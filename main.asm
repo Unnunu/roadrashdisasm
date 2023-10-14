@@ -33,7 +33,7 @@ vectorTable:
     dc.l    $144C   ; IRQ Level 3
     dc.l    $145A   ; IRQ Level 4 (VDP Horizontal Interrupt)
     dc.l    $144C   ; IRQ Level 5
-    dc.l    $1164   ; IRQ Level 6 (VDP Vertical Interrupt)
+    dc.l    VerticalInterrupt   ; IRQ Level 6 (VDP Vertical Interrupt)
     dc.l    $144C   ; IRQ Level 7
     dc.l    $144C   ; TRAP #00 Exception
     dc.l    $144C   ; TRAP #01 Exception
@@ -96,12 +96,12 @@ RESET:
     lea     defaults(pc),a5
     movem.w (a5)+,d5-d7
     movem.l (a5)+,a0-a4
-    move.b  -$10FF(a1),d0 ; read from A10000
+    move.b  -$10FF(a1),d0 ; read from A10001
     andi.b  #$F,d0
-    beq.s   @reset_system
-    move.l  #'SEGA',$2F00(a1)
+    beq.s   @noTMSS
+    move.l  #'SEGA',$2F00(a1) ; A14000 disable TMSS
 
-@reset_system:
+@noTMSS:
     move.w  (a4),d0
     moveq   #0,d0
     movea.l d0,a6
@@ -169,9 +169,9 @@ defaults:
     dc.w $8000   ; d5
     dc.w $3FFF   ; d6 M68k ram size for zero memset
     dc.w $100    ; d7
-    dc.l $A00000 ; a0
-    dc.l $A11100 ; a1
-    dc.l $A11200 ; a2
+    dc.l $A00000 ; a0 Where Z80 RAM starts
+    dc.l $A11100 ; a1 Z80 bus request line
+    dc.l $A11200 ; a2 Z80 reset line
     dc.l $C00000 ; a3
     dc.l $C00004 ; a4
     ; VDP regs
@@ -215,26 +215,107 @@ doStart:
     jsr     sub_7FF98
     move    #$2700,sr
     tst.l   $A10008
-    bne.s   @label2
+    bne.s   @anyButtonPressed
     tst.w   $A1000C
-    bne.s   @label2
-    bsr.w   sub_93E
-    move.w  #VDPREG_MODE2|$74,VdpCtrl
+    bne.s   @anyButtonPressed
+    bsr.w   LogoEA_Init
+    move.w  #$8174,VdpCtrl  ; Enable display
     move.w  #$FFFF,ram_FF369E
-    move.l  #$366,ram_FF1A62
+    move.l  #LogoEA_GameTick,ram_FF1A62
     move    #$2500,sr
 
-@label1:
-    jsr     sub_10D4
+@loopCheckFinished:
+    jsr     GetFirstControllerInput
     move.w  d0,d1
-    bsr.w   sub_111C
+    bsr.w   GetSecondControllerInput
     or.w    d1,d0
     tst.b   d0
-    bne.s   @label2
-    tst.b   ram_FF1A66
-    beq.s   @label1
+    bne.s   @anyButtonPressed
+    tst.b   LogoEA_ram_Finished
+    beq.s   @loopCheckFinished
 
-@label2:
+@anyButtonPressed:
     move.l  #0,ram_FF1A62
     jmp     loc_7E6A2
-; End of function RESET
+
+; end of function RESET
+
+    include "logoEA.asm"
+
+; *************************************************
+; Function GetFirstControllerInput
+; d0 - (out) button state (SACBRLDU)
+; *************************************************
+
+GetFirstControllerInput:
+                move.l  d1,-(sp)
+                move.b  #$40,($A10009).l	; TH pin to write, others to read
+                move.b  #0,($A10003).l      ; clear TH
+; wait 10 ticks
+                move.w  #$A,d1
+@wait:
+                dbf     d1,@wait
+
+                move.b  ($A10003).l,d0      ; read inputs
+                asl.b   #2,d0
+                andi.b  #$C0,d0             ; shift bits so A is bit 6 and START is bit 7
+
+                move.b  #$40,($A10003).l    ; set TH
+; wait 10 ticks
+                move.w  #$A,d1
+@wait2:
+                dbf     d1,@wait2
+
+                move.b  ($A10003).l,d1      ; read inputs
+                andi.b  #$3F,d1             ; get state of 6 buttons
+                or.b    d1,d0               ; move everything to d0
+                not.b   d0                  ; invert bits
+                move.l  (sp)+,d1
+                rts
+; End of function GetFirstControllerInput
+
+; *************************************************
+; Function GetSecondControllerInput
+; d0 - (out) button state (SACBRLDU)
+; *************************************************
+
+GetSecondControllerInput:
+                move.l  d1,-(sp)
+                move.b  #$40,($A1000B).l
+                move.b  #0,($A10005).l
+
+                move.w  #$14,d1
+@wait:
+                dbf     d1,@wait
+
+                move.b  ($A10005).l,d0
+                asl.b   #2,d0
+                andi.b  #$C0,d0
+                move.b  #$40,($A10005).l
+
+                move.w  #$14,d1
+@wait2:
+                dbf     d1,@wait2
+
+                move.b  ($A10005).l,d1
+                andi.b  #$3F,d1
+                or.b    d1,d0
+                not.b   d0
+                move.l  (sp)+,d1
+                rts
+; End of function GetSecondControllerInput
+
+; *************************************************
+; Interrupt Handler VerticalInterrupt
+; *************************************************
+
+VerticalInterrupt:
+                movem.l d0-d7/a0-a6,-(sp)
+                movea.l ram_FF1A62,a0
+                cmpa.l  #0,a0
+                beq.w   @return
+                jsr     (a0)
+@return:
+                movem.l (sp)+,d0-d7/a0-a6
+                rte
+; End of Interrupt Handler VerticalInterrupt

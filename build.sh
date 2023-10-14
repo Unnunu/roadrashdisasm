@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
 # build
-if tools/asm68k -i main.asm -o roadrash.md ; then
+if tools/asm68k -i main.asm -o roadrash.md -l roadrash.lst ; then
     echo "Build OK"
 else
     echo "Build FAILED"
