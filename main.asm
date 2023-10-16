@@ -5,68 +5,68 @@
 vectorTable:
     dc.l    $FFFFF6 ; Initial stack address
     dc.l    RESET    ; Start of program Code 
-    dc.l    $13C0   ; Bus error
-    dc.l    $13CE   ; Address error
-    dc.l    $13DC   ; Illegal instruction
-    dc.l    $13EA   ; Division by zero
-    dc.l    $13F8   ; CHK exception
-    dc.l    $1406   ; TRAPV exception
-    dc.l    $1414   ; Privilege violation
-    dc.l    $1422   ; TRACE exception
-    dc.l    $1430   ; Line-A emulator
-    dc.l    $143E   ; Line-F emulator
-    dc.l    $144C   ; Reserved (NOT USED)
-    dc.l    $144C   ; Co-processor protocol violation
-    dc.l    $144C   ; Format error
-    dc.l    $144C   ; Uninitialized Interrupt
-    dc.l    $144C   ; Reserved (NOT USED)
-    dc.l    $144C   ; Reserved (NOT USED)
-    dc.l    $144C   ; Reserved (NOT USED)
-    dc.l    $144C   ; Reserved (NOT USED)
-    dc.l    $144C   ; Reserved (NOT USED)
-    dc.l    $144C   ; Reserved (NOT USED)
-    dc.l    $144C   ; Reserved (NOT USED)
-    dc.l    $144C   ; Reserved (NOT USED)
-    dc.l    $144C   ; Spurious Interrupt
-    dc.l    $144C   ; IRQ Level 1
-    dc.l    $144C   ; IRQ Level 2 (EXT Interrupt)
-    dc.l    $144C   ; IRQ Level 3
-    dc.l    $145A   ; IRQ Level 4 (VDP Horizontal Interrupt)
-    dc.l    $144C   ; IRQ Level 5
+    dc.l    BusError   ; Bus error
+    dc.l    AddressError   ; Address error
+    dc.l    IllegalInstructionError   ; Illegal instruction
+    dc.l    ZeroDivisionError   ; Division by zero
+    dc.l    CheckException   ; CHK exception
+    dc.l    TrapVException   ; TRAPV exception
+    dc.l    PrivilegeViolation   ; Privilege violation
+    dc.l    TraceException   ; TRACE exception
+    dc.l    LineAEmulator   ; Line-A emulator
+    dc.l    LineFEmulator   ; Line-F emulator
+    dc.l    SpuriousInterrupt   ; Reserved (NOT USED)
+    dc.l    SpuriousInterrupt   ; Co-processor protocol violation
+    dc.l    SpuriousInterrupt   ; Format error
+    dc.l    SpuriousInterrupt   ; Uninitialized Interrupt
+    dc.l    SpuriousInterrupt   ; Reserved (NOT USED)
+    dc.l    SpuriousInterrupt   ; Reserved (NOT USED)
+    dc.l    SpuriousInterrupt   ; Reserved (NOT USED)
+    dc.l    SpuriousInterrupt   ; Reserved (NOT USED)
+    dc.l    SpuriousInterrupt   ; Reserved (NOT USED)
+    dc.l    SpuriousInterrupt   ; Reserved (NOT USED)
+    dc.l    SpuriousInterrupt   ; Reserved (NOT USED)
+    dc.l    SpuriousInterrupt   ; Reserved (NOT USED)
+    dc.l    SpuriousInterrupt   ; Spurious Interrupt
+    dc.l    SpuriousInterrupt   ; IRQ Level 1
+    dc.l    SpuriousInterrupt   ; IRQ Level 2 (EXT Interrupt)
+    dc.l    SpuriousInterrupt   ; IRQ Level 3
+    dc.l    HorizontalInterrupt   ; IRQ Level 4 (VDP Horizontal Interrupt)
+    dc.l    SpuriousInterrupt   ; IRQ Level 5
     dc.l    VerticalInterrupt   ; IRQ Level 6 (VDP Vertical Interrupt)
-    dc.l    $144C   ; IRQ Level 7
-    dc.l    $144C   ; TRAP #00 Exception
-    dc.l    $144C   ; TRAP #01 Exception
-    dc.l    $144C   ; TRAP #02 Exception
-    dc.l    $144C   ; TRAP #03 Exception
-    dc.l    $144C   ; TRAP #04 Exception
-    dc.l    $144C   ; TRAP #05 Exception
-    dc.l    $144C   ; TRAP #06 Exception
-    dc.l    $144C   ; TRAP #07 Exception
-    dc.l    $144C   ; TRAP #08 Exception
-    dc.l    $144C   ; TRAP #09 Exception
-    dc.l    $144C   ; TRAP #10 Exception
-    dc.l    $144C   ; TRAP #11 Exception
-    dc.l    $144C   ; TRAP #12 Exception
-    dc.l    $144C   ; TRAP #13 Exception
-    dc.l    $144C   ; TRAP #14 Exception
-    dc.l    $144C   ; TRAP #15 Exception
-    dc.l    $144C   ; (FP) Branch or Set on Unordered Condition
-    dc.l    $144C   ; (FP) Inexact Result
-    dc.l    $144C   ; (FP) Divide by Zero
-    dc.l    $144C   ; (FP) Underflow
-    dc.l    $144C   ; (FP) Operand Error
-    dc.l    $144C   ; (FP) Overflow
-    dc.l    $144C   ; (FP) Signaling NAN
-    dc.l    $144C   ; (FP) Unimplemented Data Type
-    dc.l    $144C   ; MMU Configuration Error
-    dc.l    $144C   ; MMU Illegal Operation Error
-    dc.l    $144C   ; MMU Access Violation Error
-    dc.l    $144C   ; Reserved (NOT USED)
-    dc.l    $144C   ; Reserved (NOT USED)
-    dc.l    $144C   ; Reserved (NOT USED)
-    dc.l    $144C   ; Reserved (NOT USED)
-    dc.l    $144C   ; Reserved (NOT USED)
+    dc.l    SpuriousInterrupt   ; IRQ Level 7
+    dc.l    SpuriousInterrupt   ; TRAP #00 Exception
+    dc.l    SpuriousInterrupt   ; TRAP #01 Exception
+    dc.l    SpuriousInterrupt   ; TRAP #02 Exception
+    dc.l    SpuriousInterrupt   ; TRAP #03 Exception
+    dc.l    SpuriousInterrupt   ; TRAP #04 Exception
+    dc.l    SpuriousInterrupt   ; TRAP #05 Exception
+    dc.l    SpuriousInterrupt   ; TRAP #06 Exception
+    dc.l    SpuriousInterrupt   ; TRAP #07 Exception
+    dc.l    SpuriousInterrupt   ; TRAP #08 Exception
+    dc.l    SpuriousInterrupt   ; TRAP #09 Exception
+    dc.l    SpuriousInterrupt   ; TRAP #10 Exception
+    dc.l    SpuriousInterrupt   ; TRAP #11 Exception
+    dc.l    SpuriousInterrupt   ; TRAP #12 Exception
+    dc.l    SpuriousInterrupt   ; TRAP #13 Exception
+    dc.l    SpuriousInterrupt   ; TRAP #14 Exception
+    dc.l    SpuriousInterrupt   ; TRAP #15 Exception
+    dc.l    SpuriousInterrupt   ; (FP) Branch or Set on Unordered Condition
+    dc.l    SpuriousInterrupt   ; (FP) Inexact Result
+    dc.l    SpuriousInterrupt   ; (FP) Divide by Zero
+    dc.l    SpuriousInterrupt   ; (FP) Underflow
+    dc.l    SpuriousInterrupt   ; (FP) Operand Error
+    dc.l    SpuriousInterrupt   ; (FP) Overflow
+    dc.l    SpuriousInterrupt   ; (FP) Signaling NAN
+    dc.l    SpuriousInterrupt   ; (FP) Unimplemented Data Type
+    dc.l    SpuriousInterrupt   ; MMU Configuration Error
+    dc.l    SpuriousInterrupt   ; MMU Illegal Operation Error
+    dc.l    SpuriousInterrupt   ; MMU Access Violation Error
+    dc.l    SpuriousInterrupt   ; Reserved (NOT USED)
+    dc.l    SpuriousInterrupt   ; Reserved (NOT USED)
+    dc.l    SpuriousInterrupt   ; Reserved (NOT USED)
+    dc.l    SpuriousInterrupt   ; Reserved (NOT USED)
+    dc.l    SpuriousInterrupt   ; Reserved (NOT USED)
 
 header:
     dc.b    "SEGA GENESIS    "                                  ; System type
@@ -225,9 +225,9 @@ doStart:
     move    #$2500,sr
 
 @loopCheckFinished:
-    jsr     GetFirstControllerInput
+    jsr     GetInputPlayerA
     move.w  d0,d1
-    bsr.w   GetSecondControllerInput
+    bsr.w   GetInputPlayerB
     or.w    d1,d0
     tst.b   d0
     bne.s   @anyButtonPressed
@@ -243,11 +243,11 @@ doStart:
     include "logoEA.asm"
 
 ; *************************************************
-; Function GetFirstControllerInput
+; Function GetInputPlayerA
 ; d0 - (out) button state (SACBRLDU)
 ; *************************************************
 
-GetFirstControllerInput:
+GetInputPlayerA:
                 move.l  d1,-(sp)
                 move.b  #$40,($A10009).l	; TH pin to write, others to read
                 move.b  #0,($A10003).l      ; clear TH
@@ -272,14 +272,14 @@ GetFirstControllerInput:
                 not.b   d0                  ; invert bits
                 move.l  (sp)+,d1
                 rts
-; End of function GetFirstControllerInput
+; End of function GetInputPlayerA
 
 ; *************************************************
-; Function GetSecondControllerInput
+; Function GetInputPlayerB
 ; d0 - (out) button state (SACBRLDU)
 ; *************************************************
 
-GetSecondControllerInput:
+GetInputPlayerB:
                 move.l  d1,-(sp)
                 move.b  #$40,($A1000B).l
                 move.b  #0,($A10005).l
@@ -303,7 +303,7 @@ GetSecondControllerInput:
                 not.b   d0
                 move.l  (sp)+,d1
                 rts
-; End of function GetSecondControllerInput
+; End of function GetInputPlayerB
 
 ; *************************************************
 ; Interrupt Handler VerticalInterrupt
@@ -313,9 +313,541 @@ VerticalInterrupt:
                 movem.l d0-d7/a0-a6,-(sp)
                 movea.l ram_FF1A62,a0
                 cmpa.l  #0,a0
-                beq.w   @return
+                beq   @return
                 jsr     (a0)
 @return:
                 movem.l (sp)+,d0-d7/a0-a6
                 rte
 ; End of Interrupt Handler VerticalInterrupt
+
+; *************************************************
+; Function sub_1180
+; *************************************************
+
+sub_1180:
+                move.l  a0,ram_FF0302
+                move.w  #3,ram_FF0300
+                move.l  #ram_FF305E,ram_FF305A
+                movea.l ram_FF305A,a0
+                lea     ram_FF0386,a1
+                lea     ram_FF0306,a2
+
+                move.w  #$3F,d0
+@loop:
+                move.w  (a0)+,(a2)+
+                andi.w  #$EEE,-2(a2)
+                move.w  #0,(a1)+
+                dbf     d0,@loop
+                rts
+; End of function sub_1180
+
+; *************************************************
+; Function sub_11C0
+; *************************************************
+
+sub_11C0:
+                move.l  a0,ram_FF0302
+                move.w  #3,ram_FF0300
+                move.l  #ram_FF305E,ram_FF305A
+                movea.l ram_FF305A,a0
+                lea     ram_FF0386,a1
+                lea     ram_FF0306,a2
+
+                move.w  #$3F,d0
+@loop:
+                move.w  (a0)+,(a1)+
+                andi.w  #$EEE,-2(a1)
+                move.w  #0,(a2)+
+                dbf     d0,@loop
+                rts
+; End of function sub_11C0
+
+; *************************************************
+; Function sub_1200 and sub_1242
+; *************************************************
+
+sub_1200:
+                lea     VdpCtrl,a0
+                lea     VdpData,a1
+                move.w  #$8210,(a0) ; Scroll A Name Table:    $4000
+                move.w  #$8402,(a0) ; Scroll B Name Table:    $4000
+                move.w  #$873F,(a0) ; Backdrop Color: $3F, palette 3, color $F
+                movea.l ram_FF389C,a2
+                move.w  (a2),(a0)
+                move.w  4(a2),(a0)
+                move.l  #$40000010,(a0) ; VSRAM from offset 0
+                move.l  6(a2),(a1)
+                move.w  $A(a2),ram_FF0406
+                move.l  $C(a2),(a0)
+                move.w  #0,ram_FF369E
+sub_1242:
+                subq.w  #1,ram_FF0300
+                bpl.w   @end
+                move.w  #3,ram_FF0300
+                move.l  #ram_FF0306,d0 ; DMA source
+                move.w  #0,d1 ; DMA destination
+                move.w  #$40,d2 ; DMA size / 2, load $80 bytes
+                jsr     DmaReadCRAM
+                lea     ram_FF0386,a0
+                lea     ram_FF0306,a1
+
+                move.w  #$3F,d0 ; check $40 words
+                clr.w   d1
+@loopCompare:
+; compare bytes
+                move.b  (a0)+,d2
+                sub.b   (a1)+,d2
+                beq.w   @loc_1296
+                bpl.w   @greaterByte
+; *a0 < *a1
+                or.w    d2,d1
+                subq.b  #2,-1(a1)
+                bra.w   @loc_1296
+@greaterByte:   ; *a0 > *a1
+                or.w    d2,d1
+                addq.b  #2,-1(a1)
+@loc_1296:
+; compare higher nibble
+                move.b  (a0),d2
+                andi.w  #$F0,d2
+                move.b  (a1),d3
+                andi.w  #$F0,d3
+                sub.b   d3,d2
+                beq.w   @loc_12BC
+                bpl.w   @greaterNibble
+                or.w    d2,d1
+                subi.b  #$20,(a1)
+                bra.w   @loc_12BC
+@greaterNibble:
+                or.w    d2,d1
+                addi.b  #$20,(a1)
+@loc_12BC:
+; compare lower nibble
+                move.b  (a0)+,d2
+                andi.w  #$F,d2
+                move.b  (a1)+,d3
+                andi.w  #$F,d3
+                sub.b   d3,d2
+                beq.w   @loc_12E2
+                bpl.w   @loc_12DC
+                or.w    d2,d1
+                subq.b  #2,-1(a1)
+                bra.w   @loc_12E2
+@loc_12DC:
+                or.w    d2,d1
+                addq.b  #2,-1(a1)
+@loc_12E2:
+                dbf     d0,@loopCompare
+
+                tst.w   d1
+                bne.w   @end
+                move.l  #0,ram_FF1A62 ; disable GameTick function, move to next game stage
+@end:
+                rts
+; End of function sub_1200 and sub_1242
+
+; *************************************************
+; Function sub_12F8
+; *************************************************
+
+sub_12F8:
+                subq.w  #1,ram_FF0300
+                bpl.w   @end
+                move.w  #3,ram_FF0300
+                move.l  #ram_FF0306,d0
+                move.w  #0,d1
+                move.w  #$40,d2
+                jsr     DmaReadCRAM
+                lea     ram_FF0386,a0
+                lea     ram_FF0306,a1
+                move.w  #$3F,d0
+                clr.w   d1
+@loc_1330:
+                move.b  (a0)+,d2
+                sub.b   (a1)+,d2
+                beq.w   @loc_134C
+                bpl.w   @loc_1346
+                or.w    d2,d1
+                subq.b  #2,-1(a1)
+                bra.w   @loc_134C
+@loc_1346:
+                or.w    d2,d1
+                addq.b  #2,-1(a1)
+@loc_134C:
+                move.b  (a0),d2
+                andi.w  #$F0,d2
+                move.b  (a1),d3
+                andi.w  #$F0,d3
+                sub.b   d3,d2
+                beq.w   @loc_1372
+                bpl.w   @loc_136C
+                or.w    d2,d1
+                subi.b  #$20,(a1)
+                bra.w   @loc_1372
+@loc_136C:
+                or.w    d2,d1
+                addi.b  #$20,(a1)
+@loc_1372:
+                move.b  (a0)+,d2
+                andi.w  #$F,d2
+                move.b  (a1)+,d3
+                andi.w  #$F,d3
+                sub.b   d3,d2
+                beq.w   @loc_1398
+                bpl.w   @loc_1392
+                or.w    d2,d1
+                subq.b  #2,-1(a1)
+                bra.w   @loc_1398
+@loc_1392:
+                or.w    d2,d1
+                addq.b  #2,-1(a1)
+@loc_1398:
+                dbf     d0,@loc_1330
+                tst.w   d1
+                bne.w   @loc_13AC
+                move.l  ram_FF0302,ram_FF1A62
+@loc_13AC:
+                movea.l ram_FF0302,a0
+                cmpa.l  #0,a0
+                beq.w   @end
+                jmp     (a0)
+@end:
+                rts
+; End of function sub_12F8
+
+; *************************************************
+; Interrupt Handler BusError
+; *************************************************
+
+BusError:
+                lea     (vectorTable).w,a0
+                move.l  #'BUS ',(a0)
+                stop    #$2700
+; End of Interrupt Handler BusError
+
+; *************************************************
+; Interrupt Handler AddressError
+; *************************************************
+
+AddressError:
+                lea     (vectorTable).w,a0
+                move.l  #'ADDR',(a0)
+                stop    #$2700
+; End of Interrupt Handler AddressError
+
+; *************************************************
+; Interrupt Handler IllegalInstructionError
+; *************************************************
+
+IllegalInstructionError:
+                lea     (vectorTable).w,a0
+                move.l  #'ILEG',(a0)
+                stop    #$2700
+; End of Interrupt Handler IllegalInstructionError
+
+; *************************************************
+; Interrupt Handler ZeroDivisionError
+; *************************************************
+
+ZeroDivisionError:
+                lea     (vectorTable).w,a0
+                move.l  #'ZDIV',(a0)
+                stop    #$2700
+; End of Interrupt Handler ZeroDivisionError
+
+; *************************************************
+; Interrupt Handler CheckException
+; *************************************************
+
+CheckException:
+                lea     (vectorTable).w,a0
+                move.l  #'CHK ',(a0)
+                stop    #$2700
+; End of Interrupt Handler CheckException
+
+; *************************************************
+; Interrupt Handler TrapVException
+; *************************************************
+
+TrapVException:
+                lea     (vectorTable).w,a0
+                move.l  #'TRPV',(a0)
+                stop    #$2700
+; End of Interrupt Handler TrapVException
+
+; *************************************************
+; Interrupt Handler PrivilegeViolation
+; *************************************************
+
+PrivilegeViolation:
+                lea     (vectorTable).w,a0
+                move.l  #'PRIV',(a0)
+                stop    #$2700
+; End of Interrupt Handler PrivilegeViolation
+
+; *************************************************
+; Interrupt Handler TraceException
+; *************************************************
+
+TraceException:
+                lea     (vectorTable).w,a0
+                move.l  #'TRAC',(a0)
+                stop    #$2700
+; End of Interrupt Handler TraceException
+
+; *************************************************
+; Interrupt Handler LineAEmulator
+; *************************************************
+
+LineAEmulator:
+                lea     (vectorTable).w,a0
+                move.l  #'LINA',(a0)
+                stop    #$2700
+; End of Interrupt Handler LineAEmulator
+
+; *************************************************
+; Interrupt Handler LineFEmulator
+; *************************************************
+
+LineFEmulator:
+                lea     (vectorTable).w,a0
+                move.l  #'LINF',(a0)
+                stop    #$2700
+; End of Interrupt Handler LineFEmulator
+
+; *************************************************
+; Interrupt Handler SpuriousInterrupt
+; *************************************************
+
+SpuriousInterrupt:
+                lea     (vectorTable).w,a0
+                move.l  #'SPUR',(a0)
+                stop    #$2700
+; End of Interrupt Handler SpuriousInterrupt
+
+; *************************************************
+; Interrupt Handler HorizontalInterrupt
+; *************************************************
+
+HorizontalInterrupt:
+                move.w  #$8AFF,VdpCtrl ; next Hint after 255 scanlines
+                cmpi.w  #$FFFF,ram_FF369E
+                beq.w   @locret_1650
+                movem.l d0-d2/a0-a2,-(sp)
+                lea     VdpCtrl,a1
+                lea     VdpData,a2
+                move.w  ram_FF0406,d0
+                ble.w   @loc_1632
+                movea.l ram_FF389C,a0
+                adda.w  d0,a0
+                move.w  (a0)+,(a1)
+                move.w  (a0)+,d0
+                move.w  (a0)+,d1
+                move.l  (a0)+,d2
+                move.w  (a0)+,ram_FF0406
+                move.l  #$40000010,(a1) ; VSRAM from offset 0
+                movea.w d0,a0
+                andi.w  #$FF00,d0
+@loc_14AA:
+                cmp.w   HvCounter,d0
+                bcc.s   @loc_14AA
+@loc_14B2:
+                move.b  HvCounter + 1,d0
+                bmi.s   @loc_14B2
+                move.w  a0,d0
+@loc_14BC:
+                cmp.w   HvCounter,d0
+                bcc.s   @loc_14BC
+                move.l  d2,(a2)
+; 36 nops
+                nop
+                nop
+                nop
+                nop
+                nop
+                nop
+                nop
+                nop
+                nop
+                nop
+                nop
+                nop
+                nop
+                nop
+                nop
+                nop
+                nop
+                nop
+                nop
+                nop
+                nop
+                nop
+                nop
+                nop
+                nop
+                nop
+                nop
+                nop
+                nop
+                nop
+                nop
+                nop
+                nop
+                nop
+                nop
+                nop
+                move.w  d1,(a1)
+                cmpi.w  #$90,ram_FF0406
+                bne.w   @loc_164C
+                move.w  #0,ram_FF0406
+                tst.w   ram_FF05D6
+                bne.w   @loc_162C
+                tst.w   ram_FF3696
+                beq.w   @loc_154E
+                clr.l   d0
+                move.w  #$1F,d1
+                jsr     sub_19F7E
+                jsr     sub_19F8A
+                bra.w   @loc_162C
+@loc_154E:
+                lea     ram_FF1EAA,a1
+                move.w  #0,d0
+                tst.b   $6E(a1)
+                bpl.w   @loc_1590
+                move.w  $14(a1),d0
+                muls.w  ram_FF3048,d0
+                add.w   $12(a1),d0
+                bpl.w   @loc_1576
+                move.w  #0,d0
+@loc_1576:
+                andi.l  #$FFFF,d0
+                move.w  ram_FF1AA2,d1
+                ext.l   d0
+                swap    d0
+                divu.w  d1,d0
+                mulu.w  #$3800,d0
+                clr.w   d0
+                swap    d0
+@loc_1590:
+                add.w   ram_FF36C4,d0
+                move.w  d0,ram_FF36B6
+                lea     ram_FF1EAA,a1
+                move.w  ram_FF36B6,d0
+                sub.w   ram_FF36B8,d0
+                move.w  d0,d1
+                bpl.w   @loc_15B6
+                neg.w   d1
+@loc_15B6:
+                cmp.w   #$64,d0
+                ble.w   @loc_15C2
+                move.w  #$64,d0
+@loc_15C2:
+                cmp.w   #$FF9C,d0
+                bpl.w   @loc_15CE
+                move.w  #$FF9C,d0
+@loc_15CE:
+                add.w   ram_FF36B8,d0
+                move.w  d0,ram_FF36B8
+                asr.w   #5,d1
+                addi.w  #2,d1
+                bpl.w   @loc_15E8
+                move.w  #0,d1
+@loc_15E8:
+                tst.b   $6E(a1)
+                bmi.w   @loc_1616
+                lea     ram_FF26AA,a1
+                move.l  ram_FF1E68,d1
+                sub.l   4(a1),d1
+                bpl.w   @loc_1606
+                neg.l   d1
+@loc_1606:
+                asl.l   #1,d1
+                swap    d1
+                cmp.w   #$1F,d1
+                bmi.w   @loc_1616
+                move.w  #$1F,d1
+@loc_1616:
+                jsr     sub_19F7E
+                movea.l ram_FF1908,a1
+                bsr.w   sub_1652
+                jsr     sub_19F8A
+@loc_162C:
+                jsr     sub_19F62
+@loc_1632:
+                move.w  #$FFFF,ram_FF369E
+                tst.w   ram_FF0406
+                ble.w   @loc_164C
+                move.w  #0,ram_FF369E
+@loc_164C:
+                movem.l (sp)+,d0-d2/a0-a2
+@locret_1650:
+                rte
+; End of function HorizontalInterrupt
+
+; *************************************************
+; Function sub_1652
+; *************************************************
+
+sub_1652:
+                cmpa.l  #$FFFFFFFF,a1
+                bne.w   @loc_1664
+                moveq   #$1F,d1
+                moveq   #0,d0
+                bra.w   @return
+@loc_1664:
+                clr.w   d0
+                tst.b   $6E(a1)
+                bpl.w   @loc_169C
+                move.w  $14(a1),d0
+                muls.w  ram_FF3048,d0
+                add.w   $12(a1),d0
+                bpl.w   @loc_1682
+                clr.w   d0
+
+@loc_1682:
+                andi.l  #$FFFF,d0
+                move.w  ram_FF1AA4,d1
+                ext.l   d0
+                swap    d0
+                divu.w  d1,d0
+                mulu.w  #$3800,d0
+                clr.w   d0
+                swap    d0
+
+@loc_169C:
+                addi.w  #$400,d0
+                move.w  d0,ram_FF36BE
+                move.w  ram_FF36BE,d0
+                cmp.w   #$400,d0
+                bpl.w   @loc_16B8
+                move.w  #$400,d0
+
+@loc_16B8:
+                sub.w   ram_FF36C0,d0
+                cmp.w   #$64,d0
+                ble.w   @loc_16CA
+                move.w  #$64,d0
+
+@loc_16CA:
+                cmp.w   #$FF9C,d0
+                bpl.w   @loc_16D6
+                move.w  #$FF9C,d0
+
+@loc_16D6:
+                add.w   ram_FF36C0,d0
+                move.w  d0,ram_FF36C0
+                move.l  ram_FF1E68,d1
+                sub.l   4(a1),d1
+                bpl.w   @loc_16F2
+                neg.l   d1
+@loc_16F2:
+                asl.l   #1,d1
+                swap    d1
+                cmp.w   #$1F,d1
+                bmi.w   @return
+                move.w  #$1F,d1
+@return:
+                rts
+; End of function sub_1652
+
+    include "intro.asm"

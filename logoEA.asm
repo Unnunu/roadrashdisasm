@@ -178,7 +178,7 @@ LogoEA_Update:
                 bne.s   @doUpdate
                 tst.w   (LogoEA_ram_TextTimer).w ; text has appeared completely
                 bge.s   @doUpdate
-                st      (LogoEA_ram_Finished).l ; set finished flag
+                st      LogoEA_ram_Finished ; set finished flag
                 rts
 @doUpdate:
                 addq.w  #1,(LogoEA_ram_FigureAnimationFrame).w
@@ -580,10 +580,10 @@ LogoEA_ChangeTextColor:
 ; *************************************************
 
 LogoEA_DrawCircle:
-                lea     (LogoEA_dFigureStripThickness).l,a0
+                lea     LogoEA_dFigureStripThickness,a0
                 lea     (LogoEA_ram_TilesCircle).w,a6
-                lea     (logoEA_dCircleShadowLength).l,a2
-                lea     (logoEA_dCircleProfile).l,a3
+                lea     logoEA_dCircleShadowLength,a2
+                lea     logoEA_dCircleProfile,a3
                 moveq   #0,d6
                 moveq   #8,d4
 @loopStrip:
@@ -715,7 +715,7 @@ LogoEA_SetupGfx:
                 lea     (LogoEA_ram_TilesSquare).w,a3
                 moveq   #$20,d1 ; tile size
                 moveq   #8,d0   ; square consists of 9 strips
-                lea     (LogoEA_dFigureStripThickness).l,a0
+                lea     LogoEA_dFigureStripThickness,a0
                 moveq   #0,d5
 
 @loopSquareStrip:
@@ -772,9 +772,9 @@ LogoEA_SetupGfx:
                 move.l  a4,-(sp)
                 movea.l d6,a3
                 lsr.w   #1,d6
-                lea     (LogoEA_dFigureStripThickness).l,a0
+                lea     LogoEA_dFigureStripThickness,a0
                 lea     (LogoEA_ram_TilesTriangle + 8).w,a6 ; leave first two lines in tiles blank
-                lea     (LogoEA_dTriangleShadowWidth).l,a4
+                lea     LogoEA_dTriangleShadowWidth,a4
                 moveq   #$20,d3
                 swap    d3 ; d3 = $200000, it's coordinate of triangle vertex (fixed point 16.16)
                 movea.l d3,a2
@@ -869,7 +869,7 @@ LogoEA_SetupGfx:
 
 ; create text 'Electronic Arts'
                 lea     (LogoEA_ram_ImageEAUncompressed).w,a1
-                lea     (LogoEA_Image_ElectronicArts).l,a3
+                lea     LogoEA_Image_ElectronicArts,a3
                 moveq   #0,d2
                 move.b  1(a3),d2
                 asl.w   #8,d2
@@ -972,7 +972,7 @@ LogoEA_Uncompress:
 ; mask bit 1
                 move.b  d0,(a1)+ ; write byte to destination buffer without change
                 subq.l  #1,d2 ; decrement size left
-                beq.w   @end
+                beq   @end
 
                 move.b  d0,(a2,d7.w) ; save byte to temp buffer
                 addq.w  #1,d7
@@ -997,7 +997,7 @@ LogoEA_Uncompress:
 
                 move.b  d0,(a1)+ ; write this byte to destination buffer
                 subq.l  #1,d2
-                beq.w   @end
+                beq   @end
 
                 move.b  d0,(a2,d7.w) ; and append this byte to temp buffer
                 addq.w  #1,d7
