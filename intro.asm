@@ -3,9 +3,9 @@
 ; *************************************************
 
 Intro_Init:
-                move.w  #0,Intro_PlayerAPressedStart
-                move.w  #0,Intro_PlayerBPressedStart
-                move.w  #$B4,Intro_TextTimer
+                move.w  #0,Intro_ram_PlayerAPressedStart
+                move.w  #0,Intro_ram_PlayerBPressedStart
+                move.w  #$B4,Intro_ram_TextTimer
                 move.w  #0,Intro_ram_CurrentStringOffset
                 lea     VdpCtrl,a0
                 move.w  #$8004,(a0) ; H-ints disabled, Pal Select 1, HVC latch disabled, Display gen enabled
@@ -22,11 +22,11 @@ Intro_Init:
                 move.w  #$9003,(a0) ; Scroll A/B Size: 128x32
                 move.w  #$9100,(a0) ; Window X: 0
                 move.w  #$9200,(a0) ; Window Y: 0
-                move.l  #$60000001,(a0) ; write to VRAM $6000: sprites
+                VDP_VRAM_WRITE $6000,(a0) ; write to sprite table
                 move.l  #0,VdpData ;  clear sprites
-                move.l  #$40000010,(a0) ; set VSRAM address 0
+                VDP_VSRAM_WRITE $0,(a0) ; write to vsram 0
                 move.l  #0,VdpData ; clear vscroll
-                move.l  #ram_FF305E,ram_FF305A
+                move.l  #Global_ram_Palette,Global_ram_PalettePtr
 ; load background image into ram
                 lea     img_Intro_Background,a3
                 lea     Intro_ram_ImageBuffer,a1
@@ -45,9 +45,9 @@ Intro_Init:
                 move.w  #$80,d6 ; plane width = 128
                 lea     Intro_ram_ImageBuffer + $3568,a0 ; source
                 jsr     WriteNametable
-; ???
+; copy title palette
                 lea     Intro_ram_ImageBuffer + $34E4,a0
-                movea.l ram_FF305A,a1
+                movea.l Global_ram_PalettePtr,a1
                 move.w  #$1F,d0
 @loc_17E8:
                 move.l  (a0)+,(a1)+
@@ -136,15 +136,15 @@ Intro_Init:
 ; write HScroll table to VRAM
                 move.l  #Intro_TitleScrollTable,d0
                 move.w  #$7000,d1 ; write HScroll table
-                move.w  #$1C0,d2
+                move.w  #$1C0,d2 ; size in words
                 jsr     DmaWriteVRAM
 
                 moveq   #1,d0
-                move.w  d0,ram_FF05D8
-                jsr     sub_19F6A
+                move.w  d0,Menu_MusicEnabled
+                jsr     AudioFunc3
 ; create String "Player A  " on the left
-                lea     unk_245E,a0
-                lea     ram_FF04A4,a1
+                lea     Menu_DefaultName,a0
+                lea     MenuPassword_ram_StrPlayerAName,a1
                 move.w  #9,(a1)+ ; y
                 move.w  #5,(a1)+ ; x
                 move.w  #1,(a1)+ ; height
@@ -154,8 +154,8 @@ Intro_Init:
                 move.w  (a0)+,(a1)+
                 dbf     d0,@loc_1972
 ; create String "Player A  " on the right
-                lea     unk_245E,a0
-                lea     ram_FF04B6,a1
+                lea     Menu_DefaultName,a0
+                lea     MenuPassword_ram_StrPlayerBName,a1
                 move.w  #9,(a1)+ ; y
                 move.w  #25,(a1)+ ; x
                 move.w  #1,(a1)+ ; height
@@ -165,7 +165,7 @@ Intro_Init:
                 move.w  (a0)+,(a1)+
                 dbf     d0,@loc_1998
 
-                lea     ram_FF04BE,a0
+                lea     Menu_ram_PlayerBName,a0
                 addq.b  #1,7(a0)
                 move.w  #$64,ram_FF052A
                 move.w  #$78,ram_FF052C
@@ -181,11 +181,11 @@ Intro_Init:
                 move.l  (a0)+,(a1)+
                 dbf     d0,@loc_19D8
 
-                move.w  #0,ram_FF05DC
-                move.w  #1,ram_FF05DA
+                move.w  #0,Menu_ram_CurrentRaceOffset
+                move.w  #1,Menu_ram_PlayerMode ; player mode : player A
                 move.w  #1,ram_FF050A
                 move.w  #0,ram_FF0520
-                move.w  #0,ram_FF0508
+                move.w  #0,Menu_ram_Player
                 bsr.w   sub_1A2C
                 bsr.w   sub_1B48
                 move.w  #$3F,ram_FF05E8
@@ -200,16 +200,16 @@ Intro_Init:
 ; *************************************************
 
 sub_1A2C:
-                move.w  #$64,ram_FF052A
-                cmpi.w  #$64,ram_FF052C
+                move.w  #100,ram_FF052A
+                cmpi.w  #100,ram_FF052C
                 bne.w   @loc_1A48
-                move.w  #$78,ram_FF052A
+                move.w  #120,ram_FF052A
 @loc_1A48:
                 lea     unk_4C20,a0
-                adda.w  #(unk_4C84 - unk_4C20),a0
+                adda.w  #100,a0
                 lea     ram_FF05F2,a1
                 adda.w  ram_FF052A,a1
-                lea     ram_FF04AC,a0
+                lea     Menu_ram_PlayerAName,a0
                 move.w  #4,d0
 @loc_1A68:
                 move.w  (a0)+,(a1)+
@@ -218,28 +218,28 @@ sub_1A2C:
                 move.l  #'    ',(a1)+
                 move.w  #'$0',(a1)+
 
-                lea     unk_2446,a0
-                lea     ram_FF042A,a1
-                move.w  #$F,(a1)+
+                lea     Menu_DefaultPassword,a0
+                lea     MenuPassword_ram_StrPlayerAPassword,a1
+                move.w  #15,(a1)+
                 move.w  #4,(a1)+
                 move.w  #2,(a1)+
-                move.w  #$C,(a1)+
+                move.w  #12,(a1)+
                 move.w  #5,d0
 @loc_1A9E:
                 move.l  (a0)+,(a1)+
                 dbf     d0,@loc_1A9E
 
-                move.w  #1,ram_FF050C
+                move.w  #1,Menu_ram_PlayerALevel
                 move.w  #0,ram_FF0526
                 move.w  #0,ram_FF0522
                 move.l  #0,ram_FF0510
-                move.l  #$64,ram_FF0518
+                move.l  #100,ram_FF0518
                 move.w  #0,ram_FF0542
-                move.w  #0,ram_FF052E
-                move.w  #0,ram_FF0530
-                move.w  #0,ram_FF0532
-                move.w  #0,ram_FF0534
-                move.w  #0,ram_FF0536
+                move.w  #0,Menu_ram_PlayerAPlaces + 0
+                move.w  #0,Menu_ram_PlayerAPlaces + 2
+                move.w  #0,Menu_ram_PlayerAPlaces + 4
+                move.w  #0,Menu_ram_PlayerAPlaces + 6
+                move.w  #0,Menu_ram_PlayerAPlaces + 8
                 lea     ram_FF0546,a0
                 move.w  #$4B,(a0)+
                 move.w  #0,(a0)+
@@ -272,10 +272,10 @@ sub_1B48:
 
 @loc_1B64:
                 lea     unk_4C20,a0
-                adda.w  #(unk_4C84-unk_4C20),a0
+                adda.w  #100,a0
                 lea     ram_FF05F2,a1
                 adda.w  ram_FF052C,a1
-                lea     ram_FF04BE,a0
+                lea     Menu_ram_PlayerBName,a0
                 move.w  #4,d0
 
 @loc_1B84:
@@ -284,29 +284,29 @@ sub_1B48:
                 move.l  #'    ',(a1)+
                 move.l  #'    ',(a1)+
                 move.w  #'$0',(a1)+
-                lea     unk_2446,a0
-                lea     ram_FF044A,a1
+                lea     Menu_DefaultPassword,a0
+                lea     MenuPassword_ram_StrPlayerBPassword,a1
 
-                move.w  #$F,(a1)+
-                move.w  #$18,(a1)+
+                move.w  #15,(a1)+
+                move.w  #24,(a1)+
                 move.w  #2,(a1)+
-                move.w  #$C,(a1)+
+                move.w  #12,(a1)+
                 move.w  #5,d0
 @loc_1BBA:
                 move.l  (a0)+,(a1)+
                 dbf     d0,@loc_1BBA
 
-                move.w  #1,ram_FF050E
+                move.w  #1,Menu_ram_PlayerBLevel
                 move.w  #0,ram_FF0528
                 move.w  #0,ram_FF0524
                 move.l  #0,ram_FF0514
-                move.l  #$64,ram_FF051C
+                move.l  #100,ram_FF051C
                 move.w  #0,ram_FF0544
-                move.w  #0,ram_FF0538
-                move.w  #0,ram_FF053A
-                move.w  #0,ram_FF053C
-                move.w  #0,ram_FF053E
-                move.w  #0,ram_FF0540
+                move.w  #0,Menu_ram_PlayerBPlaces + 0
+                move.w  #0,Menu_ram_PlayerBPlaces + 2
+                move.w  #0,Menu_ram_PlayerBPlaces + 4
+                move.w  #0,Menu_ram_PlayerBPlaces + 6
+                move.w  #0,Menu_ram_PlayerBPlaces + 8
                 lea     ram_FF0566,a0
                 move.w  #$4B,(a0)+
                 move.w  #0,(a0)+
@@ -335,30 +335,30 @@ Intro_GameTick:
 ; write HScroll table
                 move.l  #Intro_TitleScrollTable,d0
                 move.w  #$7000,d1
-                move.w  #$1C0,d2
+                move.w  #$1C0,d2 ; size in words
                 jsr     DmaWriteVRAM
 ; check if player A pressed start
                 jsr     (GetInputPlayerA).w
                 andi.w  #$80,d0 ; get 'Start' bit
                 bne.w   @playerAPressedStart
-                tst.w   Intro_PlayerAPressedStart
+                tst.w   Intro_ram_PlayerAPressedStart
                 bne.w   @endStage ; player A presed start then released
                 bra.w   @checkPlayerBStart
 @playerAPressedStart:
-                move.w  d0,Intro_PlayerAPressedStart
+                move.w  d0,Intro_ram_PlayerAPressedStart
 ; check if player B pressed start
 @checkPlayerBStart:
                 jsr     (GetInputPlayerB).w
                 andi.w  #$80,d0 ; get 'Start' bit
                 bne.w   @playerBPressedStart
-                tst.w   Intro_PlayerBPressedStart
+                tst.w   Intro_ram_PlayerBPressedStart
                 bne.w   @endStage ; player B presed start then released
                 bra.w   @showIntro
 @playerBPressedStart:
-                move.w  d0,Intro_PlayerBPressedStart
+                move.w  d0,Intro_ram_PlayerBPressedStart
 
 @showIntro:
-                subq.w  #1,Intro_TextTimer
+                subq.w  #1,Intro_ram_TextTimer
                 bpl.w   @updateScroll ; jump if text doesn't change
                 addq.w  #4,Intro_ram_CurrentStringOffset
                 move.w  Intro_ram_CurrentStringOffset,d0
@@ -382,7 +382,7 @@ Intro_GameTick:
                 lea     Intro_ram_ImageBuffer,a0
                 jsr     WriteNametable
 
-                move.w  #180,Intro_TextTimer ; wait 3 seconds
+                move.w  #180,Intro_ram_TextTimer ; wait 3 seconds
 @updateScroll:
                 lea     Intro_TitleScrollTable + $258,a0 ; y = 150
                 lea     Intro_TitleScrollSpeed + $258,a1 ; y = 150
@@ -438,11 +438,11 @@ Intro_GameTick:
 
                 bra.w   @end
 @end:
-                jsr     sub_19F62
+                jsr     AudioFunc1
                 rts
 @endStage:
-                jsr     sub_19F6E
-                move.l  #0,ram_FF1A62
+                jsr     AudioFunc4
+                move.l  #0,ram_UpdateFunction
                 bra.s   @end
 ; End of function Intro_GameTick
 
@@ -463,43 +463,56 @@ Intro_dStringTable:
                 dc.l $FFFFFFFF
 Intro_String1:
     dc.w 25,1,2,38 ; y, x, height, width
-    dc.b "    Copyright 1991 Electronic Arts    ", "                                      "
+    dc.b "    Copyright 1991 Electronic Arts    "
+    dc.b "                                      "
 Intro_String2:
     dc.w 25,1,2,38 ; y, x, height, width
-    dc.b "   Licensed by Sega Enterprises LTD.  ", "                                      "
+    dc.b "   Licensed by Sega Enterprises LTD.  "
+    dc.b "                                      "
 Intro_String3:
     dc.w 25,1,2,38 ; y, x, height, width
-    dc.b "             Programming:             ", "       Dan Geisler, Walter Stein      "
+    dc.b "             Programming:             "
+    dc.b "       Dan Geisler, Walter Stein      "
 Intro_String4:
     dc.w 25,1,2,38 ; y, x, height, width
-    dc.b "                 Art:                 ", "       Arthur Koch, Jeff Fennel       "
+    dc.b "                 Art:                 "
+    dc.b "       Arthur Koch, Jeff Fennel       "
 Intro_String5:
     dc.w 25,1,2,38 ; y, x, height, width
-    dc.b "                 Art:                 ", "   Sheryl Knowles, Cynthia Hamilton   "
+    dc.b "                 Art:                 "
+    dc.b "   Sheryl Knowles, Cynthia Hamilton   "
 Intro_String6:
     dc.w 25,1,2,38 ; y, x, height, width
-    dc.b "                 Art:                 ", "       Connie Braat, Paul Vernon      "
+    dc.b "                 Art:                 "
+    dc.b "       Connie Braat, Paul Vernon      "
 Intro_String7:
     dc.w 25,1,2,38 ; y, x, height, width
-    dc.b "                 Art:                 ", "            Peggy Brennan             "
+    dc.b "                 Art:                 "
+    dc.b "            Peggy Brennan             "
 Intro_String8:
     dc.w 25,1,2,38 ; y, x, height, width
-    dc.b "           Sound and Music:           ", "      Rob Hubbard, Mike Bartlow       "
+    dc.b "           Sound and Music:           "
+    dc.b "      Rob Hubbard, Mike Bartlow       "
 Intro_String9:
     dc.w 25,1,2,38 ; y, x, height, width
-    dc.b "              Production:             ", "              Randy Breen             "
+    dc.b "              Production:             "
+    dc.b "              Randy Breen             "
 Intro_String10:
     dc.w 25,1,2,38 ; y, x, height, width
-    dc.b "         Technical Direction:         ", "               Carl Mey               "
+    dc.b "         Technical Direction:         "
+    dc.b "               Carl Mey               "
 Intro_String11:
     dc.w 25,1,2,38 ; y, x, height, width
-    dc.b "         Production Assistant:        ", "           Michael Lubuguin           "
+    dc.b "         Production Assistant:        "
+    dc.b "           Michael Lubuguin           "
 Intro_String12:
     dc.w 25,1,2,38 ; y, x, height, width
-    dc.b "                                      ", "                                      "
+    dc.b "                                      "
+    dc.b "                                      "
 Intro_String13:
     dc.w 24,1,2,38 ; y, x, height, width
-    dc.b "   Press the Start Button to Begin    ", "                                      "
+    dc.b "   Press the Start Button to Begin    "
+    dc.b "                                      "
 
 ; *************************************************
 ; Function EncodeString
@@ -601,9 +614,3 @@ WriteNametable:
 
                 rts
 ; End of function WriteNametable
-
-unk_2446:
-    dc.b "01234  5678901234  56789"
-
-unk_245E:
-    dc.b "Player A  "

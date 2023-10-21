@@ -1,4 +1,5 @@
 ; RAM memory map
+LogoEA_ram_Base                     equ     $FFFF0000
 LogoEA_ram_TextTimer                equ     $FFFFC000
 LogoEA_ram_FigureAnimationFrame      equ     $FFFFC002
 LogoEA_ram_NextUpdateTimer          equ     $FFFFC004
@@ -160,7 +161,7 @@ LogoEA_Update:
                 subq.w  #1,(LogoEA_ram_TextTimer).w
                 move.w  d0,d1
                 neg.w   d0
-                VDP_VRAM_WRITE $2000 ; write HScroll Data Table
+                VDP_VRAM_WRITE $2000,VdpCtrl ; write HScroll Data Table
                 moveq   #$6F,d2
 ; update 'Electronic Arts' text position
 @loopWriteScrollTable:
@@ -186,7 +187,7 @@ LogoEA_Update:
 ; write circle tiles to VRAM
                 lea     (LogoEA_ram_TilesCircle).w,a3
                 move.w  #$23F,d0
-                VDP_VRAM_WRITE $4920
+                VDP_VRAM_WRITE $4920,VdpCtrl
 @loopWriteCircleToVRAM:
                 move.l  (a3)+,(a5)
                 dbf     d0,@loopWriteCircleToVRAM
@@ -203,7 +204,7 @@ LogoEA_Update:
                 bra.w   @end
 
 @doUpdate2:
-                VDP_VRAM_WRITE $C000 ; Window name table
+                VDP_VRAM_WRITE $C000,VdpCtrl ; Window name table
                 move.w  #$8F08,VdpCtrl ; set auto increment = 8
                 cmp.w   #$D,d7
                 bge.w   @checkUnflip ; jump when animFrame >= 13
@@ -214,11 +215,11 @@ LogoEA_Update:
                 move.w  #$1000,d1 ; enable vertical flip
                 cmpi.w  #0,(LogoEA_ram_CurrentFigure).w
                 bne.s   @setCirclePalette
-                VDP_CRAM_WRITE $C
+                VDP_CRAM_WRITE $C,VdpCtrl
                 move.w  #$A0,VdpData ; color #6 : (0, A, 0), dark green
-                VDP_CRAM_WRITE $8
+                VDP_CRAM_WRITE $8,VdpCtrl
                 move.w  #$A0,VdpData ; color #4 : (0, A, 0), dark green
-                VDP_CRAM_WRITE $A
+                VDP_CRAM_WRITE $A,VdpCtrl
                 move.w  #$4E4,VdpData ; color #5 : (4, E, 4), green
                 lea     (LogoEA_ram_SquareDataArray).w,a0
                 move.w  #$5C04,VdpCtrl ; square sprite table + 4
@@ -227,22 +228,22 @@ LogoEA_Update:
 @setCirclePalette:
                 cmpi.w  #1,(LogoEA_ram_CurrentFigure).w
                 bne.s   @setTrianglePalette
-                VDP_CRAM_WRITE $14 ; color #A : (2, 4, A), dark blue
+                VDP_CRAM_WRITE $14,VdpCtrl ; color #A : (2, 4, A), dark blue
                 move.w  #$A42,VdpData
-                VDP_CRAM_WRITE $1A ; color #D : (2, 4, A), dark blue
+                VDP_CRAM_WRITE $1A,VdpCtrl ; color #D : (2, 4, A), dark blue
                 move.w  #$A42,VdpData
-                VDP_CRAM_WRITE $6 ; color #3 : (6, 8, E), blue
+                VDP_CRAM_WRITE $6,VdpCtrl ; color #3 : (6, 8, E), blue
                 move.w  #$E86,VdpData
                 lea     (LogoEA_ram_CircleDataArray).w,a0
                 move.w  #$5C94,VdpCtrl ; circle sprite table + 4
                 bra.s   @flipSprites
 
 @setTrianglePalette:
-                VDP_CRAM_WRITE $16
+                VDP_CRAM_WRITE $16,VdpCtrl
                 move.w  #$8A,VdpData ; color #B : (A, 8, 0), yellow
-                VDP_CRAM_WRITE $1C
+                VDP_CRAM_WRITE $1C,VdpCtrl
                 move.w  #$8A,VdpData ; color #E : (A, 8, 0), yellow
-                VDP_CRAM_WRITE $4
+                VDP_CRAM_WRITE $4,VdpCtrl
                 move.w  #$CE,VdpData ; color #2 : (E, C, 0), light yellow
                 lea     (LogoEA_ram_TriangleDataArray).w,a0
                 move.w  #$5D24,VdpCtrl ; triangle sprite table + 4
@@ -262,11 +263,11 @@ LogoEA_Update:
                 cmpi.w  #0,(LogoEA_ram_CurrentFigure).w
                 bne.s   @checkUnflipCircle
 ; reset square palette
-                VDP_CRAM_WRITE $C
+                VDP_CRAM_WRITE $C,VdpCtrl
                 move.w  #$4E4,VdpData ; color #6 : (4, E, 4), green
-                VDP_CRAM_WRITE $8
+                VDP_CRAM_WRITE $8,VdpCtrl
                 move.w  #$8E8,VdpData ; color #4 : (8, E, 8), light green
-                VDP_CRAM_WRITE $A
+                VDP_CRAM_WRITE $A,VdpCtrl
                 move.w  #$A0,VdpData  ; color #5 : (0, A, 0), dark green
                 lea     (LogoEA_ram_SquareDataArray).w,a0
                 move.w  #$5C04,VdpCtrl  ; square sprite table + 4
@@ -276,22 +277,22 @@ LogoEA_Update:
                 cmpi.w  #1,(LogoEA_ram_CurrentFigure).w
                 bne.s   @checkUnflipTriangle
 ; reset circle palette    
-                VDP_CRAM_WRITE $14
+                VDP_CRAM_WRITE $14,VdpCtrl
                 move.w  #$E86,VdpData ; color #A : (6, 8, E), blue
-                VDP_CRAM_WRITE $1A
+                VDP_CRAM_WRITE $1A,VdpCtrl
                 move.w  #$ECA,VdpData ; color #D : (A, C, E), light blue
-                VDP_CRAM_WRITE $6
+                VDP_CRAM_WRITE $6,VdpCtrl
                 move.w  #$A42,VdpData ; color #3 : (2, 4, A), dark blue
                 lea     (LogoEA_ram_CircleDataArray).w,a0
                 move.w  #$5C94,VdpCtrl ; circle sprite table + 4
                 bra.s   @disableVFlip
 
 @checkUnflipTriangle:
-                VDP_CRAM_WRITE $16
+                VDP_CRAM_WRITE $16,VdpCtrl
                 move.w  #$CE,VdpData ; color #B : (E, C, 0), yellow
-                VDP_CRAM_WRITE $1C
+                VDP_CRAM_WRITE $1C,VdpCtrl
                 move.w  #$8EE,VdpData ; color #E : (E, E, 8), light yellow
-                VDP_CRAM_WRITE $4
+                VDP_CRAM_WRITE $4,VdpCtrl
                 move.w  #$8A,VdpData ; color #2 : (A, 8, 0), dark yellow
                 lea     (LogoEA_ram_TriangleDataArray).w,a0
                 move.w  #$5D24,VdpCtrl ; triangle sprite table + 4
@@ -558,10 +559,10 @@ LogoEA_DrawLine:
 LogoEA_ChangeTextColor:
                 cmp.w   #$18,d7 ; change color on last animation frame
                 bne.s   @return
-                VDP_CRAM_WRITE $12 ; set color #9
+                VDP_CRAM_WRITE $12,VdpCtrl ; set color #9
                 move.w  d0,(a5)
 
-                VDP_CRAM_WRITE $2 ; set color #2
+                VDP_CRAM_WRITE $2,VdpCtrl ; set color #2
                 cmp.w   #$E86,d0 ; (6,8,E) - blue
                 bne.s   @setColor
                 move.w  #$E22,d0 ; (2,2,E) - another blue
@@ -660,7 +661,7 @@ LogoEA_Init:
 ; clear ram
                 move.w  #$3FF6,d0
                 moveq   #0,d1
-                movea.l #$FFFF0000,a0
+                movea.l #LogoEA_ram_Base,a0
 @loopClearRAM:
                 move.l  d1,(a0)+
                 dbf     d0,@loopClearRAM
@@ -685,7 +686,7 @@ LogoEA_Init:
                 move.w  #$9200,VdpCtrl  ; WindowY: 0
                 move.w  #$8A01,(a4)     ; H-Int Counter: 1
 ; clear VRAM
-                VDP_VRAM_WRITE $0
+                VDP_VRAM_WRITE $0,VdpCtrl
                 move.w  #$3FFF,d1
                 moveq   #0,d0
 @loopClearVRAM:
@@ -693,9 +694,9 @@ LogoEA_Init:
                 dbf     d1,@loopClearVRAM
 
                 moveq   #0,d1
-                VDP_VSRAM_WRITE $0
+                VDP_VSRAM_WRITE $0,VdpCtrl
                 bsr.s   LogoEA_SetupGfx
-                VDP_VRAM_WRITE $2000 ; write HScroll Data Table
+                VDP_VRAM_WRITE $2000,VdpCtrl ; write HScroll Data Table
                 neg.w   d1
                 move    (sp)+,sr
                 rts
@@ -762,7 +763,7 @@ LogoEA_SetupGfx:
 @writeSquareToVRAM:
                 lea     (LogoEA_ram_TilesSquare).w,a3
                 move.w  #$23F,d0    ; Write 8 * 9 = 72 tiles of square figure
-                VDP_VRAM_WRITE $4020 ; Starting from index $201
+                VDP_VRAM_WRITE $4020,VdpCtrl ; Starting from index $201
 @loopWriteSquareTiles:
                 move.l  (a3)+,(a5)
                 dbf     d0,@loopWriteSquareTiles
@@ -838,12 +839,12 @@ LogoEA_SetupGfx:
 ; load triangle tiles to VRAM
                 lea     (LogoEA_ram_TilesTriangle).w,a3
                 move.w  #$23F,d0   ; Write 8 * 9 = 72 tiles of triangle figure
-                VDP_VRAM_WRITE $5220
+                VDP_VRAM_WRITE $5220,VdpCtrl
 @loopWriteTriangleTiles:
                 move.l  (a3)+,(a5)
                 dbf     d0,@loopWriteTriangleTiles
 
-                VDP_VRAM_WRITE $DC00 ; set sprite attr table
+                VDP_VRAM_WRITE $DC00,VdpCtrl ; set sprite attr table
                 lea     (LogoEA_ram_SquareYArray).w,a0
                 lea     (LogoEA_ram_SquareDataArray).w,a1
                 moveq   #1,d1   ; first sprite link 1
@@ -882,20 +883,20 @@ LogoEA_SetupGfx:
                 move.w  (a1)+,d2 ; width in tiles = 29
 ; load "Electronic Arts" palette to VRAM
                 moveq   #$F,d3
-                VDP_CRAM_WRITE $0
+                VDP_CRAM_WRITE $0,VdpCtrl
 @loopWritePalette:
                 move.w  (a1)+,(a5)
                 dbf     d3,@loopWritePalette
 ; load "Electronic Arts" image to VRAM
                 asl.w   #3,d0
                 subq.w  #1,d0
-                VDP_VRAM_WRITE $20
+                VDP_VRAM_WRITE $20,VdpCtrl
 @loopWriteTextImage:
                 move.l  (a1)+,(a5)
                 dbf     d0,@loopWriteTextImage
 
 ; write 'Electronic Arts' text nametable
-                VDP_VRAM_WRITE $8000
+                VDP_VRAM_WRITE $8000,VdpCtrl
                 move.w  #$720C,d6 ; ???
                 subq.w  #1,d1
                 subq.w  #1,d2

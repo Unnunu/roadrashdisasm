@@ -221,7 +221,7 @@ doStart:
     bsr.w   LogoEA_Init
     move.w  #$8174,VdpCtrl  ; Enable display
     move.w  #$FFFF,ram_FF369E
-    move.l  #LogoEA_GameTick,ram_FF1A62
+    move.l  #LogoEA_GameTick,ram_UpdateFunction
     move    #$2500,sr
 
 @loopCheckFinished:
@@ -235,7 +235,7 @@ doStart:
     beq.s   @loopCheckFinished
 
 @anyButtonPressed:
-    move.l  #0,ram_FF1A62
+    move.l  #0,ram_UpdateFunction
     jmp     loc_7E6A2
 
 ; end of function RESET
@@ -249,24 +249,24 @@ doStart:
 
 GetInputPlayerA:
                 move.l  d1,-(sp)
-                move.b  #$40,($A10009).l	; TH pin to write, others to read
-                move.b  #0,($A10003).l      ; clear TH
+                move.b  #$40,$A10009	; TH pin to write, others to read
+                move.b  #0,$A10003     ; clear TH
 ; wait 10 ticks
                 move.w  #$A,d1
 @wait:
                 dbf     d1,@wait
 
-                move.b  ($A10003).l,d0      ; read inputs
+                move.b  $A10003,d0      ; read inputs
                 asl.b   #2,d0
                 andi.b  #$C0,d0             ; shift bits so A is bit 6 and START is bit 7
 
-                move.b  #$40,($A10003).l    ; set TH
+                move.b  #$40,$A10003    ; set TH
 ; wait 10 ticks
                 move.w  #$A,d1
 @wait2:
                 dbf     d1,@wait2
 
-                move.b  ($A10003).l,d1      ; read inputs
+                move.b  $A10003,d1      ; read inputs
                 andi.b  #$3F,d1             ; get state of 6 buttons
                 or.b    d1,d0               ; move everything to d0
                 not.b   d0                  ; invert bits
@@ -281,23 +281,23 @@ GetInputPlayerA:
 
 GetInputPlayerB:
                 move.l  d1,-(sp)
-                move.b  #$40,($A1000B).l
-                move.b  #0,($A10005).l
+                move.b  #$40,$A1000B
+                move.b  #0,$A10005
 
                 move.w  #$14,d1
 @wait:
                 dbf     d1,@wait
 
-                move.b  ($A10005).l,d0
+                move.b  $A10005,d0
                 asl.b   #2,d0
                 andi.b  #$C0,d0
-                move.b  #$40,($A10005).l
+                move.b  #$40,$A10005
 
                 move.w  #$14,d1
 @wait2:
                 dbf     d1,@wait2
 
-                move.b  ($A10005).l,d1
+                move.b  $A10005,d1
                 andi.b  #$3F,d1
                 or.b    d1,d0
                 not.b   d0
@@ -311,7 +311,7 @@ GetInputPlayerB:
 
 VerticalInterrupt:
                 movem.l d0-d7/a0-a6,-(sp)
-                movea.l ram_FF1A62,a0
+                movea.l ram_UpdateFunction,a0
                 cmpa.l  #0,a0
                 beq   @return
                 jsr     (a0)
@@ -320,200 +320,7 @@ VerticalInterrupt:
                 rte
 ; End of Interrupt Handler VerticalInterrupt
 
-; *************************************************
-; Function sub_1180
-; *************************************************
-
-sub_1180:
-                move.l  a0,ram_FF0302
-                move.w  #3,ram_FF0300
-                move.l  #ram_FF305E,ram_FF305A
-                movea.l ram_FF305A,a0
-                lea     ram_FF0386,a1
-                lea     ram_FF0306,a2
-
-                move.w  #$3F,d0
-@loop:
-                move.w  (a0)+,(a2)+
-                andi.w  #$EEE,-2(a2)
-                move.w  #0,(a1)+
-                dbf     d0,@loop
-                rts
-; End of function sub_1180
-
-; *************************************************
-; Function sub_11C0
-; *************************************************
-
-sub_11C0:
-                move.l  a0,ram_FF0302
-                move.w  #3,ram_FF0300
-                move.l  #ram_FF305E,ram_FF305A
-                movea.l ram_FF305A,a0
-                lea     ram_FF0386,a1
-                lea     ram_FF0306,a2
-
-                move.w  #$3F,d0
-@loop:
-                move.w  (a0)+,(a1)+
-                andi.w  #$EEE,-2(a1)
-                move.w  #0,(a2)+
-                dbf     d0,@loop
-                rts
-; End of function sub_11C0
-
-; *************************************************
-; Function sub_1200 and sub_1242
-; *************************************************
-
-sub_1200:
-                lea     VdpCtrl,a0
-                lea     VdpData,a1
-                move.w  #$8210,(a0) ; Scroll A Name Table:    $4000
-                move.w  #$8402,(a0) ; Scroll B Name Table:    $4000
-                move.w  #$873F,(a0) ; Backdrop Color: $3F, palette 3, color $F
-                movea.l ram_FF389C,a2
-                move.w  (a2),(a0)
-                move.w  4(a2),(a0)
-                move.l  #$40000010,(a0) ; VSRAM from offset 0
-                move.l  6(a2),(a1)
-                move.w  $A(a2),ram_FF0406
-                move.l  $C(a2),(a0)
-                move.w  #0,ram_FF369E
-sub_1242:
-                subq.w  #1,ram_FF0300
-                bpl.w   @end
-                move.w  #3,ram_FF0300
-                move.l  #ram_FF0306,d0 ; DMA source
-                move.w  #0,d1 ; DMA destination
-                move.w  #$40,d2 ; DMA size / 2, load $80 bytes
-                jsr     DmaReadCRAM
-                lea     ram_FF0386,a0
-                lea     ram_FF0306,a1
-
-                move.w  #$3F,d0 ; check $40 words
-                clr.w   d1
-@loopCompare:
-; compare bytes
-                move.b  (a0)+,d2
-                sub.b   (a1)+,d2
-                beq.w   @loc_1296
-                bpl.w   @greaterByte
-; *a0 < *a1
-                or.w    d2,d1
-                subq.b  #2,-1(a1)
-                bra.w   @loc_1296
-@greaterByte:   ; *a0 > *a1
-                or.w    d2,d1
-                addq.b  #2,-1(a1)
-@loc_1296:
-; compare higher nibble
-                move.b  (a0),d2
-                andi.w  #$F0,d2
-                move.b  (a1),d3
-                andi.w  #$F0,d3
-                sub.b   d3,d2
-                beq.w   @loc_12BC
-                bpl.w   @greaterNibble
-                or.w    d2,d1
-                subi.b  #$20,(a1)
-                bra.w   @loc_12BC
-@greaterNibble:
-                or.w    d2,d1
-                addi.b  #$20,(a1)
-@loc_12BC:
-; compare lower nibble
-                move.b  (a0)+,d2
-                andi.w  #$F,d2
-                move.b  (a1)+,d3
-                andi.w  #$F,d3
-                sub.b   d3,d2
-                beq.w   @loc_12E2
-                bpl.w   @loc_12DC
-                or.w    d2,d1
-                subq.b  #2,-1(a1)
-                bra.w   @loc_12E2
-@loc_12DC:
-                or.w    d2,d1
-                addq.b  #2,-1(a1)
-@loc_12E2:
-                dbf     d0,@loopCompare
-
-                tst.w   d1
-                bne.w   @end
-                move.l  #0,ram_FF1A62 ; disable GameTick function, move to next game stage
-@end:
-                rts
-; End of function sub_1200 and sub_1242
-
-; *************************************************
-; Function sub_12F8
-; *************************************************
-
-sub_12F8:
-                subq.w  #1,ram_FF0300
-                bpl.w   @end
-                move.w  #3,ram_FF0300
-                move.l  #ram_FF0306,d0
-                move.w  #0,d1
-                move.w  #$40,d2
-                jsr     DmaReadCRAM
-                lea     ram_FF0386,a0
-                lea     ram_FF0306,a1
-                move.w  #$3F,d0
-                clr.w   d1
-@loc_1330:
-                move.b  (a0)+,d2
-                sub.b   (a1)+,d2
-                beq.w   @loc_134C
-                bpl.w   @loc_1346
-                or.w    d2,d1
-                subq.b  #2,-1(a1)
-                bra.w   @loc_134C
-@loc_1346:
-                or.w    d2,d1
-                addq.b  #2,-1(a1)
-@loc_134C:
-                move.b  (a0),d2
-                andi.w  #$F0,d2
-                move.b  (a1),d3
-                andi.w  #$F0,d3
-                sub.b   d3,d2
-                beq.w   @loc_1372
-                bpl.w   @loc_136C
-                or.w    d2,d1
-                subi.b  #$20,(a1)
-                bra.w   @loc_1372
-@loc_136C:
-                or.w    d2,d1
-                addi.b  #$20,(a1)
-@loc_1372:
-                move.b  (a0)+,d2
-                andi.w  #$F,d2
-                move.b  (a1)+,d3
-                andi.w  #$F,d3
-                sub.b   d3,d2
-                beq.w   @loc_1398
-                bpl.w   @loc_1392
-                or.w    d2,d1
-                subq.b  #2,-1(a1)
-                bra.w   @loc_1398
-@loc_1392:
-                or.w    d2,d1
-                addq.b  #2,-1(a1)
-@loc_1398:
-                dbf     d0,@loc_1330
-                tst.w   d1
-                bne.w   @loc_13AC
-                move.l  ram_FF0302,ram_FF1A62
-@loc_13AC:
-                movea.l ram_FF0302,a0
-                cmpa.l  #0,a0
-                beq.w   @end
-                jmp     (a0)
-@end:
-                rts
-; End of function sub_12F8
+    include "fade.asm"
 
 ; *************************************************
 ; Interrupt Handler BusError
@@ -706,8 +513,8 @@ HorizontalInterrupt:
                 beq.w   @loc_154E
                 clr.l   d0
                 move.w  #$1F,d1
-                jsr     sub_19F7E
-                jsr     sub_19F8A
+                jsr     AudioFunc8
+                jsr     AudioFunc11
                 bra.w   @loc_162C
 @loc_154E:
                 lea     ram_FF1EAA,a1
@@ -767,12 +574,12 @@ HorizontalInterrupt:
                 bmi.w   @loc_1616
                 move.w  #$1F,d1
 @loc_1616:
-                jsr     sub_19F7E
+                jsr     AudioFunc8
                 movea.l ram_FF1908,a1
                 bsr.w   sub_1652
-                jsr     sub_19F8A
+                jsr     AudioFunc11
 @loc_162C:
-                jsr     sub_19F62
+                jsr     AudioFunc1
 @loc_1632:
                 move.w  #$FFFF,ram_FF369E
                 tst.w   ram_FF0406
@@ -851,3 +658,6 @@ sub_1652:
 ; End of function sub_1652
 
     include "intro.asm"
+    include "menu_password.asm"
+    include "menu_main.asm"
+    include "menu_tooltip.asm"
