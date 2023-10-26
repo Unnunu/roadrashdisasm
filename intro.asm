@@ -5,7 +5,7 @@
 Intro_Init:
                 move.w  #0,Intro_ram_PlayerAPressedStart
                 move.w  #0,Intro_ram_PlayerBPressedStart
-                move.w  #$B4,Intro_ram_TextTimer
+                move.w  #180,Intro_ram_TextTimer ; 3 seconds
                 move.w  #0,Intro_ram_CurrentStringOffset
                 lea     VdpCtrl,a0
                 move.w  #$8004,(a0) ; H-ints disabled, Pal Select 1, HVC latch disabled, Display gen enabled
@@ -140,7 +140,7 @@ Intro_Init:
                 jsr     DmaWriteVRAM
 
                 moveq   #1,d0
-                move.w  d0,Menu_MusicEnabled
+                move.w  d0,ram_CurrentSong
                 jsr     AudioFunc3
 ; create String "Player A  " on the left
                 lea     Menu_DefaultName,a0
@@ -167,31 +167,31 @@ Intro_Init:
 
                 lea     Menu_ram_PlayerBName,a0
                 addq.b  #1,7(a0)
-                move.w  #$64,ram_FF052A
-                move.w  #$78,ram_FF052C
+                move.w  #(20*5),HighScore_ram_PlayerATableOffset
+                move.w  #(20*6),HighScore_ram_PlayerBTableOffset
 ; create text of demo highscore table
                 lea     unk_4C18,a0
-                lea     ram_FF05EA,a1
+                lea     HighScore_ram_Table,a1
                 move.w  #22,(a1)+ ; y
                 move.w  #16,(a1)+ ; x
                 move.w  #7,(a1)+ ; height
                 move.w  #20,(a1)+ ; width
-                move.w  #$22,d0
+                move.w  #34,d0
 @loc_19D8:
                 move.l  (a0)+,(a1)+
                 dbf     d0,@loc_19D8
 
-                move.w  #0,Menu_ram_CurrentRaceOffset
+                move.w  #0,Menu_ram_CurrentRaceId
                 move.w  #1,Menu_ram_PlayerMode ; player mode : player A
                 move.w  #1,ram_FF050A
                 move.w  #0,ram_FF0520
                 move.w  #0,Menu_ram_Player
                 bsr.w   sub_1A2C
                 bsr.w   sub_1B48
-                move.w  #$3F,ram_FF05E8
-                jsr     sub_15FE8
+                move.w  #$3F,Message_ram_ButtonBlinkPeriod
+                jsr     Rand_Init
                 jsr     sub_16088
-                move.w  #1,ram_FF05D6
+                move.w  #1,ram_MusicEnabled
                 rts
 ; End of function Intro_Init
 
@@ -200,15 +200,15 @@ Intro_Init:
 ; *************************************************
 
 sub_1A2C:
-                move.w  #100,ram_FF052A
-                cmpi.w  #100,ram_FF052C
+                move.w  #(20*5),HighScore_ram_PlayerATableOffset
+                cmpi.w  #(20*5),HighScore_ram_PlayerBTableOffset
                 bne.w   @loc_1A48
-                move.w  #120,ram_FF052A
+                move.w  #(20*6),HighScore_ram_PlayerATableOffset
 @loc_1A48:
-                lea     unk_4C20,a0
-                adda.w  #100,a0
+                lea     unk_4C18 + 8,a0
+                adda.w  #(20*5),a0
                 lea     ram_FF05F2,a1
-                adda.w  ram_FF052A,a1
+                adda.w  HighScore_ram_PlayerATableOffset,a1
                 lea     Menu_ram_PlayerAName,a0
                 move.w  #4,d0
 @loc_1A68:
@@ -233,8 +233,8 @@ sub_1A2C:
                 move.w  #0,ram_FF0526
                 move.w  #0,ram_FF0522
                 move.l  #0,ram_FF0510
-                move.l  #100,ram_FF0518
-                move.w  #0,ram_FF0542
+                move.l  #100,Menu_ram_MoneyPlayerA
+                move.w  #0,Menu_ram_BikeIdPlayerA
                 move.w  #0,Menu_ram_PlayerAPlaces + 0
                 move.w  #0,Menu_ram_PlayerAPlaces + 2
                 move.w  #0,Menu_ram_PlayerAPlaces + 4
@@ -265,16 +265,15 @@ sub_1A2C:
 ; *************************************************
 
 sub_1B48:
-                move.w  #$64,ram_FF052C
-                cmpi.w  #$64,ram_FF052A
+                move.w  #(20*5),HighScore_ram_PlayerBTableOffset
+                cmpi.w  #(20*5),HighScore_ram_PlayerATableOffset
                 bne.w   @loc_1B64
-                move.w  #$78,ram_FF052C
-
+                move.w  #(20*6),HighScore_ram_PlayerBTableOffset
 @loc_1B64:
-                lea     unk_4C20,a0
-                adda.w  #100,a0
+                lea     unk_4C18 + 8,a0
+                adda.w  #(20*5),a0
                 lea     ram_FF05F2,a1
-                adda.w  ram_FF052C,a1
+                adda.w  HighScore_ram_PlayerBTableOffset,a1
                 lea     Menu_ram_PlayerBName,a0
                 move.w  #4,d0
 
@@ -300,8 +299,8 @@ sub_1B48:
                 move.w  #0,ram_FF0528
                 move.w  #0,ram_FF0524
                 move.l  #0,ram_FF0514
-                move.l  #100,ram_FF051C
-                move.w  #0,ram_FF0544
+                move.l  #100,Menu_ram_MoneyPlayerB
+                move.w  #0,Menu_ram_BikeIdPlayerB
                 move.w  #0,Menu_ram_PlayerBPlaces + 0
                 move.w  #0,Menu_ram_PlayerBPlaces + 2
                 move.w  #0,Menu_ram_PlayerBPlaces + 4

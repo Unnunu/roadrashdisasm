@@ -507,7 +507,7 @@ HorizontalInterrupt:
                 cmpi.w  #$90,ram_FF0406
                 bne.w   @loc_164C
                 move.w  #0,ram_FF0406
-                tst.w   ram_FF05D6
+                tst.w   ram_MusicEnabled
                 bne.w   @loc_162C
                 tst.w   ram_FF3696
                 beq.w   @loc_154E
@@ -660,4 +660,9 @@ sub_1652:
     include "intro.asm"
     include "menu_password.asm"
     include "menu_main.asm"
-    include "menu_tooltip.asm"
+    include "message.asm"
+    include "sub_5760.asm"
+    include "character.asm"
+    include "race_results.asm"
+    include "highscore.asm"
+    include "shop.asm"

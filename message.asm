@@ -1,6 +1,8 @@
-; =============== S U B R O U T I N E =======================================
+; *************************************************
+; Function Message_ShowEmpty
+; *************************************************
 
-ShowEmptyMessage:
+Message_ShowEmpty:
 ; fill message field with spaces
                 move.w  #119,d0
                 move.w  (dStringCodeTable + 2 * ' ').w,d1
@@ -22,13 +24,13 @@ ShowEmptyMessage:
                 bsr.w   WriteNametableToBuffer
 sub_4268:
                 rts
-; End of function ShowEmptyMessage
+; End of function Message_ShowEmpty
 
+; *************************************************
+; Function Message_Clear
+; *************************************************
 
-; =============== S U B R O U T I N E =======================================
-
-
-ClearMessage:
+Message_Clear:
 ; clear message field
                 move.w  #119,d0
                 move.l  #$7FF07FF,d1
@@ -43,135 +45,115 @@ ClearMessage:
                 move.w  #22,d3 ; y
                 move.w  #0,d4 ; base tile
                 move.w  #64,d6 ; plane width
+                lea     Intro_ram_ImageBuffer,a0 ; source
+                lea     Menu_ram_FrameBuffer,a1 ; destination
+                bsr.w   WriteNametableToBuffer
+                rts
+; End of function Message_Clear
+
+; *************************************************
+; Function Message_BlinkButtonA
+; *************************************************
+
+Message_BlinkButtonA:
+                bsr.s   Message_Clear
+                move.w  Message_ram_ButtonBlinkCounter,d0
+                move.w  Message_ram_ButtonBlinkPeriod,d1
+                addq.w  #1,d0
+                and.w   d1,d0
+                move.w  d0,Message_ram_ButtonBlinkCounter
+                lsr.w   #1,d1
+                eori.w  #$FFFF,d1
+                and.w   d1,d0
+                beq.w   Message_DrawButtonA
+                rts
+Message_DrawButtonA:
+; draw blue "A" button
+                move.w  #4,Intro_ram_ImageBuffer ; tile #4
+                move.w  #1,d0 ; width
+                move.w  #1,d1 ; height
+                move.w  #10,d2 ; x
+                move.w  #25,d3 ; y
+                move.w  #$2500,d4 ; base tile index = $500, address = $A000, palette line = 1
+                move.w  #64,d6 ; plane width
+                lea     Intro_ram_ImageBuffer,a0 ; source
+                lea     Menu_ram_FrameBuffer,a1 ; destination
+                bsr.w   WriteNametableToBuffer
+                rts
+; End of function Message_BlinkButtonA
+
+; *************************************************
+; Function Message_BlinkButtonB
+; *************************************************
+
+Message_BlinkButtonB:
+                bsr.w   Message_Clear
+                move.w  Message_ram_ButtonBlinkCounter,d0
+                move.w  Message_ram_ButtonBlinkPeriod,d1
+                addq.w  #1,d0
+                and.w   d1,d0
+                move.w  d0,Message_ram_ButtonBlinkCounter
+                lsr.w   #1,d1
+                eori.w  #$FFFF,d1
+                and.w   d1,d0
+                beq.w   Message_DrawButtonB
+                rts
+Message_DrawButtonB:
+                lea     Intro_ram_ImageBuffer,a0
+                move.w  #5,(a0)+ ; tile #5
+                move.w  #6,(a0)+ ; and tile #6
+                move.w  #1,d0 ; width
+                move.w  #2,d1 ; height
+                move.w  #11,d2 ; x
+                move.w  #24,d3 ; y
+                move.w  #$2500,d4 ; base tile index = $500, address = $A000, palette line = 1
+                move.w  #64,d6 ; plane width
                 lea     Intro_ram_ImageBuffer,a0
                 lea     Menu_ram_FrameBuffer,a1
                 bsr.w   WriteNametableToBuffer
                 rts
-; End of function ClearMessage
+; End of function Message_BlinkButtonB
 
+; *************************************************
+; Function Message_BlinkButtonsAB
+; *************************************************
 
-; =============== S U B R O U T I N E =======================================
-
-
-sub_42AA:                               ; DATA XREF: ROM:000045BA↓o
-                                        ; ROM:00004642↓o
-                bsr.s   ClearMessage
-                move.w  ram_FF05E6,d0
-                move.w  ram_FF05E8,d1
+Message_BlinkButtonsAB:
+                bsr.w   Message_Clear
+                move.w  Message_ram_ButtonBlinkCounter,d0
+                move.w  Message_ram_ButtonBlinkPeriod,d1
                 addq.w  #1,d0
                 and.w   d1,d0
-                move.w  d0,ram_FF05E6
+                move.w  d0,Message_ram_ButtonBlinkCounter
                 lsr.w   #1,d1
                 eori.w  #$FFFF,d1
                 and.w   d1,d0
-                beq.w   sub_42D0
+                beq.w   @draw
                 rts
-; End of function sub_42AA
-
-
-; =============== S U B R O U T I N E =======================================
-
-
-sub_42D0:                               ; CODE XREF: sub_42AA+20↑j
-                                        ; sub_4362:@loc_438A↓p
-                move.w  #4,Intro_ram_ImageBuffer
-                move.w  #1,d0
-                move.w  #1,d1
-                move.w  #$A,d2
-                move.w  #$19,d3
-                move.w  #$2500,d4
-                move.w  #$40,d6 ; '@'
-                lea     Intro_ram_ImageBuffer,a0
-                lea     Menu_ram_FrameBuffer,a1
-                bsr.w   WriteNametableToBuffer
+@draw:
+                bsr.w   Message_DrawButtonA
+                bsr.s   Message_DrawButtonB
                 rts
-; End of function sub_42D0
+; End of function Message_BlinkButtonsAB
 
+; *************************************************
+; Function Message_BlinkButtonC
+; *************************************************
 
-; =============== S U B R O U T I N E =======================================
-
-
-sub_4302:                               ; DATA XREF: ROM:000045C2↓o
-                                        ; ROM:0000464A↓o
-                bsr.w   ClearMessage
-                move.w  ram_FF05E6,d0
-                move.w  ram_FF05E8,d1
+Message_BlinkButtonC:
+                bsr.w   Message_Clear
+                move.w  Message_ram_ButtonBlinkCounter,d0
+                move.w  Message_ram_ButtonBlinkPeriod,d1
                 addq.w  #1,d0
                 and.w   d1,d0
-                move.w  d0,ram_FF05E6
+                move.w  d0,Message_ram_ButtonBlinkCounter
                 lsr.w   #1,d1
                 eori.w  #$FFFF,d1
                 and.w   d1,d0
-                beq.w   sub_432A
+                beq.w   @draw
                 rts
-; End of function sub_4302
-
-
-; =============== S U B R O U T I N E =======================================
-
-
-sub_432A:                               ; CODE XREF: sub_4302+22↑j
-                                        ; sub_4362+2C↓p
-                lea     Intro_ram_ImageBuffer,a0
-                move.w  #5,(a0)+
-                move.w  #6,(a0)+
-                move.w  #1,d0
-                move.w  #2,d1
-                move.w  #$B,d2
-                move.w  #$18,d3
-                move.w  #$2500,d4
-                move.w  #$40,d6 ; '@'
-                lea     Intro_ram_ImageBuffer,a0
-                lea     Menu_ram_FrameBuffer,a1
-                bsr.w   WriteNametableToBuffer
-                rts
-; End of function sub_432A
-
-
-; =============== S U B R O U T I N E =======================================
-
-
-sub_4362:                               ; DATA XREF: ROM:000045EA↓o
-                bsr.w   ClearMessage
-                move.w  ram_FF05E6,d0
-                move.w  ram_FF05E8,d1
-                addq.w  #1,d0
-                and.w   d1,d0
-                move.w  d0,ram_FF05E6
-                lsr.w   #1,d1
-                eori.w  #$FFFF,d1
-                and.w   d1,d0
-                beq.w   @loc_438A
-                rts
-; ---------------------------------------------------------------------------
-
-@loc_438A:                               ; CODE XREF: sub_4362+22↑j
-                bsr.w   sub_42D0
-                bsr.s   sub_432A
-                rts
-; End of function sub_4362
-
-
-; =============== S U B R O U T I N E =======================================
-
-
-sub_4392:                               ; DATA XREF: ROM:000045CA↓o
-                                        ; ROM:000045F2↓o ...
-                bsr.w   ClearMessage
-                move.w  ram_FF05E6,d0
-                move.w  ram_FF05E8,d1
-                addq.w  #1,d0
-                and.w   d1,d0
-                move.w  d0,ram_FF05E6
-                lsr.w   #1,d1
-                eori.w  #$FFFF,d1
-                and.w   d1,d0
-                beq.w   @loc_43BA
-                rts
-; ---------------------------------------------------------------------------
-
-@loc_43BA:                               ; CODE XREF: sub_4392+22↑j
-                bsr.w   ClearMessage
+@draw:
+                bsr.w   Message_Clear
                 lea     Intro_ram_ImageBuffer,a0
                 move.w  #7,(a0)+
                 move.w  #8,(a0)+
@@ -180,31 +162,31 @@ sub_4392:                               ; DATA XREF: ROM:000045CA↓o
                 move.w  #$C,d2
                 move.w  #$18,d3
                 move.w  #$2500,d4
-                move.w  #$40,d6 ; '@'
+                move.w  #$40,d6
                 lea     Intro_ram_ImageBuffer,a0
                 lea     Menu_ram_FrameBuffer,a1
                 bsr.w   WriteNametableToBuffer
                 rts
-; End of function sub_4392
+; End of function Message_BlinkButtonC
 
+; *************************************************
+; Function Message_BlinkButtonStart
+; *************************************************
 
-; =============== S U B R O U T I N E =======================================
-
-
-sub_43F6:
-                bsr.w   ClearMessage
-                move.w  ram_FF05E6,d0
-                move.w  ram_FF05E8,d1
+Message_BlinkButtonStart:
+                bsr.w   Message_Clear
+                move.w  Message_ram_ButtonBlinkCounter,d0
+                move.w  Message_ram_ButtonBlinkPeriod,d1
                 addq.w  #1,d0
                 and.w   d1,d0
-                move.w  d0,ram_FF05E6
+                move.w  d0,Message_ram_ButtonBlinkCounter
                 lsr.w   #1,d1
                 eori.w  #$FFFF,d1
                 and.w   d1,d0
-                beq.w   @loc_441E
+                beq.w   @draw
                 rts
-@loc_441E:
-                bsr.w   ClearMessage
+@draw:
+                bsr.w   Message_Clear
                 lea     Intro_ram_ImageBuffer,a0
                 move.w  #9,(a0)+
                 move.w  #$A,(a0)+
@@ -219,15 +201,17 @@ sub_43F6:
                 lea     Menu_ram_FrameBuffer,a1
                 bsr.w   WriteNametableToBuffer
                 rts
-; End of function sub_43F6
+; End of function Message_BlinkButtonStart
+
+
 
 sub_445E:
-                bsr.w   ClearMessage
-                move.w  ram_FF05E6,d0
-                move.w  ram_FF05E8,d1
+                bsr.w   Message_Clear
+                move.w  Message_ram_ButtonBlinkCounter,d0
+                move.w  Message_ram_ButtonBlinkPeriod,d1
                 addq.w  #1,d0
                 and.w   d1,d0
-                move.w  d0,ram_FF05E6
+                move.w  d0,Message_ram_ButtonBlinkCounter
                 lsr.w   #1,d1
                 eori.w  #$FFFF,d1
                 and.w   d1,d0
@@ -260,12 +244,12 @@ loc_4486:
 
 
 sub_44D6:
-                bsr.w   ClearMessage
-                move.w  ram_FF05E6,d0
-                move.w  ram_FF05E8,d1
+                bsr.w   Message_Clear
+                move.w  Message_ram_ButtonBlinkCounter,d0
+                move.w  Message_ram_ButtonBlinkPeriod,d1
                 addq.w  #1,d0
                 and.w   d1,d0
-                move.w  d0,ram_FF05E6
+                move.w  d0,Message_ram_ButtonBlinkCounter
                 lsr.w   #1,d1
                 eori.w  #$FFFF,d1
                 and.w   d1,d0
@@ -293,142 +277,147 @@ loc_44FE:
                 rts
 ; End of function sub_44D6
 
+; *************************************************
+; Function Message_BlinkDirectionalPad
+; *************************************************
 
-; =============== S U B R O U T I N E =======================================
-
-
-sub_454E:
-                bsr.w   ClearMessage
-                move.w  ram_FF05E6,d0
-                move.w  ram_FF05E8,d1
+Message_BlinkDirectionalPad:
+                bsr.w   Message_Clear
+                move.w  Message_ram_ButtonBlinkCounter,d0
+                move.w  Message_ram_ButtonBlinkPeriod,d1
                 addq.w  #1,d0
                 and.w   d1,d0
-                move.w  d0,ram_FF05E6
+                move.w  d0,Message_ram_ButtonBlinkCounter
                 lsr.w   #1,d1
                 eori.w  #$FFFF,d1
                 and.w   d1,d0
-                beq.w   @loc_4576
+                beq.w   @draw
                 rts
-; ---------------------------------------------------------------------------
-
-@loc_4576:                               ; CODE XREF: sub_454E+22↑j
+@draw:
                 bsr.w   loc_4486
                 bsr.s   loc_44FE
                 rts
-; End of function sub_454E
+; End of function Message_BlinkDirectionalPad
 
-off_457E:
+Message_MsgArray:
 ; Main menu
-    dc.l unk_4888,ShowEmptyMessage
-    dc.l unk_48F4,ShowEmptyMessage
-    dc.l unk_4960,ShowEmptyMessage
-    dc.l unk_49A4,ShowEmptyMessage
-    dc.l ram_FF0756,ShowEmptyMessage
-    dc.l MenuPassword_StrPasswordStatus,ShowEmptyMessage
+    dc.l StrOnePlayerModeSelected,Message_ShowEmpty
+    dc.l StrTwoPlayerModeSelected,Message_ShowEmpty
+    dc.l StrMusicOn,Message_ShowEmpty
+    dc.l StrMusicOff,Message_ShowEmpty
+    dc.l Menu_ram_TempString,Message_ShowEmpty
+    dc.l MenuPassword_StrPasswordStatus,Message_ShowEmpty
 ; Main menu tooltips 
-    dc.l unk_4CA4,sub_43F6
-    dc.l unk_4CE8,sub_42AA
-    dc.l unk_4D2C,sub_4302
-    dc.l unk_4D70,sub_4392
-    dc.l unk_4DDC,sub_454E
+    dc.l unk_4CA4,Message_BlinkButtonStart ; index 6
+    dc.l unk_4CE8,Message_BlinkButtonA
+    dc.l unk_4D2C,Message_BlinkButtonB
+    dc.l unk_4D70,Message_BlinkButtonC
+    dc.l unk_4DDC,Message_BlinkDirectionalPad
     dc.l $FFFFFFFF,$FFFFFFFF
 ; Password menu tooltips
-    dc.l word_479E,sub_43F6
-    dc.l word_47BC,sub_4362
-    dc.l unk_4800,sub_4392
-    dc.l unk_4844,sub_454E
+    dc.l StrPressStartToExit,Message_BlinkButtonStart ; index 12
+    dc.l StrPressABToChangeLetter,Message_BlinkButtonsAB
+    dc.l StrPressCToSelectOtherPlayer,Message_BlinkButtonC
+    dc.l StrUseDirPadToMoveCursor,Message_BlinkDirectionalPad
     dc.l $FFFFFFFF,$FFFFFFFF
 
-    dc.l unk_4E78,ShowEmptyMessage
-    dc.l unk_4E78,ShowEmptyMessage
-    dc.l word_479E,sub_43F6
+    dc.l unk_4E78,Message_ShowEmpty ; index 17
+    dc.l unk_4E78,Message_ShowEmpty
+    dc.l StrPressStartToExit,Message_BlinkButtonStart
     dc.l $FFFFFFFF,$FFFFFFFF
-    dc.l MenuPassword_StrPasswordStatus,ShowEmptyMessage
-    dc.l unk_5276,ShowEmptyMessage
-    dc.l unk_4FFA,sub_43F6
-    dc.l unk_4F4A,sub_42AA
-    dc.l unk_503E,sub_4302
-    dc.l unk_4FB6,sub_4392
+
+    dc.l MenuPassword_StrPasswordStatus,Message_ShowEmpty ; index 21
+    dc.l unk_5276,Message_ShowEmpty
+    dc.l unk_4FFA,Message_BlinkButtonStart
+    dc.l unk_4F4A,Message_BlinkButtonA
+    dc.l unk_503E,Message_BlinkButtonB
+    dc.l unk_4FB6,Message_BlinkButtonC
     dc.l $FFFFFFFF,$FFFFFFFF
-    dc.l MenuPassword_StrPasswordStatus,ShowEmptyMessage
-    dc.l unk_52CE,ShowEmptyMessage
-    dc.l unk_4FFA,sub_43F6
-    dc.l unk_4F4A,sub_42AA
-    dc.l unk_503E,sub_4302
-    dc.l unk_4FB6,sub_4392
+
+    dc.l MenuPassword_StrPasswordStatus,Message_ShowEmpty ; index 28
+    dc.l unk_52CE,Message_ShowEmpty
+    dc.l unk_4FFA,Message_BlinkButtonStart
+    dc.l unk_4F4A,Message_BlinkButtonA
+    dc.l unk_503E,Message_BlinkButtonB
+    dc.l unk_4FB6,Message_BlinkButtonC
     dc.l $FFFFFFFF,$FFFFFFFF
-    dc.l MenuPassword_StrPasswordStatus,ShowEmptyMessage
-    dc.l ram_FF089A,ShowEmptyMessage
-    dc.l unk_4FFA,sub_43F6
-    dc.l unk_4F4A,sub_42AA
-    dc.l unk_503E,sub_4302
-    dc.l unk_4FB6,sub_4392
+
+    dc.l MenuPassword_StrPasswordStatus,Message_ShowEmpty ; index 35
+    dc.l ram_FF089A,Message_ShowEmpty
+    dc.l unk_4FFA,Message_BlinkButtonStart
+    dc.l unk_4F4A,Message_BlinkButtonA
+    dc.l unk_503E,Message_BlinkButtonB
+    dc.l unk_4FB6,Message_BlinkButtonC
     dc.l $FFFFFFFF,$FFFFFFFF
-    dc.l unk_4EE4,sub_4268
-    dc.l unk_4FFA,sub_43F6
-    dc.l unk_4F4A,sub_42AA
-    dc.l unk_503E,sub_4302
-    dc.l unk_4FB6,sub_4392
+; High score menu tooltips
+    dc.l unk_4EE4,sub_4268 ; index 42
+    dc.l unk_4FFA,Message_BlinkButtonStart
+    dc.l unk_4F4A,Message_BlinkButtonA
+    dc.l unk_503E,Message_BlinkButtonB
+    dc.l unk_4FB6,Message_BlinkButtonC
     dc.l $FFFFFFFF,$FFFFFFFF
-    dc.l unk_4E78,ShowEmptyMessage
-    dc.l unk_4FFA,sub_43F6
+
+    dc.l unk_4E78,Message_ShowEmpty ; index 48
+    dc.l unk_4FFA,Message_BlinkButtonStart
     dc.l $FFFFFFFF,$FFFFFFFF
-    dc.l unk_53FE,ShowEmptyMessage
-    dc.l unk_5466,ShowEmptyMessage
-    dc.l unk_54C2,ShowEmptyMessage
-    dc.l unk_5524,ShowEmptyMessage
-    dc.l unk_556C,ShowEmptyMessage
-    dc.l unk_55C8,ShowEmptyMessage
-    dc.l unk_5624,ShowEmptyMessage
-    dc.l unk_5668,ShowEmptyMessage
-    dc.l ram_FF089A,ShowEmptyMessage
-    dc.l unk_53A6,ShowEmptyMessage
+; bike descriptions in shop
+    dc.l unk_53FE,Message_ShowEmpty ; index 51
+    dc.l unk_5466,Message_ShowEmpty
+    dc.l unk_54C2,Message_ShowEmpty
+    dc.l unk_5524,Message_ShowEmpty
+    dc.l unk_556C,Message_ShowEmpty
+    dc.l unk_55C8,Message_ShowEmpty
+    dc.l unk_5624,Message_ShowEmpty
+    dc.l unk_5668,Message_ShowEmpty
+
+    dc.l ram_FF089A,Message_ShowEmpty ; index 59
+    dc.l unk_53A6,Message_ShowEmpty
     dc.l ram_FF07C2,sub_445E
     dc.l ram_FF082E,sub_445E
-    dc.l ram_FF06EA,sub_4392
-    dc.l unk_4FFA,sub_43F6
-    dc.l unk_4F4A,sub_42AA
-    dc.l unk_503E,sub_4302
+    dc.l Shop_StrBuyNewBike,Message_BlinkButtonC
+    dc.l unk_4FFA,Message_BlinkButtonStart
+    dc.l unk_4F4A,Message_BlinkButtonA
+    dc.l unk_503E,Message_BlinkButtonB
     dc.l $FFFFFFFF,$FFFFFFFF
 
-word_479E:
+StrPressStartToExit:
     dc.w 24,16,1,22
     dc.b "Press ",$22,"Start",$22," to exit "
-word_47BC:
+StrPressABToChangeLetter:
     dc.w 23,16,3,20
     dc.b " Press ",$22,"A",$22," or ",$22,"B",$22," to  "
     dc.b "                    "
     dc.b " change a letter  "
-unk_4800:
+StrPressCToSelectOtherPlayer:
     dc.w 23,16,3,20
     dc.b "    Press ",$22,"C",$22," to    "
     dc.b "                    "
     dc.b " select other player"
-unk_4844:
+StrUseDirPadToMoveCursor:
     dc.w 23,16,3,20
     dc.b " Use Directional pad"
     dc.b "                    "
     dc.b "   to move cursor   "
-unk_4888:
+StrOnePlayerModeSelected:
     dc.w 22,10,5,20
     dc.b "         1          "
     dc.b "                    "
     dc.b "    Player Mode     "
     dc.b "                    "
     dc.b "     Selected       "
-unk_48F4:
+StrTwoPlayerModeSelected:
     dc.w 22,10,5,20
     dc.b "         2          "
     dc.b "                    "
     dc.b "    Player Mode     "
     dc.b "                    "
     dc.b "     Selected       "
-unk_4960:
+StrMusicOn:
     dc.w 23,10,3,20
     dc.b "    Music is now    "
     dc.b "                    "
     dc.b "        ON          "
-unk_49A4:
+StrMusicOff:
     dc.w 23,10,3,20
     dc.b "    Music is now    "
     dc.b "                    "

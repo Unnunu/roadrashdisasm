@@ -11,19 +11,19 @@ Menu_Init:
                 move.w  #0,MainMenu_ram_ChangedButtonsPlayerB
                 move.w  #240,Menu_ram_NextMessageTimer ; 4 seconds
                 move.w  #30,Menu_ram_MessageBlinkTimer ; 0.5 second
-                move.w  #(8*6),Menu_ram_CurrentMessageOffset ; default message "Press A to start race"
+                move.w  #(8*6),Menu_ram_CurrentMessageId ; default message "Press A to start race"
                 move.l  #Global_ram_Palette,Global_ram_PalettePtr
-                move.w  #$3F,ram_FF05E8
+                move.w  #$3F,Message_ram_ButtonBlinkPeriod
                 move.w  #9,MenuPassword_ram_CursorY
                 move.w  #1,MenuPassword_ram_CursorX
                 tst.w   Menu_ram_Player
                 bne.w   @playerB ; jump if player B selected
-                tst.l   ram_FF0518
+                tst.l   Menu_ram_MoneyPlayerA
                 bpl.w   @loc_3494
                 jsr     (sub_1A2C).w
                 bra.w   @loc_3494
 @playerB:
-                tst.l   ram_FF051C
+                tst.l   Menu_ram_MoneyPlayerB
                 bpl.w   @loc_3494
                 jsr     (sub_1B48).w
 
@@ -43,7 +43,7 @@ Menu_Init:
                 move.w  #$8F02,(a0) ; Auto-increment: $2
                 move.w  #$9003,(a0) ; Scroll A/B Size: 128x32
                 move.w  #$9100,(a0) ; WindowX = 0
-                move.w  #$921C,(a0) ; WindowY = 30
+                move.w  #$921C,(a0) ; WindowY = 28 cells
 ; clear sprites
                 VDP_VRAM_WRITE $6000,(a0) ; write to sprite table
                 move.w  #3,d0
@@ -147,7 +147,7 @@ Menu_Init:
                 move.l  d1,(a0)+
                 dbf     d0,@loc_3670
 ; load race names image
-                lea     imag_mainMenu_RaceNames,a3
+                lea     img_MainMenu_RaceBadges,a3
                 lea     Intro_ram_ImageBuffer,a1
                 jsr     sub_9C26
 ; write it to VRAM
@@ -216,7 +216,7 @@ Menu_Init:
 
                 jsr     Menu_ShowMessage
                 jsr     (sub_2B2E).w
-                move.w  Menu_ram_CurrentRaceOffset,d0
+                move.w  Menu_ram_CurrentRaceId,d0
                 jsr     Menu_DrawRaceSelection
                 jsr     Menu_DrawPlayerInfo
 ; write framebuffer to VRAM
@@ -225,7 +225,7 @@ Menu_Init:
                 move.w  #$700,d2 ; size in words 64 x 28
                 jsr     DmaWriteVRAM
 
-                tst.w   ram_FF05D6
+                tst.w   ram_MusicEnabled
                 beq.w   @return
                 moveq   #1,d0
                 jsr     AudioFunc3
@@ -384,17 +384,17 @@ MainMenu_GameTick:
                 bpl.w   @end
                 move.w  #30,Menu_ram_MessageBlinkTimer ; hide for 0.5 seconds
                 move.w  #240,Menu_ram_NextMessageTimer ; change after 4 seconds
-                addq.w  #8,Menu_ram_CurrentMessageOffset ; show next tooltip
-                cmpi.w  #(8*6),Menu_ram_CurrentMessageOffset
+                addq.w  #8,Menu_ram_CurrentMessageId ; show next tooltip
+                cmpi.w  #(8*6),Menu_ram_CurrentMessageId
                 bpl.w   @changeMessage
-                move.w  #(8*6),Menu_ram_CurrentMessageOffset ; index = 6
+                move.w  #(8*6),Menu_ram_CurrentMessageId ; index = 6
 @changeMessage:
-                move.w  Menu_ram_CurrentMessageOffset,d0
-                lea     off_457E,a0
+                move.w  Menu_ram_CurrentMessageId,d0
+                lea     Message_MsgArray,a0
                 movea.l (a0,d0.w),a0
                 cmpa.l  #$FFFFFFFF,a0
                 bne.w   @end
-                move.w  #(8*6),Menu_ram_CurrentMessageOffset
+                move.w  #(8*6),Menu_ram_CurrentMessageId
                 beq.w   @end
 @end:
                 jsr     Menu_ShowMessage
@@ -402,7 +402,7 @@ MainMenu_GameTick:
                 move.w  #1,d2
                 jsr     sub_160B0
                 jsr     sub_160CC
-                jsr     sub_16034
+                jsr     Rand_GetWord
                 rts
 @endStage:
                 jsr     AudioFunc4
@@ -550,7 +550,7 @@ sub_3B56:
                 asl.w   #1,d1
                 lea     unk_49E8,a0
                 movea.l (a0,d1.w),a0
-                lea     ram_FF0756,a1
+                lea     Menu_ram_TempString,a1
                 move.w  4(a0),d1
                 mulu.w  6(a0),d1
                 addq.w  #7,d1
@@ -609,24 +609,24 @@ MainMenu_HandleInput:
                 cmpi.w  #1,Menu_ram_PlayerMode ; if player A mode
                 bne.w   @checkPlayerBMode
                 move.w  #3,Menu_ram_PlayerMode ; set two player mode
-                move.w  #(8*1),Menu_ram_CurrentMessageOffset ; two player mode selected
+                move.w  #(8*1),Menu_ram_CurrentMessageId ; two player mode selected
                 bra.w   @loc_3C74
 @checkPlayerBMode:
                 cmpi.w  #2,Menu_ram_PlayerMode ; if player B mode
                 bne.w   @setPlayerBMode
                 move.w  #1,Menu_ram_PlayerMode ; set player A mode
-                move.w  #(8*0),Menu_ram_CurrentMessageOffset ; one player mode selected
+                move.w  #(8*0),Menu_ram_CurrentMessageId ; one player mode selected
                 move.w  #0,Menu_ram_Player
                 jsr     (sub_2B2E).w
-                move.w  Menu_ram_CurrentRaceOffset,d0
+                move.w  Menu_ram_CurrentRaceId,d0
                 jsr     Menu_DrawRaceSelection
                 bra.w   @loc_3C74
 @setPlayerBMode:
                 move.w  #2,Menu_ram_PlayerMode ; set player B mode
-                move.w  #(8*0),Menu_ram_CurrentMessageOffset ; one player mode selected
+                move.w  #(8*0),Menu_ram_CurrentMessageId ; one player mode selected
                 move.w  #$FFFF,Menu_ram_Player
                 jsr     (sub_2B2E).w
-                move.w  Menu_ram_CurrentRaceOffset,d0
+                move.w  Menu_ram_CurrentRaceId,d0
                 jsr     Menu_DrawRaceSelection
 @loc_3C74:
                 jsr     (Menu_DrawPlayerInfo).w
@@ -638,14 +638,14 @@ MainMenu_HandleInput:
 ; handle B
                 move.w  #30,Menu_ram_MessageBlinkTimer
                 move.w  #240,Menu_ram_NextMessageTimer
-                move.w  #(8*3),Menu_ram_CurrentMessageOffset ; music is off
+                move.w  #(8*3),Menu_ram_CurrentMessageId ; music is off
                 jsr     AudioFunc4
-                move.w  #0,Menu_MusicEnabled ; disable music
-                eori.w  #1,ram_FF05D6
+                move.w  #0,ram_CurrentSong
+                eori.w  #1,ram_MusicEnabled ; enable or disable music
                 beq.w   @checkUpRight
-                move.w  #(8*2),Menu_ram_CurrentMessageOffset ; music is on
+                move.w  #(8*2),Menu_ram_CurrentMessageId ; music is on
                 moveq   #1,d0
-                move.w  d0,Menu_MusicEnabled
+                move.w  d0,ram_CurrentSong
                 jsr     AudioFunc3
 @checkUpRight:
                 btst    #0,MainMenu_ram_CurrentButtons
@@ -653,17 +653,17 @@ MainMenu_HandleInput:
                 btst    #3,MainMenu_ram_CurrentButtons
                 beq.w   @checkLeftDown
 @handleUpRight:
-                move.w  Menu_ram_CurrentRaceOffset,d0
+                move.w  Menu_ram_CurrentRaceId,d0
                 addq.w  #2,d0
                 cmp.w   #8,d0
                 ble.w   @loc_3D08
                 move.w  #0,d0
 @loc_3D08:
-                move.w  d0,Menu_ram_CurrentRaceOffset
+                move.w  d0,Menu_ram_CurrentRaceId
                 jsr     Menu_DrawRaceSelection
-                move.w  Menu_ram_CurrentRaceOffset,d0
+                move.w  Menu_ram_CurrentRaceId,d0
                 bsr.w   sub_3B56
-                move.w  #(8*4),Menu_ram_CurrentMessageOffset
+                move.w  #(8*4),Menu_ram_CurrentMessageId
                 move.w  #30,Menu_ram_MessageBlinkTimer
                 move.w  #240,Menu_ram_NextMessageTimer
                 jsr     (Menu_DrawPlayerInfo).w
@@ -673,16 +673,16 @@ MainMenu_HandleInput:
                 btst    #2,MainMenu_ram_CurrentButtons
                 beq.w   @checkC
 @handleLeftDown:
-                move.w  Menu_ram_CurrentRaceOffset,d0
+                move.w  Menu_ram_CurrentRaceId,d0
                 subq.w  #2,d0
                 bpl.w   @loc_3D62
                 move.w  #8,d0
 @loc_3D62:
-                move.w  d0,Menu_ram_CurrentRaceOffset
+                move.w  d0,Menu_ram_CurrentRaceId
                 jsr     Menu_DrawRaceSelection
-                move.w  Menu_ram_CurrentRaceOffset,d0
+                move.w  Menu_ram_CurrentRaceId,d0
                 bsr.w   sub_3B56
-                move.w  #(8*4),Menu_ram_CurrentMessageOffset
+                move.w  #(8*4),Menu_ram_CurrentMessageId
                 move.w  #30,Menu_ram_MessageBlinkTimer
                 move.w  #240,Menu_ram_NextMessageTimer
                 jsr     (Menu_DrawPlayerInfo).w
@@ -690,11 +690,11 @@ MainMenu_HandleInput:
                 btst    #5,MainMenu_ram_CurrentButtons
                 beq.w   @return
 ; init password menu
-                move.w  #(8*12),Menu_ram_CurrentMessageOffset ; Press 'start' to exit
+                move.w  #(8*12),Menu_ram_CurrentMessageId ; Press 'start' to exit
                 move.w  #30,Menu_ram_MessageBlinkTimer
                 move.w  #240,Menu_ram_NextMessageTimer
-                move.w  #$FFFF,ram_FF0426
-                move.w  #0,ram_FF0428
+                move.w  #$FFFF,MenuPassword_ram_HoldTimer
+                move.w  #0,MenuPassword_ram_HeldButtons
                 move.l  #MainMenu_ram_ChangedButtonsPlayerA,Menu_ram_ChangedButtonsPtr
                 move.l  #MenuPassword_ram_StrPlayerAName,MenuPassword_ram_StrPlayerNamePtr
                 move.l  #MenuPassword_ram_StrPlayerAPassword,MenuPassword_ram_StrPlayerPasswordPtr
@@ -955,31 +955,31 @@ Menu_DrawRaceCard:
 Menu_ShowMessage:
                 tst.w   Menu_ram_MessageBlinkTimer
                 bmi.w   @showText
-                move.w  Menu_ram_CurrentMessageOffset,d0 ;l only image is shown
-                lea     off_457E,a0
+                move.w  Menu_ram_CurrentMessageId,d0 ;l only image is shown
+                lea     Message_MsgArray,a0
                 movea.l 4(a0,d0.w),a0 ; get ShowMessage function
-                cmpa.l  #ShowEmptyMessage,a0
-                beq.w   @showEmptyMessage
-                jsr     ClearMessage
+                cmpa.l  #Message_ShowEmpty,a0
+                beq.w   @Message_ShowEmpty
+                jsr     Message_Clear
                 bra.w   @return
-@showEmptyMessage:
-                jsr     ShowEmptyMessage
+@Message_ShowEmpty:
+                jsr     Message_ShowEmpty
                 bra.w   @return
 @showText:
-                move.w  Menu_ram_CurrentMessageOffset,d0
-                lea     off_457E,a0
+                move.w  Menu_ram_CurrentMessageId,d0
+                lea     Message_MsgArray,a0
                 movea.l 4(a0,d0.w),a0 ; get ShowMessage function
                 bmi.w   @return ; return if value is -1
                 jsr     (a0) ; call ShowMessage function
-                move.w  Menu_ram_CurrentMessageOffset,d0
-                lea     off_457E,a0
+                move.w  Menu_ram_CurrentMessageId,d0
+                lea     Message_MsgArray,a0
                 movea.l (a0,d0.w),a0 ; get message text
                 cmpa.l  #0,a0 ; return if value is -1
                 bmi.w   @return
                 lea     Intro_ram_ImageBuffer,a1
                 bsr.w   EncodeString ; write to Intro_ram_ImageBuffer
-                move.w  Menu_ram_CurrentMessageOffset,d0
-                lea     off_457E,a0
+                move.w  Menu_ram_CurrentMessageId,d0
+                lea     Message_MsgArray,a0
                 movea.l (a0,d0.w),a0
                 move.w  6(a0),d0 ; width
                 move.w  4(a0),d1 ; height

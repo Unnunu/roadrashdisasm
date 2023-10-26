@@ -58,30 +58,30 @@ MenuPassword_GameTick:
                 beq.w   @loc_2590 ; jump if no buttons were pressed or released
                 and.w   (a0),d0
                 beq.w   @loc_2590; jump if no buttons were pressed in this frame
-                jsr     MenuPassword_HandleInput
+                jsr     MenuPassword_HandleInput ; handle newly pressed buttons
 @loc_2590:
                 movea.l Menu_ram_CurrentButtonsPtr,a0
                 movea.l Menu_ram_ChangedButtonsPtr,a1
                 tst.w   (a1)
                 beq.w   @loc_25AA
-                move.w  #0,ram_FF0426
+                move.w  #0,MenuPassword_ram_HoldTimer ; some button changed its state, reset hold timer
 @loc_25AA:
-                subq.w  #1,ram_FF0426
-                bpl.w   @loc_2634
-                move.w  #$FFFF,ram_FF0426
+                subq.w  #1,MenuPassword_ram_HoldTimer
+                bpl.w   @updateCursor
+                move.w  #$FFFF,MenuPassword_ram_HoldTimer
                 tst.w   (a1)
                 bne.w   @loc_25E4
-                tst.w   ram_FF0428
-                beq.w   @loc_2634
-                move.w  #8,ram_FF0426
-                move.w  ram_FF0428,d0
-                jsr     MenuPassword_HandleInput
-                bra.w   @loc_2634
+                tst.w   MenuPassword_ram_HeldButtons
+                beq.w   @updateCursor
+                move.w  #8,MenuPassword_ram_HoldTimer
+                move.w  MenuPassword_ram_HeldButtons,d0
+                jsr     MenuPassword_HandleInput ; handle held buttons
+                bra.w   @updateCursor
 @loc_25E4:
-                clr.w   ram_FF0428
+                clr.w   MenuPassword_ram_HeldButtons
                 move.w  (a0),d0
                 and.w   (a1),d0
-                beq.w   @loc_2634
+                beq.w   @updateCursor
                 cmp.w   #1,d0
                 beq.w   @loc_2626
                 cmp.w   #2,d0
@@ -94,41 +94,39 @@ MenuPassword_GameTick:
                 beq.w   @loc_2626
                 cmp.w   #$40,d0
                 beq.w   @loc_2626
-                bra.w   @loc_2634
+                bra.w   @updateCursor
 
 @loc_2626:
-                move.w  #30,ram_FF0426
-                move.w  d0,ram_FF0428
+                move.w  #30,MenuPassword_ram_HoldTimer
+                move.w  d0,MenuPassword_ram_HeldButtons
 
-@loc_2634:
+@updateCursor:
                 move.w  #0,d0
                 move.w  #4,d2
                 cmpi.l  #MenuPassword_ram_StrPlayerAPassword,MenuPassword_ram_StrPlayerPasswordPtr
                 beq.w   @loc_264E
-                move.w  #24,d2
-
+                move.w  #24,d2 ; player B
 @loc_264E:
                 add.w   MenuPassword_ram_CursorX,d2
                 move.w  MenuPassword_ram_CursorY,d3
                 jsr     MenuPassword_SetCursorPos
+
                 subi.w  #1,Menu_ram_MessageBlinkTimer
                 subi.w  #1,Menu_ram_NextMessageTimer
                 bpl.w   @end
-                move.w  #$1E,Menu_ram_MessageBlinkTimer
-                move.w  #$F0,Menu_ram_NextMessageTimer
-                addi.w  #8,Menu_ram_CurrentMessageOffset
-                move.w  Menu_ram_CurrentMessageOffset,d0
-                cmpi.w  #$60,Menu_ram_CurrentMessageOffset
+                move.w  #30,Menu_ram_MessageBlinkTimer
+                move.w  #240,Menu_ram_NextMessageTimer
+                addi.w  #8,Menu_ram_CurrentMessageId
+                move.w  Menu_ram_CurrentMessageId,d0
+                cmpi.w  #(8*12),Menu_ram_CurrentMessageId
                 bpl.w   @loc_26A6
-                move.w  #$60,Menu_ram_CurrentMessageOffset
-
+                move.w  #(8*12),Menu_ram_CurrentMessageId
 @loc_26A6:
-                lea     off_457E,a0
+                lea     Message_MsgArray,a0
                 movea.l (a0,d0.w),a0
                 cmpa.l  #$FFFFFFFF,a0
                 bne.w   @end
-                move.w  #(8*12),Menu_ram_CurrentMessageOffset
-
+                move.w  #(8*12),Menu_ram_CurrentMessageId
 @end:
                 jsr     Menu_ShowMessage
                 jsr     AudioFunc1
@@ -143,7 +141,7 @@ MenuPassword_GameTick:
                 move.l  d0,(a0)+
                 dbf     d1,@loc_26EC
 
-                move.w  Menu_ram_CurrentRaceOffset,d0
+                move.w  Menu_ram_CurrentRaceId,d0
                 jsr     Menu_DrawRaceSelection
                 jsr     Menu_DrawPlayerInfo
                 move.l  #MainMenu_GameTick,ram_UpdateFunction ; get to main menu
@@ -351,7 +349,7 @@ MenuPassword_HandleInput:
 sub_2A1E:
                 move.w  #30,Menu_ram_MessageBlinkTimer
                 move.w  #240,Menu_ram_NextMessageTimer
-                move.w  #(8*5),Menu_ram_CurrentMessageOffset ; show password status message (valid / invalid)
+                move.w  #(8*5),Menu_ram_CurrentMessageId ; show password status message (valid / invalid)
                 lea     MenuPassword_StrPasswordStatus,a0
                 lea     unk_4E20,a1 ; string ".. password invalid .."
                 lea     ram_FF04AA,a2
@@ -446,50 +444,50 @@ sub_2B2E:
                 lea     Menu_ram_PlayerBPlaces,a0
 
 @loc_2B44:
-                move.w  #0,Menu_ram_CurrentRaceOffset
-                move.w  Menu_ram_CurrentRaceOffset,d1
+                move.w  #0,Menu_ram_CurrentRaceId
+                move.w  Menu_ram_CurrentRaceId,d1
                 move.w  (a0),d0 ; get place in race 1
                 beq.w   @loc_2BE6
-                move.w  #2,Menu_ram_CurrentRaceOffset
+                move.w  #2,Menu_ram_CurrentRaceId
                 tst.w   2(a0)
                 beq.w   @loc_2BE6
                 cmp.w   2(a0),d0
                 bpl.w   @loc_2B7A
-                move.w  Menu_ram_CurrentRaceOffset,d1
+                move.w  Menu_ram_CurrentRaceId,d1
                 move.w  2(a0),d0
 
 @loc_2B7A:
-                move.w  #4,Menu_ram_CurrentRaceOffset
+                move.w  #4,Menu_ram_CurrentRaceId
                 tst.w   4(a0)
                 beq.w   @loc_2BE6
                 cmp.w   4(a0),d0
                 bpl.w   @loc_2B9C
-                move.w  Menu_ram_CurrentRaceOffset,d1
+                move.w  Menu_ram_CurrentRaceId,d1
                 move.w  4(a0),d0
 
 @loc_2B9C:
-                move.w  #6,Menu_ram_CurrentRaceOffset
+                move.w  #6,Menu_ram_CurrentRaceId
                 tst.w   6(a0)
                 beq.w   @loc_2BE6
                 cmp.w   6(a0),d0
                 bpl.w   @loc_2BBE
-                move.w  Menu_ram_CurrentRaceOffset,d1
+                move.w  Menu_ram_CurrentRaceId,d1
                 move.w  6(a0),d0
 
 @loc_2BBE:
-                move.w  #8,Menu_ram_CurrentRaceOffset
+                move.w  #8,Menu_ram_CurrentRaceId
                 tst.w   8(a0)
                 beq.w   @loc_2BE6
                 cmp.w   8(a0),d0
                 bpl.w   @loc_2BE0
-                move.w  Menu_ram_CurrentRaceOffset,d1
+                move.w  Menu_ram_CurrentRaceId,d1
                 move.w  8(a0),d0
 
 @loc_2BE0:
-                move.w  d1,Menu_ram_CurrentRaceOffset
+                move.w  d1,Menu_ram_CurrentRaceId
 
 @loc_2BE6:
-                move.w  Menu_ram_CurrentRaceOffset,d0
+                move.w  Menu_ram_CurrentRaceId,d0
                 rts
 ; End of function sub_2B2E
 
@@ -654,7 +652,7 @@ MenuPassword_ParsePassword:
                 lea     ram_FF0546,a1
                 move.w  #$4B,(a1)+
                 subq.w  #1,d0
-                mulu.w  #14,d0
+                mulu.w  #15,d0
                 move.w  #14,d1
 @loc_2D46:
                 move.w  d0,(a1)+
@@ -730,18 +728,18 @@ MenuPassword_ParsePassword:
 ; combine them into 24 bit signed integer
                 asl.l   #8,d0
                 asr.l   #8,d0
-; and write to ram_FF0518
-                move.l  d0,ram_FF0518
+; and write to Menu_ram_MoneyPlayerA
+                move.l  d0,Menu_ram_MoneyPlayerA
 ; char #17
                 move.w  40(a0),d0
 ; bits 3-4
                 asr.w   #3,d0
                 andi.w  #3,d0
                 move.w  d0,ram_FF0522
-; bits 0-2
+; bits 0-2 : bike id (0 - 7)
                 move.w  40(a0),d0
                 andi.w  #7,d0
-                move.w  d0,ram_FF0542
+                move.w  d0,Menu_ram_BikeIdPlayerA
 
                 bra.w   @locret_2F38
 @playerB:
@@ -815,14 +813,14 @@ MenuPassword_ParsePassword:
                 or.w    d1,d0
                 asl.l   #8,d0
                 asr.l   #8,d0
-                move.l  d0,ram_FF051C
+                move.l  d0,Menu_ram_MoneyPlayerB
                 move.w  $28(a0),d0
                 asr.w   #3,d0
                 andi.w  #3,d0
                 move.w  d0,ram_FF0524
                 move.w  $28(a0),d0
                 andi.w  #7,d0
-                move.w  d0,ram_FF0544
+                move.w  d0,Menu_ram_BikeIdPlayerB
 @locret_2F38:
                 rts
 ; End of function MenuPassword_ParsePassword
@@ -866,7 +864,7 @@ MenuPassword_CreatePassword:
                 move.l  ram_FF0510,d0
                 andi.l  #$1F,d0
                 move.w  d0,$14(a0)
-                move.l  ram_FF0518,d0
+                move.l  Menu_ram_MoneyPlayerA,d0
                 move.l  d0,d1
                 swap    d1
                 andi.w  #$F0,d1
@@ -900,7 +898,7 @@ MenuPassword_CreatePassword:
                 lsl.w   #3,d0
                 andi.w  #$18,d0
                 move.w  d0,$28(a0)
-                move.w  ram_FF0542,d0
+                move.w  Menu_ram_BikeIdPlayerA,d0
                 andi.w  #7,d0
                 or.w    d0,$28(a0)
                 move.w  #0,$2A(a0)
@@ -989,7 +987,7 @@ MenuPassword_CreatePassword:
                 move.l  ram_FF0514,d0
                 andi.l  #$1F,d0
                 move.w  d0,$14(a0)
-                move.l  ram_FF051C,d0
+                move.l  Menu_ram_MoneyPlayerB,d0
                 move.l  d0,d1
                 swap    d1
                 andi.w  #$F0,d1
@@ -1023,7 +1021,7 @@ MenuPassword_CreatePassword:
                 lsl.w   #3,d0
                 andi.w  #$18,d0
                 move.w  d0,$28(a0)
-                move.w  ram_FF0544,d0
+                move.w  Menu_ram_BikeIdPlayerB,d0
                 andi.w  #7,d0
                 or.w    d0,$28(a0)
                 move.w  #0,$2A(a0)
