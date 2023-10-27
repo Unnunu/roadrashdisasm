@@ -84,6 +84,8 @@ Shop_ScrollPos equ $FF0954
 Shop_ImageBike1 equ $FF0956
 Shop_ImageBike2 equ $FF0A9A
 Shop_ImageBike3 equ $FF0BDE
+ram_FF0D22 equ $FF0D22
+ram_FF0D24 equ $FF0D24
 
 ram_FF1414 equ $FF1414
 ram_FF1418 equ $FF1418
@@ -115,12 +117,35 @@ ram_FF36B8 equ $FF36B8
 ram_FF36BE equ $FF36BE
 ram_FF36C0 equ $FF36C0
 ram_FF36C4 equ $FF36C4
+ram_FF36C6 equ $FF36C6
+ram_FF36C8 equ $FF36C8
+ram_FF3898 equ $FF3898
 ram_FF389C equ $FF389C
+ram_FF38A0 equ $FF38A0
+ram_FF38A4 equ $FF38A4
+ram_FF38A8 equ $FF38A8
+ram_FF38AC equ $FF38AC
+ram_FF38B4 equ $FF38B4
+ram_FF38B8 equ $FF38B8
+ram_FF38D0 equ $FF38D0
+ram_FF38D4 equ $FF38D4
+ram_FF38D8 equ $FF38D8
+ram_FF3FDC equ $FF3FDC
+ram_FF425C equ $FF425C
 
-Intro_TitleScrollTable equ $FF439C ; real size $$380, reserved $680
-Intro_TitleScrollSpeed equ $FF4A1C ; real size $$380, reserved $680
+Intro_TitleScrollTable equ $FF439C ; size $$380
+ram_FF479C equ $FF479C
+Intro_TitleScrollSpeed equ $FF4A1C ; size $$380
 Intro_ram_ImageBuffer equ $FF509C
 
 ram_FF8364 equ $FF8364
 
 Menu_ram_FrameBuffer equ $FFB62C ; size $E00
+
+ram_FFD32C equ $FFD32C
+ram_FFD32E equ $FFD32E
+ram_FFD34A equ $FFD34A
+ram_FFDE58 equ $FFDE58
+ram_FFDE5C equ $FFDE5C
+ram_FFDE64 equ $FFDE64
+

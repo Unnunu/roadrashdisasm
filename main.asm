@@ -666,3 +666,4 @@ sub_1652:
     include "race_results.asm"
     include "highscore.asm"
     include "shop.asm"
+    include "endlevel.asm"

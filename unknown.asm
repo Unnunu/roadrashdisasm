@@ -1,6 +1,10 @@
 sub_9B9E equ $9B9E
 sub_9C26 equ $9C26
+sub_9EF8 equ $9EF8
 sub_AFF2 equ $AFF2
+
+sub_BBFE equ $BBFE
+sub_BD24 equ $BD24
 
 sub_C6C4 equ $C6C4
 sub_C79A equ $C79A
@@ -13,12 +17,14 @@ Rand_GetWord equ $16034
 sub_16088 equ $16088
 sub_160B0 equ $160B0
 sub_160CC equ $160CC
+sub_16926 equ $16926
 
 unk_19A12 equ $19A12
 off_19D32 equ $19D32
 unk_19DD2 equ $19DD2
 unk_19E22 equ $19E22
 unk_19EC2 equ $19EC2
+unk_19F12 equ $19F12
 
 AudioFunc1 equ $19F62
 AudioFunc2 equ $19F66
@@ -51,8 +57,11 @@ unk_7EA66 equ $7EA66
 unk_7EB72 equ $7EB72
 unk_7ED66 equ $7ED66
 img_MainMenu_RaceSelectionBackground equ $7F02C
+unk_7F400 equ $7F400
 img_Gamepad equ $7F834
 sub_7FF98 equ $7FF98
+unk_80000 equ $80000
+unk_8BF12 equ $8BF12
 
 unk_9E784 equ $9E784
 unk_9E874 equ $9E874
