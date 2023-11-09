@@ -72,11 +72,11 @@ Menu_Init:
 ; load menu background image
                 lea     img_MainMenu_Background,a3
                 lea     Intro_ram_ImageBuffer,a1
-                jsr     sub_9C26
+                jsr     UncompressW
 ; write background image to VRAM
                 move.l  #$8000,d0
                 lea     Intro_ram_ImageBuffer,a0
-                jsr     sub_AFF2
+                jsr     WriteToVRAM
 ; write background nametable
                 move.w  #40,d0 ; width
                 move.w  #28,d1 ; height
@@ -90,11 +90,11 @@ Menu_Init:
 ; load race selection background image
                 lea     img_MainMenu_RaceSelectionBackground,a3
                 lea     Intro_ram_ImageBuffer,a1
-                jsr     sub_9B9E
+                jsr     UncompressB
 ; write it to VRAM
                 move.l  #$9000,d0
                 lea     Intro_ram_ImageBuffer,a0
-                jsr     sub_AFF2
+                jsr     WriteToVRAM
 ; write race selection background nametable
                 move.w  #40,d0 ; width
                 move.w  #14,d1 ; height
@@ -108,19 +108,19 @@ Menu_Init:
 ; load paler selection border image
                 lea     img_PasswordMenu_PlayerSelection,a3
                 lea     Intro_ram_ImageBuffer,a1
-                jsr     sub_9C26
+                jsr     UncompressW
 ; write it to VRAM, but it's initially hidden
                 move.l  #$9400,d0
                 lea     Intro_ram_ImageBuffer,a0
-                jsr     sub_AFF2
+                jsr     WriteToVRAM
 ; load gamepad image
                 lea     img_Gamepad,a3
                 lea     Intro_ram_ImageBuffer,a1
-                jsr     sub_9B9E
+                jsr     UncompressB
 ; write it to VRAM
                 move.l  #$A000,d0
                 lea     Intro_ram_ImageBuffer,a0
-                jsr     sub_AFF2
+                jsr     WriteToVRAM
 ; write gamepad image nametable
                 move.w  #12,d0 ; width
                 move.w  #6,d1 ; height
@@ -134,11 +134,11 @@ Menu_Init:
 
                 lea     img_mainMenu_PlayerSelection,a3
                 lea     Intro_ram_ImageBuffer,a1
-                jsr     sub_9C26
+                jsr     UncompressW
 
                 move.l  #$B000,d0
                 lea     Intro_ram_ImageBuffer,a0
-                jsr     sub_AFF2
+                jsr     WriteToVRAM
 ; clear Menu_ram_FrameBuffer
                 lea     Menu_ram_FrameBuffer,a0
                 move.l  #$7FF07FF,d1 ; default tile
@@ -149,37 +149,37 @@ Menu_Init:
 ; load race names image
                 lea     img_MainMenu_RaceBadges,a3
                 lea     Intro_ram_ImageBuffer,a1
-                jsr     sub_9C26
+                jsr     UncompressW
 ; write it to VRAM
                 move.l  #$C000,d0
                 lea     Intro_ram_ImageBuffer,a0
-                jsr     sub_AFF2
-; create nametable in ram_FF8364
+                jsr     WriteToVRAM
+; create nametable in Race_ram_ImageBuffer2
                 move.w  #12,d0 ; height
                 move.w  #12,d1 ; width
                 move.w  #0,d2 ; x
                 move.w  #0,d3 ; y
                 move.w  #0,d4 ; base tile
                 move.w  #12,d6 ; plane width
-                lea     ram_FF8364,a1 ; destination
+                lea     Race_ram_ImageBuffer2,a1 ; destination
                 lea     Intro_ram_ImageBuffer + $D88,a0 ; source
                 jsr     WriteNametableToBuffer
 ; load race cards
                 lea     img_mainMenu_RaceCards,a3
                 lea     Intro_ram_ImageBuffer,a1
-                jsr     sub_9C26
+                jsr     UncompressW
 ; write it to VRAM
                 move.l  #$D000,d0
                 lea     Intro_ram_ImageBuffer,a0
-                jsr     sub_AFF2
-; and append nametable in ram_FF8364, just below names images
+                jsr     WriteToVRAM
+; and append nametable in Race_ram_ImageBuffer2, just below names images
                 move.w  #12,d0 ; height
                 move.w  #30,d1 ; width
                 move.w  #0,d2 ; x
                 move.w  #12,d3 ; y
                 move.w  #0,d4 ; base tile
                 move.w  #12,d6 ; plane width
-                lea     ram_FF8364,a1
+                lea     Race_ram_ImageBuffer2,a1
                 lea     Intro_ram_ImageBuffer + $2768,a0
                 jsr     WriteNametableToBuffer
 ; load palette for all menu images
@@ -208,15 +208,15 @@ Menu_Init:
 ; load font
                 lea     img_Intro_Font,a3
                 lea     Intro_ram_ImageBuffer,a1
-                jsr     sub_9C26
+                jsr     UncompressW
 ; write font to VRAM
                 moveq   #0,d0
                 lea     Intro_ram_ImageBuffer,a0
-                jsr     sub_AFF2
+                jsr     WriteToVRAM
 
                 jsr     Menu_ShowMessage
                 jsr     (sub_2B2E).w
-                move.w  Menu_ram_CurrentRaceId,d0
+                move.w  Menu_ram_CurrentTrackId,d0
                 jsr     Menu_DrawRaceSelection
                 jsr     Menu_DrawPlayerInfo
 ; write framebuffer to VRAM
@@ -441,7 +441,7 @@ Menu_DrawPlayerInfo:
 ; load player selection border image
                 lea     img_mainMenu_PlayerSelection,a3
                 lea     Intro_ram_ImageBuffer,a1
-                jsr     sub_9C26
+                jsr     UncompressW
 ; write border to framebuffer
                 lea     Intro_ram_ImageBuffer,a0
                 move.w  #12,d0 ; width
@@ -461,13 +461,13 @@ Menu_DrawPlayerInfo:
                 btst    #0,(Menu_ram_PlayerMode + 1)
                 beq.w   @drawPlayerBInfo
 ; draw player A info
-                lea     Menu_ram_StringPlayerName,a1
+                lea     Menu_ram_StrPlayerName,a1
                 move.w  #18,(a1)+ ; y
                 move.w  #2,(a1)+ ; x
                 move.w  #2,(a1)+ ; height
                 move.w  #10,(a1)+ ; width
 ; copy player name - 10 bytes
-                lea     Menu_ram_PlayerAName,a0
+                lea     MenuPassword_ram_StrPlayerAName + 8,a0
                 move.l  (a0)+,(a1)+
                 move.l  (a0)+,(a1)+
                 move.w  (a0)+,(a1)+
@@ -478,11 +478,11 @@ Menu_DrawPlayerInfo:
                 move.l  d0,(a1)+
                 move.w  #'  ',(a1)+
 ; encode string with player name and level
-                lea     Menu_ram_StringPlayerName,a0 ; string
+                lea     Menu_ram_StrPlayerName,a0 ; string
                 lea     Intro_ram_ImageBuffer,a1 ; destination
                 jsr     (EncodeString).w
 ; draw it to the framebuffer
-                lea     Menu_ram_StringPlayerName,a0
+                lea     Menu_ram_StrPlayerName,a0
                 move.w  6(a0),d0 ; width
                 move.w  4(a0),d1 ; height
                 move.w  2(a0),d2 ; x
@@ -501,13 +501,13 @@ Menu_DrawPlayerInfo:
                 btst    #1,(Menu_ram_PlayerMode + 1)
                 beq.w   @return
 ; draw player B info
-                lea     Menu_ram_StringPlayerName,a1
+                lea     Menu_ram_StrPlayerName,a1
                 move.w  #18,(a1)+ ; y
                 move.w  #28,(a1)+ ; x
                 move.w  #2,(a1)+ ; height
                 move.w  #10,(a1)+ ; width
 ; copy player name - 10 bytes
-                lea     Menu_ram_PlayerBName,a0
+                lea     MenuPassword_ram_StrPlayerBName + 8,a0
                 move.l  (a0)+,(a1)+
                 move.l  (a0)+,(a1)+
                 move.w  (a0)+,(a1)+
@@ -518,11 +518,11 @@ Menu_DrawPlayerInfo:
                 move.l  d0,(a1)+
                 move.w  #'  ',(a1)+
 ; encode string with player name and level
-                lea     Menu_ram_StringPlayerName,a0
+                lea     Menu_ram_StrPlayerName,a0
                 lea     Intro_ram_ImageBuffer,a1
                 jsr     (EncodeString).w
 ; draw it to the framebuffer
-                lea     Menu_ram_StringPlayerName,a0
+                lea     Menu_ram_StrPlayerName,a0
                 move.w  6(a0),d0 ; width
                 move.w  4(a0),d1 ; height
                 move.w  2(a0),d2 ; x
@@ -618,7 +618,7 @@ MainMenu_HandleInput:
                 move.w  #(8*0),Menu_ram_CurrentMessageId ; one player mode selected
                 move.w  #0,Menu_ram_Player
                 jsr     (sub_2B2E).w
-                move.w  Menu_ram_CurrentRaceId,d0
+                move.w  Menu_ram_CurrentTrackId,d0
                 jsr     Menu_DrawRaceSelection
                 bra.w   @loc_3C74
 @setPlayerBMode:
@@ -626,7 +626,7 @@ MainMenu_HandleInput:
                 move.w  #(8*0),Menu_ram_CurrentMessageId ; one player mode selected
                 move.w  #$FFFF,Menu_ram_Player
                 jsr     (sub_2B2E).w
-                move.w  Menu_ram_CurrentRaceId,d0
+                move.w  Menu_ram_CurrentTrackId,d0
                 jsr     Menu_DrawRaceSelection
 @loc_3C74:
                 jsr     (Menu_DrawPlayerInfo).w
@@ -653,15 +653,15 @@ MainMenu_HandleInput:
                 btst    #3,MainMenu_ram_CurrentButtons
                 beq.w   @checkLeftDown
 @handleUpRight:
-                move.w  Menu_ram_CurrentRaceId,d0
+                move.w  Menu_ram_CurrentTrackId,d0
                 addq.w  #2,d0
                 cmp.w   #8,d0
                 ble.w   @loc_3D08
                 move.w  #0,d0
 @loc_3D08:
-                move.w  d0,Menu_ram_CurrentRaceId
+                move.w  d0,Menu_ram_CurrentTrackId
                 jsr     Menu_DrawRaceSelection
-                move.w  Menu_ram_CurrentRaceId,d0
+                move.w  Menu_ram_CurrentTrackId,d0
                 bsr.w   sub_3B56
                 move.w  #(8*4),Menu_ram_CurrentMessageId
                 move.w  #30,Menu_ram_MessageBlinkTimer
@@ -673,14 +673,14 @@ MainMenu_HandleInput:
                 btst    #2,MainMenu_ram_CurrentButtons
                 beq.w   @checkC
 @handleLeftDown:
-                move.w  Menu_ram_CurrentRaceId,d0
+                move.w  Menu_ram_CurrentTrackId,d0
                 subq.w  #2,d0
                 bpl.w   @loc_3D62
                 move.w  #8,d0
 @loc_3D62:
-                move.w  d0,Menu_ram_CurrentRaceId
+                move.w  d0,Menu_ram_CurrentTrackId
                 jsr     Menu_DrawRaceSelection
-                move.w  Menu_ram_CurrentRaceId,d0
+                move.w  Menu_ram_CurrentTrackId,d0
                 bsr.w   sub_3B56
                 move.w  #(8*4),Menu_ram_CurrentMessageId
                 move.w  #30,Menu_ram_MessageBlinkTimer
@@ -719,7 +719,7 @@ MainMenu_HandleInput:
 ; load player selection border image
                 lea     img_PasswordMenu_PlayerSelection,a3
                 lea     Intro_ram_ImageBuffer,a1
-                jsr     sub_9C26
+                jsr     UncompressW
 
                 move.w  #16,d0 ; width
                 move.w  #14,d1 ; height
@@ -795,7 +795,7 @@ Menu_DrawRaceSelection:
                 swap    d0
                 andi.w  #$FFFE,d0
 ; draw race badge
-                lea     ram_FF8364,a0 ; get race badges
+                lea     Race_ram_ImageBuffer2,a0 ; get race badges
                 mulu.w  #$18,d0
                 adda.w  d0,a0
                 move.w  #12,d0 ; width
@@ -889,7 +889,7 @@ Menu_DrawRaceSelection:
 ; *************************************************
 
 Menu_DrawRaceCard:
-                lea     ram_FF8364 + $120,a0 ; get race cards nametable
+                lea     Race_ram_ImageBuffer2 + $120,a0 ; get race cards nametable
                 mulu.w  #$48,d1
                 adda.w  d1,a0
 ; copy card to Intro_ram_ImageBuffer

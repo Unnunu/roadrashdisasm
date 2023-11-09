@@ -54,25 +54,33 @@ def decompress(data, offset, word = True):
                         return bytes(outBuffer)                    
     return bytes(outBuffer)
 
-def save_image(data, name):
+def save_image(data, name, noPal = False):
     numTiles = struct.unpack_from(">H", data, 2)[0]
     print(f"Number of tiles: {numTiles}")
     tiles = [data[4 + i * 32: 4 + (i+1) * 32] for i in range(numTiles)]
     global palValues
     if palValues == []:
-        palOffset = 4 + numTiles * 32
-        palette = data[palOffset : palOffset + 128]
-        print(f"Palette offset: 0x{palOffset:X}")
-        #calculate rgb values
-        for i in range(64):
-            b = palette[i * 2]
-            g = (palette[i * 2 + 1] & 0xF0) >> 4
-            r = palette[i * 2 + 1] & 0xF
-            r *= 0x10
-            g *= 0x10
-            b *= 0x10
-            palValues.append([r, g, b])
-        ntOffset = palOffset + 128
+        if not noPal:
+            palOffset = 4 + numTiles * 32
+            palette = data[palOffset : palOffset + 128]
+            print(f"Palette offset: 0x{palOffset:X}")
+            #calculate rgb values
+            for i in range(64):
+                b = palette[i * 2]
+                g = (palette[i * 2 + 1] & 0xF0) >> 4
+                r = palette[i * 2 + 1] & 0xF
+                r *= 0x10
+                g *= 0x10
+                b *= 0x10
+                palValues.append([r, g, b])
+            ntOffset = palOffset + 128
+        else:
+            for i in range(64):
+                b = i * 3
+                g = i * 3
+                r = i * 3
+                palValues.append([r, g, b])
+            ntOffset = 4 + numTiles * 32
     else:
         ntOffset = 4 + numTiles * 32
     
@@ -105,14 +113,14 @@ def test(romFile):
     with open(romFile, "rb") as f:
         content = f.read()
     
-    imageOffsets = [0xA4498, 0xA37AA, 0xA7722, 0xAE8CE, 0x7F834, 0x7F02C, 0xA270C]
+    imageOffsets = [0x9B494]
     global palValues
     palValues = []
     
     for offset in imageOffsets:
-        data = decompress(content, offset, offset >= 0xA0000)
+        data = decompress(content, offset, offset >= 0x90000)
         print(f"Unpacking image at 0x{offset:X}")
-        save_image(data, "image_" + hex(offset))
+        save_image(data, "image_" + hex(offset), True)
 
 
 if __name__ == "__main__" :

@@ -1,23 +1,4 @@
-sub_9B9E equ $9B9E
-sub_9C26 equ $9C26
-sub_9EF8 equ $9EF8
-sub_AFF2 equ $AFF2
-
-sub_BBFE equ $BBFE
-sub_BD24 equ $BD24
-
-sub_C6C4 equ $C6C4
-sub_C79A equ $C79A
-
-DmaWriteVRAM equ $D8FA
-DmaWriteCRAM equ $D96A
-
-Rand_Init equ $15FE8
-Rand_GetWord equ $16034
-sub_16088 equ $16088
-sub_160B0 equ $160B0
-sub_160CC equ $160CC
-sub_16926 equ $16926
+sub_13D44 equ $13D44
 
 unk_19A12 equ $19A12
 off_19D32 equ $19D32
@@ -45,9 +26,35 @@ AudioFunc16 equ $19F9E
 AudioFunc17 equ $19FA2
 AudioFunc18 equ $19FA6
 
+unk_257D0 equ $257D0
+unk_257E2 equ $257E2
+unk_257E8 equ $257E8
+unk_257EE equ $257EE
+unk_25802 equ $25802
+unk_2580A equ $2580A
+unk_25812 equ $25812
+unk_25856 equ $25856
+unk_2585E equ $2585E
+unk_2589A equ $2589A
+unk_258A6 equ $258A6
+unk_258AE equ $258AE
+unk_258EE equ $258EE
+unk_259B6 equ $259B6
+unk_259C0 equ $259C0
+unk_25A10 equ $25A10
+unk_25A44 equ $25A44
+unk_25AC4 equ $25AC4
+unk_25B50 equ $25B50
+unk_25B70 equ $25B70
 unk_25EC0 equ $25EC0
 
+unk_3BF1A equ $3BF1A
+word_3C7EA equ $3C7EA
+
+unk_7DCA8 equ $7DCA8
+unk_7DEAA equ $7DEAA
 Shop_dBikePalettes equ $7E370
+unk_7E470 equ $7E470
 unk_7E670 equ $7E670
 unk_7E684 equ $7E684
 unk_7E68E equ $7E68E
@@ -62,7 +69,16 @@ img_Gamepad equ $7F834
 sub_7FF98 equ $7FF98
 unk_80000 equ $80000
 unk_8BF12 equ $8BF12
-
+unk_9B2F0 equ $9B2F0
+unk_9B7A6 equ $9B7A6
+unk_9B494 equ $9B494
+unk_9B89E equ $9B89E
+unk_9C82A equ $9C82A
+unk_9DA6A equ $9DA6A
+unk_9DB68 equ $9DB68
+unk_9DC4C equ $9DC4C
+unk_9DDCC equ $9DDCC
+unk_9E3A2 equ $9E3A2
 unk_9E784 equ $9E784
 unk_9E874 equ $9E874
 unk_9EA1E equ $9EA1E

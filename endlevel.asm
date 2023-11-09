@@ -12,26 +12,26 @@ EndLevel_Init:
                 move.w  #$3F,Message_ram_ButtonBlinkPeriod
                 move.w  #$180,Menu_ram_CurrentMessageId
                 move.l  #0,ram_FF0910
-                move.w  #0,ram_FF0D22
+                move.w  #0,EndLevel_ram_AnimFrame
                 move.w  #5,ram_FF0D24
-                move.w  #0,ram_FF36C6
-                move.w  #0,ram_FF36C8
-                move.l  #Intro_ram_ImageBuffer,ram_FFDE58
-                move.w  #$8680,ram_FFDE5C
-                move.w  #$2E0,ram_FFD34A
-                move.w  #0,ram_FFD32C
-                move.w  #0,ram_FFD32E
-                move.l  #ram_FF3FDC,ram_FF3898
-                move.l  #ram_FF425C,ram_FF389C
-                move.l  #Intro_TitleScrollTable,ram_FF38A0
-                move.l  #Intro_TitleScrollTable,ram_FF38A4
-                move.l  #ram_FF479C,ram_FF38A8
-                move.l  #ram_FF479C,ram_FF38AC
-                move.l  #ram_FF36C6,ram_FF38B4
-                move.l  #ram_FF36C6,ram_FF38B8
-                move.l  #Intro_ram_ImageBuffer,ram_FF38D0
-                move.l  #ram_FFD32C,ram_FF38D4
-                move.l  #ram_FFD32C,ram_FF38D8
+                move.w  #0,Race_ram_FrameReady
+                move.w  #0,Race_ram_FrameReady2
+                move.l  #Intro_ram_ImageBuffer,Race_ram_NextSpriteTileArray
+                move.w  #$8680,Race_ram_SpriteDestination
+                move.w  #$2E0,Animation_ram_BaseTile ; base tile index, address = $5C00
+                move.w  #0,Race_ram_SpriteSize1
+                move.w  #0,Race_ram_SpriteSize2
+                move.l  #ram_FF3FDC,Race_ram_CurrentVScrollInfo
+                move.l  #ram_FF425C,Race_ram_NextVScrollInfo
+                move.l  #Intro_TitleScrollTable,Race_ram_CurrentHScrollTable
+                move.l  #Intro_TitleScrollTable,Race_ram_NextScrollTable
+                move.l  #Intro_TitleScrollTable + $400,Race_ram_NextSpriteAttributeTable
+                move.l  #Intro_TitleScrollTable + $400,Race_ram_CurrentSpriteAttributeTable
+                move.l  #Race_ram_FrameReady,Race_ram_CurrentFrameReady
+                move.l  #Race_ram_FrameReady,Race_ram_NextFrameReady
+                move.l  #Intro_ram_ImageBuffer,Race_ram_CurrentSpriteTileArray
+                move.l  #Race_ram_SpriteSize1,Race_ram_CurrentSpriteSizePtr
+                move.l  #Race_ram_SpriteSize1,Race_ram_NextSpriteSizePtr
 
                 lea     VdpCtrl,a0
                 move.w  #$8004,(a0) ; H-ints disabled, Pal Select 1, HVC latch disabled, Display gen enabled
@@ -72,11 +72,11 @@ EndLevel_Init:
 ; load background image
                 lea     img_MainMenu_Background,a3
                 lea     Intro_ram_ImageBuffer,a1
-                jsr     sub_9C26
+                jsr     UncompressW
 ; write it to VRAM address $1280
                 move.l  #$1280,d0
                 lea     Intro_ram_ImageBuffer,a0
-                jsr     sub_AFF2
+                jsr     WriteToVRAM
 ; and draw it
                 move.w  #40,d0 ; width
                 move.w  #28,d1 ; height
@@ -87,10 +87,10 @@ EndLevel_Init:
                 move.w  #128,d6 ; plane width
                 lea     Intro_ram_ImageBuffer + $4E8,a0
                 jsr     (WriteNametable).w
-
+; load tiles for animation
                 lea     unk_80000,a3
                 movea.l #$5C00,a1
-                jsr     sub_9EF8
+                jsr     UncompressToVRAM
 ; clear first 22 lines in frame buffer
                 lea     Menu_ram_FrameBuffer,a0
                 move.l  #$7FF07FF,d1
@@ -109,11 +109,11 @@ EndLevel_Init:
 
                 lea     (unk_7F400).l,a3
                 lea     Intro_ram_ImageBuffer,a1
-                jsr     sub_9B9E
+                jsr     UncompressB
 
                 move.l  #$2020,d0
                 lea     Intro_ram_ImageBuffer,a0
-                jsr     sub_AFF2
+                jsr     WriteToVRAM
 
                 move.w  #40,d0 ; width
                 move.w  #14,d1 ; height
@@ -150,20 +150,20 @@ EndLevel_Init:
 ; load font image
                 lea     img_Intro_Font,a3
                 lea     Intro_ram_ImageBuffer,a1
-                jsr     sub_9C26
+                jsr     UncompressW
 ; write it to VRAM address $0
                 moveq   #0,d0
                 lea     Intro_ram_ImageBuffer,a0
-                jsr     sub_AFF2
+                jsr     WriteToVRAM
 ; draw image from frame buffer
                 move.l  #Menu_ram_FrameBuffer,d0
                 move.w  #$3000,d1
                 move.w  #$700,d2
                 bsr.w   DmaWriteVRAM
-
-                lea     (unk_8BF12).l,a3
+; load animation script
+                lea     unk_8BF12,a3
                 lea     Intro_ram_ImageBuffer,a1
-                jsr     sub_9C26
+                jsr     UncompressW
 
                 jsr     AudioFunc4
                 tst.w   ram_MusicEnabled
@@ -184,10 +184,10 @@ EndLevel_InitCharacterScreen:
                 move.l  #0,VdpData
                 lea     (img_Gamepad).l,a3
                 lea     Intro_ram_ImageBuffer,a1
-                jsr     sub_9B9E
+                jsr     UncompressB
                 move.l  #$A000,d0
                 lea     Intro_ram_ImageBuffer,a0
-                jsr     sub_AFF2
+                jsr     WriteToVRAM
                 move.w  #$C,d0
                 move.w  #6,d1
                 move.w  #2,d2
@@ -212,10 +212,10 @@ EndLevel_InitCharacterScreen:
                 dbf     d0,@loc_870E
                 lea     (unk_7EA66).l,a3
                 lea     Intro_ram_ImageBuffer,a1
-                jsr     sub_9B9E
+                jsr     UncompressB
                 move.l  #$9000,d0
                 lea     Intro_ram_ImageBuffer,a0
-                jsr     sub_AFF2
+                jsr     WriteToVRAM
                 move.w  #$C,d0
                 move.w  #$E,d1
                 move.w  #2,d2
@@ -229,7 +229,7 @@ EndLevel_InitCharacterScreen:
                 jsr     Rand_GetWord
                 andi.w  #8,d0
                 adda.w  d0,a0
-                move.w  ram_FF050A,d0
+                move.w  Menu_ram_PlayerLevel,d0
                 subq.w  #1,d0
                 mulu.w  #$10,d0
                 adda.w  d0,a0
@@ -244,12 +244,12 @@ EndLevel_InitCharacterScreen:
                 move.b  -1(a3),d0
                 move.l  d0,-(sp)
                 lea     Intro_ram_ImageBuffer,a1
-                jsr     sub_9C26
+                jsr     UncompressW
                 move.l  #$C000,d0
                 movea.l (sp),a0
                 movea.w -6(a0),a0
                 adda.l  #Intro_ram_ImageBuffer,a0
-                jsr     sub_AFF2
+                jsr     WriteToVRAM
                 move.w  #$A,d0
                 move.w  #$C,d1
                 move.w  #3,d2
@@ -378,7 +378,7 @@ sub_8946:
                 ble.w   @loc_898E
                 move.w  #5,Menu_ram_PlayerALevel
 @loc_898E:
-                lea     ram_FF0546,a0
+                lea     Menu_ram_PlayerAOpponents,a0
                 move.w  #$4B,(a0)+
                 move.w  Menu_ram_PlayerALevel,d0
                 subq.w  #1,d0
@@ -401,7 +401,7 @@ sub_8946:
                 ble.w   @loc_89F2
                 move.w  #5,Menu_ram_PlayerBLevel
 @loc_89F2:
-                lea     ram_FF0566,a0
+                lea     Menu_ram_PlayerBOpponents,a0
                 move.w  #$4B,(a0)+
                 move.w  Menu_ram_PlayerBLevel,d0
                 subq.w  #1,d0
@@ -470,38 +470,44 @@ EndLevel_GameTickCharacterScreen:
 ; *************************************************
 
 EndLevel_GameTick:
+; get player A input
                 move.w  MainMenu_ram_ButtonsPlayerA,MainMenu_ram_ChangedButtonsPlayerA
                 jsr     (GetInputPlayerA).w
                 move.w  d0,MainMenu_ram_ButtonsPlayerA
                 eor.w   d0,MainMenu_ram_ChangedButtonsPlayerA
+; get player B input
                 move.w  MainMenu_ram_ButtonsPlayerB,MainMenu_ram_ChangedButtonsPlayerB
                 jsr     (GetInputPlayerB).w
                 move.w  d0,MainMenu_ram_ButtonsPlayerB
                 eor.w   d0,MainMenu_ram_ChangedButtonsPlayerB
+
                 subq.w  #1,Menu_ram_NextMessageTimer
-                tst.w   ram_FF0D22
-                bmi.w   @loc_8B82
+                tst.w   EndLevel_ram_AnimFrame
+                bmi.w   @endStage
+
                 subq.w  #1,ram_FF0D24
-                bpl.w   @loc_8B7A
+                bpl.w   @end
                 lea     VdpCtrl,a0
                 lea     VdpData,a1
-                movea.l ram_FF38B8,a2
+                movea.l Race_ram_NextFrameReady,a2
                 tst.w   (a2)
-                beq.w   @loc_8B7A
+                beq.w   @end
                 move.w  #5,ram_FF0D24
-                move.l  ram_FF38A4,d0
+; set sprite table
+                move.l  Race_ram_NextScrollTable,d0
                 addi.w  #$400,d0
                 move.w  #$1000,d1
                 move.w  #$140,d2
                 jsr     DmaWriteVRAM
-                jsr     sub_BBFE
-@loc_8B7A:
+                
+                jsr     Race_SwapFrames
+@end:
                 jsr     AudioFunc1
                 rts
-@loc_8B82:
+@endStage:
                 jsr     EndLevel_InitCharacterScreen
                 move.l  #EndLevel_GameTickCharacterScreen,ram_UpdateFunction
-                bra.s   @loc_8B7A
+                bra.s   @end
 ; End of function EndLevel_GameTick
 
 ; *************************************************
@@ -509,44 +515,47 @@ EndLevel_GameTick:
 ; *************************************************
 
 EndLevel_UpdateAnimation:
-                tst.w   ram_FF0D22
+                tst.w   EndLevel_ram_AnimFrame
                 bmi.w   @return
-                lea     (unk_8C8C).l,a0
-                move.w  ram_FF050A,d0
+
+                lea     unk_8C8C,a0
+                move.w  Menu_ram_PlayerLevel,d0
                 subq.w  #1,d0
                 adda.w  d0,a0
                 adda.w  d0,a0
                 move.w  (a0),d0
-                cmp.w   ram_FF0D22,d0
-                bcs.w   @loc_8C0A
-                movea.l ram_FF38B4,a0
+                cmp.w   EndLevel_ram_AnimFrame,d0
+                bcs.w   @endAnimation
+                movea.l Race_ram_CurrentFrameReady,a0
                 tst.w   (a0)
                 bne.w   @return
-                clr.w   ram_FFDE64
-                move.w  #$2E0,ram_FFD34A
-                move.w  ram_FF0D22,d0
-                movea.l ram_FF38AC,a0
-                movea.l ram_FF38D0,a1
-                lea     unk_8DC2,a4
-                move.w  #$80,d1
-                move.w  #$80,d2
-                jsr     sub_16926
-                addq.w  #1,ram_FF0D22
-                jsr     sub_BD24
+
+                clr.w   Animation_ram_SpriteIndex
+                move.w  #$2E0,Animation_ram_BaseTile
+                move.w  EndLevel_ram_AnimFrame,d0 ; frame index
+                movea.l Race_ram_CurrentSpriteAttributeTable,a0 ; destination
+                movea.l Race_ram_CurrentSpriteTileArray,a1 ; tile array, not used
+                lea     unk_8DC2,a4 ; animation script
+                move.w  #$80,d1 ; x
+                move.w  #$80,d2 ; y
+                jsr     UpdateAnimation2
+                addq.w  #1,EndLevel_ram_AnimFrame
+                jsr     Race_FinishFrame
 @return:
                 rts
-@loc_8C0A:
-                tst.w   ram_FF36C6
+@endAnimation:
+                tst.w   Race_ram_FrameReady
                 bne.w   @loc_8C80
-                tst.w   ram_FF36C8
+                tst.w   Race_ram_FrameReady2
                 bne.w   @loc_8C80
+
                 move.w  MainMenu_ram_ChangedButtonsPlayerA,d0
                 andi.w  #$80,d0
                 beq.w   @loc_8C42
                 move.w  MainMenu_ram_ButtonsPlayerA,d0
                 andi.w  #$80,d0
                 bne.w   @loc_8C42
-                move.w  #$FFFF,Menu_ram_NextMessageTimer
+                move.w  #-1,Menu_ram_NextMessageTimer
 @loc_8C42:
                 move.w  MainMenu_ram_ChangedButtonsPlayerB,d0
                 andi.w  #$80,d0
@@ -554,11 +563,11 @@ EndLevel_UpdateAnimation:
                 move.w  MainMenu_ram_ButtonsPlayerB,d0
                 andi.w  #$80,d0
                 bne.w   @loc_8C66
-                move.w  #$FFFF,Menu_ram_NextMessageTimer
+                move.w  #-1,Menu_ram_NextMessageTimer
 @loc_8C66:
                 tst.w   Menu_ram_NextMessageTimer
                 bpl.s   @return
-                move.w  #$FFFF,ram_FF0D22
+                move.w  #-1,EndLevel_ram_AnimFrame
                 move.w  #120,Menu_ram_NextMessageTimer ; 2 seconds
                 bra.s   @return
 @loc_8C80:
@@ -567,7 +576,7 @@ EndLevel_UpdateAnimation:
 ; End of function EndLevel_UpdateAnimation
 
 unk_8C8C:
-    dc.w $23,$36,$51,$5B,$7B
+    dc.w 35,54,81,91,123
 
 unk_8C96:
     dc.w 22,16,5,20

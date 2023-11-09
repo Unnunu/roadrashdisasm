@@ -52,10 +52,10 @@ Fade_GameTickWithInit:
                 move.w  #$8210,(a0) ; Scroll A Name Table:    $4000
                 move.w  #$8402,(a0) ; Scroll B Name Table:    $4000
                 move.w  #$873F,(a0) ; Backdrop Color: $3F, palette 3, color $F
-                movea.l ram_FF389C,a2
+                movea.l Race_ram_NextVScrollInfo,a2
                 move.w  (a2),(a0)
                 move.w  4(a2),(a0)
-                move.l  #$40000010,(a0) ; VSRAM from offset 0
+                VDP_VSRAM_WRITE $0,(a0) ; VSRAM from offset 0
                 move.l  6(a2),(a1)
                 move.w  $A(a2),ram_FF0406
                 move.l  $C(a2),(a0)

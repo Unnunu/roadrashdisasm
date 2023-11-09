@@ -439,32 +439,33 @@ SpuriousInterrupt:
 HorizontalInterrupt:
                 move.w  #$8AFF,VdpCtrl ; next Hint after 255 scanlines
                 cmpi.w  #$FFFF,ram_FF369E
-                beq.w   @locret_1650
+                beq.w   @return
                 movem.l d0-d2/a0-a2,-(sp)
                 lea     VdpCtrl,a1
                 lea     VdpData,a2
                 move.w  ram_FF0406,d0
                 ble.w   @loc_1632
-                movea.l ram_FF389C,a0
+                movea.l Race_ram_NextVScrollInfo,a0
                 adda.w  d0,a0
                 move.w  (a0)+,(a1)
                 move.w  (a0)+,d0
                 move.w  (a0)+,d1
                 move.l  (a0)+,d2
                 move.w  (a0)+,ram_FF0406
-                move.l  #$40000010,(a1) ; VSRAM from offset 0
+                VDP_VSRAM_WRITE $0,(a1) ; VSRAM from offset 0
                 movea.w d0,a0
                 andi.w  #$FF00,d0
 @loc_14AA:
                 cmp.w   HvCounter,d0
-                bcc.s   @loc_14AA
+                bcc.s   @loc_14AA ; wait until VCounter > d0
 @loc_14B2:
                 move.b  HvCounter + 1,d0
-                bmi.s   @loc_14B2
+                bmi.s   @loc_14B2 ; wait until HCounter > 0
                 move.w  a0,d0
 @loc_14BC:
                 cmp.w   HvCounter,d0
-                bcc.s   @loc_14BC
+                bcc.s   @loc_14BC ; wait until HVCounter > a0
+
                 move.l  d2,(a2)
 ; 36 nops
                 nop
@@ -506,10 +507,11 @@ HorizontalInterrupt:
                 move.w  d1,(a1)
                 cmpi.w  #$90,ram_FF0406
                 bne.w   @loc_164C
+; run this only if ram_FF0406 == $90
                 move.w  #0,ram_FF0406
                 tst.w   ram_MusicEnabled
                 bne.w   @loc_162C
-                tst.w   ram_FF3696
+                tst.w   Race_ram_State
                 beq.w   @loc_154E
                 clr.l   d0
                 move.w  #$1F,d1
@@ -519,11 +521,11 @@ HorizontalInterrupt:
 @loc_154E:
                 lea     ram_FF1EAA,a1
                 move.w  #0,d0
-                tst.b   $6E(a1)
+                tst.b   STRUCT_OFFSET_6E(a1)
                 bpl.w   @loc_1590
-                move.w  $14(a1),d0
-                muls.w  ram_FF3048,d0
-                add.w   $12(a1),d0
+                move.w  STRUCT_OFFSET_14(a1),d0
+                muls.w  Race_ram_FrameCounter,d0
+                add.w   STRUCT_OFFSET_SPEED(a1),d0
                 bpl.w   @loc_1576
                 move.w  #0,d0
 @loc_1576:
@@ -560,7 +562,7 @@ HorizontalInterrupt:
                 bpl.w   @loc_15E8
                 move.w  #0,d1
 @loc_15E8:
-                tst.b   $6E(a1)
+                tst.b   STRUCT_OFFSET_6E(a1)
                 bmi.w   @loc_1616
                 lea     ram_FF26AA,a1
                 move.l  ram_FF1E68,d1
@@ -587,7 +589,7 @@ HorizontalInterrupt:
                 move.w  #0,ram_FF369E
 @loc_164C:
                 movem.l (sp)+,d0-d2/a0-a2
-@locret_1650:
+@return:
                 rte
 ; End of function HorizontalInterrupt
 
@@ -606,7 +608,7 @@ sub_1652:
                 tst.b   $6E(a1)
                 bpl.w   @loc_169C
                 move.w  $14(a1),d0
-                muls.w  ram_FF3048,d0
+                muls.w  Race_ram_FrameCounter,d0
                 add.w   $12(a1),d0
                 bpl.w   @loc_1682
                 clr.w   d0
@@ -667,3 +669,8 @@ sub_1652:
     include "highscore.asm"
     include "shop.asm"
     include "endlevel.asm"
+    include "8FB4.asm"
+    include "98C2.asm"
+    include "uncompress.asm"
+    include "9FE4.asm"
+    include "race.asm"

@@ -141,7 +141,7 @@ MenuPassword_GameTick:
                 move.l  d0,(a0)+
                 dbf     d1,@loc_26EC
 
-                move.w  Menu_ram_CurrentRaceId,d0
+                move.w  Menu_ram_CurrentTrackId,d0
                 jsr     Menu_DrawRaceSelection
                 jsr     Menu_DrawPlayerInfo
                 move.l  #MainMenu_GameTick,ram_UpdateFunction ; get to main menu
@@ -352,10 +352,10 @@ sub_2A1E:
                 move.w  #(8*5),Menu_ram_CurrentMessageId ; show password status message (valid / invalid)
                 lea     MenuPassword_StrPasswordStatus,a0
                 lea     unk_4E20,a1 ; string ".. password invalid .."
-                lea     ram_FF04AA,a2
+                lea     MenuPassword_ram_StrPlayerAName + 6,a2 ; ptr to player A name width
                 cmpi.l  #MenuPassword_ram_StrPlayerAPassword,MenuPassword_ram_StrPlayerPasswordPtr
                 beq.w   @loc_2A5C
-                lea     ram_FF04BC,a2
+                lea     MenuPassword_ram_StrPlayerBName + 6,a2 ; ptr to player B name width
 @loc_2A5C:
                 move.l  (a1)+,(a0)+ ; copy width & height
                 move.l  (a1)+,(a0)+ ; copy x & y
@@ -444,50 +444,50 @@ sub_2B2E:
                 lea     Menu_ram_PlayerBPlaces,a0
 
 @loc_2B44:
-                move.w  #0,Menu_ram_CurrentRaceId
-                move.w  Menu_ram_CurrentRaceId,d1
+                move.w  #0,Menu_ram_CurrentTrackId
+                move.w  Menu_ram_CurrentTrackId,d1
                 move.w  (a0),d0 ; get place in race 1
                 beq.w   @loc_2BE6
-                move.w  #2,Menu_ram_CurrentRaceId
+                move.w  #2,Menu_ram_CurrentTrackId
                 tst.w   2(a0)
                 beq.w   @loc_2BE6
                 cmp.w   2(a0),d0
                 bpl.w   @loc_2B7A
-                move.w  Menu_ram_CurrentRaceId,d1
+                move.w  Menu_ram_CurrentTrackId,d1
                 move.w  2(a0),d0
 
 @loc_2B7A:
-                move.w  #4,Menu_ram_CurrentRaceId
+                move.w  #4,Menu_ram_CurrentTrackId
                 tst.w   4(a0)
                 beq.w   @loc_2BE6
                 cmp.w   4(a0),d0
                 bpl.w   @loc_2B9C
-                move.w  Menu_ram_CurrentRaceId,d1
+                move.w  Menu_ram_CurrentTrackId,d1
                 move.w  4(a0),d0
 
 @loc_2B9C:
-                move.w  #6,Menu_ram_CurrentRaceId
+                move.w  #6,Menu_ram_CurrentTrackId
                 tst.w   6(a0)
                 beq.w   @loc_2BE6
                 cmp.w   6(a0),d0
                 bpl.w   @loc_2BBE
-                move.w  Menu_ram_CurrentRaceId,d1
+                move.w  Menu_ram_CurrentTrackId,d1
                 move.w  6(a0),d0
 
 @loc_2BBE:
-                move.w  #8,Menu_ram_CurrentRaceId
+                move.w  #8,Menu_ram_CurrentTrackId
                 tst.w   8(a0)
                 beq.w   @loc_2BE6
                 cmp.w   8(a0),d0
                 bpl.w   @loc_2BE0
-                move.w  Menu_ram_CurrentRaceId,d1
+                move.w  Menu_ram_CurrentTrackId,d1
                 move.w  8(a0),d0
 
 @loc_2BE0:
-                move.w  d1,Menu_ram_CurrentRaceId
+                move.w  d1,Menu_ram_CurrentTrackId
 
 @loc_2BE6:
-                move.w  Menu_ram_CurrentRaceId,d0
+                move.w  Menu_ram_CurrentTrackId,d0
                 rts
 ; End of function sub_2B2E
 
@@ -649,7 +649,7 @@ MenuPassword_ParsePassword:
                 move.w  38(a0),d0 ; char #16 is player level
                 andi.w  #7,d0
                 move.w  d0,Menu_ram_PlayerALevel
-                lea     ram_FF0546,a1
+                lea     Menu_ram_PlayerAOpponents,a1
                 move.w  #$4B,(a1)+
                 subq.w  #1,d0
                 mulu.w  #15,d0
@@ -746,7 +746,7 @@ MenuPassword_ParsePassword:
                 move.w  38(a0),d0
                 andi.w  #7,d0
                 move.w  d0,Menu_ram_PlayerBLevel
-                lea     ram_FF0566,a1
+                lea     Menu_ram_PlayerBOpponents,a1
                 move.w  #$4B,(a1)+
                 subq.w  #1,d0
                 mulu.w  #$F,d0

@@ -46,11 +46,11 @@ HighScore_Init:
 ; load background image
                 lea     img_MainMenu_Background,a3
                 lea     Intro_ram_ImageBuffer,a1
-                jsr     sub_9C26
+                jsr     UncompressW
 ; write to VRAM address $8000
                 move.l  #$8000,d0
                 lea     Intro_ram_ImageBuffer,a0
-                jsr     sub_AFF2
+                jsr     WriteToVRAM
 ; and draw it
                 move.w  #40,d0 ; width
                 move.w  #28,d1 ; height
@@ -64,11 +64,11 @@ HighScore_Init:
 ; load "High Score" title image
                 lea     unk_A2F5C,a3
                 lea     Intro_ram_ImageBuffer,a1
-                jsr     sub_9C26
+                jsr     UncompressW
 ; write to VRAM address $9000
                 move.l  #$9000,d0
                 lea     Intro_ram_ImageBuffer,a0
-                jsr     sub_AFF2
+                jsr     WriteToVRAM
 ; and draw it
                 move.w  #20,d0 ; width
                 move.w  #2,d1 ; height
@@ -105,11 +105,11 @@ HighScore_Init:
 ; load gamepad image
                 lea     img_Gamepad,a3
                 lea     Intro_ram_ImageBuffer,a1
-                jsr     sub_9B9E
+                jsr     UncompressB
 ; write to VRAM address $A000
                 move.l  #$A000,d0
                 lea     Intro_ram_ImageBuffer,a0
-                jsr     sub_AFF2
+                jsr     WriteToVRAM
 ; and draw it
                 move.w  #12,d0 ; width
                 move.w  #6,d1 ; height
@@ -123,11 +123,11 @@ HighScore_Init:
 ; load yellow badge image
                 lea     unk_7EB72,a3
                 lea     Intro_ram_ImageBuffer,a1
-                jsr     sub_9B9E
+                jsr     UncompressB
 ; write to VRAM address $B000
                 move.l  #$B000,d0
                 lea     Intro_ram_ImageBuffer,a0
-                jsr     sub_AFF2
+                jsr     WriteToVRAM
 ; and draw it 5 times
                 move.w  #22,d0
                 move.w  #3,d1
@@ -181,27 +181,27 @@ HighScore_Init:
 ; load font
                 lea     img_Intro_Font,a3
                 lea     Intro_ram_ImageBuffer,a1
-                jsr     sub_9C26
+                jsr     UncompressW
 ; write to VRAM address $0
                 moveq   #0,d0
                 lea     Intro_ram_ImageBuffer,a0
-                jsr     sub_AFF2
+                jsr     WriteToVRAM
 ; load table font
                 lea     unk_A2BAA,a3
                 lea     Intro_ram_ImageBuffer,a1
-                jsr     sub_9C26
+                jsr     UncompressW
 ; write to VRAM address $800
                 move.l  #$800,d0
                 lea     Intro_ram_ImageBuffer,a0
-                jsr     sub_AFF2
+                jsr     WriteToVRAM
 
                 lea     unk_A2E68,a3
                 lea     Intro_ram_ImageBuffer,a1
-                jsr     sub_9C26
+                jsr     UncompressW
 
                 move.l  #$1000,d0
                 lea     Intro_ram_ImageBuffer,a0
-                jsr     sub_AFF2
+                jsr     WriteToVRAM
 ; clear 22 lines in frame buffer
                 lea     Menu_ram_FrameBuffer,a0
                 move.l  #$7FF07FF,d1

@@ -30,11 +30,11 @@ Intro_Init:
 ; load background image into ram
                 lea     img_Intro_Background,a3
                 lea     Intro_ram_ImageBuffer,a1
-                jsr     sub_9C26
+                jsr     UncompressW
 ; write background image into VRAM address $8000
                 move.l  #$8000,d0
                 lea     Intro_ram_ImageBuffer,a0
-                jsr     sub_AFF2
+                jsr     WriteToVRAM
 ; create nametable for title
                 move.w  #40,d0 ; width
                 move.w  #28,d1 ; height
@@ -55,11 +55,11 @@ Intro_Init:
 ; load title image into ram
                 lea     img_Intro_Title,a3
                 lea     Intro_ram_ImageBuffer,a1
-                jsr     sub_9C26
+                jsr     UncompressW
 ; write title image into VRAM address $E000
                 move.l  #$E000,d0
                 lea     Intro_ram_ImageBuffer,a0
-                jsr     sub_AFF2
+                jsr     WriteToVRAM
 ; draw title ?
                 move.w  #40,d0 ; width
                 move.w  #28,d1 ; height
@@ -83,11 +83,11 @@ Intro_Init:
 ; load font image into ram
                 lea     img_Intro_Font,a3
                 lea     Intro_ram_ImageBuffer,a1
-                jsr     sub_9C26
+                jsr     UncompressW
 ; write font image into VRAM address $0
                 moveq   #0,d0
                 lea     Intro_ram_ImageBuffer,a0
-                jsr     sub_AFF2
+                jsr     WriteToVRAM
 ; load first string
                 movea.l Intro_dStringTable,a0
                 lea     Intro_ram_ImageBuffer,a1
@@ -165,7 +165,7 @@ Intro_Init:
                 move.w  (a0)+,(a1)+
                 dbf     d0,@loc_1998
 
-                lea     Menu_ram_PlayerBName,a0
+                lea     MenuPassword_ram_StrPlayerBName + 8,a0
                 addq.b  #1,7(a0)
                 move.w  #(20*5),HighScore_ram_PlayerATableOffset
                 move.w  #(20*6),HighScore_ram_PlayerBTableOffset
@@ -181,9 +181,9 @@ Intro_Init:
                 move.l  (a0)+,(a1)+
                 dbf     d0,@loc_19D8
 
-                move.w  #0,Menu_ram_CurrentRaceId
+                move.w  #0,Menu_ram_CurrentTrackId
                 move.w  #1,Menu_ram_PlayerMode ; player mode : player A
-                move.w  #1,ram_FF050A
+                move.w  #1,Menu_ram_PlayerLevel
                 move.w  #0,ram_FF0520
                 move.w  #0,Menu_ram_Player
                 bsr.w   sub_1A2C
@@ -209,7 +209,7 @@ sub_1A2C:
                 adda.w  #(20*5),a0
                 lea     ram_FF05F2,a1
                 adda.w  HighScore_ram_PlayerATableOffset,a1
-                lea     Menu_ram_PlayerAName,a0
+                lea     MenuPassword_ram_StrPlayerAName + 8,a0
                 move.w  #4,d0
 @loc_1A68:
                 move.w  (a0)+,(a1)+
@@ -240,7 +240,7 @@ sub_1A2C:
                 move.w  #0,Menu_ram_PlayerAPlaces + 4
                 move.w  #0,Menu_ram_PlayerAPlaces + 6
                 move.w  #0,Menu_ram_PlayerAPlaces + 8
-                lea     ram_FF0546,a0
+                lea     Menu_ram_PlayerAOpponents,a0
                 move.w  #$4B,(a0)+
                 move.w  #0,(a0)+
                 move.w  #1,(a0)+
@@ -274,7 +274,7 @@ sub_1B48:
                 adda.w  #(20*5),a0
                 lea     ram_FF05F2,a1
                 adda.w  HighScore_ram_PlayerBTableOffset,a1
-                lea     Menu_ram_PlayerBName,a0
+                lea     MenuPassword_ram_StrPlayerBName + 8,a0
                 move.w  #4,d0
 
 @loc_1B84:
@@ -306,7 +306,7 @@ sub_1B48:
                 move.w  #0,Menu_ram_PlayerBPlaces + 4
                 move.w  #0,Menu_ram_PlayerBPlaces + 6
                 move.w  #0,Menu_ram_PlayerBPlaces + 8
-                lea     ram_FF0566,a0
+                lea     Menu_ram_PlayerBOpponents,a0
                 move.w  #$4B,(a0)+
                 move.w  #0,(a0)+
                 move.w  #1,(a0)+
@@ -572,8 +572,8 @@ dStringDecodeTable:
 ; *************************************************
 ; Function WriteNametable
 ; a0 - source buffer
-; d0 - height in cells
-; d1 - width in cells
+; d0 - width in cells
+; d1 - height in cells
 ; d2 - topLeftX
 ; d3 - topLeftY
 ; d4 - base tile index

@@ -84,11 +84,11 @@ Shop_Init:
 ; load background image
                 lea     img_MainMenu_Background,a3
                 lea     Intro_ram_ImageBuffer,a1
-                jsr     sub_9C26
+                jsr     UncompressW
 ; write it to VRAM address $8000
                 move.l  #$8000,d0
                 lea     Intro_ram_ImageBuffer,a0
-                jsr     sub_AFF2
+                jsr     WriteToVRAM
 ; and draw it in frame buffer
                 move.w  #40,d0 ; width
                 move.w  #28,d1 ; height
@@ -102,11 +102,11 @@ Shop_Init:
 ; load bike selection background
                 lea     img_MainMenu_RaceSelectionBackground,a3
                 lea     Intro_ram_ImageBuffer,a1
-                jsr     sub_9B9E
+                jsr     UncompressB
 ; write it to VRAM address $9000
                 move.l  #$9000,d0
                 lea     Intro_ram_ImageBuffer,a0
-                jsr     sub_AFF2
+                jsr     WriteToVRAM
 ; and draw it in frame buffer
                 move.w  #40,d0 ; width
                 move.w  #14,d1 ; height
@@ -120,11 +120,11 @@ Shop_Init:
 ; load gamepad image
                 lea     img_Gamepad,a3
                 lea     Intro_ram_ImageBuffer,a1
-                jsr     sub_9B9E
+                jsr     UncompressB
 ; write it to VRAM address $A000
                 move.l  #$A000,d0
                 lea     Intro_ram_ImageBuffer,a0
-                jsr     sub_AFF2
+                jsr     WriteToVRAM
 ; and draw it
                 move.w  #12,d0 ; width
                 move.w  #6,d1 ; height
@@ -138,11 +138,11 @@ Shop_Init:
 ; load left arrows image
                 lea     unk_9E784,a3
                 lea     Intro_ram_ImageBuffer,a1
-                jsr     sub_9C26
+                jsr     UncompressW
 ; write it to VRAM address $B000
                 move.l  #$B000,d0
                 lea     Intro_ram_ImageBuffer,a0
-                jsr     sub_AFF2
+                jsr     WriteToVRAM
 ; and draw it
                 move.w  #4,d0 ; width
                 move.w  #2,d1 ; height
@@ -156,11 +156,11 @@ Shop_Init:
 ; load right arrows image
                 lea     unk_9E874,a3
                 lea     Intro_ram_ImageBuffer,a1
-                jsr     sub_9C26
+                jsr     UncompressW
 ; write it to VRAM address $B100
                 move.l  #$B100,d0
                 lea     Intro_ram_ImageBuffer,a0
-                jsr     sub_AFF2
+                jsr     WriteToVRAM
 ; and draw it
                 move.w  #4,d0 ; width
                 move.w  #2,d1 ; height
@@ -193,11 +193,11 @@ Shop_Init:
 ; load bike 1 image
                 lea     unk_9EA1E,a3
                 lea     Intro_ram_ImageBuffer,a1
-                jsr     sub_9C26
+                jsr     UncompressW
 ; write it to VRAM address $C000
                 move.l  #$C000,d0
                 lea     Intro_ram_ImageBuffer,a0
-                jsr     sub_AFF2
+                jsr     WriteToVRAM
 ; and draw it to Shop_ImageBike1
                 move.w  #18,d0 ; width
                 move.w  #9,d1 ; height
@@ -211,11 +211,11 @@ Shop_Init:
 ; load bike 2 image
                 lea     unk_9FDDE,a3
                 lea     Intro_ram_ImageBuffer,a1
-                jsr     sub_9C26
+                jsr     UncompressW
 ; write it to VRAM address $D000
                 move.l  #$D000,d0
                 lea     Intro_ram_ImageBuffer,a0
-                jsr     sub_AFF2
+                jsr     WriteToVRAM
 ; and draw it to Shop_ImageBike2
                 move.w  #18,d0 ; width
                 move.w  #9,d1 ; height
@@ -229,11 +229,11 @@ Shop_Init:
 ; load bike 3 image
                 lea     unk_A122A,a3
                 lea     Intro_ram_ImageBuffer,a1
-                jsr     sub_9C26
+                jsr     UncompressW
 ; write it to VRAM address $E000
                 move.l  #$E000,d0
                 lea     Intro_ram_ImageBuffer,a0
-                jsr     sub_AFF2
+                jsr     WriteToVRAM
 ; and draw it to Shop_ImageBike3
                 move.w  #18,d0 ; width
                 move.w  #9,d1 ; height
@@ -286,11 +286,11 @@ Shop_Init:
 ; load font image
                 lea     img_Intro_Font,a3
                 lea     Intro_ram_ImageBuffer,a1
-                jsr     sub_9C26
+                jsr     UncompressW
 ; write it to address $0
                 moveq   #0,d0
                 lea     Intro_ram_ImageBuffer,a0
-                jsr     sub_AFF2
+                jsr     WriteToVRAM
 ; draw bike name, power and weight
                 move.w  Shop_CurrentBikeId,d0
                 bsr.w   Shop_DrawBikeName

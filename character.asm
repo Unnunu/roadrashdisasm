@@ -55,11 +55,11 @@ Character_Init:
 ; load background image
                 lea     img_MainMenu_Background,a3
                 lea     Intro_ram_ImageBuffer,a1
-                jsr     sub_9C26
+                jsr     UncompressW
 ; write to VRAM, why $4000 ??
                 move.l  #$4000,d0
                 lea     Intro_ram_ImageBuffer,a0
-                jsr     sub_AFF2
+                jsr     WriteToVRAM
 ; and draw it
                 move.w  #40,d0 ; width
                 move.w  #28,d1 ; height
@@ -73,11 +73,11 @@ Character_Init:
 ; load gamepad image
                 lea     img_Gamepad,a3
                 lea     Intro_ram_ImageBuffer,a1
-                jsr     sub_9B9E
+                jsr     UncompressB
 ; write to VRAM address $A000
                 move.l  #$A000,d0
                 lea     Intro_ram_ImageBuffer,a0
-                jsr     sub_AFF2
+                jsr     WriteToVRAM
 ; and draw it
                 move.w  #12,d0 ; width
                 move.w  #6,d1 ; height
@@ -98,11 +98,11 @@ Character_Init:
 
                 lea     unk_7EA66,a3
                 lea     Intro_ram_ImageBuffer,a1
-                jsr     sub_9B9E
+                jsr     UncompressB
 
                 move.l  #$B000,d0
                 lea     Intro_ram_ImageBuffer,a0
-                jsr     sub_AFF2
+                jsr     WriteToVRAM
 
                 move.w  #12,d0 ; width
                 move.w  #14,d1 ; height
@@ -141,7 +141,7 @@ Character_Init:
                 subq.w  #1,d0
                 mulu.w  #$A0,d0
                 adda.w  d0,a0
-                move.w  Menu_ram_CurrentRaceId,d0
+                move.w  Menu_ram_CurrentTrackId,d0
                 mulu.w  #$10,d0
                 adda.w  d0,a0
                 movea.l 4(a0),a3 ; get character image
@@ -157,13 +157,13 @@ Character_Init:
                 move.l  d0,-(sp) ; character name
 ; decompress image
                 lea     Intro_ram_ImageBuffer,a1 ; destination
-                jsr     sub_9C26
+                jsr     UncompressW
 
                 move.l  #$C000,d0 ; chararcter image VRAM address
                 movea.l (sp),a0
                 movea.w -6(a0),a0
                 adda.l  #Intro_ram_ImageBuffer,a0
-                jsr     sub_AFF2
+                jsr     WriteToVRAM
 ; write image to fb
                 move.w  #10,d0 ; width
                 move.w  #12,d1 ; height
@@ -291,11 +291,11 @@ Character_Init:
 
                 lea     unk_B1506,a3
                 lea     Intro_ram_ImageBuffer,a1
-                jsr     sub_9C26
+                jsr     UncompressW
 
                 move.l  #$D000,d0
                 lea     Intro_ram_ImageBuffer,a0
-                jsr     sub_AFF2
+                jsr     WriteToVRAM
 
                 move.w  #6,d0
                 move.w  #7,d1
@@ -309,11 +309,11 @@ Character_Init:
 @loc_5E2C:
                 lea     img_Intro_Font,a3
                 lea     Intro_ram_ImageBuffer,a1
-                jsr     sub_9C26
+                jsr     UncompressW
 
                 moveq   #0,d0
                 lea     Intro_ram_ImageBuffer,a0
-                jsr     sub_AFF2
+                jsr     WriteToVRAM
 
                 bsr.w   Menu_ShowMessage
 
@@ -341,7 +341,7 @@ Character_GameTick:
                 move.w  MainMenu_ram_ChangedButtonsPlayerA,d1
                 and.w   d1,d0
                 beq.w   @loc_5EAA
-                move.b  #0,ram_FF1ADA
+                move.b  #0,Race_ram_ActiveController
                 bra.w   @endStage
 @loc_5EAA:
                 move.w  MainMenu_ram_ButtonsPlayerB,MainMenu_ram_ChangedButtonsPlayerB
@@ -351,7 +351,7 @@ Character_GameTick:
                 move.w  MainMenu_ram_ChangedButtonsPlayerB,d1
                 and.w   d1,d0
                 beq.w   @loc_5EDA
-                move.b  #1,ram_FF1ADA
+                move.b  #1,Race_ram_ActiveController
                 bra.w   @endStage
 
 @loc_5EDA:

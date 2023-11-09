@@ -67,11 +67,11 @@ RaceResults_Init:
 ; load background image
                 lea     img_MainMenu_Background,a3
                 lea     Intro_ram_ImageBuffer,a1
-                jsr     sub_9C26
+                jsr     UncompressW
 ; write to VRAM address $8000
                 move.l  #$8000,d0
                 lea     Intro_ram_ImageBuffer,a0
-                jsr     sub_AFF2
+                jsr     WriteToVRAM
 ; and draw it
                 move.w  #40,d0 ; width
                 move.w  #28,d1 ; height
@@ -85,11 +85,11 @@ RaceResults_Init:
 ; load gamepad image
                 lea     img_Gamepad,a3
                 lea     Intro_ram_ImageBuffer,a1
-                jsr     sub_9B9E
+                jsr     UncompressB
 ; write to VRAM address $A000
                 move.l  #$A000,d0
                 lea     Intro_ram_ImageBuffer,a0
-                jsr     sub_AFF2
+                jsr     WriteToVRAM
 ; and draw it
                 move.w  #12,d0 ; width
                 move.w  #6,d1 ; height
@@ -110,11 +110,11 @@ RaceResults_Init:
 ; load font
                 lea     img_Intro_Font,a3
                 lea     Intro_ram_ImageBuffer,a1
-                jsr     sub_9C26
+                jsr     UncompressW
 ; write to VRAM address $0
                 moveq   #0,d0
                 lea     Intro_ram_ImageBuffer,a0
-                jsr     sub_AFF2
+                jsr     WriteToVRAM
 
                 cmpi.w  #$FFFF,ram_FF04C8
                 beq.w   @loc_616E
@@ -141,12 +141,12 @@ RaceResults_Init:
                 move.w  #14,(a0)+ ; x
                 move.w  #5,(a0)+ ; height
                 move.w  #12,(a0)+ ; width
-                lea     Menu_ram_PlayerAName,a1
+                lea     MenuPassword_ram_StrPlayerAName + 8,a1
                 lea     MenuPassword_ram_StrPlayerAPassword + $8,a2
                 lea     Menu_ram_MoneyPlayerA,a3
                 tst.w   Menu_ram_Player
                 beq.w   @loc_61E8
-                lea     Menu_ram_PlayerBName,a1
+                lea     MenuPassword_ram_StrPlayerBName + 8,a1
                 lea     MenuPassword_ram_StrPlayerBPassword + $8,a2
                 lea     Menu_ram_MoneyPlayerB,a3
 @loc_61E8:
@@ -192,7 +192,7 @@ RaceResults_Init:
 @loc_628C:
                 move.b  (a0)+,(a1)+
                 dbf     d0,@loc_628C
-                move.w  ram_FF050A,d0
+                move.w  Menu_ram_PlayerLevel,d0
                 cmp.w   #5,d0
                 bmi.w   @loc_62A4
                 move.w  #4,d0
@@ -218,11 +218,11 @@ sub_62CE:
 ; load "race results" title image
                 lea     unk_AF26C,a3
                 lea     Intro_ram_ImageBuffer,a1
-                jsr     sub_9C26
+                jsr     UncompressW
 ; write to VRAM address $9000
                 move.l  #$9000,d0
                 lea     Intro_ram_ImageBuffer,a0
-                jsr     sub_AFF2
+                jsr     WriteToVRAM
 ; and draw it
                 move.w  #27,d0 ; width
                 move.w  #2,d1 ; height
@@ -235,18 +235,18 @@ sub_62CE:
                 jsr     (WriteNametable).w
 ; load end race image for current map
                 lea     unk_7E670,a3
-                move.w  Menu_ram_CurrentRaceId,d0
+                move.w  Menu_ram_CurrentTrackId,d0
                 asl.w   #1,d0
                 movea.l (a3,d0.w),a3
                 lea     Intro_ram_ImageBuffer,a1
-                jsr     sub_9C26
+                jsr     UncompressW
 ; write it to VRAM address $B000
                 lea     unk_7E684,a0
-                adda.w  Menu_ram_CurrentRaceId,a0
+                adda.w  Menu_ram_CurrentTrackId,a0
                 movea.w (a0),a0
                 adda.l  #Intro_ram_ImageBuffer,a0
                 move.l  #$B000,d0
-                jsr     sub_AFF2
+                jsr     WriteToVRAM
 ; and draw it
                 move.w  #36,d0 ; width
                 move.w  #11,d1 ; height
@@ -256,13 +256,13 @@ sub_62CE:
                 move.w  #$4000,d5 ; VRAM address = Scroll A/B
                 move.w  #128,d6 ; plane width
                 lea     unk_7E68E,a0
-                adda.w  Menu_ram_CurrentRaceId,a0
+                adda.w  Menu_ram_CurrentTrackId,a0
                 movea.w (a0),a0
                 adda.l  #Intro_ram_ImageBuffer + 4,a0
                 jsr     (WriteNametable).w
 ; load palette
                 lea     unk_7E698,a0
-                adda.w  Menu_ram_CurrentRaceId,a0
+                adda.w  Menu_ram_CurrentTrackId,a0
                 movea.w (a0),a0
                 adda.l  #Intro_ram_ImageBuffer,a0
                 movea.l Global_ram_PalettePtr,a1
@@ -299,7 +299,7 @@ sub_62CE:
                 ori.w   #$6000,(a0)+ ; set palette 3
                 dbf     d0,@loc_63FA
 
-                move.w  Menu_ram_CurrentRaceId,d0
+                move.w  Menu_ram_CurrentTrackId,d0
                 lea     Menu_ram_PlayerAPlaces,a0
                 tst.w   Menu_ram_Player
                 beq.w   @loc_641E
@@ -342,10 +342,10 @@ sub_647E:
                 move.l  #sub_647E,ram_FF0914
                 lea     unk_7ED66,a3
                 lea     Intro_ram_ImageBuffer,a1
-                jsr     sub_9B9E
+                jsr     UncompressB
                 move.l  #$9000,d0
                 lea     Intro_ram_ImageBuffer,a0
-                jsr     sub_AFF2
+                jsr     WriteToVRAM
                 move.w  #$15,d0
                 move.w  #2,d1
                 move.w  #$A,d2
@@ -357,10 +357,10 @@ sub_647E:
                 jsr     (WriteNametable).w
                 lea     unk_7EA66,a3
                 lea     Intro_ram_ImageBuffer,a1
-                jsr     sub_9B9E
+                jsr     UncompressB
                 move.l  #$B000,d0
                 lea     Intro_ram_ImageBuffer,a0
-                jsr     sub_AFF2
+                jsr     WriteToVRAM
                 move.w  #$C,d0
                 move.w  #$E,d1
                 move.w  #2,d2
@@ -409,12 +409,12 @@ sub_647E:
                 move.b  -1(a3),d0
                 move.l  d0,-(sp)
                 lea     Intro_ram_ImageBuffer,a1
-                jsr     sub_9C26
+                jsr     UncompressW
                 move.l  #$C000,d0
                 movea.l (sp),a0
                 movea.w -6(a0),a0
                 adda.l  #Intro_ram_ImageBuffer,a0
-                jsr     sub_AFF2
+                jsr     WriteToVRAM
                 move.w  #$A,d0
                 move.w  #$C,d1
                 move.w  #3,d2
@@ -563,10 +563,10 @@ sub_67AC:
                 move.l  #sub_67AC,ram_FF0914
                 lea     unk_7EA66,a3
                 lea     Intro_ram_ImageBuffer,a1
-                jsr     sub_9B9E
+                jsr     UncompressB
                 move.l  #$B000,d0
                 lea     Intro_ram_ImageBuffer,a0
-                jsr     sub_AFF2
+                jsr     WriteToVRAM
                 move.w  #$C,d0
                 move.w  #$E,d1
                 move.w  #2,d2
@@ -588,7 +588,7 @@ sub_67AC:
                 jsr     Rand_GetWord
                 and.w   ($8).w,d0
                 adda.w  d0,a0
-                move.w  ram_FF050A,d0
+                move.w  Menu_ram_PlayerLevel,d0
                 subq.w  #1,d0
                 mulu.w  #$10,d0
                 adda.w  d0,a0
@@ -599,7 +599,7 @@ sub_67AC:
                 jsr     Rand_GetWord
                 andi.w  #$18,d0
                 adda.w  d0,a0
-                move.w  ram_FF050A,d0
+                move.w  Menu_ram_PlayerLevel,d0
                 subq.w  #1,d0
                 mulu.w  #$20,d0
                 adda.w  d0,a0
@@ -615,12 +615,12 @@ sub_67AC:
                 move.b  -1(a3),d0
                 move.l  d0,-(sp)
                 lea     Intro_ram_ImageBuffer,a1
-                jsr     sub_9C26
+                jsr     UncompressW
                 move.l  #$C000,d0
                 movea.l (sp),a0
                 movea.w -6(a0),a0
                 adda.l  #Intro_ram_ImageBuffer,a0
-                jsr     sub_AFF2
+                jsr     WriteToVRAM
                 move.w  #$A,d0
                 move.w  #$C,d1
                 move.w  #3,d2
