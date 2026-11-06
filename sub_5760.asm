@@ -13,10 +13,10 @@ sub_5760:
                 bra.w   .locret_593C
 ; ---------------------------------------------------------------------------
 
-.loc_579E:                               ; CODE XREF: sub_5760+26↑j
+.loc_579E:
                 or.w    d2,-6(a0)
 
-.loc_57A2:                               ; CODE XREF: sub_5760+1E↑j
+.loc_57A2:
                 move.w  d0,d2
                 lsr.w   #5,d2
                 andi.w  #$18,d0
@@ -24,7 +24,7 @@ sub_5760:
                 subq.w  #1,d2
                 move.w  #$20,d0 ; ' '
 
-.loc_57B4:                               ; CODE XREF: sub_5760+4A↑j
+.loc_57B4:
                 subq.w  #8,d0
                 move.w  d0,(ram_FF0906).l
                 move.w  d1,d3
@@ -34,7 +34,7 @@ sub_5760:
                 subq.w  #1,d3
                 move.w  #$20,d1 ; ' '
 
-.loc_57CE:                               ; CODE XREF: sub_5760+64↑j
+.loc_57CE:
                 subq.w  #8,d1
                 asl.w   #2,d1
                 move.w  d1,(ram_FF0908).l
@@ -49,14 +49,14 @@ sub_5760:
                 bne.w   .loc_580C
                 move.w  d4,(ram_FFDE6A).l
 
-.loc_580C:                               ; CODE XREF: sub_5760+A2↑j
+.loc_580C:
                 move.w  (ram_FFDE70).l,d4
                 addi.w  #$80,d4
                 move.w  (Animation_ram_SpriteIndex).l,d5
                 addq.w  #1,d5
                 move.w  (Animation_ram_TileIndex).l,d6
 
-.loc_5824:                               ; CODE XREF: sub_5760:@loc_5924↓j
+.loc_5824:
                 move.w  d6,(ram_FF090E).l
                 move.w  (ram_FFDE6E).l,d7
                 addi.w  #$80,d7
@@ -65,20 +65,19 @@ sub_5760:
                 add.w   (ram_FF1336).l,d7
                 add.w   (ram_FF1336).l,d7
 
-.loc_584A:                               ; CODE XREF: sub_5760+DA↑j
+.loc_584A:
                 move.w  #$60,d0 ; '`'
                 cmp.w   #0,d3
                 bne.w   .loc_585C
                 move.w  (ram_FF0908).l,d0
 
-.loc_585C:                               ; CODE XREF: sub_5760+F2↑j
-; sub_5760:@loc_58F8↓j
+.loc_585C:
                 movea.w #$18,a1
                 cmp.w   #0,d2
                 bne.w   .loc_586E
                 movea.w (ram_FF0906).l,a1
 
-.loc_586E:                               ; CODE XREF: sub_5760+104↑j
+.loc_586E:
                 adda.w  d0,a1
                 or.w    $5946(a1),d5
                 move.w  d4,(a0)+
@@ -88,7 +87,7 @@ sub_5760:
                 bpl.w   .loc_5886
                 ori.w   #$8000,d6
 
-.loc_5886:                               ; CODE XREF: sub_5760+11E↑j
+.loc_5886:
                 or.w    (ram_FFDE5E).l,d6
                 add.w   (Animation_ram_BaseTile).l,d6
                 tst.w   (ram_FF133A).l
@@ -96,7 +95,7 @@ sub_5760:
                 ori.w   #$800,d6
                 sub.w   $594A(a1),d7
 
-.loc_58A4:                               ; CODE XREF: sub_5760+138↑j
+.loc_58A4:
                 move.w  d6,(a0)+
                 move.w  (sp)+,d6
                 move.w  d7,(a0)+
@@ -116,12 +115,12 @@ sub_5760:
                 bra.w   .locret_593C
 ; ---------------------------------------------------------------------------
 
-.loc_58EA:                               ; CODE XREF: sub_5760+158↑j
+.loc_58EA:
                 tst.w   (ram_FF133A).l
                 bne.w   .loc_58F8
                 add.w   $594A(a1),d7
 
-.loc_58F8:                               ; CODE XREF: sub_5760+190↑j
+.loc_58F8:
                 dbf     d2,.loc_585C
                 add.w   unk_5944(a1),d4
                 move.w  (ram_FF090A).l,d2
@@ -133,15 +132,14 @@ sub_5760:
                 asl.w   #5,d0
                 move.w  d0,(ram_FFDE68).l
 
-.loc_5924:                               ; CODE XREF: sub_5760+1AE↑j
+.loc_5924:
                 dbf     d3,.loc_5824
                 andi.w  #$FF00,-6(a0)
                 subq.w  #1,d5
                 move.w  d5,(Animation_ram_SpriteIndex).l
                 move.w  d6,(Animation_ram_TileIndex).l
 
-.locret_593C:                            ; CODE XREF: sub_5760+3A↑j
-; sub_5760+178↑j ...
+.locret_593C:
                 rts
 ; End of function sub_5760
 

@@ -342,13 +342,12 @@ Race_DrawPlayerNameOrPlace:
                 subq.w  #1,d0
                 move.w  d0,(ram_FF14BC).l
 
-.loc_D614:                               ; CODE XREF: Race_DrawPlayerNameOrPlace+30↑j
+.loc_D614:
                 cmpi.w  #$18,(ram_FF14B8).l
                 bpl.w   .loc_D628
                 addi.w  #$18,(ram_FF14B8).l
 
-.loc_D628:                               ; CODE XREF: Race_DrawPlayerNameOrPlace+20↑j
-; Race_DrawPlayerNameOrPlace+4E↑j
+.loc_D628:
                 lea     (ram_FF14BE).l,a0
                 move.w  #$A,6(a0)
                 move.w  #1,4(a0)
@@ -357,25 +356,25 @@ Race_DrawPlayerNameOrPlace:
                 tst.w   (ram_FF14B8).l
                 bpl.w   .loc_D684
 
-.loc_D64E:                               ; CODE XREF: Race_DrawPlayerNameOrPlace+C0↓j
+.loc_D64E:
                 tst.w   (ram_FF14B8).l
                 bmi.w   .loc_D65E
                 subq.w  #1,(ram_FF14B8).l
 
-.loc_D65E:                               ; CODE XREF: Race_DrawPlayerNameOrPlace+86↑j
+.loc_D65E:
                 lea     (MenuPassword_ram_StrPlayerAName + 8).l,a1
                 tst.w   (Menu_ram_Player).l
                 beq.w   .loc_D674
                 lea     (MenuPassword_ram_StrPlayerBName + 8).l,a1
 
-.loc_D674:                               ; CODE XREF: Race_DrawPlayerNameOrPlace+9C↑j
+.loc_D674:
                 move.l  (a1)+,8(a0)
                 move.l  (a1)+,$C(a0)
                 move.w  (a1)+,$10(a0)
                 bra.w   .loc_D702
 
 
-.loc_D684:                               ; CODE XREF: Race_DrawPlayerNameOrPlace+7C↑j
+.loc_D684:
                 move.w  (ram_FF14BC).l,d0
                 cmp.w   #$10,d0
                 bcc.s   .loc_D64E
@@ -392,7 +391,7 @@ Race_DrawPlayerNameOrPlace:
                 move.l  #' PLA',$C(a0)
                 move.w  #'CE',$10(a0)
                 bra.w   .loc_D702
-.loc_D6CE:                               ; CODE XREF: Race_DrawPlayerNameOrPlace+CA↑j
+.loc_D6CE:
                 move.l  #'    ',8(a0)
                 move.l  #'    ',$C(a0)
                 move.w  #'  ',$10(a0)

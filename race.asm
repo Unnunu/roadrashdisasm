@@ -1840,26 +1840,26 @@ sub_C2FC:
                 move.w  #$F,d0
                 lea     (ram_FF0586).l,a1
 
-.loc_C306:                               ; CODE XREF: sub_C2FC+10↓j
+.loc_C306:
                 move.l  #$7000FFFF,(a1)+
                 dbf     d0,.loc_C306
                 move.w  #0,d0
 
-.loc_C314:                               ; CODE XREF: sub_C2FC+50↓j
+.loc_C314:
                 move.w  (a0)+,d1
                 swap    d1
                 move.w  d0,d1
                 lea     (ram_FF0586).l,a1
                 move.w  #$F,d2
 
-.loc_C324:                               ; CODE XREF: sub_C2FC:@loc_C334↓j
+.loc_C324:
                 cmp.l   (a1)+,d1
                 bpl.w   .loc_C334
                 move.l  -4(a1),d3
                 move.l  d1,-4(a1)
                 move.l  d3,d1
 
-.loc_C334:                               ; CODE XREF: sub_C2FC+2A↑j
+.loc_C334:
                 dbf     d2,.loc_C324
                 addq.w  #1,d0
                 cmp.w   #1,d0
@@ -1867,7 +1867,7 @@ sub_C2FC:
                 addq.w  #1,d0
                 lea     2(a0),a0
 
-.loc_C348:                               ; CODE XREF: sub_C2FC+42↑j
+.loc_C348:
                 cmp.w   #$10,d0
                 bmi.s   .loc_C314
                 rts
@@ -1882,7 +1882,7 @@ sub_C350:
                 lea     (ram_FF0586).l,a1
                 move.w  #$F,d0
 
-.loc_C35E:                               ; CODE XREF: sub_C350+1E↓j
+.loc_C35E:
                 move.l  (a1),d1
                 tst.w   d1
                 bmi.w   .loc_C372
@@ -1891,7 +1891,7 @@ sub_C350:
                 move.l  d1,(a1)+
                 dbf     d0,.loc_C35E
 
-.loc_C372:                               ; CODE XREF: sub_C350+12↑j
+.loc_C372:
                 movem.l (sp)+,d0-d1/a1
                 rts
 ; End of function sub_C350
@@ -1900,31 +1900,31 @@ sub_C350:
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_C378:                               ; CODE XREF: sub_C3F8↓p
+sub_C378:
                 move.w  #$F,d0
                 lea     (ram_FF0586).l,a0
 
-.loc_C382:                               ; CODE XREF: sub_C378+10↓j
+.loc_C382:
                 move.l  #$FFFFFFFF,(a0)+
                 dbf     d0,.loc_C382
                 lea     (ram_FF04C8).l,a0
                 move.w  #0,d0
 
-.loc_C396:                               ; CODE XREF: sub_C378+56↓j
+.loc_C396:
                 move.l  (a0)+,d1
                 asl.l   #8,d1
                 move.b  d0,d1
                 lea     (ram_FF0586).l,a1
                 move.w  #$F,d2
 
-.loc_C3A6:                               ; CODE XREF: sub_C378:@loc_C3B6↓j
+.loc_C3A6:
                 cmp.l   (a1)+,d1
                 bcc.w   .loc_C3B6
                 move.l  -4(a1),d3
                 move.l  d1,-4(a1)
                 move.l  d3,d1
 
-.loc_C3B6:                               ; CODE XREF: sub_C378+30↑j
+.loc_C3B6:
                 dbf     d2,.loc_C3A6
                 addq.w  #1,d0
                 cmp.w   #1,d0
@@ -1932,14 +1932,14 @@ sub_C378:                               ; CODE XREF: sub_C3F8↓p
                 addq.w  #1,d0
                 lea     4(a0),a0
 
-.loc_C3CA:                               ; CODE XREF: sub_C378+48↑j
+.loc_C3CA:
                 cmp.w   #$10,d0
                 bmi.s   .loc_C396
                 lea     (ram_FF0586).l,a0
                 move.w  #$F,d0
                 clr.w   d2
 
-.loc_C3DC:                               ; CODE XREF: sub_C378+78↓j
+.loc_C3DC:
                 move.l  (a0),d1
                 move.b  d1,d2
                 asr.l   #8,d1
@@ -1947,7 +1947,7 @@ sub_C378:                               ; CODE XREF: sub_C3F8↓p
                 divu.w  #6,d1
                 swap    d1
 
-.loc_C3EC:                               ; CODE XREF: sub_C378+6A↑j
+.loc_C3EC:
                 move.w  d2,d1
                 move.l  d1,(a0)+
                 dbf     d0,.loc_C3DC
@@ -2384,7 +2384,7 @@ sub_C868:
                 lea     (unk_CCDA).l,a4
                 move.w  #3,d3
 
-.loc_C90E:                               ; CODE XREF: sub_C868+166↓j
+.loc_C90E:
                 move.l  a0,-(sp)
                 move.w  (a1),d0
                 andi.w  #$FF,d0
@@ -2394,19 +2394,19 @@ sub_C868:
                 bra.w   .loc_C948
 
 
-.loc_C926:                               ; CODE XREF: sub_C868+B2↑j
+.loc_C926:
                 subi.w  #$30,d0 ; '0'
                 cmpi.b  #$31,(a1) ; '1'
                 bne.w   .loc_C936
                 addi.w  #$A,d0
 
-.loc_C936:                               ; CODE XREF: sub_C868+C6↑j
+.loc_C936:
                 asl.w   #1,d0
                 lea     (unk_D1A0).l,a0
                 move.w  (a0,d0.w),d0
                 mulu.w  (Menu_ram_PlayerLevel).l,d0
 
-.loc_C948:                               ; CODE XREF: sub_C868+BA↑j
+.loc_C948:
                 movea.l a1,a0
                 adda.w  (ram_FF141A).l,a0
                 subq.w  #1,a0
@@ -2424,10 +2424,10 @@ sub_C868:
                 bra.w   .loc_C990
 
 
-.loc_C98C:                               ; CODE XREF: sub_C868+10C↑j
+.loc_C98C:
                 bsr.w   sub_C9D4
 
-.loc_C990:                               ; CODE XREF: sub_C868+120↑j
+.loc_C990:
                 tst.w   d1
                 bne.w   .loc_C9B0
                 lea     (MenuPassword_ram_StrPlayerAName + 8).l,a2
@@ -2437,14 +2437,13 @@ sub_C868:
                 bra.w   .loc_C9BC
 
 
-.loc_C9B0:                               ; CODE XREF: sub_C868+12A↑j
+.loc_C9B0:
                 asl.w   #1,d1
                 move.w  (a3,d1.w),d1
                 asl.w   #4,d1
                 lea     6(a4,d1.w),a2
 
-.loc_C9BC:                               ; CODE XREF: sub_C868+13A↑j
-; sub_C868+144↑j
+.loc_C9BC:
                 move.l  (a2)+,4(a1)
                 move.l  (a2)+,8(a1)
                 move.w  (a2)+,$C(a1)
@@ -2457,7 +2456,7 @@ sub_C868:
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_C9D4:                               ; CODE XREF: sub_C868:@loc_C98C↑p
+sub_C9D4:
                 clr.l   d2
                 move.w  d0,d2
                 move.b  #$30,$15(a1) ; '0'
@@ -2493,8 +2492,7 @@ sub_C9D4:                               ; CODE XREF: sub_C868:@loc_C98C↑p
                 move.b  #$30,$F(a1) ; '0'
                 add.b   d2,$F(a1)
 
-.locret_CA4E:                            ; CODE XREF: sub_C9D4+1E↑j
-; sub_C9D4+36↑j ...
+.locret_CA4E:
                 rts
 ; End of function sub_C9D4
 
@@ -2814,8 +2812,7 @@ DmaWriteVRAM:
 ; d0 - DMA source
 ; d1 - DMA destination
 
-DmaWriteCRAM:                           ; CODE XREF: Fade_GameTickWithInit+62↑p
-; FadeWithFunction_GameTick+20↑p ...
+DmaWriteCRAM:
                 move.w  #$9300,d3
                 move.b  d2,d3
                 move.w  d3,(VdpCtrl).l
@@ -2951,8 +2948,7 @@ sub_DA3E:
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_DAE2:                               ; CODE XREF: sub_F40C+142↓p
-; sub_F40C+344↓p
+sub_DAE2:
                 move.l  4(a1),d2
                 sub.l   (ram_FF1E68).l,d2
                 neg.l   d2
@@ -3014,7 +3010,7 @@ sub_DAE2:                               ; CODE XREF: sub_F40C+142↓p
                 bmi.w   .loc_DBB0
                 move.w  #$3FFF,d0
 
-.loc_DBB0:                               ; CODE XREF: sub_DAE2+C6↑j
+.loc_DBB0:
                 move.w  d0,d1
                 lsl.w   #1,d0
                 add.w   d1,d0
@@ -3035,7 +3031,7 @@ sub_DAE2:                               ; CODE XREF: sub_F40C+142↓p
                 bra.w   .locret_DC7E
 
 
-.loc_DBF2:                               ; CODE XREF: sub_DAE2+100↑j
+.loc_DBF2:
                 move.w  $C(a1),d0
                 move.w  d0,d1
                 andi.w  #$8000,d1
@@ -3050,8 +3046,7 @@ sub_DAE2:                               ; CODE XREF: sub_F40C+142↓p
                 bra.w   .loc_DC58
 
 
-.loc_DC20:                               ; CODE XREF: sub_DAE2+124↑j
-; sub_DAE2+12C↑j
+.loc_DC20:
                 jsr     (sub_102E4).l
                 move.w  d1,d0
                 addi.w  #$154,d0
@@ -3059,25 +3054,24 @@ sub_DAE2:                               ; CODE XREF: sub_F40C+142↓p
                 bra.w   .loc_DC58
 
 
-.loc_DC34:                               ; CODE XREF: sub_DAE2+F8↑j
+.loc_DC34:
                 move.w  #$159,d0
                 move.w  d0,8(a0)
                 bra.w   .loc_DC58
 
 
-.loc_DC40:                               ; CODE XREF: sub_DAE2+108↑j
+.loc_DC40:
                 move.w  #$15A,d0
                 btst    #3,$69(a1)
                 beq.w   .loc_DC50
                 addq.w  #2,d0
 
-.loc_DC50:                               ; CODE XREF: sub_DAE2+168↑j
+.loc_DC50:
                 move.w  d0,8(a0)
                 bra.w   *+4
 
 
-.loc_DC58:                               ; CODE XREF: sub_DAE2+13A↑j
-; sub_DAE2+14E↑j ...
+.loc_DC58:
                 move.w  (a0),d0
                 cmp.w   #$FFE0,d0
                 bmi.w   .locret_DC7E
@@ -3088,8 +3082,7 @@ sub_DAE2:                               ; CODE XREF: sub_F40C+142↓p
                 addi.w  #1,(ram_FFDE72).l
                 adda.w  #$14,a0
 
-.locret_DC7E:                            ; CODE XREF: sub_DAE2+10C↑j
-; sub_DAE2+17C↑j ...
+.locret_DC7E:
                 rts
 ; End of function sub_DAE2
 
@@ -3279,7 +3272,7 @@ unk_DC84:
                 dc.b $AB
                 dc.b $BB
                 dc.b $BB
-unk_DD44:       dc.b $BB                ; DATA XREF: sub_DD84+60↓o
+unk_DD44:       dc.b $BB
                 dc.b $BB
                 dc.b $BB
                 dc.b $BB
@@ -3847,7 +3840,7 @@ sub_E004:
                 bra.w   .loc_E464
 
 
-.loc_E440:                               ; CODE XREF: sub_E004+3F8↑j
+.loc_E440:
                 mulu.w  (ram_FF1AE8).l,d1
                 mulu.w  (ram_FF1AEA).l,d2
                 mulu.w  (ram_FF1AEE).l,d3
@@ -3855,7 +3848,7 @@ sub_E004:
                 mulu.w  (ram_FF1AF2).l,d5
                 mulu.w  (ram_FF1AF4).l,d6
 
-.loc_E464:                               ; CODE XREF: sub_E004+438↑j
+.loc_E464:
                 sub.l   d1,(ram_FF30EA).l
                 sub.l   d2,(ram_FF30EE).l
                 sub.l   d3,(ram_FF30F2).l
@@ -3993,7 +3986,7 @@ sub_E494:
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_E5EE:                               ; CODE XREF: Race_Update+124↑p
+sub_E5EE:
                 movem.l d0-d3/a0-a4,-(sp)
                 btst    #7,(ram_FF1EAA + STRUCT_OFFSET_68).l
                 bne.w   .loc_E72C
@@ -4008,23 +4001,21 @@ sub_E5EE:                               ; CODE XREF: Race_Update+124↑p
                 beq.w   .loc_E642
                 subq.w  #1,d2
 
-.loc_E62E:                               ; CODE XREF: sub_E5EE:@loc_E63A↓j
+.loc_E62E:
                 cmpi.l  #ram_FF1F2A,(a2)+
                 bne.w   .loc_E63A
                 subq.w  #1,d1
 
-.loc_E63A:                               ; CODE XREF: sub_E5EE+46↑j
+.loc_E63A:
                 dbf     d2,.loc_E62E
                 bra.w   *+4
 
 
-.loc_E642:                               ; CODE XREF: sub_E5EE+3A↑j
-; sub_E5EE+50↑j
+.loc_E642:
                 addq.w  #1,d1
                 move.w  #1,d4
 
-.loc_E648:                               ; CODE XREF: sub_E5EE+84↓j
-; sub_E5EE+9A↓j ...
+.loc_E648:
                 movea.l (a0)+,a2
                 cmpa.l  #$FFFFFFFF,a2
                 beq.w   .loc_E6A8
@@ -4036,7 +4027,7 @@ sub_E5EE:                               ; CODE XREF: Race_Update+124↑p
                 beq.w   .loc_E66C
                 addq.w  #1,d1
 
-.loc_E66C:                               ; CODE XREF: sub_E5EE+78↑j
+.loc_E66C:
                 cmp.l   (ram_FF14E0).l,d2
                 bmi.s   .loc_E648
                 move.l  d2,(ram_FF14E0).l
@@ -4047,7 +4038,7 @@ sub_E5EE:                               ; CODE XREF: Race_Update+124↑p
                 bra.s   .loc_E648
 
 
-.loc_E68A:                               ; CODE XREF: sub_E5EE+6E↑j
+.loc_E68A:
                 cmp.l   (ram_FF14E4).l,d2
                 bpl.s   .loc_E648
                 move.l  d2,(ram_FF14E4).l
@@ -4058,13 +4049,13 @@ sub_E5EE:                               ; CODE XREF: Race_Update+124↑p
                 bra.s   .loc_E648
 
 
-.loc_E6A8:                               ; CODE XREF: sub_E5EE+62↑j
+.loc_E6A8:
                 cmp.w   #$A,d1
                 bcs.w   .loc_E6B8
                 subi.w  #$A,d1
                 ori.w   #$10,d1
 
-.loc_E6B8:                               ; CODE XREF: sub_E5EE+BE↑j
+.loc_E6B8:
                 move.w  d1,(ram_FF1B40).l
                 move.l  (ram_FF14E4).l,d1
                 cmp.l   #$7FFFFFFF,d1
@@ -4074,16 +4065,16 @@ sub_E5EE:                               ; CODE XREF: Race_Update+124↑p
                 bra.w   .loc_E6F4
 
 
-.loc_E6E2:                               ; CODE XREF: sub_E5EE+DC↑j
+.loc_E6E2:
                 move.w  $12(a4),d0
                 beq.w   .loc_E6EE
                 divu.w  d0,d1
                 move.w  d1,d0
 
-.loc_E6EE:                               ; CODE XREF: sub_E5EE+F8↑j
+.loc_E6EE:
                 move.w  d0,(ram_FF36B4).l
 
-.loc_E6F4:                               ; CODE XREF: sub_E5EE+F0↑j
+.loc_E6F4:
                 move.l  (ram_FF14E0).l,d1
                 cmp.l   #$80000000,d1
                 bne.w   .loc_E718
@@ -4092,18 +4083,17 @@ sub_E5EE:                               ; CODE XREF: Race_Update+124↑p
                 bra.w   .loc_E72C
 
 
-.loc_E718:                               ; CODE XREF: sub_E5EE+112↑j
+.loc_E718:
                 neg.l   d1
                 move.w  $12(a1),d0
                 beq.w   .loc_E726
                 divu.w  d0,d1
                 move.w  d1,d0
 
-.loc_E726:                               ; CODE XREF: sub_E5EE+130↑j
+.loc_E726:
                 move.w  d0,(ram_FF36B0).l
 
-.loc_E72C:                               ; CODE XREF: sub_E5EE+C↑j
-; sub_E5EE+126↑j
+.loc_E72C:
                 movem.l (sp)+,d0-d3/a0-a4
                 rts
 ; End of function sub_E5EE
@@ -4595,7 +4585,7 @@ Road_FillProfileTables:
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_EDD0:                               ; CODE XREF: Race_Update+160↑p
+sub_EDD0:
                 lea     (ram_FF310A).l,a0
                 lea     (ram_FFDC58).l,a1
                 lea     (ram_FF31D2).l,a2
@@ -4621,18 +4611,17 @@ sub_EDD0:                               ; CODE XREF: Race_Update+160↑p
                 bra.w   .loc_EE3E
 
 
-.loc_EE30:                               ; CODE XREF: sub_EDD0+4E↑j
+.loc_EE30:
                 neg.w   d4
                 mulu.w  d5,d4
                 swap    d4
                 bpl.w   .loc_EE3C
                 addq.w  #1,d4
 
-.loc_EE3C:                               ; CODE XREF: sub_EDD0+66↑j
+.loc_EE3C:
                 neg.w   d4
 
-.loc_EE3E:                               ; CODE XREF: sub_EDD0+4A↑j
-; sub_EDD0+56↑j ...
+.loc_EE3E:
                 move.w  d4,(ram_FF1E58).l
                 sub.w   d4,d0
                 move.w  d0,(ram_FF3108).l
@@ -4644,7 +4633,7 @@ sub_EDD0:                               ; CODE XREF: Race_Update+160↑p
                 bmi.w   .loc_EE68
                 lea     (ram_FFDC58).l,a1
 
-.loc_EE68:                               ; CODE XREF: sub_EDD0+8E↑j
+.loc_EE68:
                 ext.w   d3
                 beq.w   .loc_EE82
                 bmi.w   .loc_EE7A
@@ -4653,14 +4642,13 @@ sub_EDD0:                               ; CODE XREF: Race_Update+160↑p
                 bra.w   .loc_EE82
 
 
-.loc_EE7A:                               ; CODE XREF: sub_EDD0+9E↑j
+.loc_EE7A:
                 neg.w   d3
                 mulu.w  d5,d3
                 swap    d3
                 neg.w   d3
 
-.loc_EE82:                               ; CODE XREF: sub_EDD0+9A↑j
-; sub_EDD0+A6↑j
+.loc_EE82:
                 move.w  d3,(ram_FF1E5A).l
                 neg.w   d3
                 lsr.w   #8,d5
@@ -4671,7 +4659,7 @@ sub_EDD0:                               ; CODE XREF: Race_Update+160↑p
                 move.w  d1,(ram_FF30E0).l
                 move.w  #$98,d7
 
-.loc_EEA0:                               ; CODE XREF: sub_EDD0+1BA↓j
+.loc_EEA0:
                 move.w  d4,(a0)+
                 move.w  #$100,d6
                 add.w   d5,d6
@@ -4690,14 +4678,13 @@ sub_EDD0:                               ; CODE XREF: Race_Update+160↑p
                 bra.w   .loc_EEDA
 
 
-.loc_EED0:                               ; CODE XREF: sub_EDD0+E2↑j
+.loc_EED0:
                 ext.l   d1
                 asl.l   #8,d1
                 divu.w  d6,d1
                 addi.w  #$4C,d1 ; 'L'
 
-.loc_EEDA:                               ; CODE XREF: sub_EDD0+F4↑j
-; sub_EDD0+FC↑j
+.loc_EEDA:
                 move.w  d1,(a4)+
                 cmp.w   d7,d1
                 bcc.w   .loc_EEEC
@@ -4705,8 +4692,7 @@ sub_EDD0:                               ; CODE XREF: Race_Update+160↑p
                 blt.w   .loc_EEEC
                 move.w  d1,d7
 
-.loc_EEEC:                               ; CODE XREF: sub_EDD0+10E↑j
-; sub_EDD0+116↑j
+.loc_EEEC:
                 move.w  d7,(a6)+
                 clr.l   d2
                 move.w  d4,d2
@@ -4718,13 +4704,12 @@ sub_EDD0:                               ; CODE XREF: Race_Update+160↑p
                 bra.w   .loc_EF0A
 
 
-.loc_EF02:                               ; CODE XREF: sub_EDD0+122↑j
+.loc_EF02:
                 beq.w   .loc_EF0A
                 asl.l   #8,d2
                 divu.w  d6,d2
 
-.loc_EF0A:                               ; CODE XREF: sub_EDD0+12E↑j
-; sub_EDD0:@loc_EF02↑j
+.loc_EF0A:
                 subi.w  #$160,d2
                 move.w  d2,(a2)+
                 move.l  #$1C00,d2
@@ -4741,13 +4726,12 @@ sub_EDD0:                               ; CODE XREF: Race_Update+160↑p
                 bra.w   .loc_EF3C
 
 
-.loc_EF34:                               ; CODE XREF: sub_EDD0+154↑j
+.loc_EF34:
                 beq.w   .loc_EF3C
                 asl.l   #8,d2
                 divu.w  d6,d2
 
-.loc_EF3C:                               ; CODE XREF: sub_EDD0+160↑j
-; sub_EDD0:@loc_EF34↑j
+.loc_EF3C:
                 move.w  d2,(a3)+
                 clr.l   d2
                 move.w  d4,d2
@@ -4760,13 +4744,12 @@ sub_EDD0:                               ; CODE XREF: Race_Update+160↑p
                 bra.w   .loc_EF5E
 
 
-.loc_EF56:                               ; CODE XREF: sub_EDD0+176↑j
+.loc_EF56:
                 beq.w   .loc_EF5E
                 asl.l   #8,d2
                 divu.w  d6,d2
 
-.loc_EF5E:                               ; CODE XREF: sub_EDD0+182↑j
-; sub_EDD0:@loc_EF56↑j
+.loc_EF5E:
                 move.w  d2,(a5)+
                 addi.w  #$100,d5
                 move.b  (a1)+,d2
@@ -4778,7 +4761,7 @@ sub_EDD0:                               ; CODE XREF: Race_Update+160↑p
                 bmi.w   .loc_EF86
                 lea     (ram_FFDC58).l,a1
 
-.loc_EF86:                               ; CODE XREF: sub_EDD0+1AC↑j
+.loc_EF86:
                 ext.w   d2
                 add.w   d2,d3
                 dbf     d0,.loc_EEA0
@@ -4787,7 +4770,7 @@ sub_EDD0:                               ; CODE XREF: Race_Update+160↑p
                 bmi.w   .loc_EFA0
                 move.w  #$98,d7
 
-.loc_EFA0:                               ; CODE XREF: sub_EDD0+1C8↑j
+.loc_EFA0:
                 move.w  d7,(a1)
                 rts
 ; End of function sub_EDD0
@@ -4796,7 +4779,7 @@ sub_EDD0:                               ; CODE XREF: Race_Update+160↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_EFA4:                               ; CODE XREF: RESET+7E702↓p
+sub_EFA4:
                 lea     (ram_FF1EAA).l,a1
                 lea     (ram_FF04C8).l,a2
                 btst    #7,$68(a1)
@@ -4807,19 +4790,19 @@ sub_EFA4:                               ; CODE XREF: RESET+7E702↓p
                 bra.w   .loc_EFEE
 
 
-.loc_EFD6:                               ; CODE XREF: sub_EFA4+12↑j
+.loc_EFD6:
                 move.l  $62(a1),(ram_FF1E9E).l
                 move.w  (RaceTrack_Data1).l,(ram_FF1762).l
                 move.l  $62(a1),d0
                 move.l  d0,(a2)
 
-.loc_EFEE:                               ; CODE XREF: sub_EFA4+2E↑j
+.loc_EFEE:
                 lea     (ram_FF1A0C).l,a0
                 move.w  (ram_FF1A06).l,d7
                 subq.w  #2,d7
                 bmi.w   .loc_F036
 
-.loc_F000:                               ; CODE XREF: sub_EFA4:@loc_F032↓j
+.loc_F000:
                 movea.l (a0)+,a1
                 cmpa.l  #ram_FF1F2A,a1
                 beq.w   .loc_F032
@@ -4832,16 +4815,15 @@ sub_EFA4:                               ; CODE XREF: RESET+7E702↓p
                 bra.w   .loc_F032
 
 
-.loc_F028:                               ; CODE XREF: sub_EFA4+78↑j
+.loc_F028:
                 move.l  $62(a1),d0
                 asl.w   #2,d1
                 move.l  d0,(a2,d1.w)
 
-.loc_F032:                               ; CODE XREF: sub_EFA4+64↑j
-; sub_EFA4+80↑j
+.loc_F032:
                 dbf     d7,.loc_F000
 
-.loc_F036:                               ; CODE XREF: sub_EFA4+58↑j
+.loc_F036:
                 lea     (ram_FF1982).l,a0
                 move.w  (a0)+,d7
                 move.w  d7,d6
@@ -4852,7 +4834,7 @@ sub_EFA4:                               ; CODE XREF: RESET+7E702↓p
                 move.w  (ram_FF1762).l,d2
                 addi.w  #$20,d2 ; ' '
 
-.loc_F054:                               ; CODE XREF: sub_EFA4:@loc_F09A↓j
+.loc_F054:
                 jsr     (Rand_GetWord).l
                 andi.w  #$1F,d0
                 add.w   d0,d2
@@ -4873,11 +4855,10 @@ sub_EFA4:                               ; CODE XREF: RESET+7E702↓p
                 bpl.w   .loc_F09A
                 move.l  d3,(a2,d1.w)
 
-.loc_F09A:                               ; CODE XREF: sub_EFA4+C6↑j
-; sub_EFA4+EE↑j
+.loc_F09A:
                 dbf     d7,.loc_F054
 
-.loc_F09E:                               ; CODE XREF: sub_EFA4+A2↑j
+.loc_F09E:
                 lea     (ram_FF19C4).l,a0
                 move.w  (a0)+,d7
                 move.w  d7,d6
@@ -4888,7 +4869,7 @@ sub_EFA4:                               ; CODE XREF: RESET+7E702↓p
                 move.w  (ram_FF1762).l,d2
                 subi.w  #$10,d2
 
-.loc_F0BC:                               ; CODE XREF: sub_EFA4:@loc_F0DE↓j
+.loc_F0BC:
                 jsr     (Rand_GetWord).l
                 andi.w  #$1F,d0
                 sub.w   d0,d2
@@ -4899,10 +4880,10 @@ sub_EFA4:                               ; CODE XREF: RESET+7E702↓p
                 move.b  $71(a1),d1
                 bsr.w   sub_F0E4
 
-.loc_F0DE:                               ; CODE XREF: sub_EFA4+12E↑j
+.loc_F0DE:
                 dbf     d7,.loc_F0BC
 
-.locret_F0E2:                            ; CODE XREF: sub_EFA4+10A↑j
+.locret_F0E2:
                 rts
 ; End of function sub_EFA4
 
@@ -4910,8 +4891,7 @@ sub_EFA4:                               ; CODE XREF: RESET+7E702↓p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_F0E4:                               ; CODE XREF: sub_EFA4+7C↑p
-; sub_EFA4+CE↑p ...
+sub_F0E4:
                 movem.l d0-d2,-(sp)
                 move.l  (ram_FF1E9E).l,d2
                 asl.l   #8,d2
@@ -5116,7 +5096,7 @@ Interp_dDivisorMap:
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_F40C:                               ; CODE XREF: Race_Update+20A↑p
+sub_F40C:
                 addi.b  #1,(ram_FF1AD9).l
                 andi.b  #3,(ram_FF1AD9).l
                 addi.b  #1,(ram_FF1ADC).l
@@ -5128,8 +5108,7 @@ sub_F40C:                               ; CODE XREF: Race_Update+20A↑p
                 lea     (ram_FF1A08).l,a2
                 move.w  #0,(ram_FF3040).l
 
-.loc_F44C:                               ; CODE XREF: sub_F40C+D0↓j
-; sub_F40C:@loc_F838↓j
+.loc_F44C:
                 move.w  #0,(ram_FF1B16).l
                 movea.l (a2)+,a1
                 cmpa.w  #$FFFF,a1
@@ -5142,7 +5121,7 @@ sub_F40C:                               ; CODE XREF: Race_Update+20A↑p
                 cmpa.w  #$FFFF,a1
                 bne.w   .loc_F4CA
 
-.loc_F480:                               ; CODE XREF: sub_F40C+58↑j
+.loc_F480:
                 cmpi.w  #2,(ram_FF3040).l
                 beq.w   .loc_F83C
                 cmpi.l  #$708,(ram_FF1E9A).l
@@ -5158,14 +5137,13 @@ sub_F40C:                               ; CODE XREF: Race_Update+20A↑p
                 sub.l   (ram_FF1E68).l,d0
                 bmi.w   .loc_F83C
 
-.loc_F4CA:                               ; CODE XREF: sub_F40C+4E↑j
-; sub_F40C+70↑j
+.loc_F4CA:
                 cmpi.w  #1,(ram_FF3040).l
                 bne.w   .loc_F4E0
                 cmpi.w  #$FFFF,$56(a1)
                 bne.w   .loc_F44C
 
-.loc_F4E0:                               ; CODE XREF: sub_F40C+C6↑j
+.loc_F4E0:
                 move.w  #0,$12(a0)
                 cmpa.l  #ram_FF1F2A,a1
                 beq.w   .loc_F52E
@@ -5184,12 +5162,10 @@ sub_F40C:                               ; CODE XREF: Race_Update+20A↑p
                 bra.w   .loc_F534
 
 
-.loc_F52E:                               ; CODE XREF: sub_F40C+E0↑j
-; sub_F40C+EA↑j ...
+.loc_F52E:
                 bclr    #4,$68(a1)
 
-.loc_F534:                               ; CODE XREF: sub_F40C+F4↑j
-; sub_F40C+FC↑j ...
+.loc_F534:
                 move.l  4(a1),d0
                 move.l  d0,d2
                 swap    d0
@@ -5201,7 +5177,7 @@ sub_F40C:                               ; CODE XREF: Race_Update+20A↑p
                 bra.w   .loc_F69C
 
 
-.loc_F556:                               ; CODE XREF: sub_F40C+136↑j
+.loc_F556:
                 cmp.w   #$1E,d0
                 bgt.w   .loc_F838
                 sub.l   (ram_FF1E68).l,d2
@@ -5216,21 +5192,21 @@ sub_F40C:                               ; CODE XREF: Race_Update+20A↑p
                 asl.l   #8,d1
                 divu.w  d2,d1
 
-.loc_F584:                               ; CODE XREF: sub_F40C+170↑j
+.loc_F584:
                 bra.w   .loc_F596
 
 
-.loc_F588:                               ; CODE XREF: sub_F40C+16A↑j
+.loc_F588:
                 neg.w   d1
                 asl.l   #8,d1
                 tst.w   d2
                 beq.w   .loc_F594
                 divu.w  d2,d1
 
-.loc_F594:                               ; CODE XREF: sub_F40C+182↑j
+.loc_F594:
                 neg.w   d1
 
-.loc_F596:                               ; CODE XREF: sub_F40C:@loc_F584↑j
+.loc_F596:
                 lea     (ram_FFD338).l,a4
                 move.w  #4,d2
                 tst.w   (ram_FF3040).l
@@ -5238,17 +5214,17 @@ sub_F40C:                               ; CODE XREF: Race_Update+20A↑p
                 lea     (unk_25802).l,a4
                 move.w  #3,d2
 
-.loc_F5B4:                               ; CODE XREF: sub_F40C+19A↑j
+.loc_F5B4:
                 add.w   8(a1),d1
                 btst    #5,$68(a1)
                 beq.w   .loc_F5C6
                 add.w   $40(a1),d1
 
-.loc_F5C6:                               ; CODE XREF: sub_F40C+1B2↑j
+.loc_F5C6:
                 tst.w   d1
                 bmi.w   .loc_F5DE
 
-.loc_F5CC:                               ; CODE XREF: sub_F40C+1C6↓j
+.loc_F5CC:
                 cmp.w   -(a4),d1
                 bcc.w   .loc_F5F4
                 dbf     d2,.loc_F5CC
@@ -5256,10 +5232,10 @@ sub_F40C:                               ; CODE XREF: Race_Update+20A↑p
                 bra.w   .loc_F5F4
 
 
-.loc_F5DE:                               ; CODE XREF: sub_F40C+1BC↑j
+.loc_F5DE:
                 neg.w   d1
 
-.loc_F5E0:                               ; CODE XREF: sub_F40C+1DA↓j
+.loc_F5E0:
                 cmp.w   -(a4),d1
                 bcc.w   .loc_F5F2
                 dbf     d2,.loc_F5E0
@@ -5267,11 +5243,10 @@ sub_F40C:                               ; CODE XREF: Race_Update+20A↑p
                 bra.w   .loc_F5F4
 
 
-.loc_F5F2:                               ; CODE XREF: sub_F40C+1D6↑j
+.loc_F5F2:
                 neg.w   d2
 
-.loc_F5F4:                               ; CODE XREF: sub_F40C+1C2↑j
-; sub_F40C+1CE↑j ...
+.loc_F5F4:
                 move.w  d2,$34(a1)
                 move.w  d0,$A(a0)
                 tst.w   (ram_FF3040).l
@@ -5280,7 +5255,7 @@ sub_F40C:                               ; CODE XREF: Race_Update+20A↑p
                 bra.w   .loc_F64A
 
 
-.loc_F60E:                               ; CODE XREF: sub_F40C+1F6↑j
+.loc_F60E:
                 tst.w   (ram_FF1B16).l
                 bne.w   .loc_F64E
                 cmpa.l  #ram_FF1F2A,a1
@@ -5289,7 +5264,7 @@ sub_F40C:                               ; CODE XREF: Race_Update+20A↑p
                 bra.w   .loc_F64A
 
 
-.loc_F62A:                               ; CODE XREF: sub_F40C+212↑j
+.loc_F62A:
                 cmpa.l  #ram_FF1EAA,a1
                 bne.w   .loc_F646
                 tst.w   (ram_FF1ACC).l
@@ -5298,15 +5273,13 @@ sub_F40C:                               ; CODE XREF: Race_Update+20A↑p
                 bra.w   .loc_F64A
 
 
-.loc_F646:                               ; CODE XREF: sub_F40C+224↑j
-; sub_F40C+22E↑j
+.loc_F646:
                 bsr.w   sub_100D0
 
-.loc_F64A:                               ; CODE XREF: sub_F40C+1FE↑j
-; sub_F40C+21A↑j ...
+.loc_F64A:
                 move.w  d0,8(a0)
 
-.loc_F64E:                               ; CODE XREF: sub_F40C+208↑j
+.loc_F64E:
                 move.l  4(a1),d0
                 sub.l   (ram_FF1E68).l,d0
                 lea     (ram_FF1B50).l,a6
@@ -5320,7 +5293,7 @@ sub_F40C:                               ; CODE XREF: Race_Update+20A↑p
                 andi.w  #3,d0
                 or.w    d0,2(a0)
 
-.loc_F684:                               ; CODE XREF: sub_F40C+268↑j
+.loc_F684:
                 move.b  $73(a1),d0
                 asl.b   #4,d0
                 or.b    d0,$A(a0)
@@ -5329,14 +5302,13 @@ sub_F40C:                               ; CODE XREF: Race_Update+20A↑p
                 cmp.w   #$FDC4,d0
                 bpl.w   .loc_F6AA
 
-.loc_F69C:                               ; CODE XREF: sub_F40C+13E↑j
-; sub_F40C+146↑j ...
+.loc_F69C:
                 tst.w   (ram_FF1B16).l
                 beq.w   .loc_F838
                 bra.w   .loc_F71E
 
 
-.loc_F6AA:                               ; CODE XREF: sub_F40C+28C↑j
+.loc_F6AA:
                 addi.w  #1,(ram_FFDE72).l
                 cmpa.l  #ram_FF1EAA,a1
                 bne.w   .loc_F6D6
@@ -5346,8 +5318,7 @@ sub_F40C:                               ; CODE XREF: Race_Update+20A↑p
                 bmi.w   .loc_F6D6
                 bsr.w   sub_F9C4
 
-.loc_F6D6:                               ; CODE XREF: sub_F40C+2AC↑j
-; sub_F40C+2B6↑j ...
+.loc_F6D6:
                 tst.w   (ram_FF1B16).l
                 bne.w   .loc_F704
                 btst    #0,$68(a1)
@@ -5356,7 +5327,7 @@ sub_F40C:                               ; CODE XREF: Race_Update+20A↑p
                 bra.w   .loc_F834
 
 
-.loc_F6F2:                               ; CODE XREF: sub_F40C+2DA↑j
+.loc_F6F2:
                 btst    #5,$68(a1)
                 beq.w   .loc_F834
                 bsr.w   sub_F842
@@ -5399,7 +5370,7 @@ sub_F40C:                               ; CODE XREF: Race_Update+20A↑p
                 bne.w   .loc_F79A
                 addi.l  #$3000,d0
 
-.loc_F79A:                               ; CODE XREF: sub_F40C+384↑j
+.loc_F79A:
                 sub.l   (ram_FF1E68).l,d0
                 move.l  d0,(a6,d7.w)
                 addi.w  #1,(ram_FFDE72).l
@@ -5410,20 +5381,20 @@ sub_F40C:                               ; CODE XREF: Race_Update+20A↑p
                 bra.w   .loc_F7C8
 
 
-.loc_F7C2:                               ; CODE XREF: sub_F40C+3A8↑j
+.loc_F7C2:
                 bset    #7,$A(a0)
 
-.loc_F7C8:                               ; CODE XREF: sub_F40C+3B2↑j
+.loc_F7C8:
                 btst    #1,d0
                 bne.w   .loc_F7DA
                 bclr    #3,$A(a0)
                 bra.w   .loc_F7E0
 
 
-.loc_F7DA:                               ; CODE XREF: sub_F40C+3C0↑j
+.loc_F7DA:
                 bset    #3,$A(a0)
 
-.loc_F7E0:                               ; CODE XREF: sub_F40C+3CA↑j
+.loc_F7E0:
                 move.l  4(a1),d0
                 move.w  $30(a1),d1
                 move.w  $32(a1),d2
@@ -5434,7 +5405,7 @@ sub_F40C:                               ; CODE XREF: Race_Update+20A↑p
                 bra.w   .loc_F838
 
 
-.loc_F802:                               ; CODE XREF: sub_F40C+3E6↑j
+.loc_F802:
                 move.w  d0,4(a0)
                 move.w  d1,(a0)
                 move.w  d2,2(a0)
@@ -5448,17 +5419,14 @@ sub_F40C:                               ; CODE XREF: Race_Update+20A↑p
                 bsr.w   sub_FA98
                 bclr    #7,$6A(a1)
 
-.loc_F834:                               ; CODE XREF: sub_F40C+2E2↑j
-; sub_F40C+2EC↑j ...
+.loc_F834:
                 adda.w  #$14,a0
 
-.loc_F838:                               ; CODE XREF: sub_F40C+14E↑j
-; sub_F40C+296↑j ...
+.loc_F838:
                 bra.w   .loc_F44C
 
 
-.loc_F83C:                               ; CODE XREF: sub_F40C+7C↑j
-; sub_F40C+8A↑j ...
+.loc_F83C:
                 move.w  #$FFFF,(a0)
                 rts
 ; End of function sub_F40C
@@ -5467,7 +5435,7 @@ sub_F40C:                               ; CODE XREF: Race_Update+20A↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_F842:                               ; CODE XREF: sub_F40C+2F0↑p
+sub_F842:
                 adda.w  #$14,a0
                 move.b  (ram_FF1AD9).l,d0
                 ext.w   d0
@@ -5481,7 +5449,7 @@ sub_F842:                               ; CODE XREF: sub_F40C+2F0↑p
                 beq.w   .loc_F872
                 move.b  #$10,d0
 
-.loc_F872:                               ; CODE XREF: sub_F842+28↑j
+.loc_F872:
                 move.b  d0,$A(a0)
                 lea     (ram_FF1B50).l,a6
                 move.w  (ram_FFDE72).l,d7
@@ -5498,7 +5466,7 @@ sub_F842:                               ; CODE XREF: sub_F40C+2F0↑p
                 bpl.w   .loc_F8BC
                 neg.w   d0
 
-.loc_F8BC:                               ; CODE XREF: sub_F842+74↑j
+.loc_F8BC:
                 asl.w   #3,d0
                 add.w   (ram_FF1764).l,d0
                 move.b  (a4,d0.w),d1
@@ -5508,7 +5476,7 @@ sub_F842:                               ; CODE XREF: sub_F40C+2F0↑p
                 neg.w   d1
                 bset    #7,$A(a0)
 
-.loc_F8DC:                               ; CODE XREF: sub_F842+8E↑j
+.loc_F8DC:
                 add.w   $30(a1),d1
                 move.w  $32(a1),d2
                 move.l  4(a1),d0
@@ -5519,13 +5487,13 @@ sub_F842:                               ; CODE XREF: sub_F40C+2F0↑p
                 bra.w   .locret_F90C
 
 
-.loc_F8FE:                               ; CODE XREF: sub_F842+AC↑j
+.loc_F8FE:
                 move.w  d0,4(a0)
                 move.w  d1,(a0)
                 move.w  d2,2(a0)
                 or.w    d3,$A(a0)
 
-.locret_F90C:                            ; CODE XREF: sub_F842+B8↑j
+.locret_F90C:
                 rts
 ; End of function sub_F842
 
@@ -5533,7 +5501,7 @@ sub_F842:                               ; CODE XREF: sub_F40C+2F0↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_F90E:                               ; CODE XREF: sub_F40C+2DE↑p
+sub_F90E:
                 adda.w  #$14,a0
                 move.w  #0,$A(a0)
                 move.l  #0,$C(a0)
@@ -5547,12 +5515,12 @@ sub_F90E:                               ; CODE XREF: sub_F40C+2DE↑p
                 neg.w   d0
                 bset    #7,$A(a0)
 
-.loc_F948:                               ; CODE XREF: sub_F90E+2E↑j
+.loc_F948:
                 cmp.w   #4,d0
                 bmi.w   .loc_F954
                 move.w  #3,d0
 
-.loc_F954:                               ; CODE XREF: sub_F90E+3E↑j
+.loc_F954:
                 addi.w  #$16A,d0
                 move.w  d0,8(a0)
                 lea     (ram_FF1B50).l,a6
@@ -5575,13 +5543,13 @@ sub_F90E:                               ; CODE XREF: sub_F40C+2DE↑p
                 bra.w   .locret_F9C2
 
 
-.loc_F9B4:                               ; CODE XREF: sub_F90E+96↑j
+.loc_F9B4:
                 move.w  d0,4(a0)
                 move.w  d1,(a0)
                 move.w  d2,2(a0)
                 or.w    d3,$A(a0)
 
-.locret_F9C2:                            ; CODE XREF: sub_F90E+A2↑j
+.locret_F9C2:
                 rts
 ; End of function sub_F90E
 
@@ -5589,7 +5557,7 @@ sub_F90E:                               ; CODE XREF: sub_F40C+2DE↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_F9C4:                               ; CODE XREF: sub_F40C+2C6↑p
+sub_F9C4:
                 adda.w  #$14,a0
                 move.w  #0,$A(a0)
                 move.l  #0,$C(a0)
@@ -5618,7 +5586,7 @@ sub_F9C4:                               ; CODE XREF: sub_F40C+2C6↑p
                 bcs.w   .loc_FA46
                 move.w  #5,d7
 
-.loc_FA46:                               ; CODE XREF: sub_F9C4+7A↑j
+.loc_FA46:
                 asl.w   #2,d7
                 adda.w  d7,a6
                 add.w   (a6),d1
@@ -5632,13 +5600,13 @@ sub_F9C4:                               ; CODE XREF: sub_F40C+2C6↑p
                 bra.w   .locret_FA7E
 
 
-.loc_FA70:                               ; CODE XREF: sub_F9C4+9C↑j
+.loc_FA70:
                 move.w  d0,4(a0)
                 move.w  d1,(a0)
                 move.w  d2,2(a0)
                 or.w    d3,$A(a0)
 
-.locret_FA7E:                            ; CODE XREF: sub_F9C4+A8↑j
+.locret_FA7E:
                 rts
 ; End of function sub_F9C4
 
@@ -5654,7 +5622,7 @@ unk_FA80:
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_FA98:                               ; CODE XREF: sub_F40C+41E↑p
+sub_FA98:
                 adda.w  #$14,a0
                 bclr    #7,$A(a0)
                 move.w  #$172,8(a0)
@@ -5680,13 +5648,13 @@ sub_FA98:                               ; CODE XREF: sub_F40C+41E↑p
                 bra.w   .locret_FB1C
 
 
-.loc_FB10:                               ; CODE XREF: sub_FA98+68↑j
+.loc_FB10:
                 asl.w   #1,d0
                 move.w  d0,4(a0)
                 move.w  d1,(a0)
                 move.w  d2,2(a0)
 
-.locret_FB1C:                            ; CODE XREF: sub_FA98+74↑j
+.locret_FB1C:
                 rts
 ; End of function sub_FA98
 
@@ -5694,7 +5662,7 @@ sub_FA98:                               ; CODE XREF: sub_F40C+41E↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_FB1E:                               ; CODE XREF: Race_Update+204↑p
+sub_FB1E:
                 lea     (ram_FFD37C).l,a0
                 cmpi.w  #$C,(ram_FF1E68).l
                 bpl.w   .loc_FB42
@@ -5704,7 +5672,7 @@ sub_FB1E:                               ; CODE XREF: Race_Update+204↑p
                 bra.w   .loc_FB62
 
 
-.loc_FB42:                               ; CODE XREF: sub_FB1E+E↑j
+.loc_FB42:
                 clr.l   d0
                 move.w  (RaceTrack_Data1).l,d0
                 swap    d0
@@ -5714,7 +5682,7 @@ sub_FB1E:                               ; CODE XREF: Race_Update+204↑p
                 cmp.l   #$1F0000,d1
                 bcc.w   .locret_FC0C
 
-.loc_FB62:                               ; CODE XREF: sub_FB1E+20↑j
+.loc_FB62:
                 move.l  d0,-(sp)
                 move.l  d1,-(sp)
                 move.w  (ram_FFDE72).l,d0
@@ -5738,12 +5706,12 @@ sub_FB1E:                               ; CODE XREF: Race_Update+204↑p
                 bra.w   .loc_FBC6
 
                 bset    #7,$A(a0)
-.loc_FBC6:                               ; CODE XREF: sub_FB1E+9E↑j
+.loc_FBC6:
                 bclr    #3,$A(a0)
                 bra.w   .loc_FBD6
 
                 bset    #3,$A(a0)
-.loc_FBD6:                               ; CODE XREF: sub_FB1E+AE↑j
+.loc_FBD6:
                 move.w  #$180,d1
                 move.w  #0,d2
                 bsr.w   sub_FE3A
@@ -5753,18 +5721,17 @@ sub_FB1E:                               ; CODE XREF: Race_Update+204↑p
                 bra.w   .loc_FC08
 
 
-.loc_FBF4:                               ; CODE XREF: sub_FB1E+C6↑j
+.loc_FBF4:
                 move.w  d0,4(a0)
                 move.w  d1,(a0)
                 move.w  d2,2(a0)
                 bset    #7,$B(a0)
                 adda.w  #$14,a0
 
-.loc_FC08:                               ; CODE XREF: sub_FB1E+D2↑j
+.loc_FC08:
                 move.w  #$FFFF,(a0)
 
-.locret_FC0C:                            ; CODE XREF: sub_FB1E+36↑j
-; sub_FB1E+40↑j
+.locret_FC0C:
                 rts
 ; End of function sub_FB1E
 
@@ -5772,7 +5739,7 @@ sub_FB1E:                               ; CODE XREF: Race_Update+204↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_FC0E:                               ; CODE XREF: Race_Update+232↑p
+sub_FC0E:
                 move.w  #0,(ram_FFD7CA).l
                 lea     (ram_FFD37C).l,a0
                 move.w  (ram_FFDE72).l,d0
@@ -5782,7 +5749,7 @@ sub_FC0E:                               ; CODE XREF: Race_Update+232↑p
                 move.l  (ram_FF1E68).l,d0
                 movea.l (ram_FFD7CC).l,a1
 
-.loc_FC3A:                               ; CODE XREF: sub_FC0E+4A↓j
+.loc_FC3A:
                 cmpa.l  #ram_FFD7D4,a1
                 beq.w   .loc_FC5A
                 move.l  -4(a1),d1
@@ -5794,8 +5761,7 @@ sub_FC0E:                               ; CODE XREF: Race_Update+232↑p
                 bra.s   .loc_FC3A
 
 
-.loc_FC5A:                               ; CODE XREF: sub_FC0E+32↑j
-; sub_FC0E+3E↑j ...
+.loc_FC5A:
                 move.l  (a1),d1
                 cmp.l   #$FFFFFFFF,d1
                 beq.w   .locret_FD6C
@@ -5807,7 +5773,7 @@ sub_FC0E:                               ; CODE XREF: Race_Update+232↑p
                 bra.w   .loc_FD62
 
 
-.loc_FC82:                               ; CODE XREF: sub_FC0E+62↑j
+.loc_FC82:
                 cmp.l   #$1E0000,d2
                 bcc.w   .loc_FD68
                 clr.w   d0
@@ -5837,14 +5803,14 @@ sub_FC0E:                               ; CODE XREF: Race_Update+232↑p
                 bset    #7,$A(a0)
 
 
-.loc_FCF4:                               ; CODE XREF: sub_FC0E+DC↑j
+.loc_FCF4:
                 bclr    #3,$A(a0)
                 bra.w   .loc_FD04
 
                 bset    #3,$A(a0)
 
 
-.loc_FD04:                               ; CODE XREF: sub_FC0E+EC↑j
+.loc_FD04:
                 move.l  d1,d0
                 move.w  2(a1),d1
                 andi.w  #$F,d1
@@ -5858,7 +5824,7 @@ sub_FC0E:                               ; CODE XREF: Race_Update+232↑p
                 bra.w   .loc_FD62
 
 
-.loc_FD2E:                               ; CODE XREF: sub_FC0E+110↑j
+.loc_FD2E:
                 mulu.w  2(a4),d0
                 lsr.l   #8,d0
                 move.w  d0,4(a0)
@@ -5872,16 +5838,15 @@ sub_FC0E:                               ; CODE XREF: Race_Update+232↑p
                 adda.w  #$14,a0
                 addi.w  #1,(ram_FFD7CA).l
 
-.loc_FD62:                               ; CODE XREF: sub_FC0E+70↑j
-; sub_FC0E+11C↑j
+.loc_FD62:
                 addq.w  #4,a1
                 bra.w   .loc_FC5A
 
 
-.loc_FD68:                               ; CODE XREF: sub_FC0E+7A↑j
+.loc_FD68:
                 move.w  #$FFFF,(a0)
 
-.locret_FD6C:                            ; CODE XREF: sub_FC0E+54↑j
+.locret_FD6C:
                 rts
 ; End of function sub_FC0E
 
@@ -5972,8 +5937,7 @@ sub_FD96:
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_FE3A:                               ; CODE XREF: sub_F40C+3E0↑p
-; sub_F842+A6↑p ...
+sub_FE3A:
                 movem.l d4-d7/a0-a6,-(sp)
                 move.w  d0,d4
                 move.l  d0,d3
@@ -5984,7 +5948,7 @@ sub_FE3A:                               ; CODE XREF: sub_F40C+3E0↑p
                 bra.w   .loc_FF78
 
 
-.loc_FE56:                               ; CODE XREF: sub_FE3A+10↑j
+.loc_FE56:
                 swap    d3
                 swap    d5
                 sub.w   d5,d3
@@ -6015,20 +5979,19 @@ sub_FE3A:                               ; CODE XREF: sub_F40C+3E0↑p
                 beq.w   .loc_FEAC
                 addq.w  #1,d7
 
-.loc_FEAC:                               ; CODE XREF: sub_FE3A+6C↑j
+.loc_FEAC:
                 neg.w   d7
                 bra.w   .loc_FEC0
 
 
-.loc_FEB2:                               ; CODE XREF: sub_FE3A+5E↑j
+.loc_FEB2:
                 mulu.w  d4,d7
                 swap    d7
                 btst    #$1F,d7
                 beq.w   .loc_FEC0
                 addq.w  #1,d7
 
-.loc_FEC0:                               ; CODE XREF: sub_FE3A+74↑j
-; sub_FE3A+80↑j
+.loc_FEC0:
                 andi.l  #$FFFF,d7
                 sub.w   d7,d6
                 sub.w   d2,d6
@@ -6044,17 +6007,17 @@ sub_FE3A:                               ; CODE XREF: sub_F40C+3E0↑p
                 bra.w   .loc_FEF0
 
 
-.loc_FEE6:                               ; CODE XREF: sub_FE3A+96↑j
+.loc_FEE6:
                 ext.l   d2
                 asl.l   #8,d2
                 divu.w  d0,d2
                 addi.w  #$4C,d2 ; 'L'
 
-.loc_FEF0:                               ; CODE XREF: sub_FE3A+A8↑j
+.loc_FEF0:
                 bpl.w   .loc_FEF8
                 move.w  #1,d2
 
-.loc_FEF8:                               ; CODE XREF: sub_FE3A:@loc_FEF0↑j
+.loc_FEF8:
                 lea     (ram_FFD77C).l,a2
                 move.w  (a2,d3.w),6(a0)
                 lea     (ram_FF310A).l,a2
@@ -6069,20 +6032,19 @@ sub_FE3A:                               ; CODE XREF: sub_F40C+3E0↑p
                 beq.w   .loc_FF28
                 addq.w  #1,d7
 
-.loc_FF28:                               ; CODE XREF: sub_FE3A+E8↑j
+.loc_FF28:
                 neg.w   d7
                 bra.w   .loc_FF3C
 
 
-.loc_FF2E:                               ; CODE XREF: sub_FE3A+DA↑j
+.loc_FF2E:
                 mulu.w  d4,d7
                 swap    d7
                 btst    #$1F,d7
                 beq.w   .loc_FF3C
                 addq.w  #1,d7
 
-.loc_FF3C:                               ; CODE XREF: sub_FE3A+F0↑j
-; sub_FE3A+FC↑j
+.loc_FF3C:
                 sub.w   d7,d6
                 add.w   d6,d1
                 bpl.w   .loc_FF56
@@ -6095,7 +6057,7 @@ sub_FE3A:                               ; CODE XREF: sub_F40C+3E0↑p
                 bra.w   .loc_FF70
 
 
-.loc_FF56:                               ; CODE XREF: sub_FE3A+106↑j
+.loc_FF56:
                 beq.w   .loc_FF70
                 swap    d1
                 divu.w  d0,d1
@@ -6104,21 +6066,19 @@ sub_FE3A:                               ; CODE XREF: sub_F40C+3E0↑p
                 bra.w   .loc_FF70
 
 
-.loc_FF68:                               ; CODE XREF: sub_FE3A+110↑j
-; sub_FE3A+124↑j
+.loc_FF68:
                 move.w  #0,(sp)
                 bra.w   .loc_FF74
 
 
-.loc_FF70:                               ; CODE XREF: sub_FE3A+118↑j
-; sub_FE3A:@loc_FF56↑j ...
+.loc_FF70:
                 subi.w  #$160,d1
 
-.loc_FF74:                               ; CODE XREF: sub_FE3A+132↑j
+.loc_FF74:
                 move.w  (sp)+,d0
                 move.w  (sp)+,d3
 
-.loc_FF78:                               ; CODE XREF: sub_FE3A+18↑j
+.loc_FF78:
                 movem.l (sp)+,d4-d7/a0-a6
                 rts
 ; End of function sub_FE3A
@@ -6127,7 +6087,7 @@ sub_FE3A:                               ; CODE XREF: sub_F40C+3E0↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_FF7E:                               ; CODE XREF: sub_F40C+25E↑p
+sub_FF7E:
                 movem.l d0-d7/a0-a6,-(sp)
                 move.w  6(a1),d4
                 move.w  $A(a0),d2
@@ -6140,7 +6100,7 @@ sub_FF7E:                               ; CODE XREF: sub_F40C+25E↑p
                 bne.w   .loc_FFA4
                 move.w  #1,d0
 
-.loc_FFA4:                               ; CODE XREF: sub_FF7E+1E↑j
+.loc_FFA4:
                 move.l  #$2000000,d3
                 cmpi.b  #$10,$71(a1)
                 bpl.w   .loc_FFBE
@@ -6148,10 +6108,10 @@ sub_FF7E:                               ; CODE XREF: sub_F40C+25E↑p
                 bra.w   .loc_FFC4
 
 
-.loc_FFBE:                               ; CODE XREF: sub_FF7E+32↑j
+.loc_FFBE:
                 addi.l  #$1000000,d3
 
-.loc_FFC4:                               ; CODE XREF: sub_FF7E+3C↑j
+.loc_FFC4:
                 lsr.l   #2,d3
                 divu.w  d1,d3
                 move.w  d3,4(a0)
@@ -6170,23 +6130,21 @@ sub_FF7E:                               ; CODE XREF: sub_F40C+25E↑p
                 beq.w   .loc_FFF6
                 addq.w  #1,d1
 
-.loc_FFF6:                               ; CODE XREF: sub_FF7E+72↑j
+.loc_FFF6:
                 neg.w   d1
                 bra.w   .loc_1000A
 
 
-.loc_FFFC:                               ; CODE XREF: sub_FF7E+64↑j
+.loc_FFFC:
                 mulu.w  d4,d1
                 swap    d1
 
-.loc_10000:                              ; DATA XREF: Intro_GameTick+122↑o
-; Intro_GameTick+130↑o ...
+.loc_10000:
                 btst    #$1F,d1
                 beq.w   .loc_1000A
                 addq.w  #1,d1
 
-.loc_1000A:                              ; CODE XREF: sub_FF7E+7A↑j
-; sub_FF7E+86↑j
+.loc_1000A:
                 andi.l  #$FFFF,d1
                 sub.w   d1,d5
                 sub.w   $32(a1),d5
@@ -6201,16 +6159,16 @@ sub_FF7E:                               ; CODE XREF: sub_F40C+25E↑p
                 bra.w   .loc_10038
 
 
-.loc_10030:                              ; CODE XREF: sub_FF7E+9E↑j
+.loc_10030:
                 asl.l   #8,d1
                 divu.w  d0,d1
                 addi.w  #$4C,d1 ; 'L'
 
-.loc_10038:                              ; CODE XREF: sub_FF7E+AE↑j
+.loc_10038:
                 bpl.w   .loc_10040
                 move.w  #1,d1
 
-.loc_10040:                              ; CODE XREF: sub_FF7E:@loc_10038↑j
+.loc_10040:
                 lea     (ram_FFD77C).l,a2
                 move.w  (a2,d2.w),6(a0)
                 move.w  d1,2(a0)
@@ -6229,20 +6187,19 @@ sub_FF7E:                               ; CODE XREF: sub_F40C+25E↑p
                 beq.w   .loc_1007A
                 addq.w  #1,d1
 
-.loc_1007A:                              ; CODE XREF: sub_FF7E+F6↑j
+.loc_1007A:
                 neg.w   d1
                 bra.w   .loc_1008E
 
 
-.loc_10080:                              ; CODE XREF: sub_FF7E+E8↑j
+.loc_10080:
                 mulu.w  d4,d1
                 swap    d1
                 btst    #$1F,d1
                 beq.w   .loc_1008E
                 addq.w  #1,d1
 
-.loc_1008E:                              ; CODE XREF: sub_FF7E+FE↑j
-; sub_FF7E+10A↑j
+.loc_1008E:
                 sub.w   d1,d5
                 add.w   $30(a1),d5
                 bpl.w   .loc_100AA
@@ -6255,7 +6212,7 @@ sub_FF7E:                               ; CODE XREF: sub_F40C+25E↑p
                 bra.w   .loc_100C4
 
 
-.loc_100AA:                              ; CODE XREF: sub_FF7E+116↑j
+.loc_100AA:
                 beq.w   .loc_100C4
                 swap    d5
                 divu.w  d0,d5
@@ -6264,17 +6221,15 @@ sub_FF7E:                               ; CODE XREF: sub_F40C+25E↑p
                 bra.w   .loc_100C4
 
 
-.loc_100BC:                              ; CODE XREF: sub_FF7E+120↑j
-; sub_FF7E+134↑j
+.loc_100BC:
                 move.w  #0,d5
                 bra.w   .loc_100C8
 
 
-.loc_100C4:                              ; CODE XREF: sub_FF7E+128↑j
-; sub_FF7E:@loc_100AA↑j ...
+.loc_100C4:
                 subi.w  #$160,d5
 
-.loc_100C8:                              ; CODE XREF: sub_FF7E+142↑j
+.loc_100C8:
                 move.w  d5,(a0)
                 movem.l (sp)+,d0-d7/a0-a6
                 rts
@@ -6284,8 +6239,7 @@ sub_FF7E:                               ; CODE XREF: sub_F40C+25E↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_100D0:                              ; CODE XREF: sub_F40C:@loc_F646↑p
-; sub_10384+15C↓p
+sub_100D0:
                 move.w  d3,-(sp)
                 bset    #7,$B(a0)
                 move.w  #0,$12(a0)
@@ -6295,7 +6249,7 @@ sub_100D0:                              ; CODE XREF: sub_F40C:@loc_F646↑p
                 bra.w   .loc_101E6
 
 
-.loc_100EE:                              ; CODE XREF: sub_100D0+12↑j
+.loc_100EE:
                 btst    #2,$6A(a1)
                 beq.w   .loc_10110
                 move.b  #3,d0
@@ -6306,15 +6260,14 @@ sub_100D0:                              ; CODE XREF: sub_F40C:@loc_F646↑p
                 bra.w   .loc_101E6
 
 
-.loc_10110:                              ; CODE XREF: sub_100D0+24↑j
-; sub_100D0+34↑j
+.loc_10110:
                 btst    #4,$69(a1)
                 beq.w   .loc_10122
                 bsr.w   sub_1030A
                 bra.w   .loc_101E6
 
 
-.loc_10122:                              ; CODE XREF: sub_100D0+46↑j
+.loc_10122:
                 tst.w   $18(a1)
                 bne.w   .loc_1014E
                 tst.w   $12(a1)
@@ -6327,8 +6280,7 @@ sub_100D0:                              ; CODE XREF: sub_F40C:@loc_F646↑p
                 bra.w   .loc_101E6
 
 
-.loc_1014E:                              ; CODE XREF: sub_100D0+56↑j
-; sub_100D0+5E↑j ...
+.loc_1014E:
                 bclr    #$F,$A(a0)
                 move.w  $34(a1),d0
                 bmi.w   .loc_10168
@@ -6336,12 +6288,11 @@ sub_100D0:                              ; CODE XREF: sub_F40C:@loc_F646↑p
                 tst.w   $C(a1)
                 bmi.w   .loc_10170
 
-.loc_10168:                              ; CODE XREF: sub_100D0+88↑j
+.loc_10168:
                 neg.w   d0
                 bset    #$F,$A(a0)
 
-.loc_10170:                              ; CODE XREF: sub_100D0+8C↑j
-; sub_100D0+94↑j
+.loc_10170:
                 asl.w   #4,d0
                 move.w  $A(a1),d1
                 move.w  (ram_FF1AC8).l,d3
@@ -6351,10 +6302,10 @@ sub_100D0:                              ; CODE XREF: sub_F40C:@loc_F646↑p
                 bra.w   .loc_1018E
 
 
-.loc_1018A:                              ; CODE XREF: sub_100D0+AE↑j
+.loc_1018A:
                 move.w  #1,d1
 
-.loc_1018E:                              ; CODE XREF: sub_100D0+B6↑j
+.loc_1018E:
                 asl.w   #3,d1
                 add.w   d1,d0
                 move.w  $C(a1),d1
@@ -6362,13 +6313,13 @@ sub_100D0:                              ; CODE XREF: sub_F40C:@loc_F646↑p
                 beq.w   .loc_101A2
                 asl.w   #1,d1
 
-.loc_101A2:                              ; CODE XREF: sub_100D0+CC↑j
+.loc_101A2:
                 lea     (ram_FFD33E).l,a4
                 move.w  #3,d2
                 tst.w   d1
                 bmi.w   .loc_101C0
 
-.loc_101B2:                              ; CODE XREF: sub_100D0+EA↓j
+.loc_101B2:
                 cmp.w   -(a4),d1
                 bcc.w   .loc_101CE
                 subq.w  #1,d2
@@ -6376,32 +6327,30 @@ sub_100D0:                              ; CODE XREF: sub_F40C:@loc_F646↑p
                 bra.w   .loc_101CE
 
 
-.loc_101C0:                              ; CODE XREF: sub_100D0+DE↑j
+.loc_101C0:
                 neg.w   d1
 
-.loc_101C2:                              ; CODE XREF: sub_100D0+FA↓j
+.loc_101C2:
                 cmp.w   -(a4),d1
                 bcc.w   .loc_101CC
                 subq.w  #1,d2
                 bne.s   .loc_101C2
 
-.loc_101CC:                              ; CODE XREF: sub_100D0+F4↑j
+.loc_101CC:
                 neg.w   d2
 
-.loc_101CE:                              ; CODE XREF: sub_100D0+E4↑j
-; sub_100D0+EC↑j
+.loc_101CE:
                 move.w  d2,d1
                 btst    #$F,$A(a0)
                 beq.w   .loc_101DC
                 neg.w   d1
 
-.loc_101DC:                              ; CODE XREF: sub_100D0+106↑j
+.loc_101DC:
                 addq.w  #3,d1
                 move.w  d1,(ram_FF1764).l
                 add.w   d1,d0
 
-.loc_101E6:                              ; CODE XREF: sub_100D0+1A↑j
-; sub_100D0+3C↑j ...
+.loc_101E6:
                 move.w  (sp)+,d3
                 rts
 ; End of function sub_100D0
@@ -6410,19 +6359,19 @@ sub_100D0:                              ; CODE XREF: sub_F40C:@loc_F646↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_101EA:                              ; CODE XREF: sub_100D0+76↑p
+sub_101EA:
                 bclr    #$F,$A(a0)
                 move.w  $34(a1),d0
                 bpl.w   .loc_10200
                 neg.w   d0
                 bset    #$F,$A(a0)
 
-.loc_10200:                              ; CODE XREF: sub_101EA+A↑j
+.loc_10200:
                 cmp.w   #2,d0
                 bmi.w   .loc_1020C
                 move.w  #2,d0
 
-.loc_1020C:                              ; CODE XREF: sub_101EA+1A↑j
+.loc_1020C:
                 move.w  $12(a1),d1
                 cmp.w   #$DAC,d1
                 bpl.w   .loc_10228
@@ -6432,11 +6381,10 @@ sub_101EA:                              ; CODE XREF: sub_100D0+76↑p
                 bra.w   .locret_1022C
 
 
-.loc_10228:                              ; CODE XREF: sub_101EA+2A↑j
-; sub_101EA+32↑j
+.loc_10228:
                 addi.w  #$50,d0 ; 'P'
 
-.locret_1022C:                           ; CODE XREF: sub_101EA+3A↑j
+.locret_1022C:
                 rts
 ; End of function sub_101EA
 
@@ -6444,19 +6392,19 @@ sub_101EA:                              ; CODE XREF: sub_100D0+76↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_1022E:                              ; CODE XREF: sub_100D0+16↑p
+sub_1022E:
                 bclr    #$F,$A(a0)
                 move.w  $34(a1),d0
                 bgt.w   .loc_10244
                 neg.w   d0
                 bset    #$F,$A(a0)
 
-.loc_10244:                              ; CODE XREF: sub_1022E+A↑j
+.loc_10244:
                 cmp.w   #2,d0
                 bmi.w   .loc_10250
                 move.w  #2,d0
 
-.loc_10250:                              ; CODE XREF: sub_1022E+1A↑j
+.loc_10250:
                 addi.w  #$56,d0 ; 'V'
                 rts
 ; End of function sub_1022E
@@ -6465,7 +6413,7 @@ sub_1022E:                              ; CODE XREF: sub_100D0+16↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_10256:                              ; CODE XREF: sub_F40C+216↑p
+sub_10256:
                 bclr    #7,$B(a0)
                 move.w  #0,$12(a0)
                 bclr    #$F,$A(a0)
@@ -6474,7 +6422,7 @@ sub_10256:                              ; CODE XREF: sub_F40C+216↑p
                 neg.w   d0
                 bset    #$F,$A(a0)
 
-.loc_10278:                              ; CODE XREF: sub_10256+16↑j
+.loc_10278:
                 andi.w  #3,d0
                 asl.w   #1,d0
                 move.w  $A(a1),d1
@@ -6482,7 +6430,7 @@ sub_10256:                              ; CODE XREF: sub_F40C+216↑p
                 blt.w   .loc_1028E
                 addq.w  #1,d0
 
-.loc_1028E:                              ; CODE XREF: sub_10256+32↑j
+.loc_1028E:
                 addi.w  #$7F,d0
                 rts
 ; End of function sub_10256
@@ -6491,7 +6439,7 @@ sub_10256:                              ; CODE XREF: sub_F40C+216↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_10294:                              ; CODE XREF: sub_F40C+232↑p
+sub_10294:
                 bset    #7,$B(a0)
                 bclr    #$F,$A(a0)
                 move.w  $34(a1),d0
@@ -6499,12 +6447,12 @@ sub_10294:                              ; CODE XREF: sub_F40C+232↑p
                 neg.w   d0
                 bset    #$F,$A(a0)
 
-.loc_102B0:                              ; CODE XREF: sub_10294+10↑j
+.loc_102B0:
                 cmp.w   #3,d0
                 bmi.w   .loc_102BC
                 move.w  #2,d0
 
-.loc_102BC:                              ; CODE XREF: sub_10294+20↑j
+.loc_102BC:
                 asl.w   #1,d0
                 move.w  (ram_FF1ACE).l,d1
                 andi.w  #1,d1
@@ -6522,7 +6470,7 @@ unk_102DE:  dc.w 3, 19, 35
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_102E4:                              ; CODE XREF: sub_DAE2:@loc_DC20↑p
+sub_102E4:
                 movem.l d0/a4,-(sp)
                 move.w  #2,d1
                 lea     (ram_FFD33E).l,a4
@@ -6530,14 +6478,13 @@ sub_102E4:                              ; CODE XREF: sub_DAE2:@loc_DC20↑p
                 bpl.w   .loc_102FA
                 neg.w   d0
 
-.loc_102FA:                              ; CODE XREF: sub_102E4+10↑j
-; sub_102E4+1E↓j
+.loc_102FA:
                 cmp.w   -(a4),d0
                 bcc.w   .loc_10304
                 subq.w  #1,d1
                 bne.s   .loc_102FA
 
-.loc_10304:                              ; CODE XREF: sub_102E4+18↑j
+.loc_10304:
                 movem.l (sp)+,d0/a4
                 rts
 ; End of function sub_102E4
@@ -6546,21 +6493,21 @@ sub_102E4:                              ; CODE XREF: sub_DAE2:@loc_DC20↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_1030A:                              ; CODE XREF: sub_100D0+4A↑p
+sub_1030A:
                 bclr    #$F,$A(a0)
                 move.w  $34(a1),d0
                 bpl.w   .loc_10320
                 neg.w   d0
                 bset    #$F,$A(a0)
 
-.loc_10320:                              ; CODE XREF: sub_1030A+A↑j
+.loc_10320:
                 move.w  $C(a1),d1
                 lea     (ram_FFD33E).l,a4
                 move.w  #2,d2
                 tst.w   d1
                 bmi.w   .loc_10342
 
-.loc_10334:                              ; CODE XREF: sub_1030A+32↓j
+.loc_10334:
                 cmp.w   -(a4),d1
                 bcc.w   .loc_10350
                 subq.w  #1,d2
@@ -6568,20 +6515,19 @@ sub_1030A:                              ; CODE XREF: sub_100D0+4A↑p
                 bra.w   .loc_10350
 
 
-.loc_10342:                              ; CODE XREF: sub_1030A+26↑j
+.loc_10342:
                 neg.w   d1
 
-.loc_10344:                              ; CODE XREF: sub_1030A+42↓j
+.loc_10344:
                 cmp.w   -(a4),d1
                 bcc.w   .loc_1034E
                 subq.w  #1,d2
                 bne.s   .loc_10344
 
-.loc_1034E:                              ; CODE XREF: sub_1030A+3C↑j
+.loc_1034E:
                 neg.w   d2
 
-.loc_10350:                              ; CODE XREF: sub_1030A+2C↑j
-; sub_1030A+34↑j
+.loc_10350:
                 move.w  d2,d1
                 addq.w  #2,d1
                 move.w  d1,(ram_FF1764).l
@@ -6592,15 +6538,14 @@ sub_1030A:                              ; CODE XREF: sub_100D0+4A↑p
                 bra.w   .locret_10382
 
 
-.loc_10370:                              ; CODE XREF: sub_1030A+56↑j
+.loc_10370:
                 bsr.w   sub_10384
                 bra.w   .locret_10382
 
                 bclr    #4,$69(a1)
                 bsr.w   sub_100D0
 
-.locret_10382:                           ; CODE XREF: sub_1030A+62↑j
-; sub_1030A+6A↑j
+.locret_10382:
                 rts
 ; End of function sub_1030A
 
@@ -6608,12 +6553,12 @@ sub_1030A:                              ; CODE XREF: sub_100D0+4A↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_10384:                              ; CODE XREF: sub_1030A:@loc_10370↑p
+sub_10384:
                 cmp.w   #2,d0
                 ble.w   .loc_10390
                 move.w  #2,d0
 
-.loc_10390:                              ; CODE XREF: sub_10384+4↑j
+.loc_10390:
                 bne.w   .loc_103CA
                 btst    #$F,$A(a0)
                 beq.w   .loc_103B4
@@ -6623,22 +6568,22 @@ sub_10384:                              ; CODE XREF: sub_1030A:@loc_10370↑p
                 bpl.w   .loc_103B0
                 neg.w   d1
 
-.loc_103B0:                              ; CODE XREF: sub_10384+26↑j
+.loc_103B0:
                 bra.w   .loc_10402
 
 
-.loc_103B4:                              ; CODE XREF: sub_10384+16↑j
+.loc_103B4:
                 btst    #5,$69(a1)
                 bne.w   .loc_104DA
                 subq.w  #2,d1
                 bpl.w   .loc_103C6
                 neg.w   d1
 
-.loc_103C6:                              ; CODE XREF: sub_10384+3C↑j
+.loc_103C6:
                 bra.w   .loc_10402
 
 
-.loc_103CA:                              ; CODE XREF: sub_10384:@loc_10390↑j
+.loc_103CA:
                 btst    #5,$69(a1)
                 beq.w   .loc_103EE
                 subq.w  #2,d1
@@ -6646,85 +6591,80 @@ sub_10384:                              ; CODE XREF: sub_1030A:@loc_10370↑p
                 bpl.w   .loc_103E0
                 move.w  #0,d1
 
-.loc_103E0:                              ; CODE XREF: sub_10384+54↑j
+.loc_103E0:
                 btst    #$F,$A(a0)
                 bne.w   .loc_10402
                 bra.w   .loc_10450
 
 
-.loc_103EE:                              ; CODE XREF: sub_10384+4C↑j
+.loc_103EE:
                 subq.w  #2,d1
                 bpl.w   .loc_103F8
                 move.w  #0,d1
 
-.loc_103F8:                              ; CODE XREF: sub_10384+6C↑j
+.loc_103F8:
                 btst    #$F,$A(a0)
                 bne.w   .loc_10450
 
-.loc_10402:                              ; CODE XREF: sub_10384:@loc_103B0↑j
-; sub_10384:@loc_103C6↑j ...
+.loc_10402:
                 move.l  a2,-(sp)
                 tst.w   d0
                 bne.w   .loc_10410
                 bset    #$F,$A(a0)
 
-.loc_10410:                              ; CODE XREF: sub_10384+82↑j
+.loc_10410:
                 cmpi.b  #1,$6C(a1)
                 beq.w   .loc_10446
                 bmi.w   .loc_10428
                 btst    #1,$6B(a1)
                 beq.w   .loc_1043C
 
-.loc_10428:                              ; CODE XREF: sub_10384+96↑j
+.loc_10428:
                 btst    #0,$6B(a1)
                 beq.w   .loc_1043C
                 lea     (unk_106A2).l,a2
                 bra.w   .loc_1049A
 
 
-.loc_1043C:                              ; CODE XREF: sub_10384+A0↑j
-; sub_10384+AA↑j
+.loc_1043C:
                 lea     (unk_105E2).l,a2
                 bra.w   .loc_1049A
 
 
-.loc_10446:                              ; CODE XREF: sub_10384+92↑j
+.loc_10446:
                 lea     (unk_10522).l,a2
                 bra.w   .loc_1049A
 
 
-.loc_10450:                              ; CODE XREF: sub_10384+66↑j
-; sub_10384+7A↑j
+.loc_10450:
                 move.l  a2,-(sp)
                 tst.w   d0
                 bne.w   .loc_1045E
                 bclr    #$F,$A(a0)
 
-.loc_1045E:                              ; CODE XREF: sub_10384+D0↑j
+.loc_1045E:
                 cmpi.b  #1,$6C(a1)
                 beq.w   .loc_10494
                 bmi.w   .loc_10476
                 btst    #1,$6B(a1)
                 beq.w   .loc_1048A
 
-.loc_10476:                              ; CODE XREF: sub_10384+E4↑j
+.loc_10476:
                 btst    #0,$6B(a1)
                 beq.w   .loc_1048A
                 lea     (unk_10702).l,a2
                 bra.w   .loc_1049A
 
 
-.loc_1048A:                              ; CODE XREF: sub_10384+EE↑j
-; sub_10384+F8↑j
+.loc_1048A:
                 lea     (unk_10642).l,a2
                 bra.w   .loc_1049A
 
 
-.loc_10494:                              ; CODE XREF: sub_10384+E0↑j
+.loc_10494:
                 lea     (unk_10582).l,a2
 
-.loc_1049A:                              ; CODE XREF: sub_10384+B4↑j
-; sub_10384+BE↑j ...
+.loc_1049A:
                 asl.w   #5,d0
                 adda.w  d0,a2
                 bsr.w   sub_104E6
@@ -6740,21 +6680,20 @@ sub_10384:                              ; CODE XREF: sub_1030A:@loc_10370↑p
                 bra.w   .loc_104CE
 
 
-.loc_104CA:                              ; CODE XREF: sub_10384+132↑j
+.loc_104CA:
                 addi.w  #$D8,d1
 
-.loc_104CE:                              ; CODE XREF: sub_10384+142↑j
+.loc_104CE:
                 move.w  d1,$12(a0)
                 movem.l (sp)+,a2
                 bra.w   .locret_104E4
 
 
-.loc_104DA:                              ; CODE XREF: sub_10384+20↑j
-; sub_10384+36↑j
+.loc_104DA:
                 bclr    #4,$69(a1)
                 bsr.w   sub_100D0
 
-.locret_104E4:                           ; CODE XREF: sub_10384+152↑j
+.locret_104E4:
                 rts
 ; End of function sub_10384
 
@@ -6762,7 +6701,7 @@ sub_10384:                              ; CODE XREF: sub_1030A:@loc_10370↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_104E6:                              ; CODE XREF: sub_10384+11A↑p
+sub_104E6:
                 move.w  d3,-(sp)
                 tst.w   $18(a1)
                 bne.w   .loc_10502
@@ -6771,8 +6710,7 @@ sub_104E6:                              ; CODE XREF: sub_10384+11A↑p
                 btst    #1,$68(a1)
                 bne.w   .loc_1051A
 
-.loc_10502:                              ; CODE XREF: sub_104E6+6↑j
-; sub_104E6+E↑j
+.loc_10502:
                 move.w  $A(a1),d0
                 move.w  (ram_FF1AC8).l,d3
                 cmp.w   d3,d0
@@ -6781,17 +6719,16 @@ sub_104E6:                              ; CODE XREF: sub_10384+11A↑p
                 bra.w   .loc_1051E
 
 
-.loc_1051A:                              ; CODE XREF: sub_104E6+18↑j
-; sub_104E6+28↑j
+.loc_1051A:
                 move.w  #1,d0
 
-.loc_1051E:                              ; CODE XREF: sub_104E6+30↑j
+.loc_1051E:
                 move.w  (sp)+,d3
                 rts
 ; End of function sub_104E6
 
 
-unk_10522:      dc.b   0                ; DATA XREF: sub_10384:@loc_10446↑o
+unk_10522:      dc.b   0
                 dc.b   3
                 dc.b   0
                 dc.b   3
@@ -6887,7 +6824,7 @@ unk_10522:      dc.b   0                ; DATA XREF: sub_10384:@loc_10446↑o
                 dc.b   0
                 dc.b   0
                 dc.b   0
-unk_10582:      dc.b   0                ; DATA XREF: sub_10384:@loc_10494↑o
+unk_10582:      dc.b   0
                 dc.b   3
                 dc.b   0
                 dc.b   3
@@ -6983,7 +6920,7 @@ unk_10582:      dc.b   0                ; DATA XREF: sub_10384:@loc_10494↑o
                 dc.b   0
                 dc.b   0
                 dc.b   0
-unk_105E2:      dc.b   0                ; DATA XREF: sub_10384:@loc_1043C↑o
+unk_105E2:      dc.b   0
                 dc.b   3
                 dc.b   0
                 dc.b   4
@@ -7079,7 +7016,7 @@ unk_105E2:      dc.b   0                ; DATA XREF: sub_10384:@loc_1043C↑o
                 dc.b   0
                 dc.b   0
                 dc.b   0
-unk_10642:      dc.b   0                ; DATA XREF: sub_10384:@loc_1048A↑o
+unk_10642:      dc.b   0
                 dc.b   3
                 dc.b   0
                 dc.b   4
@@ -7175,7 +7112,7 @@ unk_10642:      dc.b   0                ; DATA XREF: sub_10384:@loc_1048A↑o
                 dc.b   0
                 dc.b   0
                 dc.b   0
-unk_106A2:      dc.b   0                ; DATA XREF: sub_10384+AE↑o
+unk_106A2:      dc.b   0
                 dc.b   3
                 dc.b   0
                 dc.b   5
@@ -7271,7 +7208,7 @@ unk_106A2:      dc.b   0                ; DATA XREF: sub_10384+AE↑o
                 dc.b   0
                 dc.b   0
                 dc.b   0
-unk_10702:      dc.b   0                ; DATA XREF: sub_10384+FC↑o
+unk_10702:      dc.b   0
                 dc.b   3
                 dc.b   0
                 dc.b   5
@@ -7371,7 +7308,7 @@ unk_10702:      dc.b   0                ; DATA XREF: sub_10384+FC↑o
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_10762:                              ; CODE XREF: sub_1030A+5E↑p
+sub_10762:
                 btst    #5,$69(a1)
                 beq.w   .loc_1077A
                 btst    #$F,$A(a0)
@@ -7379,48 +7316,46 @@ sub_10762:                              ; CODE XREF: sub_1030A+5E↑p
                 bra.w   .loc_10784
 
 
-.loc_1077A:                              ; CODE XREF: sub_10762+6↑j
+.loc_1077A:
                 btst    #$F,$A(a0)
                 bne.w   .loc_1079C
 
-.loc_10784:                              ; CODE XREF: sub_10762+14↑j
+.loc_10784:
                 cmp.w   #2,d0
                 ble.w   .loc_10790
                 move.w  #2,d0
 
-.loc_10790:                              ; CODE XREF: sub_10762+26↑j
+.loc_10790:
                 move.l  a2,-(sp)
                 lea     (word_107EA).l,a2
                 bra.w   .loc_107BC
 
 
-.loc_1079C:                              ; CODE XREF: sub_10762+10↑j
-; sub_10762+1E↑j
+.loc_1079C:
                 cmp.w   #1,d0
                 ble.w   .loc_107A8
                 move.w  #1,d0
 
-.loc_107A8:                              ; CODE XREF: sub_10762+3E↑j
+.loc_107A8:
                 move.l  a2,-(sp)
                 lea     (word_10802).l,a2
                 tst.w   d0
                 bne.w   .loc_107BC
                 bset    #$F,$A(a0)
 
-.loc_107BC:                              ; CODE XREF: sub_10762+36↑j
-; sub_10762+50↑j
+.loc_107BC:
                 asl.w   #3,d0
                 move.w  $A(a1),d2
                 cmp.w   (ram_FF1AC8).l,d2
                 ble.w   .loc_107CE
                 addq.w  #4,d0
 
-.loc_107CE:                              ; CODE XREF: sub_10762+66↑j
+.loc_107CE:
                 cmpi.b  #1,$6C(a1)
                 beq.w   .loc_107DA
                 addq.w  #2,d0
 
-.loc_107DA:                              ; CODE XREF: sub_10762+72↑j
+.loc_107DA:
                 move.w  (a2,d0.w),d0
                 movea.l (sp)+,a2
                 bra.w   .locret_107E8
@@ -7431,11 +7366,11 @@ sub_10762:                              ; CODE XREF: sub_1030A+5E↑p
                 dc.b $9E
 
 
-.locret_107E8:                           ; CODE XREF: sub_10762+7E↑j
+.locret_107E8:
                 rts
 ; End of function sub_10762
 
-word_107EA:     dc.w $12C               ; DATA XREF: sub_10762+30↑o
+word_107EA:     dc.w $12C
                 dc.w $12D
                 dc.w $12E
                 dc.w $12F
@@ -7447,7 +7382,7 @@ word_107EA:     dc.w $12C               ; DATA XREF: sub_10762+30↑o
                 dc.w $139
                 dc.w $13A
                 dc.w $13B
-word_10802:     dc.w $12C               ; DATA XREF: sub_10762+48↑o
+word_10802:     dc.w $12C
                 dc.w $12D
                 dc.w $12E
                 dc.w $12F
@@ -7464,44 +7399,44 @@ word_10802:     dc.w $12C               ; DATA XREF: sub_10762+48↑o
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_1081A:                              ; CODE XREF: sub_100D0+38↑p
+sub_1081A:
                 move.w  (Race_ram_FrameDelay).l,d2
                 sub.b   d2,$70(a1)
                 bgt.w   .loc_10834
                 move.b  #0,$70(a1)
                 bclr    #2,$6A(a1)
 
-.loc_10834:                              ; CODE XREF: sub_1081A+A↑j
+.loc_10834:
                 bclr    #$F,$A(a0)
                 move.w  $34(a1),d0
                 bpl.w   .loc_1084A
                 neg.w   d0
                 bset    #$F,$A(a0)
 
-.loc_1084A:                              ; CODE XREF: sub_1081A+24↑j
+.loc_1084A:
                 cmp.w   #2,d0
                 ble.w   .loc_10856
                 move.w  #2,d0
 
-.loc_10856:                              ; CODE XREF: sub_1081A+34↑j
+.loc_10856:
                 asl.w   #2,d0
                 move.w  $A(a1),d2
                 cmp.w   (ram_FF1AC8).l,d2
                 ble.w   .loc_10868
                 addq.w  #2,d0
 
-.loc_10868:                              ; CODE XREF: sub_1081A+48↑j
+.loc_10868:
                 move.w  $C(a1),d1
                 tst.w   d1
                 bpl.w   .loc_10874
                 neg.w   d1
 
-.loc_10874:                              ; CODE XREF: sub_1081A+54↑j
+.loc_10874:
                 cmp.w   (ram_FFD33A).l,d1
                 bcc.w   .loc_10880
                 addq.w  #1,d0
 
-.loc_10880:                              ; CODE XREF: sub_1081A+60↑j
+.loc_10880:
                 move.w  d0,d1
                 btst    #0,$6A(a1)
                 beq.w   .loc_10894
@@ -7509,10 +7444,10 @@ sub_1081A:                              ; CODE XREF: sub_100D0+38↑p
                 bra.w   .loc_10898
 
 
-.loc_10894:                              ; CODE XREF: sub_1081A+6E↑j
+.loc_10894:
                 addi.w  #$13C,d1
 
-.loc_10898:                              ; CODE XREF: sub_1081A+76↑j
+.loc_10898:
                 move.w  d1,$12(a0)
                 lea     (unk_108C2).l,a4
                 asl.w   #1,d0
@@ -7523,13 +7458,12 @@ sub_1081A:                              ; CODE XREF: sub_100D0+38↑p
                 bne.w   .locret_108C0
                 bset    #$F,$A(a0)
 
-.locret_108C0:                           ; CODE XREF: sub_1081A+92↑j
-; sub_1081A+9C↑j
+.locret_108C0:
                 rts
 ; End of function sub_1081A
 
 
-unk_108C2:      dc.b   0                ; DATA XREF: sub_1081A+82↑o
+unk_108C2:      dc.b   0
                 dc.b   2
                 dc.b   0
                 dc.b   3
@@ -7557,7 +7491,7 @@ unk_108C2:      dc.b   0                ; DATA XREF: sub_1081A+82↑o
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_108DA:                              ; CODE XREF: sub_F40C+1FA↑p
+sub_108DA:
                 move.w  #0,$12(a0)
                 cmpa.l  #ram_FF2FAA,a1
                 bne.w   .loc_1090C
@@ -7568,19 +7502,19 @@ sub_108DA:                              ; CODE XREF: sub_F40C+1FA↑p
                 bra.w   .locret_10970
 
 
-.loc_10902:                              ; CODE XREF: sub_108DA+1A↑j
+.loc_10902:
                 bset    #$F,$A(a0)
                 bra.w   .locret_10970
 
 
-.loc_1090C:                              ; CODE XREF: sub_108DA+C↑j
+.loc_1090C:
                 bclr    #$F,$A(a0)
                 move.w  $34(a1),d0
                 bpl.w   .loc_10922
                 neg.w   d0
                 bset    #$F,$A(a0)
 
-.loc_10922:                              ; CODE XREF: sub_108DA+3C↑j
+.loc_10922:
                 asl.w   #2,d0
                 move.w  $A(a1),d1
                 bpl.w   .loc_10944
@@ -7588,29 +7522,28 @@ sub_108DA:                              ; CODE XREF: sub_F40C+1FA↑p
                 blt.w   .loc_1093C
                 move.w  #0,d1
 
-.loc_10938:                              ; DATA XREF: sub_107EA+14↑r
+.loc_10938:
                 bra.w   .loc_10958
 
 
-.loc_1093C:                              ; CODE XREF: sub_108DA+56↑j
+.loc_1093C:
                 move.w  #$FFFF,d1
                 bra.w   .loc_10958
 
 
-.loc_10944:                              ; CODE XREF: sub_108DA+4E↑j
+.loc_10944:
                 cmp.w   #$20,d1 ; ' '
                 bgt.w   .loc_10954
                 move.w  #0,d1
 
-.loc_10950:                              ; DATA XREF: sub_107EA+2C↑r
+.loc_10950:
                 bra.w   .loc_10958
 
 
-.loc_10954:                              ; CODE XREF: sub_108DA+6E↑j
+.loc_10954:
                 move.w  #1,d1
 
-.loc_10958:                              ; CODE XREF: sub_108DA:@loc_10938↑j
-; sub_108DA+66↑j ...
+.loc_10958:
                 addq.w  #1,d1
                 add.w   d1,d0
                 btst    #3,$69(a1)
@@ -7619,11 +7552,10 @@ sub_108DA:                              ; CODE XREF: sub_F40C+1FA↑p
                 rts
 
 
-.loc_1096C:                              ; CODE XREF: sub_108DA+88↑j
+.loc_1096C:
                 addi.w  #$6F,d0 ; 'o'
 
-.locret_10970:                           ; CODE XREF: sub_108DA+24↑j
-; sub_108DA+2E↑j
+.locret_10970:
                 rts
 ; End of function sub_108DA
 
@@ -7653,7 +7585,7 @@ Race_WriteSpriteTiles:
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_109B6:                              ; CODE XREF: Race_Update+21A↑p
+sub_109B6:
                 move.w  #$FFFF,(ram_FF1B30).l
                 movea.l (ram_FFD7C4).l,a1
                 move.w  (a1),d0
@@ -7681,8 +7613,7 @@ sub_109B6:                              ; CODE XREF: Race_Update+21A↑p
                 bra.w   .loc_10A2E
 
 
-.loc_10A1A:                              ; CODE XREF: sub_109B6+1C↑j
-; sub_109B6+26↑j ...
+.loc_10A1A:
                 move.w  2(a1),d2
                 rol.w   #4,d2
                 andi.w  #$F,d2
@@ -7691,7 +7622,7 @@ sub_109B6:                              ; CODE XREF: Race_Update+21A↑p
                 lsr.w   #8,d3
                 andi.w  #$1F,d3
 
-.loc_10A2E:                              ; CODE XREF: sub_109B6+60↑j
+.loc_10A2E:
                 move.w  d1,d4
                 addq.w  #1,d4
                 ext.l   d4
@@ -7706,7 +7637,7 @@ sub_109B6:                              ; CODE XREF: Race_Update+21A↑p
                 movea.l (RaceTrack_Data4).l,a1
                 move.l  a1,(ram_FFD7C4).l
 
-.loc_10A5E:                              ; CODE XREF: sub_109B6+98↑j
+.loc_10A5E:
                 addq.w  #1,d3
                 mulu.w  d3,d2
                 add.w   d2,(ram_FFD7C8).l
@@ -7716,7 +7647,7 @@ sub_109B6:                              ; CODE XREF: Race_Update+21A↑p
                 bra.s   .loc_10A1A
 
 
-.loc_10A78:                              ; CODE XREF: sub_109B6+82↑j
+.loc_10A78:
                 sub.w   d4,d3
                 swap    d4
                 move.w  d4,d1
@@ -7729,14 +7660,14 @@ sub_109B6:                              ; CODE XREF: Race_Update+21A↑p
                 andi.w  #1,d4
                 eor.w   d4,d5
 
-.loc_10A94:                              ; CODE XREF: sub_109B6+D2↑j
+.loc_10A94:
                 andi.w  #1,d5
                 ror.w   #2,d5
                 btst    #$E,d0
                 beq.w   .loc_10AA6
                 bset    #$F,d5
 
-.loc_10AA6:                              ; CODE XREF: sub_109B6+E8↑j
+.loc_10AA6:
                 move.w  2(a1),d6
                 lea     (ram_FFD37C).l,a0
                 move.w  (ram_FFDE72).l,d7
@@ -7755,7 +7686,7 @@ sub_109B6:                              ; CODE XREF: Race_Update+21A↑p
                 bra.w   .loc_10AFC
 
 
-.loc_10AE8:                              ; CODE XREF: sub_109B6+126↑j
+.loc_10AE8:
                 move.w  d4,d7
                 subi.w  #$1BB,d7
                 asl.w   #1,d7
@@ -7765,15 +7696,13 @@ sub_109B6:                              ; CODE XREF: Race_Update+21A↑p
                 swap    d4
                 move.w  d7,d4
 
-.loc_10AFC:                              ; CODE XREF: sub_109B6+116↑j
-; sub_109B6+11E↑j ...
+.loc_10AFC:
                 exg     d0,d1
                 move.w  d6,d7
                 andi.w  #$700,d7
                 andi.w  #$FF,d6
 
-.loc_10B08:                              ; CODE XREF: sub_109B6:@loc_10BB2↓j
-; sub_109B6+28E↓j
+.loc_10B08:
                 add.w   d2,d0
                 cmp.w   #$20,d0 ; ' '
                 bcc.w   .loc_10C48
@@ -7792,7 +7721,7 @@ sub_109B6:                              ; CODE XREF: Race_Update+21A↑p
                 bra.w   .loc_10BB6
 
 
-.loc_10B48:                              ; CODE XREF: sub_109B6+174↑j
+.loc_10B48:
                 move.w  d0,$A(a0)
                 or.w    d5,$A(a0)
                 or.w    d7,$A(a0)
@@ -7802,7 +7731,7 @@ sub_109B6:                              ; CODE XREF: Race_Update+21A↑p
                 beq.w   .loc_10B6C
                 bset    #7,$B(a0)
 
-.loc_10B6C:                              ; CODE XREF: sub_109B6+1AC↑j
+.loc_10B6C:
                 movem.l d6-d7,-(sp)
                 lea     (ram_FF1B50).l,a6
                 move.w  d0,d6
@@ -7823,11 +7752,10 @@ sub_109B6:                              ; CODE XREF: Race_Update+21A↑p
                 beq.w   .loc_10BB2
                 bchg    #$E,d5
 
-.loc_10BB2:                              ; CODE XREF: sub_109B6+160↑j
-; sub_109B6+1F4↑j
+.loc_10BB2:
                 dbf     d3,.loc_10B08
 
-.loc_10BB6:                              ; CODE XREF: sub_109B6+18E↑j
+.loc_10BB6:
                 addq.w  #4,a1
                 move.w  (a1),d1
                 cmp.w   #$FFFF,d1
@@ -7835,7 +7763,7 @@ sub_109B6:                              ; CODE XREF: Race_Update+21A↑p
                 movea.l (RaceTrack_Data4).l,a1
                 move.w  (a1),d1
 
-.loc_10BCA:                              ; CODE XREF: sub_109B6+208↑j
+.loc_10BCA:
                 move.w  2(a1),d2
                 rol.w   #4,d2
                 andi.w  #$F,d2
@@ -7856,7 +7784,7 @@ sub_109B6:                              ; CODE XREF: Race_Update+21A↑p
                 bra.w   .loc_10C1E
 
 
-.loc_10C0A:                              ; CODE XREF: sub_109B6+248↑j
+.loc_10C0A:
                 move.w  d4,d7
                 subi.w  #$1BB,d7
                 asl.w   #1,d7
@@ -7866,8 +7794,7 @@ sub_109B6:                              ; CODE XREF: Race_Update+21A↑p
                 swap    d4
                 move.w  d7,d4
 
-.loc_10C1E:                              ; CODE XREF: sub_109B6+238↑j
-; sub_109B6+240↑j ...
+.loc_10C1E:
                 clr.w   d5
                 move.b  d1,d5
                 rol.b   #1,d5
@@ -7877,7 +7804,7 @@ sub_109B6:                              ; CODE XREF: Race_Update+21A↑p
                 beq.w   .loc_10C36
                 bset    #$F,d5
 
-.loc_10C36:                              ; CODE XREF: sub_109B6+278↑j
+.loc_10C36:
                 move.w  2(a1),d6
                 move.w  d6,d7
                 andi.w  #$700,d7
@@ -7885,7 +7812,7 @@ sub_109B6:                              ; CODE XREF: Race_Update+21A↑p
                 bra.w   .loc_10B08
 
 
-.loc_10C48:                              ; CODE XREF: sub_109B6+158↑j
+.loc_10C48:
                 move.w  #$FFFF,(a0)
                 rts
 ; End of function sub_109B6
@@ -7894,7 +7821,7 @@ sub_109B6:                              ; CODE XREF: Race_Update+21A↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_10C4E:                              ; CODE XREF: sub_109B6+1E4↑p
+sub_10C4E:
                 move.w  $A(a0),d0
                 andi.w  #$1F,d0
                 move.w  d0,-(sp)
@@ -7939,13 +7866,12 @@ sub_10C4E:                              ; CODE XREF: sub_109B6+1E4↑p
                 bra.w   .loc_10CD2
 
 
-.loc_10CCA:                              ; CODE XREF: sub_10C4E+6C↑j
+.loc_10CCA:
                 add.l   d5,d7
                 bpl.w   .loc_10CD2
                 neg.l   d7
 
-.loc_10CD2:                              ; CODE XREF: sub_10C4E+72↑j
-; sub_10C4E+78↑j ...
+.loc_10CD2:
                 ext.l   d0
                 addi.l  #$100,d7
                 cmp.l   d0,d7
@@ -7967,20 +7893,19 @@ sub_10C4E:                              ; CODE XREF: sub_109B6+1E4↑p
                 bne.w   .loc_10D20
                 neg.w   d6
 
-.loc_10D20:                              ; CODE XREF: sub_10C4E+CC↑j
+.loc_10D20:
                 move.w  d6,$C(a0)
                 add.w   d6,d0
                 bmi.w   .loc_10D32
                 cmp.w   #$23C,d0
                 bmi.w   .loc_10D38
 
-.loc_10D32:                              ; CODE XREF: sub_10C4E+8E↑j
-; sub_10C4E+94↑j ...
+.loc_10D32:
                 suba.w  #$14,a0
                 rts
 
 
-.loc_10D38:                              ; CODE XREF: sub_10C4E+E0↑j
+.loc_10D38:
                 neg.w   d0
                 move.w  d0,(a0)
                 addi.w  #1,(ram_FFDE72).l
@@ -7991,7 +7916,7 @@ sub_10C4E:                              ; CODE XREF: sub_109B6+1E4↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_10D46:                              ; CODE XREF: Race_Update+260↑p
+sub_10D46:
                 movem.l d0-d7/a0-a7,-(sp)
                 move.l  (a0)+,(a1)
                 move.w  #0,(a2)
@@ -8049,7 +7974,7 @@ sub_10D46:                              ; CODE XREF: Race_Update+260↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_10DBE:                              ; CODE XREF: Race_Update+AE↑p
+sub_10DBE:
                 movea.l (Global_ram_PalettePtr).l,a0
                 adda.w  #$1A,a0
                 lea     (ram_FF1EAA).l,a1
@@ -8062,7 +7987,7 @@ sub_10DBE:                              ; CODE XREF: Race_Update+AE↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_10DDA:                              ; CODE XREF: Race_Update+B4↑p
+sub_10DDA:
                 movea.l (Global_ram_PalettePtr).l,a0
                 adda.w  #$5A,a0 ; 'Z'
                 movea.l (ram_FF1908).l,a1
@@ -8071,7 +7996,7 @@ sub_10DDA:                              ; CODE XREF: Race_Update+B4↑p
                 lea     (ram_FF1B04).l,a2
                 bsr.w   sub_10E00
 
-.locret_10DFE:                           ; CODE XREF: sub_10DDA+16↑j
+.locret_10DFE:
                 rts
 ; End of function sub_10DDA
 
@@ -8079,19 +8004,18 @@ sub_10DDA:                              ; CODE XREF: Race_Update+B4↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_10E00:                              ; CODE XREF: sub_10DBE+16↑p
-; sub_10DDA+20↑p
+sub_10E00:
                 move.w  $12(a1),d0
                 beq.w   .loc_10E12
                 cmpi.b  #3,$6E(a1)
                 bne.w   .loc_10E18
 
-.loc_10E12:                              ; CODE XREF: sub_10E00+4↑j
+.loc_10E12:
                 clr.l   d0
                 bra.w   .loc_10E3A
 
 
-.loc_10E18:                              ; CODE XREF: sub_10E00+E↑j
+.loc_10E18:
                 move.w  (Race_ram_FrameDelay).l,d1
                 sub.w   d1,(a2)
                 bgt.w   .locret_10E3C
@@ -8101,21 +8025,21 @@ sub_10E00:                              ; CODE XREF: sub_10DBE+16↑p
                 bpl.w   .loc_10E32
                 clr.w   d0
 
-.loc_10E32:                              ; CODE XREF: sub_10E00+2C↑j
+.loc_10E32:
                 move.w  d0,(a2)+
                 move.l  (a2),d0
                 swap    d0
                 move.l  d0,(a2)
 
-.loc_10E3A:                              ; CODE XREF: sub_10E00+14↑j
+.loc_10E3A:
                 move.l  d0,(a0)
 
-.locret_10E3C:                           ; CODE XREF: sub_10E00+20↑j
+.locret_10E3C:
                 rts
 ; End of function sub_10E00
 
 
-unk_10E3E:      dc.b $18                ; DATA XREF: sub_F842+64↑o
+unk_10E3E:      dc.b $18
                 dc.b $10
                 dc.b   6
                 dc.b   1
@@ -8159,11 +8083,11 @@ unk_10E3E:      dc.b $18                ; DATA XREF: sub_F842+64↑o
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_10E66:                              ; CODE XREF: Race_Update+A2↑p
+sub_10E66:
                 bset    #6,(ram_FF1EAA + STRUCT_OFFSET_68).l
                 lea     (ram_FF1A08).l,a2
 
-.loc_10E74:                              ; CODE XREF: sub_10E66:@loc_11034↓j
+.loc_10E74:
                 movea.l (a2)+,a1
                 cmpa.w  #$FFFF,a1
                 beq.w   .locret_11038
@@ -8176,7 +8100,7 @@ sub_10E66:                              ; CODE XREF: Race_Update+A2↑p
                 asr.w   #2,d0
                 sub.w   d0,d1
 
-.loc_10E9C:                              ; CODE XREF: sub_10E66+2C↑j
+.loc_10E9C:
                 move.w  (Race_ram_FrameDelay).l,d2
                 muls.w  d2,d1
                 move.w  $12(a1),d0
@@ -8185,8 +8109,7 @@ sub_10E66:                              ; CODE XREF: Race_Update+A2↑p
                 bpl.w   .loc_10EB8
                 move.w  #0,$12(a1)
 
-.loc_10EB8:                              ; CODE XREF: sub_10E66+22↑j
-; sub_10E66+48↑j
+.loc_10EB8:
                 move.w  $12(a1),d0
                 move.w  (Race_ram_FrameDelay).l,d2
                 mulu.w  d2,d0
@@ -8203,8 +8126,7 @@ sub_10E66:                              ; CODE XREF: Race_Update+A2↑p
                 bra.w   .loc_10F6C
 
 
-.loc_10EF8:                              ; CODE XREF: sub_10E66+7C↑j
-; sub_10E66+86↑j
+.loc_10EF8:
                 bsr.w   sub_113CA
                 bsr.w   sub_13EFA
                 btst    #4,$68(a1)
@@ -8212,26 +8134,25 @@ sub_10E66:                              ; CODE XREF: Race_Update+A2↑p
                 btst    #3,$69(a1)
                 bne.w   .loc_10F22
 
-.loc_10F14:                              ; CODE XREF: sub_10E66+A0↑j
+.loc_10F14:
                 bclr    #3,$68(a1)
                 bsr.w   sub_11448
                 bra.w   .loc_10F6C
 
 
-.loc_10F22:                              ; CODE XREF: sub_10E66+AA↑j
+.loc_10F22:
                 bsr.w   sub_11940
                 bra.w   .loc_10F6C
 
 
-.loc_10F2A:                              ; CODE XREF: sub_10E66+68↑j
-; sub_10E66+72↑j
+.loc_10F2A:
                 btst    #6,$68(a1)
                 bne.w   .loc_10F3C
                 bsr.w   sub_1103A
                 bra.w   .loc_11034
 
 
-.loc_10F3C:                              ; CODE XREF: sub_10E66+CA↑j
+.loc_10F3C:
                 btst    #4,$68(a1)
                 beq.w   .loc_10F58
                 cmpi.b  #3,$6E(a1)
@@ -8240,16 +8161,14 @@ sub_10E66:                              ; CODE XREF: Race_Update+A2↑p
                 bra.w   .loc_10F6C
 
 
-.loc_10F58:                              ; CODE XREF: sub_10E66+DC↑j
-; sub_10E66+E6↑j
+.loc_10F58:
                 tst.w   $12(a1)
                 beq.w   .loc_10F6C
                 bsr.w   sub_113A4
                 bsr.w   sub_13EFA
                 bsr.w   sub_116E2
 
-.loc_10F6C:                              ; CODE XREF: sub_10E66+8E↑j
-; sub_10E66+B8↑j ...
+.loc_10F6C:
                 move.w  $36(a1),d1
                 move.w  d1,d3
                 sub.w   0.w(a1),d1
@@ -8265,15 +8184,14 @@ sub_10E66:                              ; CODE XREF: Race_Update+A2↑p
                 bra.w   .loc_10FAC
 
 
-.loc_10F9A:                              ; CODE XREF: sub_10E66+118↑j
+.loc_10F9A:
                 cmp.w   #$FF20,d1
                 bpl.w   .loc_10FD8
                 bset    #3,$68(a1)
                 bra.w   .loc_10FDE
 
 
-.loc_10FAC:                              ; CODE XREF: sub_10E66+110↑j
-; sub_10E66+130↑j
+.loc_10FAC:
                 cmp.w   #$360,d1
                 bmi.w   .loc_10FC6
                 subi.w  #$360,d1
@@ -8282,19 +8200,17 @@ sub_10E66:                              ; CODE XREF: Race_Update+A2↑p
                 sub.w   d1,d3
                 move.w  d3,0.w(a1)
 
-.loc_10FC6:                              ; CODE XREF: sub_10E66+14A↑j
+.loc_10FC6:
                 cmp.w   #$E0,d1
                 bmi.w   .loc_10FD8
                 bset    #3,$68(a1)
                 bra.w   .loc_10FDE
 
 
-.loc_10FD8:                              ; CODE XREF: sub_10E66+138↑j
-; sub_10E66+164↑j
+.loc_10FD8:
                 bclr    #3,$68(a1)
 
-.loc_10FDE:                              ; CODE XREF: sub_10E66+142↑j
-; sub_10E66+16E↑j
+.loc_10FDE:
                 neg.w   d1
                 move.w  d1,$30(a1)
                 bsr.w   sub_13746
@@ -8308,29 +8224,26 @@ sub_10E66:                              ; CODE XREF: Race_Update+A2↑p
                 bra.w   .loc_1101C
 
 
-.loc_11010:                              ; CODE XREF: sub_10E66+19C↑j
+.loc_11010:
                 bsr.w   sub_11B7A
                 bra.w   .loc_1101C
 
 
-.loc_11018:                              ; CODE XREF: sub_10E66+188↑j
-; sub_10E66+192↑j
+.loc_11018:
                 bsr.w   sub_12BD2
 
-.loc_1101C:                              ; CODE XREF: sub_10E66+1A6↑j
-; sub_10E66+1AE↑j
+.loc_1101C:
                 cmpi.b  #$10,$71(a1)
                 bpl.w   .loc_11034
                 btst    #4,$68(a1)
                 beq.w   .loc_11034
                 bsr.w   sub_1180C
 
-.loc_11034:                              ; CODE XREF: sub_10E66+D2↑j
-; sub_10E66+1BC↑j ...
+.loc_11034:
                 bra.w   .loc_10E74
 
 
-.locret_11038:                           ; CODE XREF: sub_10E66+14↑j
+.locret_11038:
                 rts
 ; End of function sub_10E66
 
@@ -8338,7 +8251,7 @@ sub_10E66:                              ; CODE XREF: Race_Update+A2↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_1103A:                              ; CODE XREF: sub_10E66+CE↑p
+sub_1103A:
                 move.l  d0,-(sp)
                 move.w  $30(a1),$1A(a1)
                 move.w  $32(a1),$1C(a1)
@@ -8355,8 +8268,7 @@ sub_1103A:                              ; CODE XREF: sub_10E66+CE↑p
                 bset    #7,$68(a1)
                 move.l  (ram_FF1E9A).l,$62(a1)
 
-.loc_1107E:                              ; CODE XREF: sub_1103A+28↑j
-; sub_1103A+32↑j
+.loc_1107E:
                 move.w  d1,2(a1)
                 bclr    #4,$68(a1)
                 move.b  #$FF,$6E(a1)
@@ -8566,8 +8478,7 @@ sub_11268:
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_112C8:                              ; CODE XREF: sub_11268+C↑p
-; sub_11268+1E↑p ...
+sub_112C8:
                 move.l  a0,-(sp)
                 cmp.w   d2,d1
                 bne.w   .loc_112DC
@@ -8576,7 +8487,7 @@ sub_112C8:                              ; CODE XREF: sub_11268+C↑p
                 bra.w   .loc_11304
 
 
-.loc_112DC:                              ; CODE XREF: sub_112C8+4↑j
+.loc_112DC:
                 bmi.w   .loc_112F4
                 ext.l   d2
                 swap    d2
@@ -8588,7 +8499,7 @@ sub_112C8:                              ; CODE XREF: sub_11268+C↑p
                 bra.w   .loc_11304
 
 
-.loc_112F4:                              ; CODE XREF: sub_112C8:@loc_112DC↑j
+.loc_112F4:
                 ext.l   d1
                 swap    d1
                 divu.w  d2,d1
@@ -8597,8 +8508,7 @@ sub_112C8:                              ; CODE XREF: sub_11268+C↑p
                 move.b  #$FF,d2
                 sub.b   d1,d2
 
-.loc_11304:                              ; CODE XREF: sub_112C8+10↑j
-; sub_112C8+28↑j
+.loc_11304:
                 lea     (unk_7DCA8).l,a0
                 asl.w   #1,d1
                 move.w  (a0,d1.w),d1
@@ -8751,8 +8661,7 @@ sub_112C8:                              ; CODE XREF: sub_11268+C↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_113A4:                              ; CODE XREF: sub_10E66+FA↑p
-; sub_12868+40↓p
+sub_113A4:
                 move.l  $26(a1),d0
                 lsr.l   #8,d0
                 move.w  8(a1),d1
@@ -8762,7 +8671,7 @@ sub_113A4:                              ; CODE XREF: sub_10E66+FA↑p
                 beq.w   .loc_113C0
                 bsr.w   sub_1406A
 
-.loc_113C0:                              ; CODE XREF: sub_113A4+14↑j
+.loc_113C0:
                 move.w  d0,$22(a1)
                 add.w   d0,0.w(a1)
                 rts
@@ -8772,7 +8681,7 @@ sub_113A4:                              ; CODE XREF: sub_10E66+FA↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_113CA:                              ; CODE XREF: sub_10E66:@loc_10EF8↑p
+sub_113CA:
                 move.l  $26(a1),d0
                 lsr.l   #8,d0
                 move.l  d0,d1
@@ -8786,17 +8695,17 @@ sub_113CA:                              ; CODE XREF: sub_10E66:@loc_10EF8↑p
                 bra.w   .loc_1143E
 
 
-.loc_113F2:                              ; CODE XREF: sub_113CA+18↑j
+.loc_113F2:
                 tst.b   $6E(a1)
                 bmi.w   .loc_11402
                 move.w  8(a1),d0
                 bra.w   .loc_11406
 
 
-.loc_11402:                              ; CODE XREF: sub_113CA+2C↑j
+.loc_11402:
                 move.w  d0,8(a1)
 
-.loc_11406:                              ; CODE XREF: sub_113CA+34↑j
+.loc_11406:
                 add.l   d0,(ram_FF1E5C).l
                 sub.l   $36(a1),d0
                 exg     d0,d1
@@ -8806,7 +8715,7 @@ sub_113CA:                              ; CODE XREF: sub_10E66:@loc_10EF8↑p
                 beq.w   .loc_11424
                 bsr.w   sub_1406A
 
-.loc_11424:                              ; CODE XREF: sub_113CA+52↑j
+.loc_11424:
                 tst.w   d0
                 bpl.w   .loc_11438
                 neg.w   d0
@@ -8816,12 +8725,11 @@ sub_113CA:                              ; CODE XREF: sub_10E66:@loc_10EF8↑p
                 bra.w   .loc_1143E
 
 
-.loc_11438:                              ; CODE XREF: sub_113CA+5C↑j
+.loc_11438:
                 mulu.w  #$D000,d0
                 swap    d0
 
-.loc_1143E:                              ; CODE XREF: sub_113CA+24↑j
-; sub_113CA+6A↑j
+.loc_1143E:
                 move.w  d0,$22(a1)
                 add.w   d0,0.w(a1)
                 rts
@@ -8831,8 +8739,7 @@ sub_113CA:                              ; CODE XREF: sub_10E66:@loc_10EF8↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_11448:                              ; CODE XREF: sub_10E66+B4↑p
-; Race_HandleInputOnFoot+11E↑p
+sub_11448:
                 movem.l d0-d7/a0-a6,-(sp)
                 move.w  $30(a1),$1A(a1)
                 move.w  $32(a1),$1C(a1)
@@ -8858,7 +8765,7 @@ sub_11448:                              ; CODE XREF: sub_10E66+B4↑p
                 bpl.w   .loc_1149E
                 neg.w   d3
 
-.loc_1149E:                              ; CODE XREF: sub_11448+50↑j
+.loc_1149E:
                 cmp.w   #$40,d3 ; '@'
                 bpl.w   .loc_115C0
                 cmp.w   (RaceTrack_Data1).l,d2
@@ -8874,15 +8781,14 @@ sub_11448:                              ; CODE XREF: sub_10E66+B4↑p
                 move.w  #$12,(ram_FF1AD0).l
                 move.w  #0,(ram_FF1AD2).l
 
-.loc_114F8:                              ; CODE XREF: sub_11448+64↑j
-; sub_11448+7E↑j
+.loc_114F8:
                 andi.w  #$FF,d2
                 asl.w   #1,d2
                 adda.w  d2,a4
                 subq.w  #1,d0
                 bmi.w   .loc_11552
 
-.loc_11506:                              ; CODE XREF: sub_11448+106↓j
+.loc_11506:
                 move.b  (a4)+,d3
                 ext.w   d3
                 add.w   d3,d6
@@ -8891,7 +8797,7 @@ sub_11448:                              ; CODE XREF: sub_10E66+B4↑p
                 bmi.w   .loc_1151E
                 lea     (ram_FFDC58).l,a4
 
-.loc_1151E:                              ; CODE XREF: sub_11448+CC↑j
+.loc_1151E:
                 ext.w   d5
                 add.w   d5,d7
                 btst    #0,$68(a1)
@@ -8905,13 +8811,12 @@ sub_11448:                              ; CODE XREF: sub_10E66+B4↑p
                 move.w  d7,(ram_FF1E92).l
                 move.w  (sp)+,d7
 
-.loc_11548:                              ; CODE XREF: sub_11448+E0↑j
-; sub_11448+E8↑j
+.loc_11548:
                 addi.w  #$100,d4
                 addq.w  #1,d2
                 dbf     d0,.loc_11506
 
-.loc_11552:                              ; CODE XREF: sub_11448+BA↑j
+.loc_11552:
                 add.w   d7,$3A(a1)
                 move.w  6(a1),d0
                 move.b  (a4)+,d1
@@ -8923,21 +8828,21 @@ sub_11448:                              ; CODE XREF: sub_10E66+B4↑p
                 bra.w   .loc_1156E
 
 
-.loc_1156C:                              ; CODE XREF: sub_11448+116↑j
+.loc_1156C:
                 mulu.w  d0,d1
 
-.loc_1156E:                              ; CODE XREF: sub_11448+120↑j
+.loc_1156E:
                 swap    d1
                 add.w   d1,d6
                 beq.w   .loc_11578
                 nop
 
-.loc_11578:                              ; CODE XREF: sub_11448+12A↑j
+.loc_11578:
                 sub.w   $38(a1),d6
                 beq.w   .loc_11582
                 nop
 
-.loc_11582:                              ; CODE XREF: sub_11448+134↑j
+.loc_11582:
                 move.w  d1,$38(a1)
                 move.l  $26(a1),d1
                 lsr.l   #8,d1
@@ -8945,14 +8850,14 @@ sub_11448:                              ; CODE XREF: sub_10E66+B4↑p
                 beq.w   .loc_11594
                 nop
 
-.loc_11594:                              ; CODE XREF: sub_11448+146↑j
+.loc_11594:
                 asr.l   #8,d1
                 muls.w  #$300,d1
                 asr.l   #8,d1
                 beq.w   .loc_115A2
                 nop
 
-.loc_115A2:                              ; CODE XREF: sub_11448+154↑j
+.loc_115A2:
                 add.w   d1,$36(a1)
                 move.b  (a4)+,d1
                 ext.w   d1
@@ -8963,14 +8868,14 @@ sub_11448:                              ; CODE XREF: sub_10E66+B4↑p
                 bra.w   .loc_115BA
 
 
-.loc_115B8:                              ; CODE XREF: sub_11448+162↑j
+.loc_115B8:
                 mulu.w  d0,d1
 
-.loc_115BA:                              ; CODE XREF: sub_11448+16C↑j
+.loc_115BA:
                 swap    d1
                 bsr.w   sub_115C6
 
-.loc_115C0:                              ; CODE XREF: sub_11448+5A↑j
+.loc_115C0:
                 movem.l (sp)+,d0-d7/a0-a6
                 rts
 ; End of function sub_11448
@@ -8979,8 +8884,7 @@ sub_11448:                              ; CODE XREF: sub_10E66+B4↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_115C6:                              ; CODE XREF: sub_11448+174↑p
-; sub_116E2+120↓p ...
+sub_115C6:
                 move.w  d1,$3C(a1)
                 add.w   $3A(a1),d1
                 cmpa.l  #ram_FF2EAA,a1
@@ -8999,7 +8903,7 @@ sub_115C6:                              ; CODE XREF: sub_11448+174↑p
                 move.w  d1,(ram_FF1E92).l
                 move.w  d1,$3A(a1)
 
-.loc_11610:                              ; CODE XREF: sub_115C6+32↑j
+.loc_11610:
                 move.w  (ram_FF1E92).l,d0
                 subq.w  #8,d0
                 move.w  d0,$2A(a1)
@@ -9016,18 +8920,17 @@ sub_115C6:                              ; CODE XREF: sub_11448+174↑p
                 bra.w   .loc_11644
 
 
-.loc_11640:                              ; CODE XREF: sub_115C6+6E↑j
+.loc_11640:
                 mulu.w  d3,d0
                 swap    d0
 
-.loc_11644:                              ; CODE XREF: sub_115C6+76↑j
+.loc_11644:
                 move.w  d0,$2C(a1)
                 divu.w  d3,d4
                 bne.w   .loc_11652
                 move.w  #1,d4
 
-.loc_11652:                              ; CODE XREF: sub_115C6+1E↑j
-; sub_115C6+84↑j
+.loc_11652:
                 add.w   d4,$2E(a1)
                 move.w  $2C(a1),d2
                 andi.w  #$1F,d2
@@ -9039,7 +8942,7 @@ sub_115C6:                              ; CODE XREF: sub_11448+174↑p
                 blt.w   .loc_11676
                 move.w  #$FFFF,d3
 
-.loc_11676:                              ; CODE XREF: sub_115C6+A8↑j
+.loc_11676:
                 move.w  (ram_FF1A9E).l,d4
                 lsr.w   #1,d4
                 mulu.w  d4,d3
@@ -9057,8 +8960,7 @@ sub_115C6:                              ; CODE XREF: sub_11448+174↑p
                 bra.w   .locret_116E0
 
 
-.loc_116AA:                              ; CODE XREF: sub_115C6+E↑j
-; sub_115C6+2C↑j ...
+.loc_116AA:
                 move.w  d1,2(a1)
                 move.w  #0,$32(a1)
                 btst    #0,$68(a1)
@@ -9069,15 +8971,14 @@ sub_115C6:                              ; CODE XREF: sub_11448+174↑p
                 bra.w   .locret_116E0
 
 
-.loc_116CE:                              ; CODE XREF: sub_115C6+FC↑j
+.loc_116CE:
                 bclr    #0,$68(a1)
 
-.loc_116D4:                              ; CODE XREF: sub_115C6+F4↑j
+.loc_116D4:
                 move.w  #0,$2E(a1)
                 move.w  #0,$2C(a1)
 
-.locret_116E0:                           ; CODE XREF: sub_115C6+E0↑j
-; sub_115C6+104↑j
+.locret_116E0:
                 rts
 ; End of function sub_115C6
 
@@ -9085,8 +8986,7 @@ sub_115C6:                              ; CODE XREF: sub_11448+174↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_116E2:                              ; CODE XREF: sub_10E66+102↑p
-; Race_HandleInputOnFoot:@loc_111D4↑p ...
+sub_116E2:
                 movem.l d0-d7/a0-a6,-(sp)
                 move.w  $30(a1),$1A(a1)
                 move.w  $32(a1),$1C(a1)
@@ -9112,7 +9012,7 @@ sub_116E2:                              ; CODE XREF: sub_10E66+102↑p
                 bpl.w   .loc_11738
                 neg.w   d3
 
-.loc_11738:                              ; CODE XREF: sub_116E2+50↑j
+.loc_11738:
                 cmp.w   #$40,d3 ; '@'
                 bpl.w   .loc_11806
                 cmp.w   (RaceTrack_Data1).l,d2
@@ -9122,13 +9022,12 @@ sub_116E2:                              ; CODE XREF: sub_10E66+102↑p
                 bset    #7,$68(a1)
                 move.l  (ram_FF1E9A).l,$62(a1)
 
-.loc_11762:                              ; CODE XREF: sub_116E2+64↑j
-; sub_116E2+6E↑j
+.loc_11762:
                 andi.w  #$FF,d2
                 asl.w   #1,d2
                 adda.w  d2,a4
 
-.loc_1176A:                              ; CODE XREF: sub_116E2+DC↓j
+.loc_1176A:
                 tst.w   d0
                 ble.w   .loc_117C0
                 move.b  (a4)+,d3
@@ -9139,7 +9038,7 @@ sub_116E2:                              ; CODE XREF: sub_10E66+102↑p
                 bmi.w   .loc_11788
                 lea     (ram_FFDC58).l,a4
 
-.loc_11788:                              ; CODE XREF: sub_116E2+9C↑j
+.loc_11788:
                 ext.w   d5
                 add.w   d5,d7
                 btst    #0,$68(a1)
@@ -9155,15 +9054,14 @@ sub_116E2:                              ; CODE XREF: sub_10E66+102↑p
                 bra.w   *+4
 
 
-.loc_117B6:                              ; CODE XREF: sub_116E2+B0↑j
-; sub_116E2+B8↑j ...
+.loc_117B6:
                 addi.w  #$100,d4
                 subq.w  #1,d0
                 addq.w  #1,d2
                 bra.s   .loc_1176A
 
 
-.loc_117C0:                              ; CODE XREF: sub_116E2+8A↑j
+.loc_117C0:
                 add.w   d7,$3A(a1)
                 move.w  6(a1),d0
                 move.b  (a4)+,d1
@@ -9175,10 +9073,10 @@ sub_116E2:                              ; CODE XREF: sub_10E66+102↑p
                 bra.w   .loc_117DC
 
 
-.loc_117DA:                              ; CODE XREF: sub_116E2+EA↑j
+.loc_117DA:
                 mulu.w  d0,d1
 
-.loc_117DC:                              ; CODE XREF: sub_116E2+F4↑j
+.loc_117DC:
                 swap    d1
                 add.w   d1,d6
                 sub.w   $38(a1),d6
@@ -9193,14 +9091,14 @@ sub_116E2:                              ; CODE XREF: sub_10E66+102↑p
                 bra.w   .loc_11800
 
 
-.loc_117FE:                              ; CODE XREF: sub_116E2+10E↑j
+.loc_117FE:
                 mulu.w  d0,d1
 
-.loc_11800:                              ; CODE XREF: sub_116E2+118↑j
+.loc_11800:
                 swap    d1
                 bsr.w   sub_115C6
 
-.loc_11806:                              ; CODE XREF: sub_116E2+5A↑j
+.loc_11806:
                 movem.l (sp)+,d0-d7/a0-a6
                 rts
 ; End of function sub_116E2
@@ -9209,7 +9107,7 @@ sub_116E2:                              ; CODE XREF: sub_10E66+102↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_1180C:                              ; CODE XREF: sub_10E66+1CA↑p
+sub_1180C:
                 movem.l d0-d7/a0-a6,-(sp)
                 move.l  4(a1),-(sp)
                 lea     (unk_258AE).l,a2
@@ -9231,8 +9129,7 @@ sub_1180C:                              ; CODE XREF: sub_10E66+1CA↑p
                 bpl.w   .loc_11858
                 move.w  #0,$12(a1)
 
-.loc_11858:                              ; CODE XREF: sub_1180C+2C↑j
-; sub_1180C+42↑j
+.loc_11858:
                 move.w  $12(a1),d0
                 beq.w   .loc_1188A
                 move.w  (Race_ram_FrameDelay).l,d2
@@ -9245,16 +9142,15 @@ sub_1180C:                              ; CODE XREF: sub_10E66+1CA↑p
                 bra.w   .loc_11884
 
 
-.loc_11880:                              ; CODE XREF: sub_1180C+68↑j
+.loc_11880:
                 bsr.w   sub_11940
 
-.loc_11884:                              ; CODE XREF: sub_1180C+70↑j
+.loc_11884:
                 movea.l (sp)+,a2
                 bra.w   *+4
 
 
-.loc_1188A:                              ; CODE XREF: sub_1180C+50↑j
-; sub_1180C+7A↑j
+.loc_1188A:
                 move.w  $36(a1),d1
                 move.w  d1,d3
                 sub.w   0.w(a1),d1
@@ -9267,19 +9163,18 @@ sub_1180C:                              ; CODE XREF: sub_10E66+1CA↑p
                 bra.w   .loc_118C0
 
 
-.loc_118AE:                              ; CODE XREF: sub_1180C+88↑j
+.loc_118AE:
                 cmp.w   #$360,d1
                 bmi.w   .loc_118C0
                 move.w  #$360,d1
                 sub.w   d1,d3
                 move.w  d3,0.w(a1)
 
-.loc_118C0:                              ; CODE XREF: sub_1180C+90↑j
-; sub_1180C+9E↑j ...
+.loc_118C0:
                 neg.w   d1
                 move.w  d1,$30(a1)
 
-.loc_118C6:                              ; CODE XREF: sub_1180C+20↑j
+.loc_118C6:
                 move.l  (sp)+,d1
                 move.l  4(a1),d0
                 sub.l   d1,d0
@@ -9291,17 +9186,16 @@ sub_1180C:                              ; CODE XREF: sub_10E66+1CA↑p
                 bra.w   .loc_118F8
 
 
-.loc_118E8:                              ; CODE XREF: sub_1180C+C2↑j
+.loc_118E8:
                 cmp.l   #$A0000,d0
                 bmi.w   .loc_11900
                 addi.l  #$A0000,d1
 
-.loc_118F8:                              ; CODE XREF: sub_1180C+D8↑j
+.loc_118F8:
                 move.l  d1,4(a1)
                 move.l  d1,$1E(a1)
 
-.loc_11900:                              ; CODE XREF: sub_1180C+CE↑j
-; sub_1180C+E2↑j
+.loc_11900:
                 movem.l (sp)+,d0-d7/a0-a6
                 rts
 ; End of function sub_1180C
@@ -9310,8 +9204,7 @@ sub_1180C:                              ; CODE XREF: sub_10E66+1CA↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_11906:                              ; CODE XREF: sub_11B7A+9E↓p
-; sub_11B7A+AC↓p ...
+sub_11906:
                 movem.l d0/a0-a1,-(sp)
                 lea     (unk_258AE).l,a0
                 move.b  $71(a1),d0
@@ -9321,7 +9214,7 @@ sub_11906:                              ; CODE XREF: sub_11B7A+9E↓p
                 move.w  #$1F,d0
                 movem.l a0-a1,-(sp)
 
-.loc_11924:                              ; CODE XREF: sub_11906+20↓j
+.loc_11924:
                 move.l  (a1)+,(a0)+
                 dbf     d0,.loc_11924
                 movem.l (sp)+,a0-a1
@@ -9335,15 +9228,14 @@ sub_11906:                              ; CODE XREF: sub_11B7A+9E↓p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_11940:                              ; CODE XREF: sub_10E66:@loc_10F22↑p
-; Race_HandleInputOnFoot+142↑p ...
+sub_11940:
                 movem.l d0-d7/a0-a6,-(sp)
                 cmpa.l  #ram_FF1EAA,a1
                 bne.w   .loc_1195A
                 cmpi.l  #$10000,4(a1)
                 blt.w   .loc_11A58
 
-.loc_1195A:                              ; CODE XREF: sub_11940+A↑j
+.loc_1195A:
                 move.w  $30(a1),$1A(a1)
                 move.w  $32(a1),$1C(a1)
                 move.l  $26(a1),d4
@@ -9370,21 +9262,21 @@ sub_11940:                              ; CODE XREF: sub_10E66:@loc_10F22↑p
                 bpl.w   .loc_119B0
                 neg.w   d3
 
-.loc_119B0:                              ; CODE XREF: sub_11940+6A↑j
+.loc_119B0:
                 cmp.w   #$40,d3 ; '@'
                 bpl.w   .loc_11A58
                 andi.w  #$FF,d2
                 asl.w   #1,d2
                 adda.w  d2,a4
 
-.loc_119C0:                              ; CODE XREF: sub_11940:@loc_11A0C↓j
+.loc_119C0:
                 cmp.w   (RaceTrack_Data1).l,d2
                 bmi.w   .loc_119D4
                 ext.l   d2
                 divu.w  (RaceTrack_Data1).l,d2
                 swap    d2
 
-.loc_119D4:                              ; CODE XREF: sub_11940+86↑j
+.loc_119D4:
                 tst.w   d0
                 ble.w   .loc_11A0E
                 move.b  (a4),d3
@@ -9396,7 +9288,7 @@ sub_11940:                              ; CODE XREF: sub_10E66:@loc_10F22↑p
                 bpl.w   .loc_119F6
                 movea.l #ram_FFDD56,a4
 
-.loc_119F6:                              ; CODE XREF: sub_11940+AC↑j
+.loc_119F6:
                 ext.w   d5
                 add.w   d5,d7
                 addi.w  #$100,d4
@@ -9405,11 +9297,11 @@ sub_11940:                              ; CODE XREF: sub_10E66:@loc_10F22↑p
                 bpl.w   .loc_11A0C
                 move.w  (RaceTrack_Data1).l,d2
 
-.loc_11A0C:                              ; CODE XREF: sub_11940+C2↑j
+.loc_11A0C:
                 bra.s   .loc_119C0
 
 
-.loc_11A0E:                              ; CODE XREF: sub_11940+96↑j
+.loc_11A0E:
                 move.w  d1,$E(a1)
                 move.w  d2,$10(a1)
                 sub.w   d6,$36(a1)
@@ -9424,10 +9316,10 @@ sub_11940:                              ; CODE XREF: sub_10E66:@loc_10F22↑p
                 bra.w   .loc_11A36
 
 
-.loc_11A34:                              ; CODE XREF: sub_11940+E6↑j
+.loc_11A34:
                 mulu.w  d0,d1
 
-.loc_11A36:                              ; CODE XREF: sub_11940+F0↑j
+.loc_11A36:
                 swap    d1
                 move.w  d1,$38(a1)
                 move.b  1(a4),d1
@@ -9439,15 +9331,14 @@ sub_11940:                              ; CODE XREF: sub_10E66:@loc_10F22↑p
                 bra.w   .loc_11A52
 
 
-.loc_11A50:                              ; CODE XREF: sub_11940+102↑j
+.loc_11A50:
                 mulu.w  d0,d1
 
-.loc_11A52:                              ; CODE XREF: sub_11940+10C↑j
+.loc_11A52:
                 swap    d1
                 bsr.w   sub_115C6
 
-.loc_11A58:                              ; CODE XREF: sub_11940+16↑j
-; sub_11940+74↑j
+.loc_11A58:
                 movem.l (sp)+,d0-d7/a0-a6
                 rts
 ; End of function sub_11940
@@ -9741,7 +9632,7 @@ sub_11940:                              ; CODE XREF: sub_10E66:@loc_10F22↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_11B7A:                              ; CODE XREF: sub_10E66:@loc_11010↑p
+sub_11B7A:
                 move.w  4(a1),d0
                 lea     (ram_FFDC58).l,a4
                 andi.w  #$FF,d0
@@ -9754,11 +9645,11 @@ sub_11B7A:                              ; CODE XREF: sub_10E66:@loc_11010↑p
                 bmi.w   .loc_11BAE
                 move.b  #$64,d0 ; 'd'
 
-.loc_11BA8:                              ; CODE XREF: sub_11B7A+1C↑j
+.loc_11BA8:
                 ext.w   d0
                 move.w  d0,$A(a1)
 
-.loc_11BAE:                              ; CODE XREF: sub_11B7A+26↑j
+.loc_11BAE:
                 btst    #0,$68(a1)
                 bne.w   .locret_11C42
                 tst.b   $6E(a1)
@@ -9773,7 +9664,7 @@ sub_11B7A:                              ; CODE XREF: sub_10E66:@loc_11010↑p
                 neg.w   d2
                 neg.w   d3
 
-.loc_11BDC:                              ; CODE XREF: sub_11B7A+58↑j
+.loc_11BDC:
                 cmp.w   #3,d3
                 bmi.w   .locret_11C42
                 add.w   d1,d2
@@ -9791,19 +9682,18 @@ sub_11B7A:                              ; CODE XREF: sub_10E66:@loc_11010↑p
                 bra.w   .loc_11C2A
 
 
-.loc_11C20:                              ; CODE XREF: sub_11B7A+94↑j
+.loc_11C20:
                 jsr     (sub_15538).l
                 bsr.w   sub_11906
 
-.loc_11C2A:                              ; CODE XREF: sub_11B7A+A2↑j
+.loc_11C2A:
                 bclr    #7,$6A(a1)
                 move.w  $12(a1),d0
                 jsr     (sub_1434A).l
                 lsr.w   #2,d0
                 add.w   d0,(Race_ram_BikeDamage).l
 
-.locret_11C42:                           ; CODE XREF: sub_11B7A+3A↑j
-; sub_11B7A+42↑j ...
+.locret_11C42:
                 rts
 ; End of function sub_11B7A
 
@@ -9811,7 +9701,7 @@ sub_11B7A:                              ; CODE XREF: sub_10E66:@loc_11010↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_11C44:                              ; CODE XREF: Race_Update+10C↑p
+sub_11C44:
                 tst.w   (ram_FF1B18).l
                 beq.w   .loc_11C6A
                 move.w  (Race_ram_FrameDelay).l,d0
@@ -9821,10 +9711,10 @@ sub_11C44:                              ; CODE XREF: Race_Update+10C↑p
                 bra.w   .locret_11CC6
 
 
-.loc_11C6A:                              ; CODE XREF: sub_11C44+6↑j
+.loc_11C6A:
                 lea     (ram_FF1A08).l,a0
 
-.loc_11C70:                              ; CODE XREF: sub_11C44+3E↓j
+.loc_11C70:
                 movea.l (a0)+,a2
                 cmpa.l  #$FFFFFFFF,a2
                 beq.w   .locret_11CC6
@@ -9839,7 +9729,7 @@ sub_11C44:                              ; CODE XREF: Race_Update+10C↑p
                 cmp.l   ($4000).w,d0 ; WOW
                 bpl.w   .locret_11CC6
 
-.loc_11CA2:                              ; CODE XREF: sub_11C44+50↑j
+.loc_11CA2:
                 cmp.l   #$60000,d0
                 bpl.w   .locret_11CC6
                 tst.w   $12(a1)
@@ -9847,8 +9737,7 @@ sub_11C44:                              ; CODE XREF: Race_Update+10C↑p
                 move.w  #$12C,(ram_FF1B18).l
                 move.w  (ram_FF1B38).l,(ram_FF1B1A).l
 
-.locret_11CC6:                           ; CODE XREF: sub_11C44+16↑j
-; sub_11C44+22↑j ...
+.locret_11CC6:
                 rts
 ; End of function sub_11C44
 
@@ -9856,7 +9745,7 @@ sub_11C44:                              ; CODE XREF: Race_Update+10C↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_11CC8:                              ; CODE XREF: Race_Update+112↑p
+sub_11CC8:
                 move.w  #0,(ram_FF176A).l
                 move.l  #$6000,(ram_FF3038).l
                 move.w  #$10,(ram_FF303C).l
@@ -9881,12 +9770,10 @@ sub_11CC8:                              ; CODE XREF: Race_Update+112↑p
                 bra.w   .loc_11D44
 
 
-.loc_11D3C:                              ; CODE XREF: sub_11CC8+5A↑j
-; sub_11CC8+64↑j
+.loc_11D3C:
                 move.w  #0,(ram_FF1768).l
 
-.loc_11D44:                              ; CODE XREF: sub_11CC8+70↑j
-; sub_11CC8+8E↓j ...
+.loc_11D44:
                 movea.l (a0)+,a2
                 cmpa.l  #$FFFFFFFF,a2
                 beq.w   .loc_11E8C
@@ -9908,7 +9795,7 @@ sub_11CC8:                              ; CODE XREF: Race_Update+112↑p
                 btst    #4,$68(a1)
                 beq.s   .loc_11D44
 
-.loc_11D92:                              ; CODE XREF: sub_11CC8+9A↑j
+.loc_11D92:
                 cmpa.l  #ram_FF1F2A,a2
                 beq.w   .loc_11DFE
                 tst.w   (ram_FF1768).l
@@ -9916,14 +9803,14 @@ sub_11CC8:                              ; CODE XREF: Race_Update+112↑p
                 cmpa.l  #ram_FF26AA,a2
                 bcs.w   .loc_11DC2
 
-.loc_11DB0:                              ; CODE XREF: sub_11CC8+DA↑j
+.loc_11DB0:
                 cmpi.b  #1,$6E(a2)
                 bcs.w   .loc_1202E
                 bsr.w   sub_1438E
                 bra.w   .loc_1202E
 
 
-.loc_11DC2:                              ; CODE XREF: sub_11CC8+E4↑j
+.loc_11DC2:
                 move.b  $6E(a2),d0
                 bmi.w   .loc_11DFE
                 cmp.b   #1,d0
@@ -9938,14 +9825,13 @@ sub_11CC8:                              ; CODE XREF: Race_Update+112↑p
                 bra.w   .loc_1202E
 
 
-.loc_11DFE:                              ; CODE XREF: sub_11CC8+D0↑j
-; sub_11CC8+FE↑j
+.loc_11DFE:
                 bsr.w   sub_1487C
                 tst.b   (ram_FF1AD6).l
                 bne.w   .loc_11E14
                 move.b  #9,(ram_FF1AD6).l
 
-.loc_11E14:                              ; CODE XREF: sub_11CC8+140↑j
+.loc_11E14:
                 move.w  $C(a1),d0
                 muls.w  #$40,d0
                 move.w  d0,(RaceBike_ram_CurrentSteering).l
@@ -9960,18 +9846,18 @@ sub_11CC8:                              ; CODE XREF: Race_Update+112↑p
                 bra.w   .loc_1202E
 
 
-.loc_11E4A:                              ; CODE XREF: sub_11CC8+16E↑j
+.loc_11E4A:
                 cmpi.b  #3,$6E(a1)
                 bmi.w   .loc_11E5A
                 move.w  #0,$12(a1)
 
-.loc_11E5A:                              ; CODE XREF: sub_11CC8+188↑j
+.loc_11E5A:
                 move.b  #0,$6E(a1)
                 move.b  #$FF,$6F(a1)
                 bra.w   .loc_1202E
 
 
-.loc_11E6A:                              ; CODE XREF: sub_11CC8+164↑j
+.loc_11E6A:
                 tst.w   (ram_FF1B1A).l
                 bne.w   .loc_11E88
                 move.b  #$FF,$6E(a2)
@@ -9979,20 +9865,17 @@ sub_11CC8:                              ; CODE XREF: Race_Update+112↑p
                 bne.w   .loc_11E88
                 bsr.w   sub_11906
 
-.loc_11E88:                              ; CODE XREF: sub_11CC8+1A8↑j
-; sub_11CC8+1B8↑j
+.loc_11E88:
                 bra.w   .loc_1202E
 
 
-.loc_11E8C:                              ; CODE XREF: sub_11CC8+84↑j
-; sub_11CC8+39A↓j
+.loc_11E8C:
                 lea     (unk_2589A).l,a0
                 move.l  #$6000,(ram_FF3038).l
                 move.w  #$37,(ram_FF303C).l ; '7'
                 move.w  #$40,(ram_FF303E).l ; '@'
 
-.loc_11EAC:                              ; CODE XREF: sub_11CC8+1F6↓j
-; sub_11CC8+202↓j
+.loc_11EAC:
                 movea.l (a0)+,a2
                 cmpa.l  #$FFFFFFFF,a2
                 beq.w   .loc_11EF4
@@ -10011,8 +9894,7 @@ sub_11CC8:                              ; CODE XREF: Race_Update+112↑p
                 bra.w   .loc_1202E
 
 
-.loc_11EF4:                              ; CODE XREF: sub_11CC8+1EC↑j
-; sub_11CC8+20E↑j
+.loc_11EF4:
                 move.w  #$60,(ram_FF303C).l ; '`'
                 move.l  #$3700,(ram_FF3038).l
                 move.w  #$40,(ram_FF303E).l ; '@'
@@ -10037,8 +9919,7 @@ sub_11CC8:                              ; CODE XREF: Race_Update+112↑p
                 dc.b $D8
 
 
-.loc_11F58:                              ; CODE XREF: sub_11CC8+252↑j
-; sub_11CC8+260↑j
+.loc_11F58:
                 bsr.w   sub_12070
                 btst    #4,$68(a1)
                 bne.w   .loc_1202E
@@ -10059,7 +9940,7 @@ sub_11CC8:                              ; CODE XREF: Race_Update+112↑p
                 move.w  (ram_FF1B4A).l,d7
                 subq.w  #1,d7
 
-.loc_11FB8:                              ; CODE XREF: sub_11CC8+310↓j
+.loc_11FB8:
                 cmpi.w  #$FFFF,(a0)
                 beq.w   .loc_1202E
                 move.w  d7,-(sp)
@@ -10072,7 +9953,7 @@ sub_11CC8:                              ; CODE XREF: Race_Update+112↑p
                 bra.w   .loc_1202E
 
 
-.loc_11FE0:                              ; CODE XREF: sub_11CC8+30A↑j
+.loc_11FE0:
                 move.w  (sp)+,d7
                 suba.l  #$14,a0
                 move.w  (ram_FF1B0E).l,d0
@@ -10084,13 +9965,12 @@ sub_11CC8:                              ; CODE XREF: Race_Update+112↑p
                 bra.w   .loc_12010
 
 
-.loc_12006:                              ; CODE XREF: sub_11CC8+332↑j
+.loc_12006:
                 subi.w  #$1BB,d0
                 lsr.w   #1,d0
                 addi.w  #$1BB,d0
 
-.loc_12010:                              ; CODE XREF: sub_11CC8+32A↑j
-; sub_11CC8+33A↑j
+.loc_12010:
                 subi.w  #$186,d0
                 lea     (unk_147FC).l,a4
                 move.b  (a4,d0.w),d0
@@ -10100,8 +9980,7 @@ sub_11CC8:                              ; CODE XREF: Race_Update+112↑p
                 movea.l (a4,d0.w),a4
                 jsr     (a4)
 
-.loc_1202E:                              ; CODE XREF: sub_11CC8+EE↑j
-; sub_11CC8+F6↑j ...
+.loc_1202E:
                 tst.b   $6E(a1)
                 bmi.w   .loc_12068
                 bset    #4,$68(a1)
@@ -10114,11 +9993,11 @@ sub_11CC8:                              ; CODE XREF: Race_Update+112↑p
                 bra.w   .loc_11E8C
 
 
-.locret_12066:                           ; CODE XREF: sub_11CC8+37A↑j
+.locret_12066:
                 rts
 
 
-.loc_12068:                              ; CODE XREF: sub_11CC8+36A↑j
+.loc_12068:
                 bclr    #4,$68(a1)
                 rts
 ; End of function sub_11CC8
@@ -10127,8 +10006,7 @@ sub_11CC8:                              ; CODE XREF: Race_Update+112↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_12070:                              ; CODE XREF: sub_11CC8:@loc_11F58↑p
-; sub_1218C:@loc_12384↓p
+sub_12070:
                 movem.l d0-d7/a0-a7,-(sp)
                 movea.l (ram_FFD7D0).l,a0
                 suba.w  #$14,a0
@@ -10140,8 +10018,7 @@ sub_12070:                              ; CODE XREF: sub_11CC8:@loc_11F58↑p
                 lea     (unk_3BF1A).l,a6
                 lea     (unk_14764).l,a5
 
-.loc_120A4:                              ; CODE XREF: sub_12070+BC↓j
-; sub_12070+D4↓j ...
+.loc_120A4:
                 adda.w  #$14,a0
                 move.l  (a2)+,d2
                 cmp.l   #$FFFFFFFF,d2
@@ -10155,11 +10032,11 @@ sub_12070:                              ; CODE XREF: sub_11CC8:@loc_11F58↑p
                 bra.w   .loc_12162
 
 
-.loc_120C8:                              ; CODE XREF: sub_12070+4A↑j
+.loc_120C8:
                 cmp.l   d2,d1
                 bpl.w   .loc_12162
 
-.loc_120CE:                              ; CODE XREF: sub_12070+50↑j
+.loc_120CE:
                 move.w  d3,d2
                 andi.w  #$F,d2
                 asl.w   #5,d2
@@ -10194,14 +10071,14 @@ sub_12070:                              ; CODE XREF: sub_11CC8:@loc_11F58↑p
                 bra.w   .loc_12148
 
 
-.loc_12134:                              ; CODE XREF: sub_12070+A8↑j
+.loc_12134:
                 sub.w   d3,d2
                 move.w  d2,(ram_FF1B14).l
                 sub.w   $4E(a1),d2
                 cmp.w   $30(a1),d2
                 bpl.w   .loc_120A4
 
-.loc_12148:                              ; CODE XREF: sub_12070+C0↑j
+.loc_12148:
                 cmp.w   $32(a1),d5
                 bmi.w   .loc_120A4
                 move.w  4(a5,d4.w),d4
@@ -10210,8 +10087,7 @@ sub_12070:                              ; CODE XREF: sub_11CC8:@loc_11F58↑p
                 movea.l (a4,d4.w),a4
                 jsr     (a4)
 
-.loc_12162:                              ; CODE XREF: sub_12070+40↑j
-; sub_12070+54↑j ...
+.loc_12162:
                 movem.l (sp)+,d0-d7/a0-a7
                 rts
 ; End of function sub_12070
@@ -10257,11 +10133,10 @@ sub_12070:                              ; CODE XREF: sub_11CC8:@loc_11F58↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_1218C:                              ; CODE XREF: Race_Update+118↑p
+sub_1218C:
                 lea     (ram_FF1A0C).l,a0
 
-.loc_12192:                              ; CODE XREF: sub_1218C+20↓j
-; sub_1218C+2E↓j ...
+.loc_12192:
                 movea.l (a0)+,a1
                 cmpa.l  #$FFFFFFFF,a1
                 beq.w   .locret_123A6
@@ -10271,7 +10146,7 @@ sub_1218C:                              ; CODE XREF: Race_Update+118↑p
                 bmi.s   .loc_12192
                 bclr    #4,$68(a1)
 
-.loc_121B4:                              ; CODE XREF: sub_1218C+18↑j
+.loc_121B4:
                 btst    #6,$68(a1)
                 beq.s   .loc_12192
                 move.w  #0,(ram_FF1768).l
@@ -10282,20 +10157,19 @@ sub_1218C:                              ; CODE XREF: Race_Update+118↑p
                 bra.w   .loc_121E6
 
 
-.loc_121DA:                              ; CODE XREF: sub_1218C+40↑j
-; sub_1218C+60↓j ...
+.loc_121DA:
                 movea.l (a0)+,a2
                 cmpa.l  #$FFFFFFFF,a2
                 beq.w   .loc_12288
 
-.loc_121E6:                              ; CODE XREF: sub_1218C+4A↑j
+.loc_121E6:
                 btst    #6,$68(a2)
                 beq.s   .loc_121DA
                 tst.b   $6E(a1)
                 bmi.w   .loc_121FE
                 move.w  #1,(ram_FF1768).l
 
-.loc_121FE:                              ; CODE XREF: sub_1218C+66↑j
+.loc_121FE:
                 bsr.w   sub_124E2
                 btst    #4,$68(a1)
                 bne.w   .loc_12234
@@ -10312,7 +10186,7 @@ sub_1218C:                              ; CODE XREF: Race_Update+118↑p
                 btst    #4,$68(a1)
                 beq.s   .loc_121DA
 
-.loc_12234:                              ; CODE XREF: sub_1218C+7C↑j
+.loc_12234:
                 tst.w   (ram_FF1768).l
                 beq.w   .loc_1224E
                 move.w  $12(a2),d0
@@ -10320,7 +10194,7 @@ sub_1218C:                              ; CODE XREF: Race_Update+118↑p
                 cmp.w   #$FA0,d0
                 ble.w   .loc_1226A
 
-.loc_1224E:                              ; CODE XREF: sub_1218C+AE↑j
+.loc_1224E:
                 cmpi.w  #$7D0,$12(a2)
                 bgt.w   .loc_12272
                 cmpa.l  #ram_FF26AA,a2
@@ -10328,24 +10202,22 @@ sub_1218C:                              ; CODE XREF: Race_Update+118↑p
                 tst.b   $6E(a2)
                 bmi.w   .loc_12272
 
-.loc_1226A:                              ; CODE XREF: sub_1218C+BE↑j
-; sub_1218C+D2↑j
+.loc_1226A:
                 bsr.w   sub_1438E
                 bra.w   .loc_12388
 
 
-.loc_12272:                              ; CODE XREF: sub_1218C+C8↑j
-; sub_1218C+DA↑j
+.loc_12272:
                 bsr.w   sub_1487C
                 tst.w   (ram_FF1768).l
                 bne.w   .loc_12284
                 bsr.w   sub_11906
 
-.loc_12284:                              ; CODE XREF: sub_1218C+F0↑j
+.loc_12284:
                 bra.w   .loc_12388
 
 
-.loc_12288:                              ; CODE XREF: sub_1218C+56↑j
+.loc_12288:
                 move.w  #$60,(ram_FF303C).l ; '`'
                 move.l  #$3700,(ram_FF3038).l
                 move.w  #$40,(ram_FF303E).l ; '@'
@@ -10363,7 +10235,7 @@ sub_1218C:                              ; CODE XREF: Race_Update+118↑p
                 bra.w   .loc_12388
 
 
-.loc_122DC:                              ; CODE XREF: sub_1218C+142↑j
+.loc_122DC:
                 bsr.w   sub_14486
                 move.b  #0,$6E(a1)
                 move.b  #$FF,$6F(a1)
@@ -10371,15 +10243,13 @@ sub_1218C:                              ; CODE XREF: Race_Update+118↑p
                 bne.w   .loc_122FA
                 bsr.w   sub_11906
 
-.loc_122FA:                              ; CODE XREF: sub_1218C+122↑j
-; sub_1218C+130↑j ...
+.loc_122FA:
                 lea     (unk_2589A).l,a0
                 move.l  #$6000,(ram_FF3038).l
                 move.w  #$37,(ram_FF303C).l ; '7'
                 move.w  #$40,(ram_FF303E).l ; '@'
 
-.loc_1231A:                              ; CODE XREF: sub_1218C+1A0↓j
-; sub_1218C+1AC↓j
+.loc_1231A:
                 movea.l (a0)+,a2
                 cmpa.l  #$FFFFFFFF,a2
                 beq.w   .loc_12384
@@ -10396,7 +10266,7 @@ sub_1218C:                              ; CODE XREF: Race_Update+118↑p
                 bra.w   .loc_12388
 
 
-.loc_12356:                              ; CODE XREF: sub_1218C+1BC↑j
+.loc_12356:
                 bsr.w   sub_14486
                 btst    #4,$68(a1)
                 beq.w   .loc_12384
@@ -10407,25 +10277,22 @@ sub_1218C:                              ; CODE XREF: Race_Update+118↑p
                 bne.w   .loc_12388
                 bsr.w   sub_11906
 
-.loc_12384:                              ; CODE XREF: sub_1218C+196↑j
-; sub_1218C+1D4↑j
+.loc_12384:
                 bsr.w   sub_12070
 
-.loc_12388:                              ; CODE XREF: sub_1218C+E2↑j
-; sub_1218C:@loc_12284↑j ...
+.loc_12388:
                 btst    #4,$68(a1)
                 bne.w   .loc_123A0
                 tst.b   $6E(a1)
                 bmi.w   .loc_123A0
                 bset    #4,$68(a1)
 
-.loc_123A0:                              ; CODE XREF: sub_1218C+202↑j
-; sub_1218C+20A↑j
+.loc_123A0:
                 movea.l (sp)+,a0
                 bra.w   .loc_12192
 
 
-.locret_123A6:                           ; CODE XREF: sub_1218C+E↑j
+.locret_123A6:
                 rts
 ; End of function sub_1218C
 
@@ -10433,7 +10300,7 @@ sub_1218C:                              ; CODE XREF: Race_Update+118↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_123A8:                              ; CODE XREF: Race_Update+11E↑p
+sub_123A8:
                 lea     (ram_FF2EAA).l,a1
                 lea     (ram_FF2F2A).l,a2
                 btst    #6,$68(a1)
@@ -10452,13 +10319,12 @@ sub_123A8:                              ; CODE XREF: Race_Update+11E↑p
                 beq.w   .loc_12406
                 neg.l   d1
 
-.loc_12406:                              ; CODE XREF: sub_123A8+58↑j
+.loc_12406:
                 add.l   d1,d0
                 move.l  d0,4(a2)
                 move.w  $12(a1),$12(a2)
 
-.locret_12412:                           ; CODE XREF: sub_123A8+12↑j
-; sub_123A8+1C↑j ...
+.locret_12412:
                 rts
 ; End of function sub_123A8
 
@@ -10466,7 +10332,7 @@ sub_123A8:                              ; CODE XREF: Race_Update+11E↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_12414:                              ; CODE XREF: sub_11CC8+2FA↑p
+sub_12414:
                 cmp.w   $E(a0),d1
                 bcs.w   .loc_124DA
                 cmp.w   $E(a0),d0
@@ -10474,7 +10340,7 @@ sub_12414:                              ; CODE XREF: sub_11CC8+2FA↑p
                 bra.w   .loc_124DA
 
 
-.loc_12428:                              ; CODE XREF: sub_12414+C↑j
+.loc_12428:
                 move.w  $10(a0),d2
                 andi.w  #$F,d2
                 asl.w   #6,d2
@@ -10482,7 +10348,7 @@ sub_12414:                              ; CODE XREF: sub_11CC8+2FA↑p
                 beq.w   .loc_1243E
                 neg.w   d2
 
-.loc_1243E:                              ; CODE XREF: sub_12414+24↑j
+.loc_1243E:
                 lea     (unk_3BF1A).l,a2
                 move.w  8(a0),d0
                 move.w  d0,(ram_FF1B0E).l
@@ -10503,7 +10369,7 @@ sub_12414:                              ; CODE XREF: sub_11CC8+2FA↑p
                 asl.l   #2,d0
                 swap    d0
 
-.loc_12484:                              ; CODE XREF: sub_12414+66↑j
+.loc_12484:
                 move.w  d0,(ram_FF1B10).l
                 move.w  $30(a1),d3
                 move.w  $1A(a1),d4
@@ -10517,7 +10383,7 @@ sub_12414:                              ; CODE XREF: sub_11CC8+2FA↑p
                 bra.w   .loc_124DA
 
 
-.loc_124AE:                              ; CODE XREF: sub_12414+80↑j
+.loc_124AE:
                 sub.w   d0,d2
                 add.w   $4E(a1),d3
                 bclr    #1,$69(a1)
@@ -10526,8 +10392,7 @@ sub_12414:                              ; CODE XREF: sub_11CC8+2FA↑p
                 bra.w   .loc_124DA
 
 
-.loc_124C4:                              ; CODE XREF: sub_12414+92↑j
-; sub_12414+A8↑j
+.loc_124C4:
                 cmp.w   $32(a1),d5
                 bmi.w   .loc_124DA
                 move.w  d2,(ram_FF1B14).l
@@ -10535,8 +10400,7 @@ sub_12414:                              ; CODE XREF: sub_11CC8+2FA↑p
                 rts
 
 
-.loc_124DA:                              ; CODE XREF: sub_12414+4↑j
-; sub_12414+10↑j ...
+.loc_124DA:
                 bclr    #4,$68(a1)
                 rts
 ; End of function sub_12414
@@ -10545,8 +10409,7 @@ sub_12414:                              ; CODE XREF: sub_11CC8+2FA↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_124E2:                              ; CODE XREF: sub_11CC8+90↑p
-; sub_11CC8+BE↑p ...
+sub_124E2:
                 move.w  #0,(ram_FF1766).l
                 move.w  #0,(ram_FF1B16).l
                 move.l  $1E(a1),d0
@@ -10560,7 +10423,7 @@ sub_124E2:                              ; CODE XREF: sub_11CC8+90↑p
                 bra.w   .loc_1280A
 
 
-.loc_1251A:                              ; CODE XREF: sub_124E2+18↑j
+.loc_1251A:
                 bclr    #0,$69(a1)
                 move.l  4(a1),d0
                 addi.l  #$6000,d0
@@ -10569,8 +10432,7 @@ sub_124E2:                              ; CODE XREF: sub_11CC8+90↑p
                 bra.w   .loc_1280A
 
 
-.loc_12536:                              ; CODE XREF: sub_124E2+30↑j
-; sub_124E2+4C↑j
+.loc_12536:
                 move.w  $1A(a1),d0
                 cmp.w   $1A(a2),d0
                 bmi.w   .loc_12698
@@ -10598,12 +10460,11 @@ sub_124E2:                              ; CODE XREF: sub_11CC8+90↑p
                 bra.w   .loc_125B0
 
 
-.loc_125A8:                              ; CODE XREF: sub_124E2+B6↑j
+.loc_125A8:
                 bsr.w   sub_12B24
                 move.w  d0,$50(a1)
 
-.loc_125B0:                              ; CODE XREF: sub_124E2+8E↑j
-; sub_124E2+98↑j ...
+.loc_125B0:
                 move.w  8(a2),d1
                 move.w  $C(a2),d2
                 move.w  #1,d3
@@ -10625,12 +10486,11 @@ sub_124E2:                              ; CODE XREF: sub_11CC8+90↑p
                 bra.w   .loc_1260E
 
 
-.loc_12606:                              ; CODE XREF: sub_124E2+114↑j
+.loc_12606:
                 bsr.w   sub_12B24
                 move.w  d0,$50(a2)
 
-.loc_1260E:                              ; CODE XREF: sub_124E2+F6↑j
-; sub_124E2+100↑j ...
+.loc_1260E:
                 move.w  $30(a1),d0
                 sub.w   $4A(a1),d0
                 sub.w   $4A(a2),d0
@@ -10644,15 +10504,14 @@ sub_124E2:                              ; CODE XREF: sub_11CC8+90↑p
                 bra.w   .loc_12654
 
 
-.loc_1263A:                              ; CODE XREF: sub_124E2+142↑j
+.loc_1263A:
                 move.w  #1,(ram_FF1B16).l
                 move.w  d0,$52(a1)
                 tst.w   $50(a1)
                 beq.w   .loc_12654
                 bset    #7,$69(a1)
 
-.loc_12654:                              ; CODE XREF: sub_124E2+154↑j
-; sub_124E2+168↑j
+.loc_12654:
                 sub.w   $50(a2),d1
                 bmi.w   .loc_1266E
                 move.w  #0,d1
@@ -10661,7 +10520,7 @@ sub_124E2:                              ; CODE XREF: sub_11CC8+90↑p
                 bra.w   .loc_1268A
 
 
-.loc_1266E:                              ; CODE XREF: sub_124E2+176↑j
+.loc_1266E:
                 move.w  #1,(ram_FF1B16).l
                 neg.w   d1
                 move.w  d1,$52(a2)
@@ -10669,14 +10528,13 @@ sub_124E2:                              ; CODE XREF: sub_11CC8+90↑p
                 beq.w   .loc_1268A
                 bset    #7,$69(a2)
 
-.loc_1268A:                              ; CODE XREF: sub_124E2+188↑j
-; sub_124E2+19E↑j
+.loc_1268A:
                 tst.w   (ram_FF1B16).l
                 beq.w   .loc_1280A
                 bra.w   .loc_127EA
 
 
-.loc_12698:                              ; CODE XREF: sub_124E2+5C↑j
+.loc_12698:
                 bclr    #1,$69(a1)
                 move.w  8(a1),d1
                 move.w  $C(a1),d2
@@ -10701,12 +10559,11 @@ sub_124E2:                              ; CODE XREF: sub_11CC8+90↑p
                 bra.w   .loc_12706
 
 
-.loc_126FE:                              ; CODE XREF: sub_124E2+20C↑j
+.loc_126FE:
                 bsr.w   sub_12B24
                 move.w  d0,$50(a1)
 
-.loc_12706:                              ; CODE XREF: sub_124E2+1E4↑j
-; sub_124E2+1EE↑j ...
+.loc_12706:
                 move.w  8(a2),d1
                 move.w  $C(a2),d2
                 move.w  #0,d3
@@ -10728,12 +10585,11 @@ sub_124E2:                              ; CODE XREF: sub_11CC8+90↑p
                 bra.w   .loc_12764
 
 
-.loc_1275C:                              ; CODE XREF: sub_124E2+26A↑j
+.loc_1275C:
                 bsr.w   sub_12B24
                 move.w  d0,$50(a2)
 
-.loc_12764:                              ; CODE XREF: sub_124E2+24C↑j
-; sub_124E2+256↑j ...
+.loc_12764:
                 move.w  $30(a1),d0
                 add.w   $4A(a1),d0
                 add.w   $4A(a2),d0
@@ -10747,15 +10603,14 @@ sub_124E2:                              ; CODE XREF: sub_11CC8+90↑p
                 bra.w   .loc_127AA
 
 
-.loc_12790:                              ; CODE XREF: sub_124E2+298↑j
+.loc_12790:
                 move.w  #1,(ram_FF1B16).l
                 move.w  d0,$52(a1)
                 tst.w   $50(a1)
                 beq.w   .loc_127AA
                 bset    #7,$69(a1)
 
-.loc_127AA:                              ; CODE XREF: sub_124E2+2AA↑j
-; sub_124E2+2BE↑j
+.loc_127AA:
                 add.w   $50(a2),d1
                 bpl.w   .loc_127C4
                 move.w  #0,d1
@@ -10764,7 +10619,7 @@ sub_124E2:                              ; CODE XREF: sub_11CC8+90↑p
                 bra.w   .loc_127E0
 
 
-.loc_127C4:                              ; CODE XREF: sub_124E2+2CC↑j
+.loc_127C4:
                 move.w  #1,(ram_FF1B16).l
                 neg.w   d1
                 move.w  d1,$52(a2)
@@ -10772,12 +10627,11 @@ sub_124E2:                              ; CODE XREF: sub_11CC8+90↑p
                 beq.w   .loc_127E0
                 bset    #7,$69(a2)
 
-.loc_127E0:                              ; CODE XREF: sub_124E2+2DE↑j
-; sub_124E2+2F4↑j
+.loc_127E0:
                 tst.w   (ram_FF1B16).l
                 beq.w   .loc_1280A
 
-.loc_127EA:                              ; CODE XREF: sub_124E2+1B2↑j
+.loc_127EA:
                 move.w  $32(a1),d0
                 sub.w   (ram_FF303E).l,d0
                 sub.w   $32(a2),d0
@@ -10787,8 +10641,7 @@ sub_124E2:                              ; CODE XREF: sub_11CC8+90↑p
                 rts
 
 
-.loc_1280A:                              ; CODE XREF: sub_124E2+34↑j
-; sub_124E2+50↑j ...
+.loc_1280A:
                 bclr    #4,$68(a1)
                 bclr    #7,$69(a1)
                 bclr    #7,$69(a2)
@@ -10799,11 +10652,10 @@ sub_124E2:                              ; CODE XREF: sub_11CC8+90↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_1281E:                              ; CODE XREF: Race_Update+106↑p
+sub_1281E:
                 lea     (ram_FF1A0C).l,a0
 
-.loc_12824:                              ; CODE XREF: sub_1281E+16↓j
-; sub_1281E+1E↓j
+.loc_12824:
                 movea.l (a0)+,a1
                 cmpa.w  #$FFFF,a1
                 beq.w   .loc_1283E
@@ -10813,11 +10665,10 @@ sub_1281E:                              ; CODE XREF: Race_Update+106↑p
                 bra.s   .loc_12824
 
 
-.loc_1283E:                              ; CODE XREF: sub_1281E+C↑j
+.loc_1283E:
                 lea     (unk_2589A).l,a0
 
-.loc_12844:                              ; CODE XREF: sub_1281E+36↓j
-; sub_1281E+3E↓j
+.loc_12844:
                 movea.l (a0)+,a1
                 cmpa.w  #$FFFF,a1
                 beq.w   .loc_1285E
@@ -10827,7 +10678,7 @@ sub_1281E:                              ; CODE XREF: Race_Update+106↑p
                 bra.s   .loc_12844
 
 
-.loc_1285E:                              ; CODE XREF: sub_1281E+2C↑j
+.loc_1285E:
                 bclr    #4,(ram_FF3012).l
                 rts
 ; End of function sub_1281E
@@ -10836,11 +10687,10 @@ sub_1281E:                              ; CODE XREF: Race_Update+106↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_12868:                              ; CODE XREF: Race_Update+C0↑p
+sub_12868:
                 lea     (unk_2589A).l,a2
 
-.loc_1286E:                              ; CODE XREF: sub_12868+16↓j
-; sub_12868+1E↓j ...
+.loc_1286E:
                 movea.l (a2)+,a1
                 cmpa.w  #$FFFF,a1
                 beq.w   .locret_128DE
@@ -10863,10 +10713,10 @@ sub_12868:                              ; CODE XREF: Race_Update+C0↑p
                 bra.w   .loc_128C2
 
 
-.loc_128BE:                              ; CODE XREF: sub_12868+4A↑j
+.loc_128BE:
                 bsr.w   sub_11940
 
-.loc_128C2:                              ; CODE XREF: sub_12868+52↑j
+.loc_128C2:
                 move.w  $36(a1),d1
                 add.w   $38(a1),d1
                 move.w  d1,0.w(a1)
@@ -10876,7 +10726,7 @@ sub_12868:                              ; CODE XREF: Race_Update+C0↑p
                 bra.s   .loc_1286E
 
 
-.locret_128DE:                           ; CODE XREF: sub_12868+C↑j
+.locret_128DE:
                 rts
 ; End of function sub_12868
 
@@ -10884,7 +10734,7 @@ sub_12868:                              ; CODE XREF: Race_Update+C0↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_128E0:                              ; CODE XREF: Race_Update+F4↑p
+sub_128E0:
                 cmpi.l  #$708,(ram_FF1E9A).l
                 bcs.w   .locret_12972
                 bset    #6,$68(a1)
@@ -10898,10 +10748,10 @@ sub_128E0:                              ; CODE XREF: Race_Update+F4↑p
                 bra.w   .loc_12920
 
 
-.loc_1291A:                              ; CODE XREF: sub_128E0+2C↑j
+.loc_1291A:
                 move.b  #2,$73(a1)
 
-.loc_12920:                              ; CODE XREF: sub_128E0+36↑j
+.loc_12920:
                 tst.w   d0
                 bmi.w   .loc_12942
                 addq.w  #1,d1
@@ -10913,7 +10763,7 @@ sub_128E0:                              ; CODE XREF: Race_Update+F4↑p
                 bra.w   .loc_1295A
 
 
-.loc_12942:                              ; CODE XREF: sub_128E0+42↑j
+.loc_12942:
                 bclr    #3,$69(a1)
                 andi.w  #$7FF,d0
                 neg.w   d0
@@ -10921,7 +10771,7 @@ sub_128E0:                              ; CODE XREF: Race_Update+F4↑p
                 move.w  d0,0.w(a1)
                 move.w  d0,$1A(a1)
 
-.loc_1295A:                              ; CODE XREF: sub_128E0+5E↑j
+.loc_1295A:
                 move.w  #0,$32(a1)
                 move.w  #$1770,$12(a1)
                 swap    d1
@@ -10929,7 +10779,7 @@ sub_128E0:                              ; CODE XREF: Race_Update+F4↑p
                 move.l  d1,4(a1)
                 move.l  d1,$1E(a1)
 
-.locret_12972:                           ; CODE XREF: sub_128E0+A↑j
+.locret_12972:
                 rts
 ; End of function sub_128E0
 
@@ -10937,7 +10787,7 @@ sub_128E0:                              ; CODE XREF: Race_Update+F4↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_12974:                              ; CODE XREF: Race_Update:@loc_C106↑p
+sub_12974:
                 lea     (ram_FF2FAA).l,a1
                 cmpi.l  #$708,(ram_FF1E9A).l
                 bcc.w   .loc_12992
@@ -10945,7 +10795,7 @@ sub_12974:                              ; CODE XREF: Race_Update:@loc_C106↑p
                 bra.w   .locret_12A86
 
 
-.loc_12992:                              ; CODE XREF: sub_12974+10↑j
+.loc_12992:
                 btst    #6,$68(a1)
                 beq.w   .locret_12A86
                 move.w  $30(a1),d0
@@ -10953,13 +10803,12 @@ sub_12974:                              ; CODE XREF: Race_Update:@loc_C106↑p
                 beq.w   .loc_129AC
                 neg.w   d0
 
-.loc_129AC:                              ; CODE XREF: sub_12974+32↑j
+.loc_129AC:
                 tst.w   d0
                 bpl.w   .loc_12A32
                 lea     (unk_2589A).l,a0
 
-.loc_129B8:                              ; CODE XREF: sub_12974+62↓j
-; sub_12974+6A↓j ...
+.loc_129B8:
                 movea.l (a0)+,a2
                 cmpa.l  #$FFFFFFFF,a2
                 beq.w   .loc_12A32
@@ -10973,13 +10822,13 @@ sub_12974:                              ; CODE XREF: Race_Update:@loc_C106↑p
                 bra.w   .loc_129F4
 
 
-.loc_129E4:                              ; CODE XREF: sub_12974+58↑j
+.loc_129E4:
                 btst    #3,$69(a2)
                 beq.s   .loc_129B8
                 cmp.l   #$100000,d1
                 bpl.s   .loc_129B8
 
-.loc_129F4:                              ; CODE XREF: sub_12974+6C↑j
+.loc_129F4:
                 neg.w   d0
                 subi.w  #$100,d0
                 bmi.w   .loc_12A32
@@ -10990,7 +10839,7 @@ sub_12974:                              ; CODE XREF: Race_Update:@loc_C106↑p
                 bra.w   .loc_12A38
 
 
-.loc_12A16:                              ; CODE XREF: sub_12974+8E↑j
+.loc_12A16:
                 ext.l   d0
                 asl.l   #8,d0
                 move.w  $12(a1),d1
@@ -11001,12 +10850,10 @@ sub_12974:                              ; CODE XREF: Race_Update:@loc_C106↑p
                 bra.w   .loc_12A38
 
 
-.loc_12A32:                              ; CODE XREF: sub_12974+3A↑j
-; sub_12974+4C↑j ...
+.loc_12A32:
                 move.w  #$20,$14(a1) ; ' '
 
-.loc_12A38:                              ; CODE XREF: sub_12974+9E↑j
-; sub_12974+BA↑j
+.loc_12A38:
                 move.w  $12(a1),d0
                 move.w  (Race_ram_FrameDelay).l,d2
                 move.w  $14(a1),d1
@@ -11018,12 +10865,12 @@ sub_12974:                              ; CODE XREF: Race_Update:@loc_C106↑p
                 bra.w   .loc_12A7C
 
 
-.loc_12A5C:                              ; CODE XREF: sub_12974+D6↑j
+.loc_12A5C:
                 cmp.w   #$1770,d0
                 ble.w   .loc_12A68
                 move.w  #$1770,d0
 
-.loc_12A68:                              ; CODE XREF: sub_12974+EC↑j
+.loc_12A68:
                 move.w  d0,$12(a1)
                 mulu.w  d2,d0
                 lsr.l   #8,d0
@@ -11031,13 +10878,11 @@ sub_12974:                              ; CODE XREF: Race_Update:@loc_C106↑p
                 beq.w   .loc_12A7C
                 neg.w   d0
 
-.loc_12A7C:                              ; CODE XREF: sub_12974+E4↑j
-; sub_12974+102↑j
+.loc_12A7C:
                 move.w  $30(a1),$1A(a1)
                 add.w   d0,$30(a1)
 
-.locret_12A86:                           ; CODE XREF: sub_12974+1A↑j
-; sub_12974+24↑j
+.locret_12A86:
                 rts
 ; End of function sub_12974
 
@@ -11045,15 +10890,14 @@ sub_12974:                              ; CODE XREF: Race_Update:@loc_C106↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_12A88:                              ; CODE XREF: sub_124E2+7C↑p
-; sub_124E2+E4↑p ...
+sub_12A88:
                 cmp.b   #$10,d4
                 bpl.w   .loc_12A96
                 bsr.w   sub_12A9C
                 rts
 
 
-.loc_12A96:                              ; CODE XREF: sub_12A88+4↑j
+.loc_12A96:
                 bsr.w   sub_12AF8
                 rts
 ; End of function sub_12A88
@@ -11062,8 +10906,7 @@ sub_12A88:                              ; CODE XREF: sub_124E2+7C↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_12A9C:                              ; CODE XREF: sub_11CC8+3C↑p
-; sub_11CC8+48↑p ...
+sub_12A9C:
                 movem.l d1-d3,-(sp)
                 lea     (unk_12B7C).l,a6
                 asr.w   #3,d2
@@ -11076,25 +10919,24 @@ sub_12A9C:                              ; CODE XREF: sub_11CC8+3C↑p
                 bra.w   .loc_12ACC
 
 
-.loc_12AC0:                              ; CODE XREF: sub_12A9C+12↑j
+.loc_12AC0:
                 cmp.w   #4,d2
                 ble.w   .loc_12ACC
                 move.w  #4,d2
 
-.loc_12ACC:                              ; CODE XREF: sub_12A9C+18↑j
-; sub_12A9C+20↑j ...
+.loc_12ACC:
                 asl.w   #1,d2
                 add.w   d2,d3
                 asr.w   #4,d1
                 bpl.w   .loc_12AD8
                 neg.w   d1
 
-.loc_12AD8:                              ; CODE XREF: sub_12A9C+36↑j
+.loc_12AD8:
                 cmp.w   #3,d1
                 ble.w   .loc_12AE4
                 move.w  #3,d1
 
-.loc_12AE4:                              ; CODE XREF: sub_12A9C+40↑j
+.loc_12AE4:
                 asl.w   #1,d1
                 add.w   d1,d3
                 asl.w   #2,d1
@@ -11109,14 +10951,14 @@ sub_12A9C:                              ; CODE XREF: sub_11CC8+3C↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_12AF8:                              ; CODE XREF: sub_12A88:@loc_12A96↑p
+sub_12AF8:
                 cmp.b   #$12,d4
                 bpl.w   .loc_12B06
                 move.w  #$37,d0 ; '7'
                 rts
 
 
-.loc_12B06:                              ; CODE XREF: sub_12AF8+4↑j
+.loc_12B06:
                 move.w  #$60,d0 ; '`'
                 rts
 ; End of function sub_12AF8
@@ -11125,18 +10967,17 @@ sub_12AF8:                              ; CODE XREF: sub_12A88:@loc_12A96↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_12B0C:                              ; CODE XREF: sub_124E2+BA↑p
-; sub_124E2+118↑p ...
+sub_12B0C:
                 btst    #1,$6B(a1)
                 beq.w   .loc_12B1E
                 move.w  #$28,d0 ; '('
                 bra.w   .locret_12B22
 
 
-.loc_12B1E:                              ; CODE XREF: sub_12B0C+6↑j
+.loc_12B1E:
                 move.w  #$19,d0
 
-.locret_12B22:                           ; CODE XREF: sub_12B0C+E↑j
+.locret_12B22:
                 rts
 ; End of function sub_12B0C
 
@@ -11144,8 +10985,7 @@ sub_12B0C:                              ; CODE XREF: sub_124E2+BA↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_12B24:                              ; CODE XREF: sub_124E2:@loc_125A8↑p
-; sub_124E2:@loc_12606↑p ...
+sub_12B24:
                 move.w  #$1A,d0
                 rts
 ; End of function sub_12B24
@@ -11233,7 +11073,7 @@ sub_12B24:                              ; CODE XREF: sub_124E2:@loc_125A8↑p
                 dc.b $92
                 dc.b $4E ; N
                 dc.b $75 ; u
-unk_12B7C:      dc.b $10                ; DATA XREF: sub_12A9C+4↑o
+unk_12B7C:      dc.b $10
                 dc.b $19
                 dc.b  $C
                 dc.b $13
@@ -11323,8 +11163,7 @@ unk_12B7C:      dc.b $10                ; DATA XREF: sub_12A9C+4↑o
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_12BD2:                              ; CODE XREF: sub_10E66:@loc_11018↑p
-; sub_1103A+6C↑p
+sub_12BD2:
                 move.w  4(a1),d0
                 lea     (ram_FFDC58).l,a4
                 move.w  d0,d1
@@ -11332,7 +11171,7 @@ sub_12BD2:                              ; CODE XREF: sub_10E66:@loc_11018↑p
                 bpl.w   .loc_12BEA
                 neg.w   d1
 
-.loc_12BEA:                              ; CODE XREF: sub_12BD2+12↑j
+.loc_12BEA:
                 cmp.w   #$40,d1 ; '@'
                 bpl.w   .locret_12C98
                 andi.w  #$FF,d0
@@ -11344,11 +11183,11 @@ sub_12BD2:                              ; CODE XREF: sub_10E66:@loc_11018↑p
                 bmi.w   .loc_12C1C
                 move.b  (ram_FF1AC8).l,d1
 
-.loc_12C16:                              ; CODE XREF: sub_12BD2+30↑j
+.loc_12C16:
                 ext.w   d1
                 move.w  d1,$A(a1)
 
-.loc_12C1C:                              ; CODE XREF: sub_12BD2+3A↑j
+.loc_12C1C:
                 addi.w  #$C,d0
                 andi.w  #$1FF,d0
                 move.b  2(a4,d0.w),d0
@@ -11358,14 +11197,14 @@ sub_12BD2:                              ; CODE XREF: sub_10E66:@loc_11018↑p
                 beq.w   .loc_12C3C
                 add.w   $46(a1),d0
 
-.loc_12C3C:                              ; CODE XREF: sub_12BD2+62↑j
+.loc_12C3C:
                 bsr.w   sub_12CCE
                 move.w  $C(a1),8(a1)
                 move.w  8(a1),d1
                 bpl.w   .loc_12C50
                 neg.w   d1
 
-.loc_12C50:                              ; CODE XREF: sub_12BD2+78↑j
+.loc_12C50:
                 cmp.w   #$7F,d1
                 bmi.w   .locret_12C98
                 cmpi.b  #$FF,$6E(a1)
@@ -11376,18 +11215,17 @@ sub_12BD2:                              ; CODE XREF: sub_10E66:@loc_11018↑p
                 bra.w   .loc_12C7C
 
 
-.loc_12C76:                              ; CODE XREF: sub_12BD2+96↑j
+.loc_12C76:
                 jsr     (sub_1555C).l
 
-.loc_12C7C:                              ; CODE XREF: sub_12BD2+A0↑j
+.loc_12C7C:
                 move.b  #0,$6E(a1)
                 move.b  #$FF,$6F(a1)
                 bset    #4,$68(a1)
                 bsr.w   sub_11906
                 bclr    #7,$6A(a1)
 
-.locret_12C98:                           ; CODE XREF: sub_12BD2+1C↑j
-; sub_12BD2+82↑j ...
+.locret_12C98:
                 rts
 ; End of function sub_12BD2
 
@@ -11395,7 +11233,7 @@ sub_12BD2:                              ; CODE XREF: sub_10E66:@loc_11018↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_12C9A:                              ; CODE XREF: sub_12868+6A↑p
+sub_12C9A:
                 move.w  4(a1),d0
                 lea     (ram_FFDC58).l,a4
                 andi.w  #$FF,d0
@@ -11416,7 +11254,7 @@ sub_12C9A:                              ; CODE XREF: sub_12868+6A↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_12CCE:                              ; CODE XREF: sub_12BD2:@loc_12C3C↑p
+sub_12CCE:
                 move.w  (Race_ram_FrameDelay).l,d1
                 asl.w   #1,d1
                 move.w  d0,d2
@@ -11431,7 +11269,7 @@ sub_12CCE:                              ; CODE XREF: sub_12BD2:@loc_12C3C↑p
                 bra.w   .locret_12D08
 
 
-.loc_12CF4:                              ; CODE XREF: sub_12CCE+10↑j
+.loc_12CF4:
                 sub.w   d3,d2
                 cmp.w   d1,d2
                 bmi.w   .loc_12D04
@@ -11439,18 +11277,15 @@ sub_12CCE:                              ; CODE XREF: sub_12BD2:@loc_12C3C↑p
                 bra.w   .locret_12D08
 
 
-.loc_12D04:                              ; CODE XREF: sub_12CCE+1A↑j
-; sub_12CCE+2A↑j
+.loc_12D04:
                 move.w  d0,$C(a1)
 
-.locret_12D08:                           ; CODE XREF: sub_12CCE+22↑j
-; sub_12CCE+32↑j
+.locret_12D08:
                 rts
 ; End of function sub_12CCE
 
 
-unk_12D0A:      dc.b $FF                ; DATA XREF: sub_1384C+2↓o
-; sub_13892+2↓o
+unk_12D0A:      dc.b $FF
                 dc.b $60 ; `
                 dc.b $FF
                 dc.b $A0
@@ -11862,15 +11697,14 @@ unk_12D0A:      dc.b $FF                ; DATA XREF: sub_1384C+2↓o
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_12EA2:                              ; CODE XREF: Race_Update+12A↑p
+sub_12EA2:
                 move.w  #0,(ram_FF1A98).l
                 lea     (ram_FF1A08).l,a0
                 tst.w   (MainMenu_ram_DemoMode).l
                 bne.w   .loc_12EBC
                 addq.w  #4,a0
 
-.loc_12EBC:                              ; CODE XREF: sub_12EA2+14↑j
-; sub_12EA2+40↓j ...
+.loc_12EBC:
                 movea.l (a0)+,a1
                 cmpa.l  #$FFFFFFFF,a1
                 beq.w   .locret_12FE2
@@ -11884,8 +11718,7 @@ sub_12EA2:                              ; CODE XREF: Race_Update+12A↑p
                 bra.s   .loc_12EBC
 
 
-.loc_12EE4:                              ; CODE XREF: sub_12EA2+2C↑j
-; sub_12EA2+34↑j
+.loc_12EE4:
                 move.b  $75(a1),d2
                 ext.w   d2
                 asl.w   #2,d2
@@ -11898,7 +11731,7 @@ sub_12EA2:                              ; CODE XREF: Race_Update+12A↑p
                 bcs.w   .loc_12F14
                 move.w  $E(a4),d0
 
-.loc_12F14:                              ; CODE XREF: sub_12EA2+6A↑j
+.loc_12F14:
                 move.w  d0,$5C(a1)
                 move.l  a0,-(sp)
                 btst    #7,(ram_FF1EAA + STRUCT_OFFSET_68).l
@@ -11913,7 +11746,7 @@ sub_12EA2:                              ; CODE XREF: Race_Update+12A↑p
                 bra.w   .loc_12FDC
 
 
-.loc_12F4A:                              ; CODE XREF: sub_12EA2+8E↑j
+.loc_12F4A:
                 cmp.w   #$22,d0 ; '"'
                 bmi.w   .loc_12F60
                 bclr    #6,$68(a1)
@@ -11921,8 +11754,7 @@ sub_12EA2:                              ; CODE XREF: Race_Update+12A↑p
                 bra.w   .loc_12FDC
 
 
-.loc_12F60:                              ; CODE XREF: sub_12EA2+80↑j
-; sub_12EA2+96↑j ...
+.loc_12F60:
                 bset    #6,$68(a1)
                 move.b  $74(a1),d2
                 ext.w   d2
@@ -11939,7 +11771,7 @@ sub_12EA2:                              ; CODE XREF: Race_Update+12A↑p
                 cmpi.w  #3,(ram_FF0520).l
                 bne.w   .loc_12FD8
 
-.loc_12FA6:                              ; CODE XREF: sub_12EA2+F4↑j
+.loc_12FA6:
                 move.w  STRUCT_OFFSET_66(a1),d0
                 cmp.w   (ram_FF1EAA + STRUCT_OFFSET_SPEED).l,d0
                 bgt.w   .loc_12FD8
@@ -11949,23 +11781,20 @@ sub_12EA2:                              ; CODE XREF: Race_Update+12A↑p
                 cmp.w   (ram_FF1A96).l,d0
                 bpl.w   .loc_12FD8
 
-.loc_12FCE:                              ; CODE XREF: sub_12EA2+E6↑j
-; sub_12EA2+118↑j
+.loc_12FCE:
                 addi.w  #1,(ram_FF1A98).l
                 addq.w  #4,a4
 
-.loc_12FD8:                              ; CODE XREF: sub_12EA2+DC↑j
-; sub_12EA2+100↑j ...
+.loc_12FD8:
                 movea.l (a4),a6
                 jsr     (a6)
 
-.loc_12FDC:                              ; CODE XREF: sub_12EA2+A4↑j
-; sub_12EA2+BA↑j
+.loc_12FDC:
                 movea.l (sp)+,a0
                 bra.w   .loc_12EBC
 
 
-.locret_12FE2:                           ; CODE XREF: sub_12EA2+22↑j
+.locret_12FE2:
                 rts
 ; End of function sub_12EA2
 
@@ -12264,10 +12093,10 @@ sub_12EA2:                              ; CODE XREF: Race_Update+12A↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_13106:                              ; CODE XREF: Race_Update+130↑p
+sub_13106:
                 lea     (unk_2589A).l,a0
 
-.loc_1310C:                              ; CODE XREF: sub_13106+26↓j
+.loc_1310C:
                 movea.l (a0)+,a1
                 cmpa.l  #$FFFFFFFF,a1
                 beq.w   .locret_1312E
@@ -12280,7 +12109,7 @@ sub_13106:                              ; CODE XREF: Race_Update+130↑p
                 bra.s   .loc_1310C
 
 
-.locret_1312E:                           ; CODE XREF: sub_13106+E↑j
+.locret_1312E:
                 rts
 ; End of function sub_13106
 
@@ -12431,8 +12260,7 @@ sub_13106:                              ; CODE XREF: Race_Update+130↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_131BE:                              ; CODE XREF: sub_165D0+A↓p
-; sub_16612+6↓p ...
+sub_131BE:
                 lea     (ram_FF1EAA).l,a2
                 move.w  $12(a1),d6
                 movea.l (ram_FF1A68).l,a4
@@ -12441,7 +12269,7 @@ sub_131BE:                              ; CODE XREF: sub_165D0+A↓p
                 cmp.w   STRUCT_OFFSET_66(a1),d6
                 bmi.w   .loc_1325E
 
-.loc_131E0:                              ; CODE XREF: sub_131BE+16↑j
+.loc_131E0:
                 sub.w   $12(a2),d6
                 move.l  4(a1),d7
                 sub.l   4(a2),d7
@@ -12451,7 +12279,7 @@ sub_131BE:                              ; CODE XREF: sub_165D0+A↓p
                 tst.b   $6E(a2)
                 bpl.w   .loc_1325E
 
-.loc_13202:                              ; CODE XREF: sub_131BE+38↑j
+.loc_13202:
                 tst.w   d6
                 bpl.w   .loc_13280
                 neg.w   d6
@@ -12475,7 +12303,7 @@ sub_131BE:                              ; CODE XREF: sub_165D0+A↓p
                 bra.w   .loc_1328C
 
 
-.loc_13248:                              ; CODE XREF: sub_131BE+2E↑j
+.loc_13248:
                 tst.w   d6
                 ble.w   .loc_1325E
                 neg.l   d7
@@ -12485,8 +12313,7 @@ sub_131BE:                              ; CODE XREF: sub_165D0+A↓p
                 cmp.l   d6,d7
                 bmi.w   .loc_13280
 
-.loc_1325E:                              ; CODE XREF: sub_131BE+1E↑j
-; sub_131BE+40↑j ...
+.loc_1325E:
                 bset    #1,$68(a1)
                 bclr    #2,$68(a1)
                 btst    #5,$68(a1)
@@ -12495,13 +12322,11 @@ sub_131BE:                              ; CODE XREF: sub_165D0+A↓p
                 cmp.w   $12(a1),d0
                 bpl.w   .loc_1328C
 
-.loc_13280:                              ; CODE XREF: sub_131BE+46↑j
-; sub_131BE+9C↑j ...
+.loc_13280:
                 bset    #2,$68(a1)
                 bclr    #1,$68(a1)
 
-.loc_1328C:                              ; CODE XREF: sub_131BE+86↑j
-; sub_131BE+BE↑j
+.loc_1328C:
                 bsr.w   sub_13A92
                 rts
 ; End of function sub_131BE
@@ -12510,7 +12335,7 @@ sub_131BE:                              ; CODE XREF: sub_165D0+A↓p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_13292:                              ; CODE XREF: sub_166DC+E↓p
+sub_13292:
                 lea     (ram_FF1EAA).l,a2
                 move.w  $12(a1),d6
                 movea.l (ram_FF1A68).l,a4
@@ -12541,7 +12366,7 @@ sub_13292:                              ; CODE XREF: sub_166DC+E↓p
                 bra.w   .loc_13308
 
 
-.loc_132F4:                              ; CODE XREF: sub_13292+22↑j
+.loc_132F4:
                 tst.w   d6
                 ble.w   .loc_13308
                 divu.w  d6,d7
@@ -12550,8 +12375,7 @@ sub_13292:                              ; CODE XREF: sub_166DC+E↓p
                 cmp.l   d6,d7
                 bmi.w   .loc_1332A
 
-.loc_13308:                              ; CODE XREF: sub_13292+5E↑j
-; sub_13292+64↑j
+.loc_13308:
                 bset    #1,$68(a1)
                 bclr    #2,$68(a1)
                 btst    #5,$68(a1)
@@ -12560,12 +12384,11 @@ sub_13292:                              ; CODE XREF: sub_166DC+E↓p
                 cmp.w   $12(a1),d0
                 bpl.w   .loc_13336
 
-.loc_1332A:                              ; CODE XREF: sub_13292+28↑j
-; sub_13292+5A↑j ...
+.loc_1332A:
                 bset    #2,$68(a1)
                 bclr    #1,$68(a1)
 
-.loc_13336:                              ; CODE XREF: sub_13292+94↑j
+.loc_13336:
                 bsr.w   sub_13A92
                 rts
 ; End of function sub_13292
@@ -12574,8 +12397,7 @@ sub_13292:                              ; CODE XREF: sub_166DC+E↓p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_1333C:                              ; CODE XREF: sub_16612+C↓p
-; sub_16644+1C↓p ...
+sub_1333C:
                 move.w  $30(a2),d0
                 move.w  $30(a1),d2
                 cmpa.l  #ram_FF1F2A,a1
@@ -12588,25 +12410,24 @@ sub_1333C:                              ; CODE XREF: sub_16612+C↓p
                 bra.w   .loc_13370
 
 
-.loc_13364:                              ; CODE XREF: sub_1333C+14↑j
+.loc_13364:
                 cmp.w   #$C4,d0
                 ble.w   .loc_13370
                 move.w  #$C4,d0
 
-.loc_13370:                              ; CODE XREF: sub_1333C+E↑j
-; sub_1333C+1C↑j ...
+.loc_13370:
                 sub.w   d2,d0
                 bmi.w   .loc_13378
                 neg.w   d1
 
-.loc_13378:                              ; CODE XREF: sub_1333C+36↑j
+.loc_13378:
                 add.w   d1,d0
                 move.w  $12(a1),d1
                 cmpa.l  #ram_FF1F2A,a1
                 beq.w   .loc_1338A
                 lsr.w   #1,d1
 
-.loc_1338A:                              ; CODE XREF: sub_1333C+48↑j
+.loc_1338A:
                 lsr.w   #8,d1
                 beq.w   .locret_133EE
                 movem.l d0-d1,-(sp)
@@ -12622,13 +12443,13 @@ sub_1333C:                              ; CODE XREF: sub_16612+C↓p
                 bra.w   .loc_133E4
 
 
-.loc_133B8:                              ; CODE XREF: sub_1333C+70↑j
+.loc_133B8:
                 ext.l   d0
                 swap    d0
                 divs.w  d1,d0
                 asr.w   #8,d0
 
-.loc_133C0:                              ; CODE XREF: sub_1333C+64↑j
+.loc_133C0:
                 movea.l (ram_FF1A68).l,a4
                 move.w  6(a4),d1
                 tst.w   d0
@@ -12639,19 +12460,18 @@ sub_1333C:                              ; CODE XREF: sub_16612+C↓p
                 bra.w   .loc_133E2
 
 
-.loc_133DC:                              ; CODE XREF: sub_1333C+90↑j
+.loc_133DC:
                 cmp.w   d1,d0
                 ble.w   .loc_133E4
 
-.loc_133E2:                              ; CODE XREF: sub_1333C+9C↑j
+.loc_133E2:
                 move.w  d1,d0
 
-.loc_133E4:                              ; CODE XREF: sub_1333C+78↑j
-; sub_1333C+98↑j ...
+.loc_133E4:
                 move.w  d0,$46(a1)
                 bset    #2,$69(a1)
 
-.locret_133EE:                           ; CODE XREF: sub_1333C+50↑j
+.locret_133EE:
                 rts
 ; End of function sub_1333C
 
@@ -12710,7 +12530,7 @@ sub_1333C:                              ; CODE XREF: sub_16612+C↓p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_13422:                              ; CODE XREF: sub_166F0+24↓p
+sub_13422:
                 move.w  (ram_FF1B46).l,(ram_FF1896).l
                 move.l  a2,-(sp)
                 move.w  (ram_FF1B46).l,-(sp)
@@ -12727,21 +12547,20 @@ sub_13422:                              ; CODE XREF: sub_166F0+24↓p
                 bra.w   .loc_13480
 
 
-.loc_1346A:                              ; CODE XREF: sub_13422+3C↑j
+.loc_1346A:
                 move.w  #5,d0
                 bra.w   .loc_134BC
 
 
-.loc_13472:                              ; CODE XREF: sub_13422+2A↑j
-; sub_13422+34↑j
+.loc_13472:
                 tst.w   $30(a1)
                 bmi.w   .loc_134F0
 
-.loc_1347A:                              ; CODE XREF: sub_13422+8C↓j
+.loc_1347A:
                 subq.w  #1,d0
                 ble.w   .loc_134B0
 
-.loc_13480:                              ; CODE XREF: sub_13422+44↑j
+.loc_13480:
                 bsr.w   sub_135F6
                 move.l  a2,(ram_FF1892).l
                 move.w  (ram_FF1B46).l,(ram_FF1898).l
@@ -12752,15 +12571,15 @@ sub_13422:                              ; CODE XREF: sub_166F0+24↓p
                 cmp.w   (ram_FF1B46).l,d1
                 beq.s   .loc_1347A
 
-.loc_134B0:                              ; CODE XREF: sub_13422+5A↑j
+.loc_134B0:
                 move.w  (sp),d0
 
-.loc_134B2:                              ; CODE XREF: sub_13422+C8↓j
+.loc_134B2:
                 addq.w  #1,d0
                 cmp.w   #7,d0
                 bpl.w   .loc_13562
 
-.loc_134BC:                              ; CODE XREF: sub_13422+4C↑j
+.loc_134BC:
                 bsr.w   sub_135F6
                 move.l  a2,(ram_FF189C).l
                 move.w  (ram_FF1B46).l,(ram_FF18A0).l
@@ -12773,8 +12592,7 @@ sub_13422:                              ; CODE XREF: sub_166F0+24↓p
                 bra.w   .loc_13562
 
 
-.loc_134F0:                              ; CODE XREF: sub_13422+54↑j
-; sub_13422+106↓j
+.loc_134F0:
                 addq.w  #1,d0
                 cmp.w   #7,d0
                 bpl.w   .loc_1352A
@@ -12788,10 +12606,10 @@ sub_13422:                              ; CODE XREF: sub_166F0+24↓p
                 cmp.w   (ram_FF1B46).l,d1
                 beq.s   .loc_134F0
 
-.loc_1352A:                              ; CODE XREF: sub_13422+D4↑j
+.loc_1352A:
                 move.w  (sp),d0
 
-.loc_1352C:                              ; CODE XREF: sub_13422+13E↓j
+.loc_1352C:
                 subq.w  #1,d0
                 bmi.w   .loc_13562
                 bsr.w   sub_135F6
@@ -12804,8 +12622,7 @@ sub_13422:                              ; CODE XREF: sub_166F0+24↓p
                 cmp.w   (ram_FF1B46).l,d1
                 beq.s   .loc_1352C
 
-.loc_13562:                              ; CODE XREF: sub_13422+96↑j
-; sub_13422+CA↑j ...
+.loc_13562:
                 addq.w  #2,sp
                 move.w  (sp)+,(ram_FF1B46).l
                 movea.l (sp)+,a2
@@ -12821,7 +12638,7 @@ sub_13422:                              ; CODE XREF: sub_166F0+24↓p
                 bra.w   .loc_135D6
 
 
-.loc_135A2:                              ; CODE XREF: sub_13422+156↑j
+.loc_135A2:
                 cmp.w   (ram_FF1B46).l,d1
                 bmi.w   .loc_135C2
                 move.w  d1,(ram_FF1B46).l
@@ -12830,25 +12647,22 @@ sub_13422:                              ; CODE XREF: sub_166F0+24↓p
                 bra.w   .loc_135D6
 
 
-.loc_135C2:                              ; CODE XREF: sub_13422+166↑j
-; sub_13422+186↑j
+.loc_135C2:
                 bclr    #1,$68(a1)
                 bset    #2,$68(a1)
                 bra.w   .locret_135E6
 
 
-.loc_135D2:                              ; CODE XREF: sub_13422+7E↑j
-; sub_13422+BA↑j ...
+.loc_135D2:
                 addq.w  #4,sp
                 movea.l (sp)+,a2
 
-.loc_135D6:                              ; CODE XREF: sub_13422+17C↑j
-; sub_13422+19C↑j
+.loc_135D6:
                 bsr.w   sub_13892
                 bset    #1,$68(a1)
                 bclr    #2,$68(a1)
 
-.locret_135E6:                           ; CODE XREF: sub_13422+1AC↑j
+.locret_135E6:
                 rts
 ; End of function sub_13422
 
@@ -12871,8 +12685,7 @@ sub_13422:                              ; CODE XREF: sub_166F0+24↓p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_135F6:                              ; CODE XREF: sub_13422:@loc_13480↑p
-; sub_13422:@loc_134BC↑p ...
+sub_135F6:
                 lea     (ram_FF178A).l,a6
                 move.b  (a6,d0.w),d1
                 ext.w   d1
@@ -12882,10 +12695,10 @@ sub_135F6:                              ; CODE XREF: sub_13422:@loc_13480↑p
                 cmpi.w  #$F0,(ram_FF1B46).l
                 blt.w   .locret_13624
 
-.loc_1361E:                              ; CODE XREF: sub_135F6+C↑j
+.loc_1361E:
                 movea.l #$FFFFFFFF,a2
 
-.locret_13624:                           ; CODE XREF: sub_135F6+24↑j
+.locret_13624:
                 rts
 ; End of function sub_135F6
 
@@ -12893,7 +12706,7 @@ sub_135F6:                              ; CODE XREF: sub_13422:@loc_13480↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_13626:                              ; CODE XREF: sub_135F6+18↑p
+sub_13626:
                 move.b  $71(a1),d7
                 subq.w  #1,d1
                 lea     (ram_FF1792).l,a6
@@ -12901,7 +12714,7 @@ sub_13626:                              ; CODE XREF: sub_135F6+18↑p
                 asl.w   #4,d2
                 adda.w  d2,a6
 
-.loc_13638:                              ; CODE XREF: sub_13626:@loc_136B0↓j
+.loc_13638:
                 move.b  (a6)+,d2
                 cmp.b   d7,d2
                 beq.w   .loc_136B0
@@ -12912,12 +12725,12 @@ sub_13626:                              ; CODE XREF: sub_135F6+18↑p
                 bra.w   .loc_13664
 
 
-.loc_13656:                              ; CODE XREF: sub_13626+1E↑j
+.loc_13656:
                 lea     (unk_2589A).l,a0
                 move.w  #$FFFF,d6
                 subi.w  #$10,d2
 
-.loc_13664:                              ; CODE XREF: sub_13626+2C↑j
+.loc_13664:
                 ext.w   d2
                 asl.w   #2,d2
                 movea.l (a0,d2.w),a2
@@ -12926,13 +12739,13 @@ sub_13626:                              ; CODE XREF: sub_135F6+18↑p
                 beq.w   .loc_1367C
                 neg.w   d2
 
-.loc_1367C:                              ; CODE XREF: sub_13626+50↑j
+.loc_1367C:
                 move.w  $12(a2),d4
                 btst    #3,$69(a2)
                 beq.w   .loc_1368C
                 neg.w   d4
 
-.loc_1368C:                              ; CODE XREF: sub_13626+60↑j
+.loc_1368C:
                 sub.w   d4,d2
                 ble.w   .loc_136B0
                 move.l  4(a2),d3
@@ -12943,8 +12756,7 @@ sub_13626:                              ; CODE XREF: sub_135F6+18↑p
                 bpl.w   .loc_136B0
                 move.w  d3,(ram_FF1B46).l
 
-.loc_136B0:                              ; CODE XREF: sub_13626+16↑j
-; sub_13626+68↑j ...
+.loc_136B0:
                 dbf     d1,.loc_13638
                 rts
 ; End of function sub_13626
@@ -12953,19 +12765,19 @@ sub_13626:                              ; CODE XREF: sub_135F6+18↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_136B6:                              ; CODE XREF: sub_1333C+58↑p
+sub_136B6:
                 move.w  $12(a1),d1
                 btst    #3,$69(a1)
                 beq.w   .loc_136C6
                 neg.w   d1
 
-.loc_136C6:                              ; CODE XREF: sub_136B6+A↑j
+.loc_136C6:
                 move.w  $12(a2),d2
                 btst    #3,$69(a2)
                 beq.w   .loc_136D6
                 neg.w   d2
 
-.loc_136D6:                              ; CODE XREF: sub_136B6+1A↑j
+.loc_136D6:
                 sub.w   d1,d2
                 beq.w   .loc_13700
                 move.l  4(a2),d0
@@ -12977,18 +12789,17 @@ sub_136B6:                              ; CODE XREF: sub_1333C+58↑p
                 bra.w   .loc_136FC
 
 
-.loc_136F4:                              ; CODE XREF: sub_136B6+2E↑j
+.loc_136F4:
                 tst.w   d2
                 bpl.w   .loc_13700
                 neg.w   d2
 
-.loc_136FC:                              ; CODE XREF: sub_136B6+3A↑j
+.loc_136FC:
                 divu.w  d2,d0
                 rts
 
 
-.loc_13700:                              ; CODE XREF: sub_136B6+22↑j
-; sub_136B6+34↑j ...
+.loc_13700:
                 clr.w   d0
                 rts
 ; End of function sub_136B6
@@ -13064,8 +12875,7 @@ sub_136B6:                              ; CODE XREF: sub_1333C+58↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_13746:                              ; CODE XREF: sub_10E66+17E↑p
-; sub_16D9A+84↓p
+sub_13746:
                 movem.l d0-d1/a0,-(sp)
                 move.w  $30(a1),d0
                 move.w  d0,d1
@@ -13076,13 +12886,12 @@ sub_13746:                              ; CODE XREF: sub_10E66+17E↑p
                 bra.w   .loc_1376C
 
 
-.loc_13760:                              ; CODE XREF: sub_13746+E↑j
+.loc_13760:
                 cmp.b   #6,d0
                 bmi.w   .loc_1376C
                 move.w  #5,d0
 
-.loc_1376C:                              ; CODE XREF: sub_13746+16↑j
-; sub_13746+1E↑j
+.loc_1376C:
                 move.b  d0,$72(a1)
                 bsr.w   sub_13812
                 move.w  $16(a1),d2
@@ -13099,18 +12908,17 @@ sub_13746:                              ; CODE XREF: sub_10E66+17E↑p
                 bra.w   .loc_137A6
 
 
-.loc_1379A:                              ; CODE XREF: sub_13746+48↑j
+.loc_1379A:
                 cmp.b   #6,d0
                 bmi.w   .loc_137A6
                 move.w  #5,d0
 
-.loc_137A6:                              ; CODE XREF: sub_13746+50↑j
-; sub_13746+58↑j
+.loc_137A6:
                 cmp.b   $72(a1),d0
                 beq.w   .loc_137B2
                 bsr.w   sub_13812
 
-.loc_137B2:                              ; CODE XREF: sub_13746+64↑j
+.loc_137B2:
                 move.w  d1,d0
                 sub.w   d4,d0
                 asr.w   #6,d0
@@ -13120,18 +12928,17 @@ sub_13746:                              ; CODE XREF: sub_10E66+17E↑p
                 bra.w   .loc_137D2
 
 
-.loc_137C6:                              ; CODE XREF: sub_13746+74↑j
+.loc_137C6:
                 cmp.b   #6,d0
                 bmi.w   .loc_137D2
                 move.w  #5,d0
 
-.loc_137D2:                              ; CODE XREF: sub_13746+7C↑j
-; sub_13746+84↑j
+.loc_137D2:
                 cmp.b   $72(a1),d0
                 beq.w   .loc_137DE
                 bsr.w   sub_13812
 
-.loc_137DE:                              ; CODE XREF: sub_13746+90↑j
+.loc_137DE:
                 movem.l (sp)+,d0-d1/a0
                 rts
 ; End of function sub_13746
@@ -13140,18 +12947,18 @@ sub_13746:                              ; CODE XREF: sub_10E66+17E↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_137E4:                              ; CODE XREF: sub_12868+66↑p
+sub_137E4:
                 movem.l d0-d1/a0,-(sp)
                 clr.w   d0
                 tst.w   $30(a1)
                 bmi.w   .loc_137F6
                 move.w  #3,d0
 
-.loc_137F6:                              ; CODE XREF: sub_137E4+A↑j
+.loc_137F6:
                 move.w  #2,d1
                 move.b  d0,$72(a1)
 
-.loc_137FE:                              ; CODE XREF: sub_137E4+24↓j
+.loc_137FE:
                 move.w  d1,-(sp)
                 bsr.w   sub_13812
                 move.w  (sp)+,d1
@@ -13165,8 +12972,7 @@ sub_137E4:                              ; CODE XREF: sub_12868+66↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_13812:                              ; CODE XREF: sub_13746+2A↑p
-; sub_13746+68↑p ...
+sub_13812:
                 movem.l d0-d1/a0,-(sp)
                 ext.w   d0
                 lea     (ram_FF178A).l,a0
@@ -13253,14 +13059,13 @@ sub_13892:
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_138CE:                              ; CODE XREF: Race_Update:@loc_C10C↑p
+sub_138CE:
                 lea     (ram_FF1EAA).l,a1
                 btst    #4,$68(a1)
                 bne.w   .return
                 lea     (unk_2589A).l,a0
 
-.loc_138E4:                              ; CODE XREF: sub_138CE+26↓j
-; sub_138CE+B0↓j ...
+.loc_138E4:
                 movea.l (a0)+,a2
                 cmpa.w  #$FFFF,a2
                 beq.w   .return
@@ -13283,7 +13088,7 @@ sub_138CE:                              ; CODE XREF: Race_Update:@loc_C10C↑p
                 beq.w   .loc_13936
                 move.w  #2,d1
 
-.loc_13936:                              ; CODE XREF: sub_138CE+60↑j
+.loc_13936:
                 move.b  d1,$73(a2)
                 btst    #2,d0
                 bne.w   .loc_13952
@@ -13292,11 +13097,11 @@ sub_138CE:                              ; CODE XREF: Race_Update:@loc_C10C↑p
                 bra.w   .loc_1395E
 
 
-.loc_13952:                              ; CODE XREF: sub_138CE+70↑j
+.loc_13952:
                 bset    #3,$69(a2)
                 move.w  #$FF90,$30(a2)
 
-.loc_1395E:                              ; CODE XREF: sub_138CE+80↑j
+.loc_1395E:
                 andi.w  #$F0,d0
                 lsr.w   #4,d0
                 move.b  d0,$74(a2)
@@ -13308,7 +13113,7 @@ sub_138CE:                              ; CODE XREF: Race_Update:@loc_C10C↑p
                 bra.w   .loc_138E4
 
 
-.loc_13982:                              ; CODE XREF: sub_138CE+2E↑j
+.loc_13982:
                 cmpi.l  #$708,(ram_FF1E9A).l
                 bcs.w   .loc_138E4
                 move.w  (Race_ram_FrameDelay).l,d2
@@ -13428,13 +13233,12 @@ sub_138CE:                              ; CODE XREF: Race_Update:@loc_C10C↑p
                 dc.b $CE
 
 
-.return:                           ; CODE XREF: sub_138CE+C↑j
-; sub_138CE+1C↑j
+.return:
                 rts
 ; End of function sub_138CE
 
 
-unk_13A1A:      dc.b $FF                ; DATA XREF: sub_138CE+40↑o
+unk_13A1A:      dc.b $FF
                 dc.b $FF
                 dc.b $B3
                 dc.b $33 ; 3
@@ -13450,7 +13254,7 @@ unk_13A1A:      dc.b $FF                ; DATA XREF: sub_138CE+40↑o
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_13A26:                              ; CODE XREF: sub_138CE+D6↑p
+sub_13A26:
                 bclr    #0,$68(a2)
                 move.w  #0,d0
                 move.w  d0,2(a2)
@@ -13642,17 +13446,17 @@ sub_13BBC:
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_13BD8:                              ; CODE XREF: sub_1180C+24↑p
+sub_13BD8:
                 btst    #0,$68(a1)
                 bne.w   .loc_13BEA
                 move.w  #$FFD0,d1
                 bra.w   .loc_13BEE
 
 
-.loc_13BEA:                              ; CODE XREF: sub_13BD8+6↑j
+.loc_13BEA:
                 move.w  #$FFFB,d1
 
-.loc_13BEE:                              ; CODE XREF: sub_13BD8+E↑j
+.loc_13BEE:
                 move.w  d1,$14(a1)
                 rts
 ; End of function sub_13BD8
@@ -13661,7 +13465,7 @@ sub_13BD8:                              ; CODE XREF: sub_1180C+24↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_13BF4:                              ; CODE XREF: Race_Update+BA↑p
+sub_13BF4:
                 lea     (ram_FF1F2A).l,a1
                 move.w  (ram_FF1B32).l,d0
                 beq.w   .loc_13C1C
@@ -13670,7 +13474,7 @@ sub_13BF4:                              ; CODE XREF: Race_Update+BA↑p
                 bgt.w   .loc_13C88
                 move.w  #0,(ram_FF1B32).l
 
-.loc_13C1C:                              ; CODE XREF: sub_13BF4+C↑j
+.loc_13C1C:
                 btst    #6,$68(a1)
                 bne.w   .locret_13CFC
                 move.w  STRUCT_OFFSET_66(a1),d0
@@ -13684,7 +13488,7 @@ sub_13BF4:                              ; CODE XREF: Race_Update+BA↑p
                 bpl.w   .loc_13C54
                 moveq   #0,d1
 
-.loc_13C54:                              ; CODE XREF: sub_13BF4+5A↑j
+.loc_13C54:
                 cmp.l   d1,d0
                 bmi.w   .loc_13C88
                 tst.w   (ram_FF1B36).l
@@ -13697,8 +13501,7 @@ sub_13BF4:                              ; CODE XREF: Race_Update+BA↑p
                 bra.w   .locret_13CFC
 
 
-.loc_13C88:                              ; CODE XREF: sub_13BF4+1C↑j
-; sub_13BF4+42↑j ...
+.loc_13C88:
                 movea.l (ram_FFDBD4).l,a2
                 move.l  (a2),d0
                 cmp.l   #$FFFFFFFF,d0
@@ -13726,12 +13529,11 @@ sub_13BF4:                              ; CODE XREF: Race_Update+BA↑p
                 bmi.w   .loc_13CF4
                 move.w  #$2710,d0
 
-.loc_13CF4:                              ; CODE XREF: sub_13BF4+F8↑j
+.loc_13CF4:
                 move.w  d0,$12(a1)
                 bsr.w   sub_13CFE
 
-.locret_13CFC:                           ; CODE XREF: sub_13BF4+2E↑j
-; sub_13BF4+90↑j ...
+.locret_13CFC:
                 rts
 ; End of function sub_13BF4
 
@@ -13739,8 +13541,7 @@ sub_13BF4:                              ; CODE XREF: Race_Update+BA↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_13CFE:                              ; CODE XREF: sub_13BF4+8C↑p
-; sub_13BF4+104↑p
+sub_13CFE:
                 bsr.w   sub_16D0A
                 bsr.w   sub_16D9A
                 bsr.w   sub_13FE6
@@ -13748,7 +13549,7 @@ sub_13CFE:                              ; CODE XREF: sub_13BF4+8C↑p
                 bpl.w   .loc_13D16
                 move.w  d0,$12(a1)
 
-.loc_13D16:                              ; CODE XREF: sub_13CFE+10↑j
+.loc_13D16:
                 move.w  (ram_FF1B38).l,d0
                 addq.w  #4,d0
                 move.b  d0,$75(a1)
@@ -13925,12 +13726,12 @@ sub_13CFE:                              ; CODE XREF: sub_13BF4+8C↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_13DE0:                              ; CODE XREF: sub_12868+6E↑p
+sub_13DE0:
                 movem.l d0-d2/a0-a2,-(sp)
                 movea.l (ram_FFD7CC).l,a0
                 move.w  #0,(ram_FF18A4).l
 
-.loc_13DF2:                              ; CODE XREF: sub_13DE0+7C↓j
+.loc_13DF2:
                 move.l  (a0),d1
                 cmp.l   #$FFFFFFFF,d1
                 beq.w   .loc_13E8E
@@ -13941,12 +13742,12 @@ sub_13DE0:                              ; CODE XREF: sub_12868+6E↑p
                 beq.w   .loc_13E12
                 neg.l   d2
 
-.loc_13E12:                              ; CODE XREF: sub_13DE0+2C↑j
+.loc_13E12:
                 tst.l   d2
                 bgt.w   .loc_13E1A
                 addq.l  #4,a0
 
-.loc_13E1A:                              ; CODE XREF: sub_13DE0+34↑j
+.loc_13E1A:
                 cmp.l   #$1E0000,d2
                 bcc.w   .loc_13E8E
                 subi.l  #$10000,d2
@@ -13965,12 +13766,12 @@ sub_13DE0:                              ; CODE XREF: sub_12868+6E↑p
                 eor.w   d0,d1
                 bpl.w   .loc_13E5E
 
-.loc_13E5A:                              ; CODE XREF: sub_13DE0+5E↑j
+.loc_13E5A:
                 addq.w  #4,a0
                 bra.s   .loc_13DF2
 
 
-.loc_13E5E:                              ; CODE XREF: sub_13DE0+76↑j
+.loc_13E5E:
                 clr.l   d0
                 move.w  $12(a1),d0
                 beq.w   .loc_13E8E
@@ -13985,12 +13786,10 @@ sub_13DE0:                              ; CODE XREF: sub_12868+6E↑p
                 bra.w   .loc_13E8E
 
 
-.loc_13E88:                              ; CODE XREF: sub_13DE0+8A↑j
-; sub_13DE0+94↑j
+.loc_13E88:
                 move.w  #0,$12(a1)
 
-.loc_13E8E:                              ; CODE XREF: sub_13DE0+1A↑j
-; sub_13DE0+40↑j ...
+.loc_13E8E:
                 movem.l (sp)+,d0-d2/a0-a2
                 rts
 ; End of function sub_13DE0
@@ -13999,7 +13798,7 @@ sub_13DE0:                              ; CODE XREF: sub_12868+6E↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_13E94:                              ; CODE XREF: Race_Update+A8↑p
+sub_13E94:
                 lea     (ram_FF1EAA).l,a1
                 bsr.w   sub_13FE6
                 rts
@@ -14046,8 +13845,7 @@ sub_13EA0:
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_13EFA:                              ; CODE XREF: sub_10E66+96↑p
-; sub_10E66+FE↑p
+sub_13EFA:
                 movem.l d0-d1,-(sp)
                 btst    #0,$68(a1)
                 bne.w   .loc_13FE0
@@ -14060,17 +13858,17 @@ sub_13EFA:                              ; CODE XREF: sub_10E66+96↑p
                 bpl.w   .loc_13F26
                 neg.w   d0
 
-.loc_13F26:                              ; CODE XREF: sub_13EFA+26↑j
+.loc_13F26:
                 tst.w   (MainMenu_ram_DemoMode).l
                 bne.w   .loc_13F3A
                 cmpa.l  #ram_FF1EAA,a1
                 beq.w   .loc_13F40
 
-.loc_13F3A:                              ; CODE XREF: sub_13EFA+32↑j
+.loc_13F3A:
                 mulu.w  #$200,d0
                 lsr.l   #8,d0
 
-.loc_13F40:                              ; CODE XREF: sub_13EFA+3C↑j
+.loc_13F40:
                 mulu.w  d1,d0
                 lsr.l   #3,d0
                 clr.l   d1
@@ -14081,13 +13879,13 @@ sub_13EFA:                              ; CODE XREF: sub_10E66+96↑p
                 bcc.w   .loc_13F60
                 move.w  #0,d2
 
-.loc_13F60:                              ; CODE XREF: sub_13EFA+5E↑j
+.loc_13F60:
                 move.b  d2,$78(a1)
                 move.w  (word_14742).l,d1
                 bra.w   .loc_13FB0
 
 
-.loc_13F6E:                              ; CODE XREF: sub_13EFA+50↑j
+.loc_13F6E:
                 btst    #5,$68(a1)
                 beq.w   .loc_13F96
                 btst    #3,$68(a1)
@@ -14096,23 +13894,22 @@ sub_13EFA:                              ; CODE XREF: sub_10E66+96↑p
                 bra.w   .loc_13FB0
 
 
-.loc_13F8C:                              ; CODE XREF: sub_13EFA+84↑j
+.loc_13F8C:
                 move.w  (ram_FF302E).l,d1
                 bra.w   .loc_13FB0
 
 
-.loc_13F96:                              ; CODE XREF: sub_13EFA+7A↑j
+.loc_13F96:
                 btst    #3,$68(a1)
                 beq.w   .loc_13FAA
                 move.w  (ram_FF3032).l,d1
                 bra.w   .loc_13FB0
 
 
-.loc_13FAA:                              ; CODE XREF: sub_13EFA+A2↑j
+.loc_13FAA:
                 move.w  (ram_FF302E).l,d1
 
-.loc_13FB0:                              ; CODE XREF: sub_13EFA+70↑j
-; sub_13EFA+8E↑j ...
+.loc_13FB0:
                 cmp.l   d1,d0
                 bcs.w   .loc_13FCE
                 lsr.l   #8,d0
@@ -14120,20 +13917,18 @@ sub_13EFA:                              ; CODE XREF: sub_10E66+96↑p
                 asl.l   #8,d1
                 divu.w  d0,d1
 
-.loc_13FC0:                              ; CODE XREF: sub_13EFA+BE↑j
+.loc_13FC0:
                 move.w  d1,$3E(a1)
                 bset    #5,$68(a1)
                 bra.w   .loc_13FE0
 
 
-.loc_13FCE:                              ; CODE XREF: sub_13EFA+12↑j
-; sub_13EFA+22↑j ...
+.loc_13FCE:
                 bclr    #5,$68(a1)
                 move.w  #0,$40(a1)
                 move.w  #0,$3E(a1)
 
-.loc_13FE0:                              ; CODE XREF: sub_13EFA+A↑j
-; sub_13EFA+D0↑j
+.loc_13FE0:
                 movem.l (sp)+,d0-d1
                 rts
 ; End of function sub_13EFA
@@ -14142,8 +13937,7 @@ sub_13EFA:                              ; CODE XREF: sub_10E66+96↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_13FE6:                              ; CODE XREF: sub_131BE+B6↑p
-; sub_13292+8C↑p ...
+sub_13FE6:
                 movem.l d1-d2/a0-a2,-(sp)
                 clr.l   d0
                 btst    #3,$68(a1)
@@ -14152,10 +13946,10 @@ sub_13FE6:                              ; CODE XREF: sub_131BE+B6↑p
                 bra.w   .loc_14006
 
 
-.loc_14000:                              ; CODE XREF: sub_13FE6+C↑j
+.loc_14000:
                 move.w  (ram_FF302E).l,d0
 
-.loc_14006:                              ; CODE XREF: sub_13FE6+16↑j
+.loc_14006:
                 asl.l   #3,d0
                 lea     (ram_FFDC58).l,a0
                 move.w  4(a1),d1
@@ -14167,7 +13961,7 @@ sub_13FE6:                              ; CODE XREF: sub_131BE+B6↑p
                 bpl.w   .loc_14026
                 neg.w   d1
 
-.loc_14026:                              ; CODE XREF: sub_13FE6+3A↑j
+.loc_14026:
                 tst.w   d1
                 beq.w   .loc_1404C
                 lea     (unk_14056).l,a2
@@ -14181,17 +13975,16 @@ sub_13FE6:                              ; CODE XREF: sub_131BE+B6↑p
                 bvs.w   .loc_1404C
                 bpl.w   .loc_14050
 
-.loc_1404C:                              ; CODE XREF: sub_13FE6+42↑j
-; sub_13FE6+5E↑j
+.loc_1404C:
                 move.w  #$7FFF,d0
 
-.loc_14050:                              ; CODE XREF: sub_13FE6+62↑j
+.loc_14050:
                 movem.l (sp)+,d1-d2/a0-a2
                 rts
 ; End of function sub_13FE6
 
 
-unk_14056:      dc.b   1                ; DATA XREF: sub_13FE6+46↑o
+unk_14056:      dc.b   1
                 dc.b $38 ; 8
                 dc.b   1
                 dc.b $30 ; 0
@@ -14215,8 +14008,7 @@ unk_14056:      dc.b   1                ; DATA XREF: sub_13FE6+46↑o
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_1406A:                              ; CODE XREF: sub_113A4+18↑p
-; sub_113CA+56↑p
+sub_1406A:
                 move.w  d0,d1
                 move.w  $3E(a1),d3
                 beq.w   .locret_140BA
@@ -14229,11 +14021,11 @@ sub_1406A:                              ; CODE XREF: sub_113A4+18↑p
                 bra.w   .loc_1408A
 
 
-.loc_14086:                              ; CODE XREF: sub_1406A+C↑j
+.loc_14086:
                 mulu.w  d3,d1
                 swap    d1
 
-.loc_1408A:                              ; CODE XREF: sub_1406A+18↑j
+.loc_1408A:
                 move.w  d1,(ram_FF3042).l
                 move.l  #$10000,d2
                 divu.w  d3,d2
@@ -14247,15 +14039,15 @@ sub_1406A:                              ; CODE XREF: sub_113A4+18↑p
                 bra.w   .loc_140B4
 
 
-.loc_140AE:                              ; CODE XREF: sub_1406A+32↑j
+.loc_140AE:
                 mulu.w  #$140,d2
                 lsr.l   #8,d2
 
-.loc_140B4:                              ; CODE XREF: sub_1406A+40↑j
+.loc_140B4:
                 move.w  d2,$40(a1)
                 move.w  d1,d0
 
-.locret_140BA:                           ; CODE XREF: sub_1406A+6↑j
+.locret_140BA:
                 rts
 ; End of function sub_1406A
 
@@ -14804,19 +14596,19 @@ sub_1406A:                              ; CODE XREF: sub_113A4+18↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_142D8:                              ; CODE XREF: sub_14486+5A↓p
+sub_142D8:
                 bclr    #7,$6A(a1)
                 move.w  d0,-(sp)
                 move.w  (ram_FF18A6).l,d0
                 bpl.w   .loc_142EC
                 neg.w   d0
 
-.loc_142EC:                              ; CODE XREF: sub_142D8+E↑j
+.loc_142EC:
                 cmp.w   #$1770,d0
                 bcs.w   .loc_142FA
                 bset    #7,$6A(a1)
 
-.loc_142FA:                              ; CODE XREF: sub_142D8+18↑j
+.loc_142FA:
                 move.w  (sp)+,d0
                 rts
 ; End of function sub_142D8
@@ -14902,25 +14694,24 @@ sub_142D8:                              ; CODE XREF: sub_14486+5A↓p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_1434A:                              ; CODE XREF: sub_11B7A+BA↑p
-; sub_14486+26↓p ...
+sub_1434A:
                 tst.w   (ram_FF1768).l
                 beq.w   .loc_1435A
                 clr.w   d0
                 bra.w   .locret_1436C
 
 
-.loc_1435A:                              ; CODE XREF: sub_1434A+6↑j
+.loc_1435A:
                 tst.w   d0
                 bpl.w   .loc_14362
                 neg.w   d0
 
-.loc_14362:                              ; CODE XREF: sub_1434A+12↑j
+.loc_14362:
                 lsr.w   #8,d0
                 lsr.w   #3,d0
                 move.w  d0,(ram_FF1B28).l
 
-.locret_1436C:                           ; CODE XREF: sub_1434A+C↑j
+.locret_1436C:
                 rts
 ; End of function sub_1434A
 
@@ -14961,8 +14752,7 @@ sub_1434A:                              ; CODE XREF: sub_11B7A+BA↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_1438E:                              ; CODE XREF: sub_11CC8+F2↑p
-; sub_11CC8+10A↑p ...
+sub_1438E:
                 move.w  $12(a1),d0
                 cmpa.l  #ram_FF1EAA,a1
                 bne.w   .loc_143D4
@@ -14974,14 +14764,13 @@ sub_1438E:                              ; CODE XREF: sub_11CC8+F2↑p
                 bra.w   .loc_143D4
 
 
-.loc_143BA:                              ; CODE XREF: sub_1438E+1C↑j
+.loc_143BA:
                 move.b  #1,$6E(a1)
                 move.b  #0,$6F(a1)
                 move.b  #$FF,$70(a1)
                 move.b  #$F,(ram_FF1AD6).l
 
-.loc_143D4:                              ; CODE XREF: sub_1438E+A↑j
-; sub_1438E+12↑j ...
+.loc_143D4:
                 lsr.w   #8,d0
                 lsr.w   #3,d0
                 beq.w   .locret_14402
@@ -14994,8 +14783,7 @@ sub_1438E:                              ; CODE XREF: sub_11CC8+F2↑p
                 move.w  d0,$2A(a1)
                 bset    #0,$68(a1)
 
-.locret_14402:                           ; CODE XREF: sub_1438E+4A↑j
-; sub_1438E+54↑j
+.locret_14402:
                 rts
 ; End of function sub_1438E
 
@@ -15134,8 +14922,7 @@ sub_1438E:                              ; CODE XREF: sub_11CC8+F2↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_14486:                              ; CODE XREF: sub_11CC8+204↑p
-; sub_11CC8+264↑p ...
+sub_14486:
                 move.w  $1C(a1),d0
                 cmp.w   (ram_FF303E).l,d0
                 bpl.w   .loc_14594
@@ -15153,13 +14940,13 @@ sub_14486:                              ; CODE XREF: sub_11CC8+204↑p
                 bra.w   .loc_144CE
 
 
-.loc_144CA:                              ; CODE XREF: sub_14486+38↑j
+.loc_144CA:
                 addi.w  #9,d0
 
-.loc_144CE:                              ; CODE XREF: sub_14486+40↑j
+.loc_144CE:
                 move.b  d0,(ram_FF1AD6).l
 
-.loc_144D4:                              ; CODE XREF: sub_14486+22↑j
+.loc_144D4:
                 move.b  $69(a2),d0
                 andi.b  #8,d0
                 or.b    d0,$69(a1)
@@ -15169,7 +14956,7 @@ sub_14486:                              ; CODE XREF: sub_11CC8+204↑p
                 bne.w   .loc_144F8
                 move.w  #$400,d0
 
-.loc_144F8:                              ; CODE XREF: sub_14486+6A↑j
+.loc_144F8:
                 btst    #3,$69(a1)
                 bne.w   .loc_1451C
                 asr.w   #1,d0
@@ -15182,20 +14969,18 @@ sub_14486:                              ; CODE XREF: sub_11CC8+204↑p
                 bra.w   .loc_14530
 
 
-.loc_1451C:                              ; CODE XREF: sub_14486+78↑j
+.loc_1451C:
                 move.w  $12(a2),d1
                 lsr.w   #1,d1
                 beq.w   .loc_14530
                 btst    #0,$68(a1)
                 bne.w   .loc_14538
 
-.loc_14530:                              ; CODE XREF: sub_14486+84↑j
-; sub_14486+92↑j ...
+.loc_14530:
                 move.w  d1,$12(a1)
                 bsr.w   sub_14688
 
-.loc_14538:                              ; CODE XREF: sub_14486+8E↑j
-; sub_14486+A6↑j
+.loc_14538:
                 move.w  8(a1),d0
                 sub.w   8(a2),d0
                 sub.w   d0,8(a1)
@@ -15211,7 +14996,7 @@ sub_14486:                              ; CODE XREF: sub_11CC8+204↑p
                 bpl.w   .loc_14570
                 neg.w   d0
 
-.loc_14570:                              ; CODE XREF: sub_14486+E4↑j
+.loc_14570:
                 lsr.w   #8,d0
                 lsr.w   #3,d0
                 move.w  d0,$2C(a1)
@@ -15223,7 +15008,7 @@ sub_14486:                              ; CODE XREF: sub_11CC8+204↑p
                 bra.w   .locret_145EA
 
 
-.loc_14594:                              ; CODE XREF: sub_14486+A↑j
+.loc_14594:
                 move.w  $12(a1),d0
                 lsr.w   #8,d0
                 lsr.w   #3,d0
@@ -15242,8 +15027,7 @@ sub_14486:                              ; CODE XREF: sub_11CC8+204↑p
                 bmi.w   .locret_145EA
                 move.b  #$16,(ram_FF1AD6).l
 
-.locret_145EA:                           ; CODE XREF: sub_14486+C8↑j
-; sub_14486+10A↑j ...
+.locret_145EA:
                 rts
 ; End of function sub_14486
 
@@ -15251,8 +15035,7 @@ sub_14486:                              ; CODE XREF: sub_11CC8+204↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_145EC:                              ; CODE XREF: sub_14486+12↑p
-; sub_14CEC+4↓p
+sub_145EC:
                 move.w  $12(a1),d0
                 move.w  $12(a2),d4
                 cmpi.b  #$10,$71(a2)
@@ -15264,12 +15047,11 @@ sub_145EC:                              ; CODE XREF: sub_14486+12↑p
                 bpl.w   .loc_14612
                 neg.w   d0
 
-.loc_14612:                              ; CODE XREF: sub_145EC+20↑j
+.loc_14612:
                 bra.w   .loc_14652
 
 
-.loc_14616:                              ; CODE XREF: sub_145EC+E↑j
-; sub_145EC+18↑j
+.loc_14616:
                 sub.w   d4,d0
                 bcc.w   .loc_14628
                 neg.w   d1
@@ -15278,11 +15060,11 @@ sub_145EC:                              ; CODE XREF: sub_14486+12↑p
                 bra.w   .loc_1462E
 
 
-.loc_14628:                              ; CODE XREF: sub_145EC+2C↑j
+.loc_14628:
                 cmp.w   d1,d0
                 bcc.w   .loc_14652
 
-.loc_1462E:                              ; CODE XREF: sub_145EC+38↑j
+.loc_1462E:
                 tst.b   $6E(a1)
                 bmi.w   .locret_14686
                 move.b  #1,$6E(a1)
@@ -15290,19 +15072,17 @@ sub_145EC:                              ; CODE XREF: sub_14486+12↑p
                 bne.w   .loc_1464E
                 move.b  #9,(ram_FF1AD6).l
 
-.loc_1464E:                              ; CODE XREF: sub_145EC+56↑j
+.loc_1464E:
                 bra.w   .loc_1466A
 
 
-.loc_14652:                              ; CODE XREF: sub_145EC:@loc_14612↑j
-; sub_145EC+34↑j ...
+.loc_14652:
                 move.b  #0,$6E(a1)
                 cmpa.l  #ram_FF1EAA,a1
                 bne.w   .loc_1466A
                 move.b  #$A,(ram_FF1AD6).l
 
-.loc_1466A:                              ; CODE XREF: sub_145EC:@loc_1464E↑j
-; sub_145EC+72↑j
+.loc_1466A:
                 move.b  #$FF,$6F(a1)
                 asl.w   #1,d1
                 cmp.w   d1,d0
@@ -15311,11 +15091,10 @@ sub_145EC:                              ; CODE XREF: sub_14486+12↑p
                 bra.w   .locret_14686
 
 
-.loc_14682:                              ; CODE XREF: sub_145EC+88↑j
+.loc_14682:
                 bsr.w   sub_1555C
 
-.locret_14686:                           ; CODE XREF: sub_145EC+46↑j
-; sub_145EC+92↑j
+.locret_14686:
                 rts
 ; End of function sub_145EC
 
@@ -15323,7 +15102,7 @@ sub_145EC:                              ; CODE XREF: sub_14486+12↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_14688:                              ; CODE XREF: sub_14486+AE↑p
+sub_14688:
                 move.l  (ram_FF3038).l,d0
                 addi.l  #$3000,d0
                 addi.l  #$200,d0
@@ -15331,7 +15110,7 @@ sub_14688:                              ; CODE XREF: sub_14486+AE↑p
                 bne.w   .loc_146A6
                 neg.l   d0
 
-.loc_146A6:                              ; CODE XREF: sub_14688+18↑j
+.loc_146A6:
                 add.l   d0,4(a1)
                 rts
 ; End of function sub_14688
@@ -15340,7 +15119,7 @@ sub_14688:                              ; CODE XREF: sub_14486+AE↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_146AC:                              ; CODE XREF: sub_115C6+100↑p
+sub_146AC:
                 move.w  $2C(a1),d1
                 mulu.w  #$2000,d1
                 swap    d1
@@ -15358,29 +15137,27 @@ sub_146AC:                              ; CODE XREF: sub_115C6+100↑p
                 bne.w   .loc_146EC
                 move.w  #6,(ram_FF1AD6).l
 
-.loc_146EC:                              ; CODE XREF: sub_146AC+18↑j
-; sub_146AC+34↑j
+.loc_146EC:
                 move.w  2(a1),$2A(a1)
                 move.w  #0,$2E(a1)
                 bset    #0,$68(a1)
                 bra.w   .loc_14708
 
 
-.loc_14702:                              ; CODE XREF: sub_146AC+E↑j
-; sub_146AC+24↑j
+.loc_14702:
                 bclr    #0,$68(a1)
 
-.loc_14708:                              ; CODE XREF: sub_146AC+52↑j
+.loc_14708:
                 cmpi.b  #0,$6E(a1)
                 bne.w   .locret_14718
                 move.b  #1,$6E(a1)
 
-.locret_14718:                           ; CODE XREF: sub_146AC+62↑j
+.locret_14718:
                 rts
 ; End of function sub_146AC
 
 
-unk_1471A:      dc.b $E6                ; DATA XREF: sub_B840↑o
+unk_1471A:      dc.b $E6
                 dc.b $46 ; F
                 dc.b $AB
                 dc.b $6D ; m
@@ -15420,9 +15197,8 @@ unk_1471A:      dc.b $E6                ; DATA XREF: sub_B840↑o
                 dc.b $1A
                 dc.b $66 ; f
                 dc.b $58 ; X
-word_14742:     dc.w $4CC2              ; DATA XREF: sub_13EFA+6A↑r
-unk_14744:      dc.b   0                ; DATA XREF: sub_11CC8+35A↑o
-; sub_12070+E6↑o
+word_14742:     dc.w $4CC2
+unk_14744:      dc.b   0
                 dc.b   1
                 dc.b $40 ; @
                 dc.b $EE
@@ -15454,8 +15230,7 @@ unk_14744:      dc.b   0                ; DATA XREF: sub_11CC8+35A↑o
                 dc.b   1
                 dc.b $42 ; B
                 dc.b $BE
-unk_14764:      dc.b   0                ; DATA XREF: sub_FC0E+8E↑o
-; sub_12070+2E↑o ...
+unk_14764:      dc.b   0
                 dc.b   0
                 dc.b   1
                 dc.b   0
@@ -15607,7 +15382,7 @@ unk_14764:      dc.b   0                ; DATA XREF: sub_FC0E+8E↑o
                 dc.b   1
                 dc.b   0
                 dc.b   0
-unk_147FC:      dc.b   0                ; DATA XREF: sub_11CC8+34C↑o
+unk_147FC:      dc.b   0
                 dc.b   2
                 dc.b   2
                 dc.b   2
@@ -15739,8 +15514,7 @@ unk_147FC:      dc.b   0                ; DATA XREF: sub_11CC8+34C↑o
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_1487C:                              ; CODE XREF: sub_11CC8:@loc_11DFE↑p
-; sub_1218C:@loc_12272↑p
+sub_1487C:
                 clr.w   (ram_FF1A9A).l
                 clr.w   (ram_FF1A9C).l
                 clr.w   (ram_FF18B8).l
@@ -15753,24 +15527,23 @@ sub_1487C:                              ; CODE XREF: sub_11CC8:@loc_11DFE↑p
                 bra.w   .loc_148B8
 
 
-.loc_148AE:                              ; CODE XREF: sub_1487C+20↑j
+.loc_148AE:
                 cmp.l   (ram_FF3038).l,d0
                 bmi.w   .loc_148C0
 
-.loc_148B8:                              ; CODE XREF: sub_1487C+2E↑j
+.loc_148B8:
                 bsr.w   sub_14CEC
                 bra.w   .locret_1496A
 
 
-.loc_148C0:                              ; CODE XREF: sub_1487C+2A↑j
-; sub_1487C+38↑j
+.loc_148C0:
                 bsr.w   sub_1496C
                 btst    #4,$69(a1)
                 beq.w   .loc_148D6
                 tst.w   $50(a1)
                 bne.w   .loc_148F0
 
-.loc_148D6:                              ; CODE XREF: sub_1487C+4E↑j
+.loc_148D6:
                 move.w  $52(a1),d1
                 add.w   d1,$22(a1)
                 move.w  #0,$52(a1)
@@ -15778,7 +15551,7 @@ sub_1487C:                              ; CODE XREF: sub_11CC8:@loc_11DFE↑p
                 bra.w   .loc_1491E
 
 
-.loc_148F0:                              ; CODE XREF: sub_1487C+56↑j
+.loc_148F0:
                 cmpa.l  #ram_FF1EAA,a1
                 bne.w   .loc_14910
                 move.b  (ram_FF1ADB).l,d2
@@ -15786,14 +15559,12 @@ sub_1487C:                              ; CODE XREF: sub_11CC8:@loc_11DFE↑p
                 bne.w   .loc_14910
                 move.w  #3,(ram_FF0520).l
 
-.loc_14910:                              ; CODE XREF: sub_1487C+7A↑j
-; sub_1487C+88↑j
+.loc_14910:
                 cmpi.b  #1,$6C(a1)
                 bne.w   .loc_1491E
                 bsr.w   sub_149C4
 
-.loc_1491E:                              ; CODE XREF: sub_1487C+70↑j
-; sub_1487C+9A↑j
+.loc_1491E:
                 cmpa.l  #ram_FF1F2A,a2
                 beq.w   .loc_1493A
                 btst    #4,$69(a2)
@@ -15801,8 +15572,7 @@ sub_1487C:                              ; CODE XREF: sub_11CC8:@loc_11DFE↑p
                 tst.w   $50(a2)
                 bne.w   .loc_14954
 
-.loc_1493A:                              ; CODE XREF: sub_1487C+A8↑j
-; sub_1487C+B2↑j
+.loc_1493A:
                 move.w  $52(a2),d1
                 add.w   d1,$22(a2)
                 move.w  #0,$52(a2)
@@ -15810,17 +15580,16 @@ sub_1487C:                              ; CODE XREF: sub_11CC8:@loc_11DFE↑p
                 bra.w   .loc_14962
 
 
-.loc_14954:                              ; CODE XREF: sub_1487C+BA↑j
+.loc_14954:
                 cmpi.b  #1,$6C(a2)
                 bne.w   .loc_14962
                 bsr.w   sub_14B04
 
-.loc_14962:                              ; CODE XREF: sub_1487C+D4↑j
-; sub_1487C+DE↑j
+.loc_14962:
                 bsr.w   sub_14D84
                 bsr.w   sub_14C3C
 
-.locret_1496A:                           ; CODE XREF: sub_1487C+40↑j
+.locret_1496A:
                 rts
 ; End of function sub_1487C
 
@@ -15828,7 +15597,7 @@ sub_1487C:                              ; CODE XREF: sub_11CC8:@loc_11DFE↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_1496C:                              ; CODE XREF: sub_1487C:@loc_148C0↑p
+sub_1496C:
                 movem.l d0-d3,-(sp)
                 move.w  $1A(a1),d0
                 move.w  $1A(a2),d1
@@ -15845,7 +15614,7 @@ sub_1496C:                              ; CODE XREF: sub_1487C:@loc_148C0↑p
                 bra.w   .loc_149B6
 
 
-.loc_149A0:                              ; CODE XREF: sub_1496C+16↑j
+.loc_149A0:
                 sub.w   $4C(a1),d2
                 sub.w   $4E(a2),d2
                 subi.w  #$10,d2
@@ -15853,8 +15622,7 @@ sub_1496C:                              ; CODE XREF: sub_1487C:@loc_148C0↑p
                 bpl.w   .loc_149B6
                 move.w  d2,$30(a2)
 
-.loc_149B6:                              ; CODE XREF: sub_1496C+28↑j
-; sub_1496C+30↑j ...
+.loc_149B6:
                 sub.w   $30(a2),d3
                 sub.w   d3,0.w(a2)
                 movem.l (sp)+,d0-d3
@@ -15865,7 +15633,7 @@ sub_1496C:                              ; CODE XREF: sub_1487C:@loc_148C0↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_149C4:                              ; CODE XREF: sub_1487C+9E↑p
+sub_149C4:
                 move.w  $52(a1),d1
                 btst    #6,$69(a1)
                 beq.w   .loc_14A04
@@ -15882,7 +15650,7 @@ sub_149C4:                              ; CODE XREF: sub_1487C+9E↑p
                 bra.w   .locret_14B02
 
 
-.loc_14A04:                              ; CODE XREF: sub_149C4+A↑j
+.loc_14A04:
                 move.w  $5E(a1),d0
                 muls.w  d0,d1
                 cmpa.l  #ram_FF1EAA,a1
@@ -15891,14 +15659,13 @@ sub_149C4:                              ; CODE XREF: sub_1487C+9E↑p
                 beq.w   .loc_14A26
                 move.b  #$11,(ram_FF1AD6).l
 
-.loc_14A26:                              ; CODE XREF: sub_149C4+4C↑j
-; sub_149C4+56↑j
+.loc_14A26:
                 asr.l   #8,d1
                 move.w  d1,$52(a1)
                 bpl.w   .loc_14A32
                 neg.w   d1
 
-.loc_14A32:                              ; CODE XREF: sub_149C4+68↑j
+.loc_14A32:
                 tst.b   $6B(a1)
                 bne.w   .loc_14A62
                 move.w  $1A(a1),d0
@@ -15906,7 +15673,7 @@ sub_149C4:                              ; CODE XREF: sub_1487C+9E↑p
                 bpl.w   .loc_14A48
                 neg.w   d0
 
-.loc_14A48:                              ; CODE XREF: sub_149C4+7E↑j
+.loc_14A48:
                 sub.w   $4A(a1),d0
                 sub.w   $4A(a2),d0
                 cmp.w   #$A,d0
@@ -15915,13 +15682,12 @@ sub_149C4:                              ; CODE XREF: sub_1487C+9E↑p
                 bra.w   .loc_14A72
 
 
-.loc_14A62:                              ; CODE XREF: sub_149C4+72↑j
-; sub_149C4+90↑j
+.loc_14A62:
                 cmpa.l  #ram_FF1F2A,a2
                 beq.w   .locret_14B02
                 move.w  d1,(ram_FF18BA).l
 
-.loc_14A72:                              ; CODE XREF: sub_149C4+9A↑j
+.loc_14A72:
                 cmpa.l  #ram_FF1F2A,a2
                 beq.w   .locret_14B02
                 btst    #6,$69(a2)
@@ -15945,8 +15711,7 @@ sub_149C4:                              ; CODE XREF: sub_1487C+9E↑p
                 bra.w   .locret_14B02
 
 
-.loc_14AE4:                              ; CODE XREF: sub_149C4+BE↑j
-; sub_149C4+C8↑j ...
+.loc_14AE4:
                 move.b  $6B(a1),d2
                 andi.w  #3,d2
                 andi.b  #$FC,$6A(a2)
@@ -15954,8 +15719,7 @@ sub_149C4:                              ; CODE XREF: sub_1487C+9E↑p
                 bset    #2,$6A(a2)
                 move.b  #$1E,$70(a2)
 
-.locret_14B02:                           ; CODE XREF: sub_149C4+20↑j
-; sub_149C4+30↑j ...
+.locret_14B02:
                 rts
 ; End of function sub_149C4
 
@@ -15963,7 +15727,7 @@ sub_149C4:                              ; CODE XREF: sub_1487C+9E↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_14B04:                              ; CODE XREF: sub_1487C+E2↑p
+sub_14B04:
                 move.w  $52(a2),d1
                 btst    #6,$69(a2)
                 beq.w   .loc_14B44
@@ -15980,7 +15744,7 @@ sub_14B04:                              ; CODE XREF: sub_1487C+E2↑p
                 bra.w   .locret_14C3A
 
 
-.loc_14B44:                              ; CODE XREF: sub_14B04+A↑j
+.loc_14B44:
                 move.w  $5E(a2),d0
                 muls.w  d0,d1
                 cmpa.l  (ram_FF1908).l,a2
@@ -15989,14 +15753,13 @@ sub_14B04:                              ; CODE XREF: sub_1487C+E2↑p
                 beq.w   .loc_14B66
                 move.b  #$11,(ram_FF1AD6).l
 
-.loc_14B66:                              ; CODE XREF: sub_14B04+4C↑j
-; sub_14B04+56↑j
+.loc_14B66:
                 asr.l   #8,d1
                 move.w  d1,$52(a2)
                 bpl.w   .loc_14B72
                 neg.w   d1
 
-.loc_14B72:                              ; CODE XREF: sub_14B04+68↑j
+.loc_14B72:
                 tst.b   $6B(a2)
                 bne.w   .loc_14BA2
                 move.w  $1A(a1),d0
@@ -16004,7 +15767,7 @@ sub_14B04:                              ; CODE XREF: sub_1487C+E2↑p
                 bpl.w   .loc_14B88
                 neg.w   d0
 
-.loc_14B88:                              ; CODE XREF: sub_14B04+7E↑j
+.loc_14B88:
                 sub.w   $4A(a1),d0
                 sub.w   $4A(a2),d0
                 cmp.w   #$A,d0
@@ -16013,16 +15776,15 @@ sub_14B04:                              ; CODE XREF: sub_1487C+E2↑p
                 bra.w   .loc_14BB4
 
 
-.loc_14BA2:                              ; CODE XREF: sub_14B04+72↑j
-; sub_14B04+90↑j
+.loc_14BA2:
                 cmp.w   #$50,d1 ; 'P'
                 ble.w   .loc_14BAE
                 move.w  #$50,d1 ; 'P'
 
-.loc_14BAE:                              ; CODE XREF: sub_14B04+A2↑j
+.loc_14BAE:
                 move.w  d1,(ram_FF18B8).l
 
-.loc_14BB4:                              ; CODE XREF: sub_14B04+9A↑j
+.loc_14BB4:
                 btst    #6,$69(a2)
                 bne.w   .loc_14C1C
                 btst    #1,$6B(a2)
@@ -16044,8 +15806,7 @@ sub_14B04:                              ; CODE XREF: sub_1487C+E2↑p
                 bra.w   .locret_14C3A
 
 
-.loc_14C1C:                              ; CODE XREF: sub_14B04+B6↑j
-; sub_14B04+C0↑j ...
+.loc_14C1C:
                 move.b  $6B(a2),d2
                 andi.w  #3,d2
                 andi.b  #$FC,$6A(a1)
@@ -16053,8 +15814,7 @@ sub_14B04:                              ; CODE XREF: sub_1487C+E2↑p
                 bset    #2,$6A(a1)
                 move.b  #$1E,$70(a1)
 
-.locret_14C3A:                           ; CODE XREF: sub_14B04+26↑j
-; sub_14B04+30↑j ...
+.locret_14C3A:
                 rts
 ; End of function sub_14B04
 
@@ -16062,7 +15822,7 @@ sub_14B04:                              ; CODE XREF: sub_1487C+E2↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_14C3C:                              ; CODE XREF: sub_1487C+EA↑p
+sub_14C3C:
                 tst.b   $6E(a1)
                 bpl.w   .loc_14C8C
                 move.w  (ram_FF18B8).l,d0
@@ -16079,8 +15839,7 @@ sub_14C3C:                              ; CODE XREF: sub_1487C+EA↑p
                 bne.w   .loc_14C8C
                 move.b  #$F,(ram_FF1AD6).l
 
-.loc_14C8C:                              ; CODE XREF: sub_14C3C+4↑j
-; sub_14C3C+E↑j ...
+.loc_14C8C:
                 tst.b   $6E(a2)
                 bpl.w   .locret_14CEA
                 move.w  (ram_FF18BA).l,d0
@@ -16102,8 +15861,7 @@ sub_14C3C:                              ; CODE XREF: sub_1487C+EA↑p
                 bne.w   .locret_14CEA
                 move.b  #$D,(ram_FF1AD6).l
 
-.locret_14CEA:                           ; CODE XREF: sub_14C3C+54↑j
-; sub_14C3C+5E↑j ...
+.locret_14CEA:
                 rts
 ; End of function sub_14C3C
 
@@ -16111,7 +15869,7 @@ sub_14C3C:                              ; CODE XREF: sub_1487C+EA↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_14CEC:                              ; CODE XREF: sub_1487C:@loc_148B8↑p
+sub_14CEC:
                 move.w  #$1F40,d1
                 bsr.w   sub_145EC
                 move.w  d0,(ram_FF18A6).l
@@ -16125,11 +15883,11 @@ sub_14CEC:                              ; CODE XREF: sub_1487C:@loc_148B8↑p
                 bra.w   .loc_14D1A
 
 
-.loc_14D14:                              ; CODE XREF: sub_14CEC+16↑j
+.loc_14D14:
                 mulu.w  #$1999,d0
                 swap    d0
 
-.loc_14D1A:                              ; CODE XREF: sub_14CEC+24↑j
+.loc_14D1A:
                 cmpa.l  #ram_FF1EAA,a1
                 bne.w   .loc_14D34
                 move.w  d0,-(sp)
@@ -16137,7 +15895,7 @@ sub_14CEC:                              ; CODE XREF: sub_1487C:@loc_148B8↑p
                 add.w   d0,(Race_ram_BikeDamage).l
                 move.w  (sp)+,d0
 
-.loc_14D34:                              ; CODE XREF: sub_14CEC+34↑j
+.loc_14D34:
                 move.w  $12(a1),d1
                 move.w  $12(a2),d2
                 move.l  #$7000,d3
@@ -16145,7 +15903,7 @@ sub_14CEC:                              ; CODE XREF: sub_1487C:@loc_148B8↑p
                 bpl.w   .loc_14D4A
                 neg.l   d3
 
-.loc_14D4A:                              ; CODE XREF: sub_14CEC+58↑j
+.loc_14D4A:
                 btst    #0,$69(a1)
                 add.w   d0,d2
                 sub.w   d0,d1
@@ -16168,8 +15926,7 @@ sub_14CEC:                              ; CODE XREF: sub_1487C:@loc_148B8↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_14D84:                              ; CODE XREF: sub_1487C:@loc_14962↑p
-; sub_14CEC+92↑p
+sub_14D84:
                 move.w  $22(a2),d0
                 sub.w   $22(a1),d0
                 ext.l   d0
@@ -16182,11 +15939,11 @@ sub_14D84:                              ; CODE XREF: sub_1487C:@loc_14962↑p
                 bra.w   .loc_14DB0
 
 
-.loc_14DA8:                              ; CODE XREF: sub_14D84+10↑j
+.loc_14DA8:
                 mulu.w  (ram_FF18B6).l,d0
                 swap    d0
 
-.loc_14DB0:                              ; CODE XREF: sub_14D84+20↑j
+.loc_14DB0:
                 move.w  $C(a1),d1
                 add.w   (ram_FF1A9A).l,d1
                 move.w  $C(a2),d2
@@ -16198,11 +15955,11 @@ sub_14D84:                              ; CODE XREF: sub_1487C:@loc_14962↑p
                 bra.w   .loc_14DDA
 
 
-.loc_14DD6:                              ; CODE XREF: sub_14D84+46↑j
+.loc_14DD6:
                 sub.w   d0,d2
                 add.w   d0,d1
 
-.loc_14DDA:                              ; CODE XREF: sub_14D84+4E↑j
+.loc_14DDA:
                 move.w  d2,$C(a1)
                 move.w  d2,8(a1)
                 move.w  d1,$C(a2)
@@ -16291,7 +16048,7 @@ sub_14D84:                              ; CODE XREF: sub_1487C:@loc_14962↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_14E38:                              ; CODE XREF: Race_Update+266↑p
+sub_14E38:
                 tst.w   (Race_ram_GameEnded).l
                 beq.w   .loc_14E58
                 jsr     (AudioFunc7).l
@@ -16300,18 +16057,18 @@ sub_14E38:                              ; CODE XREF: Race_Update+266↑p
                 bra.w   .loc_14E62
 
 
-.loc_14E58:                              ; CODE XREF: sub_14E38+6↑j
+.loc_14E58:
                 tst.w   (Race_ram_State).l
                 beq.w   .loc_14E7A
 
-.loc_14E62:                              ; CODE XREF: sub_14E38+1C↑j
+.loc_14E62:
                 jsr     (AudioFunc15).l
                 jsr     (AudioFunc17).l
                 move.b  #0,(ram_FF1AD5).l
                 bra.w   .loc_14FA2
 
 
-.loc_14E7A:                              ; CODE XREF: sub_14E38+26↑j
+.loc_14E7A:
                 clr.l   d0
                 btst    #5,(ram_FF1EAA + STRUCT_OFFSET_68).l
                 beq.w   .loc_14E9A
@@ -16321,16 +16078,16 @@ sub_14E38:                              ; CODE XREF: Race_Update+266↑p
                 bra.w   .loc_14EB4
 
 
-.loc_14E9A:                              ; CODE XREF: sub_14E38+4C↑j
+.loc_14E9A:
                 cmpi.b  #1,(ram_FF1EAA + STRUCT_OFFSET_6E).l
                 bne.w   .loc_14ECE
                 btst    #0,(ram_FF1EAA + STRUCT_OFFSET_68).l
                 bne.w   .loc_14ECE
 
-.loc_14EB2:                              ; CODE XREF: sub_14E38+58↑j
+.loc_14EB2:
                 moveq   #2,d0
 
-.loc_14EB4:                              ; CODE XREF: sub_14E38+5E↑j
+.loc_14EB4:
                 cmp.b   (ram_FF1AD4).l,d0
                 beq.w   .loc_14EE6
                 move.b  d0,(ram_FF1AD4).l
@@ -16338,15 +16095,13 @@ sub_14E38:                              ; CODE XREF: Race_Update+266↑p
                 bra.w   .loc_14EE6
 
 
-.loc_14ECE:                              ; CODE XREF: sub_14E38+6A↑j
-; sub_14E38+76↑j
+.loc_14ECE:
                 tst.w   (ram_FF1AD4).l
                 beq.w   .loc_14EE6
                 move.b  #0,(ram_FF1AD4).l
                 jsr     (AudioFunc15).l
 
-.loc_14EE6:                              ; CODE XREF: sub_14E38+82↑j
-; sub_14E38+92↑j ...
+.loc_14EE6:
                 tst.w   (ram_FF1EA8).l
                 beq.w   .loc_14F1E
                 move.w  (ram_FF1EA8).l,d0
@@ -16358,11 +16113,10 @@ sub_14E38:                              ; CODE XREF: Race_Update+266↑p
                 bra.w   .loc_14F58
 
 
-.loc_14F16:                              ; CODE XREF: sub_14E38+C4↑j
+.loc_14F16:
                 move.w  #0,(ram_FF1EA8).l
 
-.loc_14F1E:                              ; CODE XREF: sub_14E38+B4↑j
-; sub_14E38+D6↑j
+.loc_14F1E:
                 clr.l   d0
                 move.b  (ram_FF1AD6).l,d0
                 beq.w   .loc_14F34
@@ -16370,7 +16124,7 @@ sub_14E38:                              ; CODE XREF: Race_Update+266↑p
                 bra.w   .loc_14F58
 
 
-.loc_14F34:                              ; CODE XREF: sub_14E38+EE↑j
+.loc_14F34:
                 clr.l   d0
                 move.b  (ram_FF1AD7).l,d0
                 beq.w   .loc_14F58
@@ -16379,11 +16133,10 @@ sub_14E38:                              ; CODE XREF: Race_Update+266↑p
                 tst.b   (ram_FF1ADD).l
                 beq.w   .loc_14F58
 
-.loc_14F52:                              ; CODE XREF: sub_14E38+10C↑j
+.loc_14F52:
                 jsr     (AudioFunc5).l
 
-.loc_14F58:                              ; CODE XREF: sub_14E38+DA↑j
-; sub_14E38+F8↑j ...
+.loc_14F58:
                 tst.w   (ram_FF1B32).l
                 bne.w   .loc_14FA2
                 move.w  (ram_FF1F2E).l,d0
@@ -16391,7 +16144,7 @@ sub_14E38:                              ; CODE XREF: Race_Update+266↑p
                 bpl.w   .loc_14F74
                 neg.w   d0
 
-.loc_14F74:                              ; CODE XREF: sub_14E38+136↑j
+.loc_14F74:
                 cmp.w   #$18,d0
                 bpl.w   .loc_14FA2
                 move.w  d0,d1
@@ -16405,8 +16158,7 @@ sub_14E38:                              ; CODE XREF: Race_Update+266↑p
                 move.b  d0,(ram_FF1AD5).l
                 jsr     (AudioFunc5).l
 
-.loc_14FA2:                              ; CODE XREF: sub_14E38+3E↑j
-; sub_14E38+126↑j ...
+.loc_14FA2:
                 move.b  #0,(ram_FF1AD6).l
                 move.b  #0,(ram_FF1AD7).l
                 rts
@@ -16416,7 +16168,7 @@ sub_14E38:                              ; CODE XREF: Race_Update+266↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_14FB4:                              ; CODE XREF: sub_1611A+AE↓p
+sub_14FB4:
                 move.w  d0,-(sp)
                 move.w  (Race_ram_FrameDelay).l,d0
                 sub.w   d0,(ram_FF1AD0).l
@@ -16432,14 +16184,12 @@ sub_14FB4:                              ; CODE XREF: sub_1611A+AE↓p
                 bpl.w   .loc_15000
                 move.b  #$15,(ram_FF1AD6).l
 
-.loc_15000:                              ; CODE XREF: sub_14FB4+2C↑j
-; sub_14FB4+34↑j ...
+.loc_15000:
                 cmp.w   #$A,d0
                 bmi.w   .loc_15010
                 move.w  #1,(Race_ram_GameEnded).l
 
-.loc_15010:                              ; CODE XREF: sub_14FB4+E↑j
-; sub_14FB4+50↑j
+.loc_15010:
                 move.w  (sp)+,d0
                 rts
 ; End of function sub_14FB4
@@ -16448,7 +16198,7 @@ sub_14FB4:                              ; CODE XREF: sub_1611A+AE↓p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_15014:                              ; CODE XREF: sub_F40C+106↑p
+sub_15014:
                 movem.l d1-d7/a0-a2,-(sp)
                 move.b  $71(a1),d0
                 ext.w   d0
@@ -16463,17 +16213,17 @@ sub_15014:                              ; CODE XREF: sub_F40C+106↑p
                 move.w  #$11,d0
                 move.w  d0,$54(a1)
 
-.loc_15048:                              ; CODE XREF: sub_15014+28↑j
+.loc_15048:
                 asl.w   #2,d0
                 lea     (unk_155D0).l,a0
                 movea.l (a0,d0.w),a0
 
-.loc_15054:                              ; CODE XREF: sub_15014+F2↓j
+.loc_15054:
                 move.b  $70(a1),d2
                 move.b  $6F(a1),d1
                 bpl.w   *+4
 
-.loc_15060:                              ; CODE XREF: sub_15014+48↑j
+.loc_15060:
                 move.b  $6E(a1),d0
                 ext.w   d0
                 asl.w   #3,d0
@@ -16491,7 +16241,7 @@ sub_15014:                              ; CODE XREF: sub_F40C+106↑p
                 bpl.w   .loc_1509E
                 neg.w   d4
 
-.loc_1509E:                              ; CODE XREF: sub_15014+84↑j
+.loc_1509E:
                 cmp.w   d4,d3
                 bmi.w   .loc_150E0
                 btst    #3,$69(a1)
@@ -16502,23 +16252,22 @@ sub_15014:                              ; CODE XREF: sub_F40C+106↑p
                 bra.w   .loc_150CE
 
 
-.loc_150C0:                              ; CODE XREF: sub_15014+96↑j
+.loc_150C0:
                 move.w  4(a1),d7
                 cmp.w   (ram_FF1E68).l,d7
                 bmi.w   .loc_150EE
 
-.loc_150CE:                              ; CODE XREF: sub_15014+A8↑j
+.loc_150CE:
                 lea     (unk_15CE0).l,a4
                 move.w  #$B1,(ram_FF18BC).l
                 bra.w   .loc_150EE
 
 
-.loc_150E0:                              ; CODE XREF: sub_15014+8C↑j
+.loc_150E0:
                 lea     (unk_15CFC).l,a4
                 move.w  #$B2,(ram_FF18BC).l
 
-.loc_150EE:                              ; CODE XREF: sub_15014+6E↑j
-; sub_15014+A4↑j ...
+.loc_150EE:
                 bsr.w   sub_154D2
                 tst.w   d0
                 bpl.w   .loc_1510A
@@ -16528,7 +16277,7 @@ sub_15014:                              ; CODE XREF: sub_F40C+106↑p
                 bra.w   .loc_15054
 
 
-.loc_1510A:                              ; CODE XREF: sub_15014+E0↑j
+.loc_1510A:
                 move.w  d0,$58(a1)
                 move.b  d1,$6F(a1)
                 move.b  d2,$70(a1)
@@ -16541,30 +16290,28 @@ sub_15014:                              ; CODE XREF: sub_F40C+106↑p
                 bra.w   .loc_1514C
 
 
-.loc_15138:                              ; CODE XREF: sub_15014+114↑j
+.loc_15138:
                 tst.w   $22(a1)
                 beq.w   .loc_1514C
                 bpl.w   .loc_15148
                 bset    #0,d3
 
-.loc_15148:                              ; CODE XREF: sub_15014+108↑j
-; sub_15014+12C↑j
+.loc_15148:
                 move.b  d3,$76(a1)
 
-.loc_1514C:                              ; CODE XREF: sub_15014+120↑j
-; sub_15014+128↑j
+.loc_1514C:
                 move.w  $54(a2),d0
                 cmp.w   #$11,d0
                 ble.w   .loc_15160
                 move.w  #$11,d0
                 move.w  d0,$54(a1)
 
-.loc_15160:                              ; CODE XREF: sub_15014+140↑j
+.loc_15160:
                 asl.w   #2,d0
                 lea     (unk_155D0).l,a0
                 movea.l (a0,d0.w),a0
 
-.loc_1516C:                              ; CODE XREF: sub_15014+1B4↓j
+.loc_1516C:
                 move.b  $70(a2),d2
                 move.b  $6F(a2),d1
                 move.b  $6E(a2),d0
@@ -16577,8 +16324,7 @@ sub_15014:                              ; CODE XREF: sub_F40C+106↑p
                 move.b  #$FF,d1
                 move.b  #0,d2
 
-.loc_15198:                              ; CODE XREF: sub_15014+168↑j
-; sub_15014+170↑j
+.loc_15198:
                 ext.w   d0
                 asl.w   #3,d0
                 movea.l 4(a0,d0.w),a4
@@ -16588,7 +16334,7 @@ sub_15014:                              ; CODE XREF: sub_F40C+106↑p
                 bra.w   .loc_151EA
 
 
-.loc_151B4:                              ; CODE XREF: sub_15014+192↑j
+.loc_151B4:
                 bsr.w   sub_154D2
                 tst.w   d0
                 bpl.w   .loc_151CA
@@ -16597,7 +16343,7 @@ sub_15014:                              ; CODE XREF: sub_F40C+106↑p
                 bra.s   .loc_1516C
 
 
-.loc_151CA:                              ; CODE XREF: sub_15014+1A6↑j
+.loc_151CA:
                 move.w  d0,$58(a2)
                 move.b  d1,$6F(a2)
                 move.b  d2,$70(a2)
@@ -16605,13 +16351,11 @@ sub_15014:                              ; CODE XREF: sub_F40C+106↑p
                 bra.w   .loc_151EA
 
 
-.loc_151DE:                              ; CODE XREF: sub_15014+5E↑j
-; sub_15014+EE↑j
+.loc_151DE:
                 move.b  #$FF,$6E(a1)
                 move.b  #$FF,$6E(a2)
 
-.loc_151EA:                              ; CODE XREF: sub_15014+19C↑j
-; sub_15014+1C6↑j
+.loc_151EA:
                 movem.l (sp)+,d1-d7/a0-a2
                 rts
 ; End of function sub_15014
@@ -16620,7 +16364,7 @@ sub_15014:                              ; CODE XREF: sub_F40C+106↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_151F0:                              ; CODE XREF: sub_15014+E4↑p
+sub_151F0:
                 movem.l d0-d1,-(sp)
                 cmpi.b  #1,$6E(a1)
                 bmi.w   .loc_1521C
@@ -16632,14 +16376,13 @@ sub_151F0:                              ; CODE XREF: sub_15014+E4↑p
                 bra.w   .loc_15338
 
 
-.loc_1521C:                              ; CODE XREF: sub_151F0+A↑j
-; sub_151F0+18↑j
+.loc_1521C:
                 move.b  #1,$6E(a1)
                 move.b  #$FF,$6F(a1)
                 bra.w   .loc_15338
 
 
-.loc_1522C:                              ; CODE XREF: sub_151F0+E↑j
+.loc_1522C:
                 cmpi.b  #3,$6E(a1)
                 blt.w   .loc_152AA
                 beq.w   .loc_1524A
@@ -16648,7 +16391,7 @@ sub_151F0:                              ; CODE XREF: sub_15014+E4↑p
                 bra.w   .loc_15338
 
 
-.loc_1524A:                              ; CODE XREF: sub_151F0+46↑j
+.loc_1524A:
                 move.l  4(a2),d0
                 sub.l   4(a1),d0
                 bpl.w   .loc_1526C
@@ -16659,13 +16402,13 @@ sub_151F0:                              ; CODE XREF: sub_15014+E4↑p
                 bra.w   .loc_1527E
 
 
-.loc_1526C:                              ; CODE XREF: sub_151F0+62↑j
+.loc_1526C:
                 move.l  4(a2),d0
                 sub.l   4(a1),d0
                 cmp.l   #$2000,d0
                 bgt.w   .loc_152AA
 
-.loc_1527E:                              ; CODE XREF: sub_151F0+78↑j
+.loc_1527E:
                 move.w  $1A(a2),d0
                 sub.w   $1A(a1),d0
                 bpl.w   .loc_1529A
@@ -16675,29 +16418,26 @@ sub_151F0:                              ; CODE XREF: sub_15014+E4↑p
                 bra.w   .loc_152D6
 
 
-.loc_1529A:                              ; CODE XREF: sub_151F0+96↑j
+.loc_1529A:
                 move.w  $30(a2),d0
                 sub.w   $30(a1),d0
                 cmp.w   #$40,d0 ; '@'
                 ble.w   .loc_152D6
 
-.loc_152AA:                              ; CODE XREF: sub_151F0+42↑j
-; sub_151F0+74↑j ...
+.loc_152AA:
                 cmpa.l  #ram_FF1EAA,a1
                 bne.w   .loc_152C6
                 tst.w   (ram_FF1B1A).l
                 beq.w   .loc_152C6
                 move.w  #1,(Race_ram_GameEnded).l
 
-.loc_152C6:                              ; CODE XREF: sub_151F0+C0↑j
-; sub_151F0+CA↑j
+.loc_152C6:
                 move.b  #3,$6E(a1)
                 move.b  #$FF,$6F(a1)
                 bra.w   .loc_15338
 
 
-.loc_152D6:                              ; CODE XREF: sub_151F0+A6↑j
-; sub_151F0+B6↑j
+.loc_152D6:
                 bclr    #3,$69(a1)
                 move.w  #0,8(a1)
                 move.w  #0,$C(a1)
@@ -16711,7 +16451,7 @@ sub_151F0:                              ; CODE XREF: sub_15014+E4↑p
                 bmi.w   .loc_15310
                 lsr.w   #1,d1
 
-.loc_15310:                              ; CODE XREF: sub_151F0+11A↑j
+.loc_15310:
                 add.w   d1,d0
                 move.w  d0,$30(a2)
                 move.w  0.w(a1),d0
@@ -16722,8 +16462,7 @@ sub_151F0:                              ; CODE XREF: sub_15014+E4↑p
                 move.b  #$FF,$6F(a1)
                 move.b  #$FF,$6F(a2)
 
-.loc_15338:                              ; CODE XREF: sub_151F0+28↑j
-; sub_151F0+38↑j ...
+.loc_15338:
                 movem.l (sp)+,d0-d1
                 rts
 ; End of function sub_151F0
@@ -16732,7 +16471,7 @@ sub_151F0:                              ; CODE XREF: sub_15014+E4↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_1533E:                              ; CODE XREF: sub_15014+1C↑p
+sub_1533E:
                 movem.l d0-d1,-(sp)
                 cmpi.b  #1,$6E(a1)
                 bmi.w   .loc_15440
@@ -16744,7 +16483,7 @@ sub_1533E:                              ; CODE XREF: sub_15014+1C↑p
                 bra.w   .loc_15440
 
 
-.loc_1536A:                              ; CODE XREF: sub_1533E+E↑j
+.loc_1536A:
                 cmpi.b  #4,$6E(a1)
                 beq.w   .loc_153FC
                 cmpi.b  #3,$6E(a1)
@@ -16759,13 +16498,13 @@ sub_1533E:                              ; CODE XREF: sub_15014+1C↑p
                 bra.w   .loc_153B2
 
 
-.loc_153A0:                              ; CODE XREF: sub_1533E+48↑j
+.loc_153A0:
                 move.l  4(a2),d0
                 sub.l   4(a1),d0
                 cmp.l   #$2000,d0
                 bgt.w   .loc_15440
 
-.loc_153B2:                              ; CODE XREF: sub_1533E+5E↑j
+.loc_153B2:
                 move.w  $1A(a2),d0
                 sub.w   $1A(a1),d0
                 bpl.w   .loc_153CE
@@ -16775,20 +16514,20 @@ sub_1533E:                              ; CODE XREF: sub_15014+1C↑p
                 bra.w   .loc_153DE
 
 
-.loc_153CE:                              ; CODE XREF: sub_1533E+7C↑j
+.loc_153CE:
                 move.w  $30(a2),d0
                 sub.w   $30(a1),d0
                 cmp.w   #$40,d0 ; '@'
                 bgt.w   .loc_15440
 
-.loc_153DE:                              ; CODE XREF: sub_1533E+8C↑j
+.loc_153DE:
                 bclr    #3,$69(a1)
                 move.b  #4,$6E(a1)
                 move.b  #4,$6E(a2)
                 move.b  #$FF,$6F(a1)
                 move.b  #$FF,$6F(a2)
 
-.loc_153FC:                              ; CODE XREF: sub_1533E+32↑j
+.loc_153FC:
                 move.w  #0,8(a1)
                 move.w  #0,$C(a1)
                 move.w  #0,$12(a1)
@@ -16801,15 +16540,14 @@ sub_1533E:                              ; CODE XREF: sub_15014+1C↑p
                 bmi.w   .loc_15430
                 lsr.w   #1,d1
 
-.loc_15430:                              ; CODE XREF: sub_1533E+EC↑j
+.loc_15430:
                 add.w   d1,d0
                 move.w  d0,$30(a2)
                 move.w  0.w(a1),d0
                 add.w   d1,d0
                 move.w  d0,0.w(a2)
 
-.loc_15440:                              ; CODE XREF: sub_1533E+A↑j
-; sub_1533E+18↑j ...
+.loc_15440:
                 movem.l (sp)+,d0-d1
                 rts
 ; End of function sub_1533E
@@ -16818,7 +16556,7 @@ sub_1533E:                              ; CODE XREF: sub_15014+1C↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_15446:                              ; CODE XREF: sub_15014+1AA↑p
+sub_15446:
                 move.w  d0,-(sp)
                 move.b  $6E(a2),d0
                 cmp.b   #3,d0
@@ -16843,11 +16581,11 @@ sub_15446:                              ; CODE XREF: sub_15014+1AA↑p
                 dc.b   2
 
 
-.loc_15468:                              ; CODE XREF: sub_15446+A↑j
+.loc_15468:
                 addq.b  #1,d0
                 move.b  d0,$6E(a2)
 
-.loc_1546E:                              ; CODE XREF: sub_15446+E↑j
+.loc_1546E:
                 move.b  #$FF,$6F(a2)
                 move.w  (sp)+,d0
                 rts
@@ -16857,11 +16595,11 @@ sub_15446:                              ; CODE XREF: sub_15014+1AA↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_15478:                              ; CODE XREF: sub_FB1E+54↑p
+sub_15478:
                 movem.l d1-d7/a0-a2,-(sp)
                 lea     (unk_155A4).l,a0
 
-.loc_15482:                              ; CODE XREF: sub_15478+46↓j
+.loc_15482:
                 move.b  (ram_FF302B).l,d2
                 move.b  (ram_FF302A).l,d1
                 move.w  #0,d0
@@ -16876,7 +16614,7 @@ sub_15478:                              ; CODE XREF: sub_FB1E+54↑p
                 bra.s   .loc_15482
 
 
-.loc_154C0:                              ; CODE XREF: sub_15478+2A↑j
+.loc_154C0:
                 move.b  d1,(ram_FF302A).l
                 move.b  d2,(ram_FF302B).l
                 movem.l (sp)+,d1-d7/a0-a2
@@ -16887,8 +16625,7 @@ sub_15478:                              ; CODE XREF: sub_FB1E+54↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_154D2:                              ; CODE XREF: sub_15014:@loc_150EE↑p
-; sub_15014:@loc_151B4↑p ...
+sub_154D2:
                 tst.b   d1
                 bmi.w   .loc_15506
                 sub.b   (ram_FF304B).l,d2
@@ -16896,7 +16633,7 @@ sub_154D2:                              ; CODE XREF: sub_15014:@loc_150EE↑p
                 add.b   2(a4),d2
                 bpl.w   .loc_1550A
 
-.loc_154EA:                              ; CODE XREF: sub_154D2+2E↓j
+.loc_154EA:
                 addq.b  #1,d1
                 move.b  d1,d4
                 ext.w   d4
@@ -16909,19 +16646,19 @@ sub_154D2:                              ; CODE XREF: sub_15014:@loc_150EE↑p
                 bra.w   .loc_15516
 
 
-.loc_15506:                              ; CODE XREF: sub_154D2+2↑j
+.loc_15506:
                 move.b  2(a4),d2
 
-.loc_1550A:                              ; CODE XREF: sub_154D2+14↑j
+.loc_1550A:
                 addq.b  #1,d1
 
-.loc_1550C:                              ; CODE XREF: sub_154D2+C↑j
+.loc_1550C:
                 move.b  d1,d4
                 ext.w   d4
                 asl.w   #2,d4
                 move.b  3(a4,d4.w),d0
 
-.loc_15516:                              ; CODE XREF: sub_154D2+30↑j
+.loc_15516:
                 move.b  4(a4,d4.w),d3
                 move.b  5(a4,d4.w),d5
                 move.b  6(a4,d4.w),d6
@@ -16929,13 +16666,12 @@ sub_154D2:                              ; CODE XREF: sub_15014:@loc_150EE↑p
                 bmi.w   .loc_1552A
                 add.w   (a4),d0
 
-.loc_1552A:                              ; CODE XREF: sub_154D2+26↑j
-; sub_154D2+52↑j
+.loc_1552A:
                 cmp.w   (word_3C7EA).l,d0
                 bmi.w   .locret_15536
                 nop
 
-.locret_15536:                           ; CODE XREF: sub_154D2+5E↑j
+.locret_15536:
                 rts
 ; End of function sub_154D2
 
@@ -16943,8 +16679,7 @@ sub_154D2:                              ; CODE XREF: sub_15014:@loc_150EE↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_15538:                              ; CODE XREF: sub_11B7A+98↑p
-; sub_11B7A:@loc_11C20↑p ...
+sub_15538:
                 movem.l d0/a4,-(sp)
                 jsr     (Rand_GetWord).l
                 andi.w  #3,d0
@@ -16960,8 +16695,7 @@ sub_15538:                              ; CODE XREF: sub_11B7A+98↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_1555C:                              ; CODE XREF: sub_12BD2:@loc_12C76↑p
-; sub_145EC:@loc_14682↑p
+sub_1555C:
                 movem.l d0/a4,-(sp)
                 jsr     (Rand_GetWord).l
                 andi.w  #7,d0
@@ -17010,7 +16744,7 @@ sub_1555C:                              ; CODE XREF: sub_12BD2:@loc_12C76↑p
                 dc.b   1
                 dc.b $4E ; N
                 dc.b $75 ; u
-unk_155A4:      dc.b   0                ; DATA XREF: sub_15478+4↑o
+unk_155A4:      dc.b   0
                 dc.b   1
                 dc.b $55 ; U
                 dc.b $AC
@@ -17018,7 +16752,7 @@ unk_155A4:      dc.b   0                ; DATA XREF: sub_15478+4↑o
                 dc.b $FF
                 dc.b $FF
                 dc.b $FF
-unk_155AC:      dc.b   1                ; DATA XREF: sub_15478+1E↑o
+unk_155AC:      dc.b   1
                 dc.b $5E ; ^
                 dc.b   8
                 dc.b   0
@@ -17054,8 +16788,7 @@ unk_155AC:      dc.b   1                ; DATA XREF: sub_15478+1E↑o
                 dc.b   0
                 dc.b   0
                 dc.b $FF
-unk_155D0:      dc.b   0                ; DATA XREF: sub_15014+36↑o
-; sub_15014+14E↑o
+unk_155D0:      dc.b   0
                 dc.b   1
                 dc.b $57 ; W
                 dc.b $60 ; `
@@ -17127,7 +16860,7 @@ unk_155D0:      dc.b   0                ; DATA XREF: sub_15014+36↑o
                 dc.b   1
                 dc.b $59 ; Y
                 dc.b $18
-unk_15618:      dc.b   6                ; DATA XREF: sub_15538+E↑o
+unk_15618:      dc.b   6
                 dc.b  $A
                 dc.b  $B
                 dc.b  $C
@@ -17139,7 +16872,7 @@ unk_15618:      dc.b   6                ; DATA XREF: sub_15538+E↑o
                 dc.b  $B
                 dc.b  $E
                 dc.b   7
-unk_15624:      dc.b   0                ; DATA XREF: sub_1555C+E↑o
+unk_15624:      dc.b   0
                 dc.b   3
                 dc.b  $E
                 dc.b  $F
@@ -18863,7 +18596,7 @@ unk_15624:      dc.b   0                ; DATA XREF: sub_1555C+E↑o
                 dc.b   0
                 dc.b   0
                 dc.b $FF
-unk_15CE0:      dc.b   0                ; DATA XREF: sub_15014:@loc_150CE↑o
+unk_15CE0:      dc.b   0
                 dc.b $B3
                 dc.b   4
                 dc.b   6
@@ -18891,7 +18624,7 @@ unk_15CE0:      dc.b   0                ; DATA XREF: sub_15014:@loc_150CE↑o
                 dc.b   0
                 dc.b   0
                 dc.b $FF
-unk_15CFC:      dc.b   0                ; DATA XREF: sub_15014:@loc_150E0↑o
+unk_15CFC:      dc.b   0
                 dc.b $B3
                 dc.b   4
                 dc.b  $C
@@ -19575,7 +19308,7 @@ unk_15CFC:      dc.b   0                ; DATA XREF: sub_15014:@loc_150E0↑o
                 dc.b $12
                 dc.b   3
                 dc.b $FF
-byte_15FA8:     dc.b $3D                ; DATA XREF: Rand_Init+6↓o
+byte_15FA8:     dc.b $3D
                 dc.b $52 ; R
                 dc.b $7F ; 
                 dc.b $31 ; 1
@@ -19643,20 +19376,20 @@ byte_15FA8:     dc.b $3D                ; DATA XREF: Rand_Init+6↓o
 ; =============== S U B R O U T I N E =======================================
 
 
-Rand_Init:                              ; CODE XREF: Intro_Init+312↑p
+Rand_Init:
                 movem.l d0-d1/a0-a1,-(sp)
                 move.w  d0,d1
 
                 lea     (byte_15FA8).l,a0
                 lea     (ram_FF18BE).l,a1
                 move.w  #$20,d0
-.loc_15FFE:                              ; CODE XREF: Rand_Init+18↓j
+.loc_15FFE:
                 move.w  (a0)+,(a1)+
                 dbf     d0,.loc_15FFE
 
                 lea     (ram_FF18BE).l,a0
                 move.w  #$20,d0
-.loc_1600E:                              ; CODE XREF: Rand_Init+28↓j
+.loc_1600E:
                 add.w   d1,(a0)+
                 dbf     d0,.loc_1600E
 
@@ -19709,7 +19442,7 @@ sub_1607C:
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_16088:                              ; CODE XREF: Intro_Init+318↑p
+sub_16088:
                 move.w  #$563A,(ram_FF1B42).l
                 move.w  #$563A,(ram_FF1B44).l
                 rts
@@ -19725,7 +19458,7 @@ sub_1609A:
                 bcc.s   .loc_160A8
                 eori.w  #$B400,d0
 
-.loc_160A8:                              ; CODE XREF: sub_1609A+8↑j
+.loc_160A8:
                 move.w  d0,(ram_FF1B42).l
                 rts
 ; End of function sub_1609A
@@ -19734,14 +19467,14 @@ sub_1609A:
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_160B0:                              ; CODE XREF: MainMenu_GameTick+186↑p
+sub_160B0:
                 moveq   #0,d0
                 move.w  (ram_FF1B42).l,d0
                 lsr.w   #1,d0
                 bcc.s   .loc_160C0
                 eori.w  #$B400,d0
 
-.loc_160C0:                              ; CODE XREF: sub_160B0+A↑j
+.loc_160C0:
                 move.w  d0,(ram_FF1B42).l
                 divs.w  d2,d0
                 swap    d0
@@ -19752,13 +19485,13 @@ sub_160B0:                              ; CODE XREF: MainMenu_GameTick+186↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_160CC:                              ; CODE XREF: MainMenu_GameTick+18C↑p
+sub_160CC:
                 move.w  (ram_FF1B44).l,d0
                 lsr.w   #1,d0
                 bcc.s   .loc_160DA
                 eori.w  #$B400,d0
 
-.loc_160DA:                              ; CODE XREF: sub_160CC+8↑j
+.loc_160DA:
                 move.w  d0,(ram_FF1B44).l
                 rts
 ; End of function sub_160CC
@@ -19767,24 +19500,24 @@ sub_160CC:                              ; CODE XREF: MainMenu_GameTick+18C↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_160E2:                              ; CODE XREF: Race_Update+7E↑p
+sub_160E2:
                 lea     (ram_FF1EAA).l,a1
                 btst    #4,$68(a1)
                 beq.w   .loc_160FA
                 tst.b   $6E(a1)
                 bpl.w   .locret_16118
 
-.loc_160FA:                              ; CODE XREF: sub_160E2+C↑j
+.loc_160FA:
                 move.w  $5C(a1),d0
                 add.w   (Race_ram_FrameDelay).l,d0
                 cmp.w   (ram_FF18AA).l,d0
                 bcs.w   .loc_16114
                 move.w  (ram_FF18AA).l,d0
 
-.loc_16114:                              ; CODE XREF: sub_160E2+28↑j
+.loc_16114:
                 move.w  d0,$5C(a1)
 
-.locret_16118:                           ; CODE XREF: sub_160E2+14↑j
+.locret_16118:
                 rts
 ; End of function sub_160E2
 
@@ -19792,7 +19525,7 @@ sub_160E2:                              ; CODE XREF: Race_Update+7E↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_1611A:                              ; CODE XREF: Race_Update+148↑p
+sub_1611A:
                 move.w  #0,(ram_FF1904).l
                 lea     (ram_FF1A08).l,a0
                 movea.l (a0)+,a1
@@ -19801,8 +19534,7 @@ sub_1611A:                              ; CODE XREF: Race_Update+148↑p
                 move.l  (a0),-(sp)
                 move.l  #$7FFFFFFF,d4
 
-.loc_1613A:                              ; CODE XREF: sub_1611A+54↓j
-; sub_1611A+5A↓j
+.loc_1613A:
                 movea.l (a0)+,a2
                 cmpa.l  #$FFFFFFFF,a2
                 beq.w   .loc_16176
@@ -19810,7 +19542,7 @@ sub_1611A:                              ; CODE XREF: Race_Update+148↑p
                 sub.l   4(a2),d1
                 bpl.w   .loc_16152
                 neg.l   d1
-.loc_16152:                              ; CODE XREF: sub_1611A+32↑j
+.loc_16152:
                 lsr.l   #8,d1
                 move.l  d1,d3
                 mulu.w  d3,d1
@@ -19819,7 +19551,7 @@ sub_1611A:                              ; CODE XREF: Race_Update+148↑p
                 sub.w   $30(a2),d3
                 bpl.w   .loc_16166
                 neg.w   d3
-.loc_16166:                              ; CODE XREF: sub_1611A+46↑j
+.loc_16166:
                 move.w  d3,d5
                 mulu.w  d5,d3
                 add.l   d3,d1
@@ -19830,7 +19562,7 @@ sub_1611A:                              ; CODE XREF: Race_Update+148↑p
                 bra.s   .loc_1613A
 
 
-.loc_16176:                              ; CODE XREF: sub_1611A+28↑j
+.loc_16176:
                 movea.l (sp)+,a2
                 move.l  a2,(ram_FF1908).l
                 cmpa.l  #$FFFFFFFF,a2
@@ -19851,14 +19583,14 @@ sub_1611A:                              ; CODE XREF: Race_Update+148↑p
                 sub.l   4(a1),d0
                 move.l  d0,(ram_FF1786).l
 
-.loc_161BE:                              ; CODE XREF: sub_1611A+6A↑j
+.loc_161BE:
                 tst.w   (ram_FF1ACC).l
                 beq.w   .loc_161D2
                 jsr     (sub_14FB4).l
                 bra.w   .locret_162AE
 
 
-.loc_161D2:                              ; CODE XREF: sub_1611A+AA↑j
+.loc_161D2:
                 tst.b   (ram_FF1B22).l
                 beq.w   .loc_162AA
                 btst    #5,(Race_ram_CurrentButtons).l
@@ -19868,7 +19600,7 @@ sub_1611A:                              ; CODE XREF: Race_Update+148↑p
                 btst    #0,$6B(a1)
                 beq.w   .loc_1621E
 
-.loc_161FC:                              ; CODE XREF: sub_1611A+D4↑j
+.loc_161FC:
                 move.w  (Race_ram_FrameDelay).l,d0
                 sub.b   d0,$6D(a1)
                 bgt.w   .locret_162AE
@@ -19878,20 +19610,19 @@ sub_1611A:                              ; CODE XREF: Race_Update+148↑p
                 bra.w   .locret_162AE
 
 
-.loc_1621E:                              ; CODE XREF: sub_1611A+CA↑j
-; sub_1611A+DE↑j
+.loc_1621E:
                 move.w  (Race_ram_FrameDelay).l,d0
                 sub.b   d0,$6D(a1)
                 bgt.w   .locret_162AE
 
-.loc_1622C:                              ; CODE XREF: sub_1611A+F6↑j
+.loc_1622C:
                 addi.b  #1,$6C(a1)
                 cmpi.b  #1,$6C(a1)
                 bne.w   .loc_16248
                 move.w  #1,(ram_FF1904).l
                 bsr.w   sub_16520
 
-.loc_16248:                              ; CODE XREF: sub_1611A+11E↑j
+.loc_16248:
                 cmpi.b  #3,$6C(a1)
                 bpl.w   .loc_16298
                 btst    #6,$69(a1)
@@ -19901,14 +19632,14 @@ sub_1611A:                              ; CODE XREF: Race_Update+148↑p
                 beq.w   .loc_16272
                 lea     (ram_FF1AC2).l,a4
 
-.loc_16272:                              ; CODE XREF: sub_1611A+14E↑j
+.loc_16272:
                 move.b  $6C(a1),d0
                 asl.w   #1,d0
                 move.b  (a4,d0.w),$6D(a1)
                 bra.w   .locret_162AE
 
 
-.loc_16282:                              ; CODE XREF: sub_1611A+13E↑j
+.loc_16282:
                 lea     (ram_FF1ABC).l,a4
                 move.b  $6C(a1),d0
                 asl.w   #1,d0
@@ -19916,17 +19647,16 @@ sub_1611A:                              ; CODE XREF: Race_Update+148↑p
                 bra.w   .locret_162AE
 
 
-.loc_16298:                              ; CODE XREF: sub_1611A+134↑j
+.loc_16298:
                 move.b  #0,(ram_FF1B22).l
                 bclr    #4,$69(a1)
                 bra.w   .locret_162AE
 
 
-.loc_162AA:                              ; CODE XREF: sub_1611A+BE↑j
+.loc_162AA:
                 bsr.w   sub_162B0
 
-.locret_162AE:                           ; CODE XREF: sub_1611A+B4↑j
-; sub_1611A+EC↑j ...
+.locret_162AE:
                 rts
 ; End of function sub_1611A
 
@@ -19934,7 +19664,7 @@ sub_1611A:                              ; CODE XREF: Race_Update+148↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_162B0:                              ; CODE XREF: sub_1611A:@loc_162AA↑p
+sub_162B0:
                 move.b  (Race_ram_CurrentButtons).l,d0
                 btst    #5,d0
                 beq.w   .locret_1634C
@@ -19946,7 +19676,7 @@ sub_162B0:                              ; CODE XREF: sub_1611A:@loc_162AA↑p
                 beq.w   .loc_162EC
                 move.b  (ram_FF1AC2).l,$6D(a1)
 
-.loc_162EC:                              ; CODE XREF: sub_162B0+30↑j
+.loc_162EC:
                 bclr    #0,$6B(a1)
                 bclr    #6,$69(a1)
                 btst    #0,d0
@@ -19955,14 +19685,13 @@ sub_162B0:                              ; CODE XREF: sub_1611A:@loc_162AA↑p
                 bra.w   .loc_16320
 
 
-.loc_1630A:                              ; CODE XREF: sub_162B0+4C↑j
+.loc_1630A:
                 btst    #1,d0
                 beq.w   .loc_16320
                 bset    #6,$69(a1)
                 move.b  (ram_FF1ABC).l,$6D(a1)
 
-.loc_16320:                              ; CODE XREF: sub_162B0+56↑j
-; sub_162B0+5E↑j
+.loc_16320:
                 movea.l (ram_FF1908).l,a0
                 cmpa.l  #$FFFFFFFF,a0
                 beq.w   .locret_1634C
@@ -19973,11 +19702,10 @@ sub_162B0:                              ; CODE XREF: sub_1611A:@loc_162AA↑p
                 bra.w   .locret_1634C
 
 
-.loc_16346:                              ; CODE XREF: sub_162B0+88↑j
+.loc_16346:
                 bset    #5,$69(a1)
 
-.locret_1634C:                           ; CODE XREF: sub_162B0+A↑j
-; sub_162B0+7C↑j ...
+.locret_1634C:
                 rts
 ; End of function sub_162B0
 
@@ -19992,15 +19720,14 @@ sub_1634E:
                 bra.w   locret_16456
 ; ---------------------------------------------------------------------------
 
-loc_1636E:                              ; CODE XREF: sub_1634E+E↑j
+loc_1636E:
                 neg.l   d0
                 cmp.l   #$10000,d0
                 bmi.w   loc_1637E
                 bra.w   locret_16456
 ; ---------------------------------------------------------------------------
 
-loc_1637E:                              ; CODE XREF: sub_1634E+18↑j
-; sub_1634E+28↑j
+loc_1637E:
                 clr.w   d0
                 move.b  (ram_FF1B24).l,d0
                 beq.w   locret_16456
@@ -20014,21 +19741,20 @@ loc_1637E:                              ; CODE XREF: sub_1634E+18↑j
                 bra.w   loc_163B4
 ; ---------------------------------------------------------------------------
 
-loc_163AE:                              ; CODE XREF: sub_1634E+52↑j
+loc_163AE:
                 bclr    #5,$69(a1)
 
-loc_163B4:                              ; CODE XREF: sub_1634E+5C↑j
+loc_163B4:
                 btst    #1,d0
                 bne.w   loc_163C6
                 bclr    #6,$69(a1)
                 bra.w   loc_163CC
 ; ---------------------------------------------------------------------------
 
-loc_163C6:                              ; CODE XREF: sub_1634E+6A↑j
+loc_163C6:
                 bset    #6,$69(a1)
 
-loc_163CC:                              ; CODE XREF: sub_1634E+40↑j
-; sub_1634E+74↑j
+loc_163CC:
                 bra.w   loc_16428
 ; ---------------------------------------------------------------------------
                 btst    #2,d0
@@ -20043,7 +19769,7 @@ loc_163CC:                              ; CODE XREF: sub_1634E+40↑j
                 bra.w   loc_16428
 ; ---------------------------------------------------------------------------
 
-loc_163FE:                              ; CODE XREF: sub_1634E+86↑j
+loc_163FE:
                 btst    #3,d0
                 beq.w   loc_16428
                 move.l  4(a2),d2
@@ -20054,8 +19780,7 @@ loc_163FE:                              ; CODE XREF: sub_1634E+86↑j
                 bset    #2,$68(a1)
                 bsr.w   sub_13A92
 
-loc_16428:                              ; CODE XREF: sub_1634E:loc_163CC↑j
-; sub_1634E+98↑j ...
+loc_16428:
                 btst    #4,d0
                 beq.w   loc_16440
                 movea.l (ram_FF1A68).l,a4
@@ -20064,17 +19789,16 @@ loc_16428:                              ; CODE XREF: sub_1634E:loc_163CC↑j
                 bra.w   loc_16452
 ; ---------------------------------------------------------------------------
 
-loc_16440:                              ; CODE XREF: sub_1634E+DE↑j
+loc_16440:
                 btst    #5,d0
                 beq.w   locret_16456
                 movea.l (ram_FF1A68).l,a4
                 move.w  6(a4),d2
 
-loc_16452:                              ; CODE XREF: sub_1634E+EE↑j
+loc_16452:
                 move.w  d2,$46(a1)
 
-locret_16456:                           ; CODE XREF: sub_1634E+1C↑j
-; sub_1634E+2C↑j ...
+locret_16456:
                 rts
 ; End of function sub_1634E
 
@@ -20089,12 +19813,12 @@ sub_16458:
                 bgt.w   loc_1646E
                 move.w  #0,$5A(a1)
 
-loc_1646E:                              ; CODE XREF: sub_16458+C↑j
+loc_1646E:
                 btst    #4,$69(a1)
                 beq.w   loc_1647C
                 bsr.w   sub_16548
 
-loc_1647C:                              ; CODE XREF: sub_16458+1C↑j
+loc_1647C:
                 bclr    #2,$69(a1)
                 move.b  $72(a1),d0
                 ext.w   d0
@@ -20108,13 +19832,13 @@ loc_1647C:                              ; CODE XREF: sub_16458+1C↑j
                 bra.w   loc_1651C
 ; ---------------------------------------------------------------------------
 
-loc_164AA:                              ; CODE XREF: sub_16458+3C↑j
+loc_164AA:
                 jsr     (sub_13D44).l
                 tst.w   (ram_FF18A4).l
                 bne.w   locret_1651E
                 lea     (ram_FF1EAA).l,a2
 
-loc_164C0:                              ; CODE XREF: sub_16458+46↑j
+loc_164C0:
                 cmpa.l  #ram_FF1F2A,a1
                 beq.w   loc_16518
                 btst    #4,$69(a1)
@@ -20124,7 +19848,7 @@ loc_164C0:                              ; CODE XREF: sub_16458+46↑j
                 bpl.w   loc_164E2
                 neg.l   d0
 
-loc_164E2:                              ; CODE XREF: sub_16458+84↑j
+loc_164E2:
                 movea.l (ram_FF1A68).l,a5
                 move.w  0.w(a5),d6
                 ext.l   d6
@@ -20134,30 +19858,27 @@ loc_164E2:                              ; CODE XREF: sub_16458+84↑j
                 movea.l 8(a4),a6
                 bra.w   loc_1651C
 ; ---------------------------------------------------------------------------
-loc_164FE:                              ; CODE XREF: sub_16458+9A↑j
+loc_164FE:
                 cmpa.l  (ram_FF1908).l,a1
                 bne.w   loc_16510
                 tst.w   $5A(a1)
                 ble.w   loc_16518
-loc_16510:                              ; CODE XREF: sub_16458+AC↑j
+loc_16510:
                 movea.l 8(a4),a6
                 bra.w   loc_1651C
 ; ---------------------------------------------------------------------------
-loc_16518:                              ; CODE XREF: sub_16458+6E↑j
-; sub_16458+78↑j ...
+loc_16518:
                 movea.l $C(a4),a6
-loc_1651C:                              ; CODE XREF: sub_16458+4E↑j
-; sub_16458+A2↑j ...
+loc_1651C:
                 jsr     (a6)
-locret_1651E:                           ; CODE XREF: sub_16458+5E↑j
+locret_1651E:
                 rts
 ; End of function sub_16458
 
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_16520:                              ; CODE XREF: sub_1611A+12A↑p
-; sub_16548+2E↓p
+sub_16520:
                 cmpi.b  #1,$6C(a1)
                 bne.w   .locret_16546
                 btst    #1,$6B(a1)
@@ -20166,8 +19887,7 @@ sub_16520:                              ; CODE XREF: sub_1611A+12A↑p
                 bne.w   .locret_16546
                 move.b  #$E,(ram_FF1AD7).l
 
-.locret_16546:                           ; CODE XREF: sub_16520+6↑j
-; sub_16520+10↑j ...
+.locret_16546:
                 rts
 ; End of function sub_16520
 
@@ -20186,7 +19906,7 @@ sub_16548:
                 move.w  #1,(ram_FF1906).l
                 bsr.s   sub_16520
 
-.loc_16578:                              ; CODE XREF: sub_16548+22↑j
+.loc_16578:
                 cmpi.b  #3,$6C(a1)
                 bpl.w   .loc_165C8
                 btst    #6,$69(a1)
@@ -20196,14 +19916,14 @@ sub_16548:
                 beq.w   .loc_165A2
                 lea     (unk_257E2).l,a4
 
-.loc_165A2:                              ; CODE XREF: sub_16548+50↑j
+.loc_165A2:
                 move.b  $6C(a1),d0
                 asl.w   #1,d0
                 move.b  (a4,d0.w),$6D(a1)
                 bra.w   .locret_165CE
 
 
-.loc_165B2:                              ; CODE XREF: sub_16548+40↑j
+.loc_165B2:
                 lea     (unk_257EE).l,a4
                 move.b  $6C(a1),d0
                 asl.w   #1,d0
@@ -20211,11 +19931,10 @@ sub_16548:
                 bra.w   .locret_165CE
 
 
-.loc_165C8:                              ; CODE XREF: sub_16548+36↑j
+.loc_165C8:
                 bclr    #4,$69(a1)
 
-.locret_165CE:                           ; CODE XREF: sub_16548+12↑j
-; sub_16548+66↑j ...
+.locret_165CE:
                 rts
 ; End of function sub_16548
 
@@ -20235,7 +19954,7 @@ sub_165D0:
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_165E0:                              ; CODE XREF: sub_16624↓p
+sub_165E0:
                 move.b  $72(a1),d0
                 ext.w   d0
                 bset    #1,$68(a1)
@@ -20246,7 +19965,7 @@ sub_165E0:                              ; CODE XREF: sub_16624↓p
                 bset    #2,$68(a1)
                 bclr    #1,$68(a1)
 
-.loc_1660C:                              ; CODE XREF: sub_165E0+1C↑j
+.loc_1660C:
                 bsr.w   sub_13A92
                 rts
 ; End of function sub_165E0
@@ -20255,8 +19974,7 @@ sub_165E0:                              ; CODE XREF: sub_16624↓p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_16612:                              ; CODE XREF: sub_1662C+E↓p
-; sub_166B0+18↓p
+sub_16612:
                 bsr.w   sub_16732
                 move.w  d1,-(sp)
                 bsr.w   sub_131BE
@@ -20279,7 +19997,7 @@ sub_16624:
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_1662C:                              ; CODE XREF: sub_16644+14↓p
+sub_1662C:
                 jsr     (Rand_GetWord).l
                 btst    #0,d0
                 bne.w   .loc_1663E
@@ -20287,7 +20005,7 @@ sub_1662C:                              ; CODE XREF: sub_16644+14↓p
                 rts
 
 
-.loc_1663E:                              ; CODE XREF: sub_1662C+A↑j
+.loc_1663E:
                 bsr.w   sub_1666A
                 rts
 ; End of function sub_1662C
@@ -20304,7 +20022,7 @@ sub_16644:
                 bsr.s   sub_1662C
                 rts
 
-.loc_1665C:                              ; CODE XREF: sub_16644+10↑j
+.loc_1665C:
                 move.w  #$FFC0,d1
                 bsr.w   sub_1333C
                 bsr.w   sub_131BE
@@ -20315,7 +20033,7 @@ sub_16644:
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_1666A:                              ; CODE XREF: sub_1662C:@loc_1663E↑p
+sub_1666A:
                 bsr.w   sub_131BE
                 move.l  (ram_FF1786).l,d0
                 movea.l (ram_FF1A68).l,a4
@@ -20325,20 +20043,20 @@ sub_1666A:                              ; CODE XREF: sub_1662C:@loc_1663E↑p
                 bra.w   .loc_1669A
 
 
-.loc_1668E:                              ; CODE XREF: sub_1666A+16↑j
+.loc_1668E:
                 move.w  2(a4),d7
                 ext.l   d7
                 cmp.l   d7,d0
                 bmi.w   .loc_166A6
 
-.loc_1669A:                              ; CODE XREF: sub_1666A+20↑j
+.loc_1669A:
                 move.b  $72(a1),d0
                 ext.w   d0
                 bsr.w   sub_1384C
                 rts
 
 
-.loc_166A6:                              ; CODE XREF: sub_1666A+2C↑j
+.loc_166A6:
                 move.w  #0,d1
                 bsr.w   sub_1333C
                 rts
@@ -20359,7 +20077,7 @@ sub_166B0:
                 rts
 
 
-.loc_166CE:                              ; CODE XREF: sub_166B0+14↑j
+.loc_166CE:
                 move.w  #0,d1
                 bsr.w   sub_1333C
                 bsr.w   sub_131BE
@@ -20396,15 +20114,14 @@ sub_166F0:
                 bra.w   .locret_16730
 
 
-.loc_16720:                              ; CODE XREF: sub_166F0+16↑j
-; sub_166F0+20↑j
+.loc_16720:
                 bsr.w   sub_16732
                 move.w  d1,-(sp)
                 bsr.w   sub_131BE
                 move.w  (sp)+,d1
                 bsr.w   sub_1333C
 
-.locret_16730:                           ; CODE XREF: sub_166F0+2C↑j
+.locret_16730:
                 rts
 ; End of function sub_166F0
 
@@ -20412,8 +20129,7 @@ sub_166F0:
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_16732:                              ; CODE XREF: sub_16612↑p
-; sub_16624+2↑p ...
+sub_16732:
                 btst    #4,$69(a1)
                 bne.w   .locret_1685E
                 lea     (ram_FF1EAA).l,a2
@@ -20427,7 +20143,7 @@ sub_16732:                              ; CODE XREF: sub_16612↑p
                 bpl.w   .loc_16760
                 neg.l   d0
 
-.loc_16760:                              ; CODE XREF: sub_16732+28↑j
+.loc_16760:
                 movea.l (ram_FF1A68).l,a4
                 move.w  2(a4),d7
                 ext.l   d7
@@ -20451,7 +20167,7 @@ sub_16732:                              ; CODE XREF: sub_16612↑p
                 bra.w   .locret_1685E
 
 
-.loc_167BC:                              ; CODE XREF: sub_16732+74↑j
+.loc_167BC:
                 bclr    #6,$69(a1)
                 move.b  (ram_FF1AB6).l,$6D(a1)
                 move.w  (ram_FF1E9C).l,d0
@@ -20463,7 +20179,7 @@ sub_16732:                              ; CODE XREF: sub_16612↑p
                 bra.w   .locret_1685E
 
 
-.loc_167EC:                              ; CODE XREF: sub_16732+48↑j
+.loc_167EC:
                 cmp.w   d1,d0
                 bpl.w   .loc_16858
                 move.w  8(a4),$5A(a1)
@@ -20478,7 +20194,7 @@ sub_16732:                              ; CODE XREF: sub_16612↑p
                 bra.w   .locret_1685E
 
 
-.loc_16828:                              ; CODE XREF: sub_16732+E0↑j
+.loc_16828:
                 bclr    #6,$69(a1)
                 move.b  (ram_FF1AB6).l,$6D(a1)
                 move.w  (ram_FF1E9C).l,d0
@@ -20490,12 +20206,10 @@ sub_16732:                              ; CODE XREF: sub_16612↑p
                 bra.w   .locret_1685E
 
 
-.loc_16858:                              ; CODE XREF: sub_16732+3C↑j
-; sub_16732+50↑j ...
+.loc_16858:
                 bclr    #4,$69(a1)
 
-.locret_1685E:                           ; CODE XREF: sub_16732+6↑j
-; sub_16732+86↑j ...
+.locret_1685E:
                 rts
 ; End of function sub_16732
 
@@ -20504,7 +20218,7 @@ sub_16732:                              ; CODE XREF: sub_16612↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_169B0:                              ; CODE XREF: Race_Init+62↑p
+sub_169B0:
                 movem.l d0/a0,-(sp)
                 move.w  (Menu_ram_CurrentTrackId).l,d0
                 asl.w   #1,d0
@@ -20524,8 +20238,7 @@ sub_169B0:                              ; CODE XREF: Race_Init+62↑p
                 lea     (ram_FFDC58).l,a1
                 move.w  #$7F,d0
 
-.loc_16A08:                              ; CODE XREF: sub_169B0+6C↓j
-; sub_169B0+7C↓j
+.loc_16A08:
                 move.b  (a1),d1
                 ext.w   d1
                 bpl.w   .loc_16A24
@@ -20539,14 +20252,14 @@ sub_169B0:                              ; CODE XREF: Race_Init+62↑p
                 bra.w   .locret_16A30
 
 
-.loc_16A24:                              ; CODE XREF: sub_169B0+5C↑j
+.loc_16A24:
                 mulu.w  d2,d1
                 swap    d1
                 move.b  d1,(a1)
                 addq.w  #2,a1
                 dbf     d0,.loc_16A08
 
-.locret_16A30:                           ; CODE XREF: sub_169B0+70↑j
+.locret_16A30:
                 rts
 ; End of function sub_169B0
 
@@ -20554,7 +20267,7 @@ sub_169B0:                              ; CODE XREF: Race_Init+62↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_16A32:                              ; CODE XREF: RESET+7E6AE↓p
+sub_16A32:
                 addq.w  #1,d0
                 cmp.w   #3,d0
                 ble.w   .loc_16A44
@@ -20562,10 +20275,10 @@ sub_16A32:                              ; CODE XREF: RESET+7E6AE↓p
                 bra.w   .loc_16A46
 
 
-.loc_16A44:                              ; CODE XREF: sub_16A32+6↑j
+.loc_16A44:
                 asl.w   #7,d0
 
-.loc_16A46:                              ; CODE XREF: sub_16A32+E↑j
+.loc_16A46:
                 lea     (ram_FFDC58).l,a1
                 adda.w  d0,a1
                 move.l  a1,-(sp)
@@ -20582,8 +20295,7 @@ sub_16A32:                              ; CODE XREF: RESET+7E6AE↓p
                 move.w  (a0,d0.w),d2
                 move.w  #$3F,d0 ; '?'
 
-.loc_16A86:                              ; CODE XREF: sub_16A32+68↓j
-; sub_16A32+78↓j
+.loc_16A86:
                 move.b  (a1),d1
                 ext.w   d1
                 bpl.w   .loc_16AA2
@@ -20597,45 +20309,45 @@ sub_16A32:                              ; CODE XREF: RESET+7E6AE↓p
                 bra.w   .locret_16AAE
 
 
-.loc_16AA2:                              ; CODE XREF: sub_16A32+58↑j
+.loc_16AA2:
                 mulu.w  d2,d1
                 swap    d1
                 move.b  d1,(a1)
                 addq.w  #2,a1
                 dbf     d0,.loc_16A86
 
-.locret_16AAE:                           ; CODE XREF: sub_16A32+6C↑j
+.locret_16AAE:
                 rts
 ; End of function sub_16A32
 
 
 
-off_16AB0:      dc.l word_16AC4         ; DATA XREF: sub_169B0+C↑o
+off_16AB0:      dc.l word_16AC4
                 dc.l word_16ACE
                 dc.l word_16AD8
                 dc.l word_16AE2
                 dc.l word_16AEC
-word_16AC4:     dc.w $B333              ; DATA XREF: ROM:off_16AB0↑o
+word_16AC4:     dc.w $B333
                 dc.w $CCCC
                 dc.w $D999
                 dc.w $D999
 word_16ACC:     dc.w $D999
-word_16ACE:     dc.w $B333              ; DATA XREF: ROM:00016AB4↑o
+word_16ACE:     dc.w $B333
                 dc.w $CCCC
                 dc.w $D999
                 dc.w $E666
                 dc.w $E666
-word_16AD8:     dc.w $B333              ; DATA XREF: ROM:00016AB8↑o
+word_16AD8:     dc.w $B333
                 dc.w $CCCC
                 dc.w $D999
                 dc.w $E666
 word_16AE0:     dc.w $E666
-word_16AE2:     dc.w $A666              ; DATA XREF: ROM:00016ABC↑o
+word_16AE2:     dc.w $A666
                 dc.w $B333
                 dc.w $C000
                 dc.w $C000
                 dc.w $C000
-word_16AEC:     dc.w $B333              ; DATA XREF: ROM:00016AC0↑o
+word_16AEC:     dc.w $B333
                 dc.w $CCCC
                 dc.w $D999
                 dc.w $E666
@@ -20646,7 +20358,7 @@ word_16AEC:     dc.w $B333              ; DATA XREF: ROM:00016AC0↑o
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_16AF6:                              ; CODE XREF: Race_Update+6E↑p
+sub_16AF6:
                 btst    #7,(ram_FF1EAA + STRUCT_OFFSET_68).l
                 bne.w   .return
                 tst.w   (ram_FF1EA6).l
@@ -20658,10 +20370,10 @@ sub_16AF6:                              ; CODE XREF: Race_Update+6E↑p
                 bra.w   .return
 
 
-.loc_16B26:                              ; CODE XREF: sub_16AF6+22↑j
+.loc_16B26:
                 move.w  #0,(ram_FF1EA6).l
 
-.loc_16B2E:                              ; CODE XREF: sub_16AF6+12↑j
+.loc_16B2E:
                 cmpi.w  #6,(ram_FF1A06).l
                 bpl.w   .return
                 cmpi.w  #6000,(ram_FF1EAA + STRUCT_OFFSET_SPEED).l
@@ -20670,16 +20382,15 @@ sub_16AF6:                              ; CODE XREF: Race_Update+6E↑p
                 cmpa.l  #$FFFFFFFF,a1
                 bne.w   .loc_16B58
 
-.loc_16B54:                              ; CODE XREF: sub_16AF6+4C↑j
+.loc_16B54:
                 bsr.w   sub_16C1A
 
-.loc_16B58:                              ; CODE XREF: sub_16AF6+5A↑j
+.loc_16B58:
                 jsr     (Rand_GetWord).l
                 andi.w  #$1FF,d0
                 move.w  d0,(ram_FF1EA6).l
 
-.return:                           ; CODE XREF: sub_16AF6+8↑j
-; sub_16AF6+2C↑j ...
+.return:
                 rts
 ; End of function sub_16AF6
 
@@ -20687,7 +20398,7 @@ sub_16AF6:                              ; CODE XREF: Race_Update+6E↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_16B6A:                              ; CODE XREF: sub_16BD6+16↓p
+sub_16B6A:
                 cmpa.l  #ram_FF1F2A,a1
                 beq.w   .locret_16B9C
                 bsr.w   sub_16BC8
@@ -20761,7 +20472,7 @@ sub_16BD6:
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_16C1A:                              ; CODE XREF: sub_16AF6:@loc_16B54↑p
+sub_16C1A:
                 move.l  a2,-(sp)
                 lea     (ram_FF19C4).l,a2
                 bsr.w   sub_16E54
@@ -20774,8 +20485,7 @@ sub_16C1A:                              ; CODE XREF: sub_16AF6:@loc_16B54↑p
                 bsr.w   sub_16D60
                 bsr.w   sub_16C4E
 
-.loc_16C4A:                              ; CODE XREF: sub_16C1A+12↑j
-; sub_16C1A+20↑j
+.loc_16C4A:
                 movea.l (sp)+,a2
                 rts
 ; End of function sub_16C1A
@@ -20784,7 +20494,7 @@ sub_16C1A:                              ; CODE XREF: sub_16AF6:@loc_16B54↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_16C4E:                              ; CODE XREF: sub_16C1A+2C↑p
+sub_16C4E:
                 movem.l d0-d1/a2,-(sp)
                 lea     (unk_25856).l,a0
                 lea     (Menu_ram_PlayerAOpponents).l,a2
@@ -20792,7 +20502,7 @@ sub_16C4E:                              ; CODE XREF: sub_16C1A+2C↑p
                 beq.w   .loc_16C6E
                 lea     (Menu_ram_PlayerBOpponents).l,a2
 
-.loc_16C6E:                              ; CODE XREF: sub_16C4E+16↑j
+.loc_16C6E:
                 move.b  $71(a1),d0
                 ext.w   d0
                 asl.w   #1,d0
@@ -20812,7 +20522,7 @@ sub_16C4E:                              ; CODE XREF: sub_16C1A+2C↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_16C9A:                              ; CODE XREF: sub_12EA2+B6↑p
+sub_16C9A:
                 move.l  a2,-(sp)
                 lea     (ram_FF1982).l,a2
                 bsr.w   sub_16E48
@@ -20825,7 +20535,7 @@ sub_16C9A:                              ; CODE XREF: sub_12EA2+B6↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_16CAE:                              ; CODE XREF: sub_12EA2+A0↑p
+sub_16CAE:
                 movem.l d0-d1/a2,-(sp)
                 cmpa.l  #ram_FF1F2A,a1
                 bne.w   .loc_16CE8
@@ -20835,16 +20545,16 @@ sub_16CAE:                              ; CODE XREF: sub_12EA2+A0↑p
                 move.w  #0,(ram_FF1B36).l
                 move.w  #0,(ram_FF1B34).l
 
-.loc_16CDC:                              ; CODE XREF: sub_16CAE+1A↑j
+.loc_16CDC:
                 move.w  #0,(ram_FF1B38).l
                 bra.w   .loc_16CF2
 
 
-.loc_16CE8:                              ; CODE XREF: sub_16CAE+A↑j
+.loc_16CE8:
                 lea     (ram_FF19C4).l,a2
                 bsr.w   sub_16E48
 
-.loc_16CF2:                              ; CODE XREF: sub_16CAE+36↑j
+.loc_16CF2:
                 bsr.w   sub_16E26
                 move.l  4(a1),d0
                 divu.w  (ram_FF1E9C).l,d0
@@ -20896,7 +20606,7 @@ sub_16D2A:
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_16D60:                              ; CODE XREF: sub_16C1A+28↑p
+sub_16D60:
                 move.l  a2,-(sp)
                 lea     (ram_FF1EAA).l,a2
                 move.l  STRUCT_OFFSET_POSX_HIGH(a2),d0
@@ -20911,7 +20621,7 @@ sub_16D60:                              ; CODE XREF: sub_16C1A+28↑p
                 bpl.w   .loc_16D96
                 move.w  d0,$12(a1)
 
-.loc_16D96:                              ; CODE XREF: sub_16D60+2E↑j
+.loc_16D96:
                 movea.l (sp)+,a2
                 rts
 ; End of function sub_16D60
@@ -20920,8 +20630,7 @@ sub_16D60:                              ; CODE XREF: sub_16C1A+28↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_16D9A:                              ; CODE XREF: sub_13CFE+4↑p
-; sub_16D2A+1E↑p ...
+sub_16D9A:
                 lea     (ram_FFDC58).l,a4
                 move.l  4(a1),d0
                 move.l  d0,$1E(a1)
@@ -20952,7 +20661,7 @@ sub_16D9A:                              ; CODE XREF: sub_13CFE+4↑p
                 neg.w   d0
                 move.w  d0,$30(a1)
 
-.loc_16E16:                              ; CODE XREF: sub_16D9A+72↑j
+.loc_16E16:
                 move.w  d0,$1A(a1)
                 move.w  d0,0.w(a1)
                 jsr     (sub_13746).l
@@ -20963,18 +20672,17 @@ sub_16D9A:                              ; CODE XREF: sub_13CFE+4↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_16E26:                              ; CODE XREF: sub_16C9A+C↑p
-; sub_16CAE:@loc_16CF2↑p
+sub_16E26:
                 movem.l a2-a3,-(sp)
                 lea     (ram_FF1A0C).l,a2
 
-.loc_16E30:                              ; CODE XREF: sub_16E26+C↓j
+.loc_16E30:
                 cmpa.l  (a2)+,a1
                 bne.s   .loc_16E30
                 movea.l a2,a3
                 subq.l  #4,a3
 
-.loc_16E38:                              ; CODE XREF: sub_16E26+14↓j
+.loc_16E38:
                 move.l  (a2)+,(a3)+
                 bpl.s   .loc_16E38
                 subq.w  #1,(ram_FF1A06).l
@@ -20986,8 +20694,7 @@ sub_16E26:                              ; CODE XREF: sub_16C9A+C↑p
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_16E48:                              ; CODE XREF: sub_16B6A+28↑p
-; sub_16B9E+1E↑p ...
+sub_16E48:
                 move.w  (a2),d0
                 addq.w  #1,(a2)
                 asl.w   #2,d0
