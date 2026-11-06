@@ -37,15 +37,15 @@ LogoEA_GameTick:
 LogoEA_AddSpritesVPos:
     moveq   #$FFFFFFFC,d2   ; -4
     muls.w  d1,d2           ; -first strip gets displaced by -4*deltaY, second by -3*deltaY an so on
-                            ; 9th strip gets displaced by 4*deltaY
+; 9th strip gets displaced by 4*deltaY
     moveq   #8,d0           ; repeat for 9 strips
-@loop:
+.loop:
     add.w   d2,(a0)         ; add VPos for left sprite
     move.w  (a0)+,(a5)      ; write to VdpData
     add.w   d2,(a0)         ; add VPos for right sprite
     move.w  (a0)+,(a5)      ; write to VdpData
     add.w   d1,d2           ; increment displacement
-    dbf     d0,@loop
+    dbf     d0,.loop
     rts
 ; End of function LogoEA_AddSpritesVPos
 
@@ -58,12 +58,12 @@ LogoEA_AddSpritesVPos:
 
 LogoEA_SetSpritesVerticalFlip:
     moveq   #$11,d0     ; loop through 18 sprites
-@loop:
+.loop:
     move.w  (a0)+,d2    ; read sprite data value
     andi.w  #$EFFF,d2   ; clear old vflip flag
     or.w    d1,d2       ; set vflip value
     move.w  d2,(a5)     ; write to VdpData
-    dbf     d0,@loop
+    dbf     d0,.loop
     rts
 ; End of function LogoEA_SetSpritesVerticalFlip
 
@@ -88,10 +88,10 @@ LogoEA_SetSquareSpritesHPos:
     addi.w  #$80,d3 ; HPos of right sprite
 
     moveq   #8,d0   ; repeat for 9 strips
-@loop:
+.loop:
     move.w  d4,(a5) ; set left sprite HPos
     move.w  d3,(a5) ; set right sprite HPos
-    dbf     d0,@loop
+    dbf     d0,.loop
 
     movem.w (sp)+,d0-d7
     rts
@@ -111,10 +111,10 @@ LogoEA_SetTriangleSpritesHPos:
     addi.w  #$80,d3 ; HPos of right sprite
 
     moveq   #8,d0   ; repeat for 9 strips
-@loop:
+.loop:
     move.w  d4,(a5) ; set left sprite HPos
     move.w  d3,(a5) ; set right sprite HPos
-    dbf     d0,@loop
+    dbf     d0,.loop
 
     movem.w (sp)+,d0-d7
     rts
@@ -132,15 +132,15 @@ LogoEA_ShowSprites:
                 movem.w d1-d3,-(sp)
                 ori.w   #$C00,d2    ; set size 4x1 tiles
                 ori.w   #$C00,d3    ; set size 4x1 tiles
-                bra.s   @continue
+                bra.s   .continue
 
-@loop:
+.loop:
                 move.w  d2,(a5)     ; set link for left sprite
                 addq.w  #1,d2       ; increment link
                 move.w  d2,(a5)     ; set link for right sprite
                 addq.w  #1,d2       ; increment link
-@continue:
-                dbf     d1,@loop    ; repeat d1 times
+.continue:
+                dbf     d1,.loop    ; repeat d1 times
 
                 move.w  d2,(a5)     ; write links for last strip
                 move.w  d3,(a5)
@@ -156,7 +156,7 @@ LogoEA_Update:
                 movea.l #VdpCtrl,a4
                 movea.l #VdpData,a5
                 tst.w   (LogoEA_ram_TextTimer).w
-                blt.w   @checkFinish    ; jump if text 'Electronic Arts' fully shown
+                blt.w   .checkFinish    ; jump if text 'Electronic Arts' fully shown
                 move.w  (LogoEA_ram_TextTimer).w,d0
                 subq.w  #1,(LogoEA_ram_TextTimer).w
                 move.w  d0,d1
@@ -164,201 +164,201 @@ LogoEA_Update:
                 VDP_VRAM_WRITE $2000,VdpCtrl ; write HScroll Data Table
                 moveq   #$6F,d2
 ; update 'Electronic Arts' text position
-@loopWriteScrollTable:
+.loopWriteScrollTable:
                 move.w  d0,(a5)     ; fg
                 move.w  #$140,(a5)  ; bg
                 move.w  d1,(a5)     ; fg
                 move.w  #$140,(a5)  ; bg
-                dbf     d2,@loopWriteScrollTable
+                dbf     d2,.loopWriteScrollTable
 
-@checkFinish:
+.checkFinish:
                 subq.w  #1,(LogoEA_ram_NextUpdateTimer).w
-                bge.w   @end
+                bge.w   .end
                 move.w  #2,(LogoEA_ram_NextUpdateTimer).w ; update every 3 frames
                 tst.w   (LogoEA_ram_FigureAnimationFrame).w ; figures have appeared completely
-                bne.s   @doUpdate
+                bne.s   .doUpdate
                 tst.w   (LogoEA_ram_TextTimer).w ; text has appeared completely
-                bge.s   @doUpdate
-                st      LogoEA_ram_Finished ; set finished flag
+                bge.s   .doUpdate
+                st      (LogoEA_ram_Finished).l ; set finished flag
                 rts
-@doUpdate:
+.doUpdate:
                 addq.w  #1,(LogoEA_ram_FigureAnimationFrame).w
                 move.w  (LogoEA_ram_FigureAnimationFrame).w,d7
 ; write circle tiles to VRAM
                 lea     (LogoEA_ram_TilesCircle).w,a3
                 move.w  #$23F,d0
                 VDP_VRAM_WRITE $4920,VdpCtrl
-@loopWriteCircleToVRAM:
+.loopWriteCircleToVRAM:
                 move.l  (a3)+,(a5)
-                dbf     d0,@loopWriteCircleToVRAM
+                dbf     d0,.loopWriteCircleToVRAM
 
                 cmp.w   #$18,d7
-                ble.s   @doUpdate2
+                ble.s   .doUpdate2
 ; do this check on 25th frame of animation
                 clr.w   (LogoEA_ram_FigureAnimationFrame).w
                 addq.w  #1,(LogoEA_ram_CurrentFigure).w ; next figure
                 cmpi.w  #2,(LogoEA_ram_CurrentFigure).w
-                ble.w   @end
+                ble.w   .end
                 clr.w   (LogoEA_ram_CurrentFigure).w
                 move.w  #180,(LogoEA_ram_NextUpdateTimer).w ; wait 3 seconds
-                bra.w   @end
+                bra.w   .end
 
-@doUpdate2:
+.doUpdate2:
                 VDP_VRAM_WRITE $C000,VdpCtrl ; Window name table
-                move.w  #$8F08,VdpCtrl ; set auto increment = 8
+                move.w  #$8F08,(VdpCtrl).l ; set auto increment = 8
                 cmp.w   #$D,d7
-                bge.w   @checkUnflip ; jump when animFrame >= 13
+                bge.w   .checkUnflip ; jump when animFrame >= 13
                 cmp.w   #7,d7
-                bne.w   @decreaseScale; jump when animFrame != 7
+                bne.w   .decreaseScale; jump when animFrame != 7
 ; animFrame is 7, flip sprites and make them darker
 ; set square palette
                 move.w  #$1000,d1 ; enable vertical flip
                 cmpi.w  #0,(LogoEA_ram_CurrentFigure).w
-                bne.s   @setCirclePalette
+                bne.s   .setCirclePalette
                 VDP_CRAM_WRITE $C,VdpCtrl
-                move.w  #$A0,VdpData ; color #6 : (0, A, 0), dark green
+                move.w  #$A0,(VdpData).l ; color #6 : (0, A, 0), dark green
                 VDP_CRAM_WRITE $8,VdpCtrl
-                move.w  #$A0,VdpData ; color #4 : (0, A, 0), dark green
+                move.w  #$A0,(VdpData).l ; color #4 : (0, A, 0), dark green
                 VDP_CRAM_WRITE $A,VdpCtrl
-                move.w  #$4E4,VdpData ; color #5 : (4, E, 4), green
+                move.w  #$4E4,(VdpData).l ; color #5 : (4, E, 4), green
                 lea     (LogoEA_ram_SquareDataArray).w,a0
-                move.w  #$5C04,VdpCtrl ; square sprite table + 4
-                bra.w   @flipSprites
+                move.w  #$5C04,(VdpCtrl).l ; square sprite table + 4
+                bra.w   .flipSprites
 
-@setCirclePalette:
+.setCirclePalette:
                 cmpi.w  #1,(LogoEA_ram_CurrentFigure).w
-                bne.s   @setTrianglePalette
+                bne.s   .setTrianglePalette
                 VDP_CRAM_WRITE $14,VdpCtrl ; color #A : (2, 4, A), dark blue
-                move.w  #$A42,VdpData
+                move.w  #$A42,(VdpData).l
                 VDP_CRAM_WRITE $1A,VdpCtrl ; color #D : (2, 4, A), dark blue
-                move.w  #$A42,VdpData
+                move.w  #$A42,(VdpData).l
                 VDP_CRAM_WRITE $6,VdpCtrl ; color #3 : (6, 8, E), blue
-                move.w  #$E86,VdpData
+                move.w  #$E86,(VdpData).l
                 lea     (LogoEA_ram_CircleDataArray).w,a0
-                move.w  #$5C94,VdpCtrl ; circle sprite table + 4
-                bra.s   @flipSprites
+                move.w  #$5C94,(VdpCtrl).l ; circle sprite table + 4
+                bra.s   .flipSprites
 
-@setTrianglePalette:
+.setTrianglePalette:
                 VDP_CRAM_WRITE $16,VdpCtrl
-                move.w  #$8A,VdpData ; color #B : (A, 8, 0), yellow
+                move.w  #$8A,(VdpData).l ; color #B : (A, 8, 0), yellow
                 VDP_CRAM_WRITE $1C,VdpCtrl
-                move.w  #$8A,VdpData ; color #E : (A, 8, 0), yellow
+                move.w  #$8A,(VdpData).l ; color #E : (A, 8, 0), yellow
                 VDP_CRAM_WRITE $4,VdpCtrl
-                move.w  #$CE,VdpData ; color #2 : (E, C, 0), light yellow
+                move.w  #$CE,(VdpData).l ; color #2 : (E, C, 0), light yellow
                 lea     (LogoEA_ram_TriangleDataArray).w,a0
-                move.w  #$5D24,VdpCtrl ; triangle sprite table + 4
+                move.w  #$5D24,(VdpCtrl).l ; triangle sprite table + 4
 
-@flipSprites:
+.flipSprites:
                 bsr.w   LogoEA_SetSpritesVerticalFlip
 
-@decreaseScale:
+.decreaseScale:
                 moveq   #$FFFFFFFF,d1 ; animFrame < 13, shrink figures
-                bra.w   @checkSquareSetPos
+                bra.w   .checkSquareSetPos
 
-@checkUnflip:
+.checkUnflip:
                 cmp.w   #$14,d7
-                bne.w   @increaseScale
+                bne.w   .increaseScale
 ; animFrame = 20, unflip sprites and restore shadows
                 moveq   #0,d1
                 cmpi.w  #0,(LogoEA_ram_CurrentFigure).w
-                bne.s   @checkUnflipCircle
+                bne.s   .checkUnflipCircle
 ; reset square palette
                 VDP_CRAM_WRITE $C,VdpCtrl
-                move.w  #$4E4,VdpData ; color #6 : (4, E, 4), green
+                move.w  #$4E4,(VdpData).l ; color #6 : (4, E, 4), green
                 VDP_CRAM_WRITE $8,VdpCtrl
-                move.w  #$8E8,VdpData ; color #4 : (8, E, 8), light green
+                move.w  #$8E8,(VdpData).l ; color #4 : (8, E, 8), light green
                 VDP_CRAM_WRITE $A,VdpCtrl
-                move.w  #$A0,VdpData  ; color #5 : (0, A, 0), dark green
+                move.w  #$A0,(VdpData).l  ; color #5 : (0, A, 0), dark green
                 lea     (LogoEA_ram_SquareDataArray).w,a0
-                move.w  #$5C04,VdpCtrl  ; square sprite table + 4
-                bra.w   @disableVFlip
+                move.w  #$5C04,(VdpCtrl).l  ; square sprite table + 4
+                bra.w   .disableVFlip
 
-@checkUnflipCircle:
+.checkUnflipCircle:
                 cmpi.w  #1,(LogoEA_ram_CurrentFigure).w
-                bne.s   @checkUnflipTriangle
+                bne.s   .checkUnflipTriangle
 ; reset circle palette    
                 VDP_CRAM_WRITE $14,VdpCtrl
-                move.w  #$E86,VdpData ; color #A : (6, 8, E), blue
+                move.w  #$E86,(VdpData).l ; color #A : (6, 8, E), blue
                 VDP_CRAM_WRITE $1A,VdpCtrl
-                move.w  #$ECA,VdpData ; color #D : (A, C, E), light blue
+                move.w  #$ECA,(VdpData).l ; color #D : (A, C, E), light blue
                 VDP_CRAM_WRITE $6,VdpCtrl
-                move.w  #$A42,VdpData ; color #3 : (2, 4, A), dark blue
+                move.w  #$A42,(VdpData).l ; color #3 : (2, 4, A), dark blue
                 lea     (LogoEA_ram_CircleDataArray).w,a0
-                move.w  #$5C94,VdpCtrl ; circle sprite table + 4
-                bra.s   @disableVFlip
+                move.w  #$5C94,(VdpCtrl).l ; circle sprite table + 4
+                bra.s   .disableVFlip
 
-@checkUnflipTriangle:
+.checkUnflipTriangle:
                 VDP_CRAM_WRITE $16,VdpCtrl
-                move.w  #$CE,VdpData ; color #B : (E, C, 0), yellow
+                move.w  #$CE,(VdpData).l ; color #B : (E, C, 0), yellow
                 VDP_CRAM_WRITE $1C,VdpCtrl
-                move.w  #$8EE,VdpData ; color #E : (E, E, 8), light yellow
+                move.w  #$8EE,(VdpData).l ; color #E : (E, E, 8), light yellow
                 VDP_CRAM_WRITE $4,VdpCtrl
-                move.w  #$8A,VdpData ; color #2 : (A, 8, 0), dark yellow
+                move.w  #$8A,(VdpData).l ; color #2 : (A, 8, 0), dark yellow
                 lea     (LogoEA_ram_TriangleDataArray).w,a0
-                move.w  #$5D24,VdpCtrl ; triangle sprite table + 4
+                move.w  #$5D24,(VdpCtrl).l ; triangle sprite table + 4
 
-@disableVFlip:
+.disableVFlip:
                 bsr.w   LogoEA_SetSpritesVerticalFlip
 
-@increaseScale:
+.increaseScale:
                 moveq   #1,d1
 
-@checkSquareSetPos:
+.checkSquareSetPos:
                 cmpi.w  #0,(LogoEA_ram_CurrentFigure).w ; is square
-                bne.s   @checkCircleSetPos
-                move.w  #$5C00,VdpCtrl ; square sprite table
+                bne.s   .checkCircleSetPos
+                move.w  #$5C00,(VdpCtrl).l ; square sprite table
                 lea     (LogoEA_ram_SquareYArray).w,a0
 
-@checkCircleSetPos:
+.checkCircleSetPos:
                 cmpi.w  #1,(LogoEA_ram_CurrentFigure).w ; is circle
-                bne.s   @checkTriangleSetPos
-                move.w  #$5C90,VdpCtrl ; circle sprite table
+                bne.s   .checkTriangleSetPos
+                move.w  #$5C90,(VdpCtrl).l ; circle sprite table
                 lea     (LogoEA_ram_CircleYArray).w,a0
 
-@checkTriangleSetPos:
+.checkTriangleSetPos:
                 cmpi.w  #2,(LogoEA_ram_CurrentFigure).w ; is triangle
-                bne.s   @setFigurePosY
-                move.w  #$5D20,VdpCtrl ; triangle sprite table
+                bne.s   .setFigurePosY
+                move.w  #$5D20,(VdpCtrl).l ; triangle sprite table
                 lea     (LogoEA_ram_TriangleYArray).w,a0
 
-@setFigurePosY:
+.setFigurePosY:
                 bsr.w   LogoEA_AddSpritesVPos
 
                 move.w  d7,d1
                 ext.l   d1
                 divu.w  #3,d1 ; d1 = animFrame / 3, number of strips shown
                 cmpi.w  #0,(LogoEA_ram_CurrentFigure).w
-                bne.s   @checkTriangleSetPosX
+                bne.s   .checkTriangleSetPosX
 ; update square HPos
                 move.w  d1,-(sp)
                 asl.w   #2,d1 ; d1 = animFrame / 3 * 4
                 move.w  #$68,d3
                 sub.w   d7,d3 ; posX = 104 - animFrame
-                move.w  #$5C06,VdpCtrl ; square sprite table + 6
+                move.w  #$5C06,(VdpCtrl).l ; square sprite table + 6
                 bsr.w   LogoEA_SetSquareSpritesHPos
                 move.w  (sp)+,d1
 ; show square                
                 moveq   #1,d2 ; first sprite link
                 moveq   #$12,d3 ; last sprite link
                 moveq   #0,d3 ; override last link, show only square
-                move.w  #$5C02,VdpCtrl ; square sprite table + 2
+                move.w  #$5C02,(VdpCtrl).l ; square sprite table + 2
                 bsr.w   LogoEA_ShowSprites
                 move.w  #$4E4,d0 ; color (4,E,4) - green
                 bsr.w   LogoEA_ChangeTextColor
-                bra.s   @endUpdateSquareOrTriangle
+                bra.s   .endUpdateSquareOrTriangle
 
-@checkTriangleSetPosX:
+.checkTriangleSetPosX:
                 cmpi.w  #2,(LogoEA_ram_CurrentFigure).w
-                bne.s   @updateCircle
+                bne.s   .updateCircle
 ; update triangle X
                 move.w  d1,-(sp)
                 asl.w   #2,d1 ; d1 = animFrame / 3 * 4
                 move.w  #$98,d3
                 add.w   d7,d3 ; posX = 152 - animFrame
-                move.w  #$5D26,VdpCtrl ; triangle sprite table + 6
+                move.w  #$5D26,(VdpCtrl).l ; triangle sprite table + 6
                 bsr.w   LogoEA_SetTriangleSpritesHPos
                 move.w  (sp)+,d1
-                move.w  #$5D1A,VdpCtrl; last sprite of circle + 2
+                move.w  #$5D1A,(VdpCtrl).l; last sprite of circle + 2
                 move.w  #$C24,(a5) ; size 4x1, link = $24 = 36, advance to triangle sprite table + 2
                 moveq   #$25,d2 ; first sprite link
                 moveq   #0,d3 ; last sprite link
@@ -366,10 +366,10 @@ LogoEA_Update:
                 move.w  #$CE,d0 ; color (E,C,0) - yellow
                 bsr.w   LogoEA_ChangeTextColor
 
-@endUpdateSquareOrTriangle:
-                bra.s   @end
-@updateCircle:
-                move.w  #$5C8A,VdpCtrl ; last sprite of square + 2
+.endUpdateSquareOrTriangle:
+                bra.s   .end
+.updateCircle:
+                move.w  #$5C8A,(VdpCtrl).l ; last sprite of square + 2
                 move.w  #$C12,(a5) ; link = $12 = 18, advance to circle sprite table + 2
                 moveq   #$13,d2 ; first sprite link
                 moveq   #0,d3 ; last sprite link
@@ -380,17 +380,17 @@ LogoEA_Update:
 ; clear circle image
                 moveq   #0,d2
                 move.w  #$23F,d0
-@loopClearCircleImage:
+.loopClearCircleImage:
                 move.l  d2,(a3)+
-                dbf     d0,@loopClearCircleImage
+                dbf     d0,.loopClearCircleImage
 
                 add.w   d1,d1
                 addq.w  #4,d1 ; d1 = 2 * animFrame + 4
 
                 cmp.w   #$10,d1
-                ble.s   @drawCircle
+                ble.s   .drawCircle
                 moveq   #$10,d1
-@drawCircle:
+.drawCircle:
                 moveq   #$20,d3
                 movea.w d3,a1
                 subq.w  #1,a1
@@ -400,8 +400,8 @@ LogoEA_Update:
                 suba.w  d0,a1
                 bsr.w   LogoEA_DrawCircle
 
-@end:
-                move.w  #$8F02,VdpCtrl ; Auto increment : $2
+.end:
+                move.w  #$8F02,(VdpCtrl).l ; Auto increment : $2
                 moveq   #0,d0
                 rts
 ; End of function LogoEA_Update
@@ -449,14 +449,14 @@ LogoEA_CreateSprite:
 LogoEA_CreateFigureSprites:
                 moveq   #7,d7
 
-@loop:
+.loop:
                 bsr.s   LogoEA_CreateSprite
                 move.w  d0,(a5)
                 bsr.s   LogoEA_CreateSprite
                 addi.w  #$20,d0
                 move.w  d0,(a5)
                 addq.w  #6,d3
-                dbf     d7,@loop
+                dbf     d7,.loop
 
                 bsr.s   LogoEA_CreateSprite
                 move.w  d0,(a5)
@@ -512,7 +512,7 @@ LogoEA_GetPointOffsets:
 LogoEA_DrawLine:
                 movem.l d0-d7,-(sp)
                 cmp.l   d1,d2 ; check points order
-                blt.s   @return
+                blt.s   .return
 
                 move.l  d2,d0
                 bsr.s   LogoEA_GetPointOffsets
@@ -525,26 +525,26 @@ LogoEA_DrawLine:
                 bsr.s   LogoEA_GetPointOffsets
                 lsr.l   d5,d3   ; d3 is 8px line in first tile
                 cmp.w   d7,d4   ; d4 is offset of this line in first tile
-                bne.s   @firstTile
+                bne.s   .firstTile
 ; only one tile
                 and.l   d3,d6
                 move.l  d6,(a6,d4.w)
-                bra.s   @return
+                bra.s   .return
 
-@firstTile:
+.firstTile:
                 move.l  d3,(a6,d4.w)
 
-@loopWriteLine:
+.loopWriteLine:
                 addi.w  #$20,d4 ; go to next tile
                 cmp.w   d4,d7   ; if not last tile
-                beq.s   @lastTile
+                beq.s   .lastTile
                 move.l  (LogoEA_ram_LineValue).w,(a6,d4.w) ; write 8px line in this tile
-                bra.s   @loopWriteLine
+                bra.s   .loopWriteLine
 
-@lastTile:
+.lastTile:
                 move.l  d6,(a6,d7.w)
 
-@return:
+.return:
                 movem.l (sp)+,d0-d7
                 rts
 ; End of function LogoEA_DrawLine
@@ -558,19 +558,19 @@ LogoEA_DrawLine:
 
 LogoEA_ChangeTextColor:
                 cmp.w   #$18,d7 ; change color on last animation frame
-                bne.s   @return
+                bne.s   .return
                 VDP_CRAM_WRITE $12,VdpCtrl ; set color #9
                 move.w  d0,(a5)
 
                 VDP_CRAM_WRITE $2,VdpCtrl ; set color #2
                 cmp.w   #$E86,d0 ; (6,8,E) - blue
-                bne.s   @setColor
+                bne.s   .setColor
                 move.w  #$E22,d0 ; (2,2,E) - another blue
-@setColor:
+.setColor:
                 andi.w  #$666,d0 ; make it darker
                 move.w  d0,(a5)
 
-@return:
+.return:
                 rts
 ; End of function LogoEA_ChangeTextColor
 
@@ -581,55 +581,55 @@ LogoEA_ChangeTextColor:
 ; *************************************************
 
 LogoEA_DrawCircle:
-                lea     LogoEA_dFigureStripThickness,a0
+                lea     (LogoEA_dFigureStripThickness).l,a0
                 lea     (LogoEA_ram_TilesCircle).w,a6
-                lea     logoEA_dCircleShadowLength,a2
-                lea     logoEA_dCircleProfile,a3
+                lea     (logoEA_dCircleShadowLength).l,a2
+                lea     (logoEA_dCircleProfile).l,a3
                 moveq   #0,d6
                 moveq   #8,d4
-@loopStrip:
+.loopStrip:
                 move.b  (a0)+,d5 ; get strip thickness
                 ext.w   d5
 
                 moveq   #5,d0 ; repeat for 6 lines
-@loopLine:
+.loopLine:
                 move.l  #$AAAAAAAA,(LogoEA_ram_LineValue).w ; general color - blue
                 cmp.w   #$1B,d6 ; if lineNo == 27 it's diameter
-                beq.s   @calculateCoordinates
-                bgt.s   @lowerHalf
+                beq.s   .calculateCoordinates
+                bgt.s   .lowerHalf
                 move.b  (a3)+,d7
-                bra.s   @calculateCoordinates
-@lowerHalf:
+                bra.s   .calculateCoordinates
+.lowerHalf:
                 move.b  -(a3),d7
                 neg.b   d7
-@calculateCoordinates:
+.calculateCoordinates:
                 ext.w   d7
                 sub.w   d7,d3 ; line left pos
                 adda.w  d7,a1 ; line right pos
                 addq.w  #1,d6 ; increment line number
                 tst.w   d5
-                ble.s   @drawShadow
+                ble.s   .drawShadow
                 cmp.w   #1,d5
-                bne.s   @notLastLine
+                bne.s   .notLastLine
                 move.l  #$33333333,(LogoEA_ram_LineValue).w ; last line in strip : dark blue color
-@notLastLine:
+.notLastLine:
                 move.l  d3,d1
                 move.l  a1,d2
                 cmp.w   #5,d0
-                bne.s   @drawLine    
+                bne.s   .drawLine    
                 move.l  #$DDDDDDDD,(LogoEA_ram_LineValue).w ; first line : light blue
                 cmp.w   #8,d1
-                bge.s   @drawLine
+                bge.s   .drawLine
                 moveq   #8,d1 ; first line PosX can't be lower than 8.. but why?
 
-@drawLine:
+.drawLine:
                 swap    d1 ; left PosX
                 swap    d2 ; right PosX
                 bsr.w   LogoEA_DrawLine
-                bra.s   @continue
+                bra.s   .continue
 
-@drawShadow:
-                blt.s   @continue ; if line is under the shadow then draw nothing
+.drawShadow:
+                blt.s   .continue ; if line is under the shadow then draw nothing
                 move.l  #$33333333,(LogoEA_ram_LineValue).w ; shadow color : dark blue
                 move.l  d3,d1
                 move.b  (a2)+,d2 ; get shadow length
@@ -639,13 +639,13 @@ LogoEA_DrawCircle:
                 swap    d2 ; shadow right pos
                 bsr.w   LogoEA_DrawLine
 
-@continue:
+.continue:
                 addq.l  #4,a6 ; shift offset to next line
                 subq.w  #1,d5 ; decrement strip height counter
-                dbf     d0,@loopLine
+                dbf     d0,.loopLine
 
                 adda.l  #$E8,a6 ; shift offset to 3rd line of next strip ($E8 = 2 * 8 * $20 + 8)
-                dbf     d4,@loopStrip
+                dbf     d4,.loopStrip
 
                 rts
 ; End of function LogoEA_DrawCircle
@@ -655,43 +655,43 @@ LogoEA_DrawCircle:
 ; *************************************************
 
 LogoEA_Init:
-                clr.w   LogoEA_ram_Finished
+                clr.w   (LogoEA_ram_Finished).l
                 movea.l #VdpCtrl,a4
                 movea.l #VdpData,a5
 ; clear ram
                 move.w  #$3FF6,d0
                 moveq   #0,d1
                 movea.l #LogoEA_ram_Base,a0
-@loopClearRAM:
+.loopClearRAM:
                 move.l  d1,(a0)+
-                dbf     d0,@loopClearRAM
+                dbf     d0,.loopClearRAM
 
                 move    sr,-(sp)
                 ori     #$700,sr
                 movea.l #VdpCtrl,a4
                 movea.l #VdpData,a5
                 move.w  #$8004,(a4)     ; H-ints disabled, Pal Select 1, HVC latch disabled, Display gen enabled
-                move.w  #$8134,VdpCtrl  ; Display disabled, V-ints enabled, Height: 28, Mode 5, 64K VRAM
-                move.w  #$8228,VdpCtrl  ; Scroll A Name Table:    $A000
-                move.w  #$8330,VdpCtrl  ; Window Name Table:      $C000
-                move.w  #$8405,VdpCtrl  ; Scroll B Name Table:    $A000
-                move.w  #$856E,VdpCtrl  ; Sprite Attribute Table: $DC00
+                move.w  #$8134,(VdpCtrl).l  ; Display disabled, V-ints enabled, Height: 28, Mode 5, 64K VRAM
+                move.w  #$8228,(VdpCtrl).l  ; Scroll A Name Table:    $A000
+                move.w  #$8330,(VdpCtrl).l  ; Window Name Table:      $C000
+                move.w  #$8405,(VdpCtrl).l  ; Scroll B Name Table:    $A000
+                move.w  #$856E,(VdpCtrl).l  ; Sprite Attribute Table: $DC00
                 move.w  #$8700,(a4)     ; Backdrop Color: $0
                 move.w  #$8B03,(a4)     ; E-ints disabled, V-Scroll: full, H-Scroll: line
                 move.w  #$9003,(a4)     ; Scroll A/B Size: 128x32 (1024x256 pixels)
                 move.w  #$8C81,(a4)     ; Width: 40, Shadow/Highlight: disabled
-                move.w  #$8D08,VdpCtrl  ; HScroll Data Table:     $2000
-                move.w  #$8F02,VdpCtrl  ; Auto-increment: $2
-                move.w  #$9100,VdpCtrl  ; WindowX: 0
-                move.w  #$9200,VdpCtrl  ; WindowY: 0
+                move.w  #$8D08,(VdpCtrl).l  ; HScroll Data Table:     $2000
+                move.w  #$8F02,(VdpCtrl).l  ; Auto-increment: $2
+                move.w  #$9100,(VdpCtrl).l  ; WindowX: 0
+                move.w  #$9200,(VdpCtrl).l  ; WindowY: 0
                 move.w  #$8A01,(a4)     ; H-Int Counter: 1
 ; clear VRAM
                 VDP_VRAM_WRITE $0,VdpCtrl
                 move.w  #$3FFF,d1
                 moveq   #0,d0
-@loopClearVRAM:
+.loopClearVRAM:
                 move.l  d0,(a5)
-                dbf     d1,@loopClearVRAM
+                dbf     d1,.loopClearVRAM
 
                 moveq   #0,d1
                 VDP_VSRAM_WRITE $0,VdpCtrl
@@ -716,133 +716,133 @@ LogoEA_SetupGfx:
                 lea     (LogoEA_ram_TilesSquare).w,a3
                 moveq   #$20,d1 ; tile size
                 moveq   #8,d0   ; square consists of 9 strips
-                lea     LogoEA_dFigureStripThickness,a0
+                lea     (LogoEA_dFigureStripThickness).l,a0
                 moveq   #0,d5
 
-@loopSquareStrip:
+.loopSquareStrip:
                 moveq   #0,d4 ; d4 is line index in strip
                 moveq   #0,d2
                 move.b  (a0)+,d2 ; read strip thickness
-                bra.s   @continueLine ; jump to 'continueLine' so we don't need to decrement d2 before this loop
+                bra.s   .continueLine ; jump to 'continueLine' so we don't need to decrement d2 before this loop
 ; write pixels of one line
-@loopSquareLine:
+.loopSquareLine:
                 bsr.w   LogoEA_GetSquareLineMemOffset ; now d6 is memory offset of first pixel in this line
                 movea.l #$66666666,a1 ; all lines except first have green color
                 tst.w   d4 ; if not first line
-                bne.s   @createLine ; then color isn't changed
+                bne.s   .createLine ; then color isn't changed
                 movea.l #$44444444,a1 ; first line in strip has light green color
-                
-@createLine:
+
+.createLine:
                 moveq   #7,d7 ; iterate all 8 tiles which contain this line
-@loopNextTile:
+.loopNextTile:
                 tst.w   d2 ; in the last line of the strip
-                bne.s   @write8Pixels 
+                bne.s   .write8Pixels 
                 cmpa.l  #$44444444,a1 ; change green color
-                beq.s   @write8Pixels
+                beq.s   .write8Pixels
                 movea.l #$55555555,a1 ; to dark green to make 'shadow'
 
-@write8Pixels:
+.write8Pixels:
                 move.l  a1,(a3,d6.w) ; write 8 pixels
                 add.w   d1,d6 ; jump to next tile
-                dbf     d7,@loopNextTile
+                dbf     d7,.loopNextTile
 
                 addq.w  #1,d4 ; increment line index
-@continueLine:
-                dbf     d2,@loopSquareLine
+.continueLine:
+                dbf     d2,.loopSquareLine
 
                 tst.w   d0
-                beq.s   @writeSquareToVRAM ; last strip is created                            
+                beq.s   .writeSquareToVRAM ; last strip is created                            
                 bsr.w   LogoEA_GetSquareLineMemOffset ; now d6 is memory offset of first pixel in this line
                 movea.l #$55555555,a1 ; in the line after the last one first 16 pixels are dark green
                 move.l  a1,(a3,d6.w) ; write line in first tile
                 add.w   d1,d6
                 move.l  a1,(a3,d6.w) ; write line in second tile
                 addi.w  #$100,d5 ; add memory offset of first tile in strip
-                dbf     d0, @loopSquareStrip ;  go to next strip
+                dbf     d0, .loopSquareStrip ;  go to next strip
 ; load square tiles to VRAM
-@writeSquareToVRAM:
+.writeSquareToVRAM:
                 lea     (LogoEA_ram_TilesSquare).w,a3
                 move.w  #$23F,d0    ; Write 8 * 9 = 72 tiles of square figure
                 VDP_VRAM_WRITE $4020,VdpCtrl ; Starting from index $201
-@loopWriteSquareTiles:
+.loopWriteSquareTiles:
                 move.l  (a3)+,(a5)
-                dbf     d0,@loopWriteSquareTiles
-    
+                dbf     d0,.loopWriteSquareTiles
+
 ; create triangle image in runtime
                 move.l  #$97B4,d6 ; trinagle edge slope = ($97B4 / $10000) = 0.5925
                 move.l  a4,-(sp)
                 movea.l d6,a3
                 lsr.w   #1,d6
-                lea     LogoEA_dFigureStripThickness,a0
+                lea     (LogoEA_dFigureStripThickness).l,a0
                 lea     (LogoEA_ram_TilesTriangle + 8).w,a6 ; leave first two lines in tiles blank
-                lea     LogoEA_dTriangleShadowWidth,a4
+                lea     (LogoEA_dTriangleShadowWidth).l,a4
                 moveq   #$20,d3
                 swap    d3 ; d3 = $200000, it's coordinate of triangle vertex (fixed point 16.16)
                 movea.l d3,a2
                 movea.l d3,a1 ; right end of the line
                 moveq   #8,d4 ; strip counter, draw 9 strips
 
-@loopTriangleStrip:
+.loopTriangleStrip:
                 move.b  (a0)+,d5 ; get strip thickness
                 ext.w   d5
                 moveq   #5,d0 ; draw at max 6 lines in strip
 
-@loopTriangleLine:
+.loopTriangleLine:
                 move.l  #$BBBBBBBB,(LogoEA_ram_LineValue).w    ; yellow
                 tst.w   d5
-                ble.s   @drawTriangleShadow
+                ble.s   .drawTriangleShadow
                 cmp.w   #1,d5
-                bne.s   @checkFirstLine
+                bne.s   .checkFirstLine
                 move.l  #$22222222,(LogoEA_ram_LineValue).w ; last line in strip is dark yellow
 
-@checkFirstLine:
+.checkFirstLine:
                 cmp.w   #5,d0
-                bne.s   @drawTriangleLine
+                bne.s   .drawTriangleLine
                 move.l  #$EEEEEEEE,(LogoEA_ram_LineValue).w ; first line is light yellow
 
-@drawTriangleLine:
+.drawTriangleLine:
                 move.l  d3,d1 ; left edge coordinate
                 move.l  a1,d2 ; right edge coordinate
                 bsr.w   LogoEA_DrawLine
 
-@drawTriangleShadow:
+.drawTriangleShadow:
                 tst.w   d5
-                bne.s   @triangleLineFinished
+                bne.s   .triangleLineFinished
 ; draw shadow below the strip
                 move.l  #$22222222,(LogoEA_ram_LineValue).w ; dark yellow
                 moveq   #0,d2
                 move.b  (a4)+,d2 ; get shadow size in pixels
-                beq.s   @drawShadowRightPart
+                beq.s   .drawShadowRightPart
 
                 swap    d2 ; convert to 16.16
                 add.l   d3,d2 ; add to X of left edge
                 move.l  d3,d1 ; from left edge of triangle
                 bsr.w   LogoEA_DrawLine ; draw left part of the shadow
 
-@drawShadowRightPart:
+.drawShadowRightPart:
                 move.l  a2,d1 ; size of right part is always 1/4 of the length of this line
                 move.l  a1,d2
                 bsr.w   LogoEA_DrawLine ; draw right part of the shadow
 
-@triangleLineFinished:
+.triangleLineFinished:
                 addq.l  #4,a6 ; shift offset to next line
                 subq.w  #1,d5 ; decrement strip height counter
                 sub.l   a3,d3 ; decrement left edge coordinate
                 adda.l  a3,a1 ; increment right edge coordinate
                 adda.l  d6,a2 ; increment right shadow part coordinate
-                dbf     d0,@loopTriangleLine
+                dbf     d0,.loopTriangleLine
 
                 adda.l  #$E8,a6 ; shift offset to 3rd line of next strip ($E8 = 2 * 8 * $20 + 8)
-                dbf     d4,@loopTriangleStrip
+                dbf     d4,.loopTriangleStrip
 
                 movea.l (sp)+,a4 ; restore a4
 ; load triangle tiles to VRAM
                 lea     (LogoEA_ram_TilesTriangle).w,a3
                 move.w  #$23F,d0   ; Write 8 * 9 = 72 tiles of triangle figure
                 VDP_VRAM_WRITE $5220,VdpCtrl
-@loopWriteTriangleTiles:
+.loopWriteTriangleTiles:
                 move.l  (a3)+,(a5)
-                dbf     d0,@loopWriteTriangleTiles
+                dbf     d0,.loopWriteTriangleTiles
 
                 VDP_VRAM_WRITE $DC00,VdpCtrl ; set sprite attr table
                 lea     (LogoEA_ram_SquareYArray).w,a0
@@ -870,7 +870,7 @@ LogoEA_SetupGfx:
 
 ; create text 'Electronic Arts'
                 lea     (LogoEA_ram_ImageEAUncompressed).w,a1
-                lea     LogoEA_Image_ElectronicArts,a3
+                lea     (LogoEA_Image_ElectronicArts).l,a3
                 moveq   #0,d2
                 move.b  1(a3),d2
                 asl.w   #8,d2
@@ -884,16 +884,16 @@ LogoEA_SetupGfx:
 ; load "Electronic Arts" palette to VRAM
                 moveq   #$F,d3
                 VDP_CRAM_WRITE $0,VdpCtrl
-@loopWritePalette:
+.loopWritePalette:
                 move.w  (a1)+,(a5)
-                dbf     d3,@loopWritePalette
+                dbf     d3,.loopWritePalette
 ; load "Electronic Arts" image to VRAM
                 asl.w   #3,d0
                 subq.w  #1,d0
                 VDP_VRAM_WRITE $20,VdpCtrl
-@loopWriteTextImage:
+.loopWriteTextImage:
                 move.l  (a1)+,(a5)
-                dbf     d0,@loopWriteTextImage
+                dbf     d0,.loopWriteTextImage
 
 ; write 'Electronic Arts' text nametable
                 VDP_VRAM_WRITE $8000,VdpCtrl
@@ -903,15 +903,15 @@ LogoEA_SetupGfx:
                 move.w  d2,d0
                 move.w  #$8001,d4 ; nametable value : high priority, pal 0, no flip, tile 1
 
-@loopHeight:
+.loopHeight:
                 move.w  d6,(a4)
                 addi.w  #$100,d6
                 move.w  d2,d0
-@loopWidth:
+.loopWidth:
                 move.w  d4,(a5) ; write nametable entry
                 addq.w  #1,d4 ; increment tile index
-                dbf     d0,@loopWidth
-                dbf     d1,@loopHeight
+                dbf     d0,.loopWidth
+                dbf     d1,.loopHeight
 
                 move.w  #$7044,(a4) ; ???
                 bsr.s   logoEA_WriteNametableEntry
@@ -951,36 +951,36 @@ LogoEA_Uncompress:
                 movea.l a2,a0
                 move.l  #$20202020,d3
                 move.w  #$3FF,d0
-@loopFillBuffer:
+.loopFillBuffer:
                 move.l  d3,(a0)
                 addq.l  #4,a0
-                dbf     d0,@loopFillBuffer
+                dbf     d0,.loopFillBuffer
 
                 move.w  #$FEE,d7 ; temp buffer starting index
                 move.w  #0,d3 ; bytes in block counter
                 moveq   #0,d6 ; read block bitmask
 
-@nextByte:
-                dbf     d3,@readByte ; jump if d3 != 0
+.nextByte:
+                dbf     d3,.readByte ; jump if d3 != 0
 ; start next block
                 move.b  (a3)+,d0
                 move.b  d0,d6
                 move.w  #7,d3
-@readByte:
+.readByte:
                 move.b  (a3)+,d0
                 lsr.b   #1,d6 ; get bit from mask
-                bcc.w   @maskBitZero ; branch if lower bit is not set
+                bcc.w   .maskBitZero ; branch if lower bit is not set
 ; mask bit 1
                 move.b  d0,(a1)+ ; write byte to destination buffer without change
                 subq.l  #1,d2 ; decrement size left
-                beq   @end
+                beq.w   .end
 
                 move.b  d0,(a2,d7.w) ; save byte to temp buffer
                 addq.w  #1,d7
                 andi.w  #$FFF,d7
 
-                bra.s   @nextByte
-@maskBitZero:
+                bra.s   .nextByte
+.maskBitZero:
                 moveq   #0,d4
                 move.b  d0,d4 ; move byte to d4
                 move.b  (a3)+,d0
@@ -991,24 +991,24 @@ LogoEA_Uncompress:
                 andi.w  #$F,d5
                 addq.w  #2,d5
 
-@copyChunk:
+.copyChunk:
                 move.b  (a2,d4.w),d0 ; read byte from temp buffer
                 addq.w  #1,d4
                 andi.w  #$FFF,d4
 
                 move.b  d0,(a1)+ ; write this byte to destination buffer
                 subq.l  #1,d2
-                beq   @end
+                beq.w   .end
 
                 move.b  d0,(a2,d7.w) ; and append this byte to temp buffer
                 addq.w  #1,d7
                 andi.w  #$FFF,d7
 
-                dbf     d5,@copyChunk
+                dbf     d5,.copyChunk
 
-                bra.s   @nextByte
+                bra.s   .nextByte
 
-@end:
+.end:
                 movem.l (sp)+,d0-d7/a0-a6
                 rts
 ; End of function LogoEA_Uncompress
@@ -1026,4 +1026,4 @@ logoEA_dCircleShadowLength:
     dc.b    4,8,11,14,21,28,37,30,0
 
 LogoEA_Image_ElectronicArts:        
-    incbin "LogoEA_Image_ElectronicArts.bin"
+    binclude "LogoEA_Image_ElectronicArts.bin"

@@ -1,3 +1,5 @@
+    supmode on
+    padding off
     include "hw_const.asm"
     include "unknown.asm"
     include "ram_const.asm"
@@ -87,21 +89,21 @@ header:
     dc.b    "             "                                     ; Reserved
 
 RESET:
-    tst.l   $A10008
-    bne.s   @portA
-    tst.w   $A1000C
+    tst.l   ($A10008).l
+    bne.s   .portA
+    tst.w   ($A1000C).l
 
-@portA:
+.portA:
     bne.s   start
     lea     defaults(pc),a5
     movem.w (a5)+,d5-d7
     movem.l (a5)+,a0-a4
     move.b  -$10FF(a1),d0 ; read from A10001
     andi.b  #$F,d0
-    beq.s   @noTMSS
+    beq.s   .noTMSS
     move.l  #'SEGA',$2F00(a1) ; A14000 disable TMSS
 
-@noTMSS:
+.noTMSS:
     move.w  (a4),d0
     moveq   #0,d0
     movea.l d0,a6
@@ -109,54 +111,54 @@ RESET:
 
     moveq   #$17,d1 ; set regs from 0 to $17
 
-@vdp_registers:
+.vdp_registers:
     move.b  (a5)+,d5
     move.w  d5,(a4)
     add.w   d7,d5
-    dbf     d1,@vdp_registers
+    dbf     d1,.vdp_registers
 
     move.l  (a5)+,(a4) ; set VRAM FILL destination
     move.w  d0,(a3) ; trigger FILL
     move.w  d7,(a1) ; $100 -> A11100 z80 BUS request
     move.w  d7,(a2) ; $100 -> A11200 z80 RESET
 
-@z80_bus_req:
+.z80_bus_req:
     btst    d0,(a1)
-    bne.s   @z80_bus_req
+    bne.s   .z80_bus_req
 
     moveq   #(z80_end-z80_start) - 1,d2
 
-@z80_load:
+.z80_load:
     move.b  (a5)+,(a0)+
-    dbf     d2,@z80_load
+    dbf     d2,.z80_load
     move.w  d0,(a2) ; $100 -> A11200 z80 RESET off
     move.w  d0,(a1) ; $000 -> A11100 z80 BUS release
     move.w  d7,(a2) ; $100 -> A11200 z80 RESET
 
-@clear_ram:
+.clear_ram:
     move.l  d0,-(a6) ; clear M68k RAM
-    dbf     d6,@clear_ram
+    dbf     d6,.clear_ram
 
     move.l  (a5)+,(a4)
     move.l  (a5)+,(a4) ; CRAM write
     moveq   #$1F,d3
 
-@clear_cram:
+.clear_cram:
     move.l  d0,(a3)
-    dbf     d3,@clear_cram
+    dbf     d3,.clear_cram
 
     move.l  (a5)+,(a4) ; VSRAM write
     moveq   #$13,d4
 
-@clear_vsram:
+.clear_vsram:
     move.l  d0,(a3)
-    dbf     d4,@clear_vsram
+    dbf     d4,.clear_vsram
 
     moveq   #3,d5
 
-@mute_psg:
+.mute_psg:
     move.b  (a5)+,$11(a3)
-    dbf     d5,@mute_psg
+    dbf     d5,.mute_psg
 
     move.w  d0,(a2)
     movem.l (a6),d0-a6
@@ -174,7 +176,7 @@ defaults:
     dc.l $A11200 ; a2 Z80 reset line
     dc.l $C00000 ; a3
     dc.l $C00004 ; a4
-    ; VDP regs
+; VDP regs
     dc.b 4   ; 0 palette select
     dc.b $14 ; 1 Display off, DMA on, GENESIS
     dc.b $30 ; 2 Plane A C000
@@ -199,7 +201,7 @@ defaults:
     dc.b 0   ; 16 DMA source mid
     dc.b $80 ; 17 DMA source high -> FILL
     dc.l $40000080 ; DMA -> VRAM offset 0
-    ; z80 A00000-A00026
+; z80 A00000-A00026
 z80_start:
     dc.l $AF01D91F, $11270021, $2600F977, $EDB0DDE1
     dc.l $FDE1ED47, $ED4FD1E1, $F108D9C1, $D1E1F1F9
@@ -211,32 +213,32 @@ z80_end:
     dc.b $9F,$BF,$DF,$FF ; PSG mute
 
 doStart:
-    tst.w   VdpCtrl
-    jsr     sub_7FF98
+    tst.w   (VdpCtrl).l
+    jsr     (sub_7FF98).l
     move    #$2700,sr
-    tst.l   $A10008
-    bne.s   @anyButtonPressed
-    tst.w   $A1000C
-    bne.s   @anyButtonPressed
+    tst.l   ($A10008).l
+    bne.s   .anyButtonPressed
+    tst.w   ($A1000C).l
+    bne.s   .anyButtonPressed
     bsr.w   LogoEA_Init
-    move.w  #$8174,VdpCtrl  ; Enable display
-    move.w  #$FFFF,ram_FF369E
-    move.l  #LogoEA_GameTick,ram_UpdateFunction
+    move.w  #$8174,(VdpCtrl).l  ; Enable display
+    move.w  #$FFFF,(ram_FF369E).l
+    move.l  #LogoEA_GameTick,(ram_UpdateFunction).l
     move    #$2500,sr
 
-@loopCheckFinished:
-    jsr     GetInputPlayerA
+.loopCheckFinished:
+    jsr     (GetInputPlayerA).l
     move.w  d0,d1
     bsr.w   GetInputPlayerB
     or.w    d1,d0
     tst.b   d0
-    bne.s   @anyButtonPressed
-    tst.b   LogoEA_ram_Finished
-    beq.s   @loopCheckFinished
+    bne.s   .anyButtonPressed
+    tst.b   (LogoEA_ram_Finished).l
+    beq.s   .loopCheckFinished
 
-@anyButtonPressed:
-    move.l  #0,ram_UpdateFunction
-    jmp     loc_7E6A2
+.anyButtonPressed:
+    move.l  #0,(ram_UpdateFunction).l
+    jmp     (loc_7E6A2).l
 
 ; end of function RESET
 
@@ -249,24 +251,24 @@ doStart:
 
 GetInputPlayerA:
                 move.l  d1,-(sp)
-                move.b  #$40,$A10009	; TH pin to write, others to read
-                move.b  #0,$A10003     ; clear TH
+                move.b  #$40,($A10009).l	; TH pin to write, others to read
+                move.b  #0,($A10003).l     ; clear TH
 ; wait 10 ticks
                 move.w  #$A,d1
-@wait:
-                dbf     d1,@wait
+.wait:
+                dbf     d1,.wait
 
-                move.b  $A10003,d0      ; read inputs
+                move.b  ($A10003).l,d0      ; read inputs
                 asl.b   #2,d0
                 andi.b  #$C0,d0             ; shift bits so A is bit 6 and START is bit 7
 
-                move.b  #$40,$A10003    ; set TH
+                move.b  #$40,($A10003).l    ; set TH
 ; wait 10 ticks
                 move.w  #$A,d1
-@wait2:
-                dbf     d1,@wait2
+.wait2:
+                dbf     d1,.wait2
 
-                move.b  $A10003,d1      ; read inputs
+                move.b  ($A10003).l,d1      ; read inputs
                 andi.b  #$3F,d1             ; get state of 6 buttons
                 or.b    d1,d0               ; move everything to d0
                 not.b   d0                  ; invert bits
@@ -281,23 +283,23 @@ GetInputPlayerA:
 
 GetInputPlayerB:
                 move.l  d1,-(sp)
-                move.b  #$40,$A1000B
-                move.b  #0,$A10005
+                move.b  #$40,($A1000B).l
+                move.b  #0,($A10005).l
 
                 move.w  #$14,d1
-@wait:
-                dbf     d1,@wait
+.wait:
+                dbf     d1,.wait
 
-                move.b  $A10005,d0
+                move.b  ($A10005).l,d0
                 asl.b   #2,d0
                 andi.b  #$C0,d0
-                move.b  #$40,$A10005
+                move.b  #$40,($A10005).l
 
                 move.w  #$14,d1
-@wait2:
-                dbf     d1,@wait2
+.wait2:
+                dbf     d1,.wait2
 
-                move.b  $A10005,d1
+                move.b  ($A10005).l,d1
                 andi.b  #$3F,d1
                 or.b    d1,d0
                 not.b   d0
@@ -311,11 +313,11 @@ GetInputPlayerB:
 
 VerticalInterrupt:
                 movem.l d0-d7/a0-a6,-(sp)
-                movea.l ram_UpdateFunction,a0
+                movea.l (ram_UpdateFunction).l,a0
                 cmpa.l  #0,a0
-                beq   @return
+                beq.w   .return
                 jsr     (a0)
-@return:
+.return:
                 movem.l (sp)+,d0-d7/a0-a6
                 rte
 ; End of Interrupt Handler VerticalInterrupt
@@ -437,34 +439,34 @@ SpuriousInterrupt:
 ; *************************************************
 
 HorizontalInterrupt:
-                move.w  #$8AFF,VdpCtrl ; next Hint after 255 scanlines
-                cmpi.w  #$FFFF,ram_FF369E
-                beq.w   @return
+                move.w  #$8AFF,(VdpCtrl).l ; next Hint after 255 scanlines
+                cmpi.w  #$FFFF,(ram_FF369E).l
+                beq.w   .return
                 movem.l d0-d2/a0-a2,-(sp)
-                lea     VdpCtrl,a1
-                lea     VdpData,a2
-                move.w  ram_FF0406,d0
-                ble.w   @loc_1632
-                movea.l Race_ram_NextVScrollInfo,a0
+                lea     (VdpCtrl).l,a1
+                lea     (VdpData).l,a2
+                move.w  (ram_FF0406).l,d0
+                ble.w   .loc_1632
+                movea.l (Race_ram_NextVScrollInfo).l,a0
                 adda.w  d0,a0
                 move.w  (a0)+,(a1)
                 move.w  (a0)+,d0
                 move.w  (a0)+,d1
                 move.l  (a0)+,d2
-                move.w  (a0)+,ram_FF0406
+                move.w  (a0)+,(ram_FF0406).l
                 VDP_VSRAM_WRITE $0,(a1) ; VSRAM from offset 0
                 movea.w d0,a0
                 andi.w  #$FF00,d0
-@loc_14AA:
-                cmp.w   HvCounter,d0
-                bcc.s   @loc_14AA ; wait until VCounter > d0
-@loc_14B2:
-                move.b  HvCounter + 1,d0
-                bmi.s   @loc_14B2 ; wait until HCounter > 0
+.loc_14AA:
+                cmp.w   (HvCounter).l,d0
+                bcc.s   .loc_14AA ; wait until VCounter > d0
+.loc_14B2:
+                move.b  (HvCounter + 1).l,d0
+                bmi.s   .loc_14B2 ; wait until HCounter > 0
                 move.w  a0,d0
-@loc_14BC:
-                cmp.w   HvCounter,d0
-                bcc.s   @loc_14BC ; wait until HVCounter > a0
+.loc_14BC:
+                cmp.w   (HvCounter).l,d0
+                bcc.s   .loc_14BC ; wait until HVCounter > a0
 
                 move.l  d2,(a2)
 ; 36 nops
@@ -505,91 +507,91 @@ HorizontalInterrupt:
                 nop
                 nop
                 move.w  d1,(a1)
-                cmpi.w  #$90,ram_FF0406
-                bne.w   @loc_164C
+                cmpi.w  #$90,(ram_FF0406).l
+                bne.w   .loc_164C
 ; run this only if ram_FF0406 == $90
-                move.w  #0,ram_FF0406
-                tst.w   ram_MusicEnabled
-                bne.w   @loc_162C
-                tst.w   Race_ram_State
-                beq.w   @loc_154E
+                move.w  #0,(ram_FF0406).l
+                tst.w   (ram_MusicEnabled).l
+                bne.w   .loc_162C
+                tst.w   (Race_ram_State).l
+                beq.w   .loc_154E
                 clr.l   d0
                 move.w  #$1F,d1
-                jsr     AudioFunc8
-                jsr     AudioFunc11
-                bra.w   @loc_162C
-@loc_154E:
-                lea     ram_FF1EAA,a1
+                jsr     (AudioFunc8).l
+                jsr     (AudioFunc11).l
+                bra.w   .loc_162C
+.loc_154E:
+                lea     (ram_FF1EAA).l,a1
                 move.w  #0,d0
                 tst.b   STRUCT_OFFSET_6E(a1)
-                bpl.w   @loc_1590
+                bpl.w   .loc_1590
                 move.w  STRUCT_OFFSET_14(a1),d0
-                muls.w  Race_ram_FrameCounter,d0
+                muls.w  (Race_ram_FrameCounter).l,d0
                 add.w   STRUCT_OFFSET_SPEED(a1),d0
-                bpl.w   @loc_1576
+                bpl.w   .loc_1576
                 move.w  #0,d0
-@loc_1576:
+.loc_1576:
                 andi.l  #$FFFF,d0
-                move.w  ram_FF1AA2,d1
+                move.w  (ram_FF1AA2).l,d1
                 ext.l   d0
                 swap    d0
                 divu.w  d1,d0
                 mulu.w  #$3800,d0
                 clr.w   d0
                 swap    d0
-@loc_1590:
-                add.w   ram_FF36C4,d0
-                move.w  d0,ram_FF36B6
-                lea     ram_FF1EAA,a1
-                move.w  ram_FF36B6,d0
-                sub.w   ram_FF36B8,d0
+.loc_1590:
+                add.w   (ram_FF36C4).l,d0
+                move.w  d0,(ram_FF36B6).l
+                lea     (ram_FF1EAA).l,a1
+                move.w  (ram_FF36B6).l,d0
+                sub.w   (ram_FF36B8).l,d0
                 move.w  d0,d1
-                bpl.w   @loc_15B6
+                bpl.w   .loc_15B6
                 neg.w   d1
-@loc_15B6:
+.loc_15B6:
                 cmp.w   #$64,d0
-                ble.w   @loc_15C2
+                ble.w   .loc_15C2
                 move.w  #$64,d0
-@loc_15C2:
+.loc_15C2:
                 cmp.w   #$FF9C,d0
-                bpl.w   @loc_15CE
+                bpl.w   .loc_15CE
                 move.w  #$FF9C,d0
-@loc_15CE:
-                add.w   ram_FF36B8,d0
-                move.w  d0,ram_FF36B8
+.loc_15CE:
+                add.w   (ram_FF36B8).l,d0
+                move.w  d0,(ram_FF36B8).l
                 asr.w   #5,d1
                 addi.w  #2,d1
-                bpl.w   @loc_15E8
+                bpl.w   .loc_15E8
                 move.w  #0,d1
-@loc_15E8:
+.loc_15E8:
                 tst.b   STRUCT_OFFSET_6E(a1)
-                bmi.w   @loc_1616
-                lea     ram_FF26AA,a1
-                move.l  ram_FF1E68,d1
+                bmi.w   .loc_1616
+                lea     (ram_FF26AA).l,a1
+                move.l  (ram_FF1E68).l,d1
                 sub.l   4(a1),d1
-                bpl.w   @loc_1606
+                bpl.w   .loc_1606
                 neg.l   d1
-@loc_1606:
+.loc_1606:
                 asl.l   #1,d1
                 swap    d1
                 cmp.w   #$1F,d1
-                bmi.w   @loc_1616
+                bmi.w   .loc_1616
                 move.w  #$1F,d1
-@loc_1616:
-                jsr     AudioFunc8
-                movea.l ram_FF1908,a1
+.loc_1616:
+                jsr     (AudioFunc8).l
+                movea.l (ram_FF1908).l,a1
                 bsr.w   sub_1652
-                jsr     AudioFunc11
-@loc_162C:
-                jsr     AudioFunc1
-@loc_1632:
-                move.w  #$FFFF,ram_FF369E
-                tst.w   ram_FF0406
-                ble.w   @loc_164C
-                move.w  #0,ram_FF369E
-@loc_164C:
+                jsr     (AudioFunc11).l
+.loc_162C:
+                jsr     (AudioFunc1).l
+.loc_1632:
+                move.w  #$FFFF,(ram_FF369E).l
+                tst.w   (ram_FF0406).l
+                ble.w   .loc_164C
+                move.w  #0,(ram_FF369E).l
+.loc_164C:
                 movem.l (sp)+,d0-d2/a0-a2
-@return:
+.return:
                 rte
 ; End of function HorizontalInterrupt
 
@@ -599,23 +601,23 @@ HorizontalInterrupt:
 
 sub_1652:
                 cmpa.l  #$FFFFFFFF,a1
-                bne.w   @loc_1664
+                bne.w   .loc_1664
                 moveq   #$1F,d1
                 moveq   #0,d0
-                bra.w   @return
-@loc_1664:
+                bra.w   .return
+.loc_1664:
                 clr.w   d0
                 tst.b   $6E(a1)
-                bpl.w   @loc_169C
+                bpl.w   .loc_169C
                 move.w  $14(a1),d0
-                muls.w  Race_ram_FrameCounter,d0
+                muls.w  (Race_ram_FrameCounter).l,d0
                 add.w   $12(a1),d0
-                bpl.w   @loc_1682
+                bpl.w   .loc_1682
                 clr.w   d0
 
-@loc_1682:
+.loc_1682:
                 andi.l  #$FFFF,d0
-                move.w  ram_FF1AA4,d1
+                move.w  (ram_FF1AA4).l,d1
                 ext.l   d0
                 swap    d0
                 divu.w  d1,d0
@@ -623,39 +625,39 @@ sub_1652:
                 clr.w   d0
                 swap    d0
 
-@loc_169C:
+.loc_169C:
                 addi.w  #$400,d0
-                move.w  d0,ram_FF36BE
-                move.w  ram_FF36BE,d0
+                move.w  d0,(ram_FF36BE).l
+                move.w  (ram_FF36BE).l,d0
                 cmp.w   #$400,d0
-                bpl.w   @loc_16B8
+                bpl.w   .loc_16B8
                 move.w  #$400,d0
 
-@loc_16B8:
-                sub.w   ram_FF36C0,d0
+.loc_16B8:
+                sub.w   (ram_FF36C0).l,d0
                 cmp.w   #$64,d0
-                ble.w   @loc_16CA
+                ble.w   .loc_16CA
                 move.w  #$64,d0
 
-@loc_16CA:
+.loc_16CA:
                 cmp.w   #$FF9C,d0
-                bpl.w   @loc_16D6
+                bpl.w   .loc_16D6
                 move.w  #$FF9C,d0
 
-@loc_16D6:
-                add.w   ram_FF36C0,d0
-                move.w  d0,ram_FF36C0
-                move.l  ram_FF1E68,d1
+.loc_16D6:
+                add.w   (ram_FF36C0).l,d0
+                move.w  d0,(ram_FF36C0).l
+                move.l  (ram_FF1E68).l,d1
                 sub.l   4(a1),d1
-                bpl.w   @loc_16F2
+                bpl.w   .loc_16F2
                 neg.l   d1
-@loc_16F2:
+.loc_16F2:
                 asl.l   #1,d1
                 swap    d1
                 cmp.w   #$1F,d1
-                bmi.w   @return
+                bmi.w   .return
                 move.w  #$1F,d1
-@return:
+.return:
                 rts
 ; End of function sub_1652
 

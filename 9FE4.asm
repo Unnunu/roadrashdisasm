@@ -3,27 +3,27 @@
 
 sub_9FE4:
                 movem.l d0-d7/a0-a6,-(sp)
-                clr.w   ram_FF13E2
-                move.w  d1,ram_FF13B2
+                clr.w   (ram_FF13E2).l
+                move.w  d1,(ram_FF13B2).l
                 clr.l   d2
                 move.w  (a2)+,d2
-                move.w  d2,ram_FF13DC
-                move.l  a2,ram_FF13DE
+                move.w  d2,(ram_FF13DC).l
+                move.l  a2,(ram_FF13DE).l
                 adda.l  d2,a2
-                move.l  a2,ram_FF13D4
-                move.l  a1,ram_FF13D8
-                clr.w   ram_FF140E
+                move.l  a2,(ram_FF13D4).l
+                move.l  a1,(ram_FF13D8).l
+                clr.w   (ram_FF140E).l
                 clr.l   d2
                 move.w  (a3)+,d2
-                move.w  d2,ram_FF1408
-                move.l  a3,ram_FF140A
+                move.w  d2,(ram_FF1408).l
+                move.l  a3,(ram_FF140A).l
                 adda.l  d2,a3
-                move.l  a3,ram_FF1400
+                move.l  a3,(ram_FF1400).l
                 addq.l  #1,a1
-                move.l  a1,ram_FF1404
+                move.l  a1,(ram_FF1404).l
                 andi.l  #$FFFF,d1
                 movem.l (sp)+,d0-d7/a0-a6
-                jsr     sub_A04A
+                jsr     (sub_A04A).l
                 rts
 ; End of function sub_9FE4
 
@@ -173,125 +173,125 @@ unk_A0CC:       dc.b   7
 
 sub_A0D4:
                 movem.l d0-d7/a0-a6,-(sp)
-                tst.w   ram_FF13E2
-                bne.w   @loc_A106
-                clr.w   ram_FF13BC
-                clr.b   ram_FF13B8
-                clr.w   ram_FF13CE
-                clr.w   ram_FF13D0
-                clr.w   ram_FF13D2
-                clr.w   ram_FF13C8
-@loc_A106:
-                movea.l ram_FF13D4,a0
-                movea.l ram_FF13DE,a2
-                move.w  d1,ram_FF13B2
-                tst.w   ram_FF13E2
-                bne.w   @loc_A29C
-                move.b  (a0)+,ram_FF13B9
-@loc_A128:
-                move.w  ram_FF13BC,d0
-                cmp.w   ram_FF13DC,d0
-                bgt.w   @loc_A2B6
-                move.w  ram_FF13BC,d7
-                move.b  (a2,d7.w),ram_FF13C6
-                andi.b  #7,ram_FF13C6
+                tst.w   (ram_FF13E2).l
+                bne.w   .loc_A106
+                clr.w   (ram_FF13BC).l
+                clr.b   (ram_FF13B8).l
+                clr.w   (ram_FF13CE).l
+                clr.w   (ram_FF13D0).l
+                clr.w   (ram_FF13D2).l
+                clr.w   (ram_FF13C8).l
+.loc_A106:
+                movea.l (ram_FF13D4).l,a0
+                movea.l (ram_FF13DE).l,a2
+                move.w  d1,(ram_FF13B2).l
+                tst.w   (ram_FF13E2).l
+                bne.w   .loc_A29C
+                move.b  (a0)+,(ram_FF13B9).l
+.loc_A128:
+                move.w  (ram_FF13BC).l,d0
+                cmp.w   (ram_FF13DC).l,d0
+                bgt.w   .loc_A2B6
+                move.w  (ram_FF13BC).l,d7
+                move.b  (a2,d7.w),(ram_FF13C6).l
+                andi.b  #7,(ram_FF13C6).l
                 clr.l   d0
                 move.b  (a2,d7.w),d0
                 andi.w  #$F0,d0
                 lsr.w   #4,d0
                 addq.w  #1,d0
-                move.w  d0,ram_FF13C4
-                move.b  (a2,d7.w),ram_FF13C2
-                andi.b  #8,ram_FF13C2
-@loc_A172:
-                tst.w   ram_FF13C4
-                beq.w   @loc_A2AC
-                move.w  ram_FF13CE,d0
+                move.w  d0,(ram_FF13C4).l
+                move.b  (a2,d7.w),(ram_FF13C2).l
+                andi.b  #8,(ram_FF13C2).l
+.loc_A172:
+                tst.w   (ram_FF13C4).l
+                beq.w   .loc_A2AC
+                move.w  (ram_FF13CE).l,d0
                 andi.w  #7,d0
                 clr.w   d1
-                move.b  ram_FF13C6,d1
+                move.b  (ram_FF13C6).l,d1
                 asl.b   #3,d1
                 add.w   d1,d0
-                move.w  d0,ram_FF13CA
-                lea     unk_A054,a5
+                move.w  d0,(ram_FF13CA).l
+                lea     (unk_A054).l,a5
                 clr.w   d1
-                move.b  ram_FF13B9,d1
+                move.b  (ram_FF13B9).l,d1
                 and.b   (a5,d0.w),d1
-                move.w  d1,ram_FF13CC
-                lea     unk_A094,a5
+                move.w  d1,(ram_FF13CC).l
+                lea     (unk_A094).l,a5
                 clr.l   d1
                 move.b  (a5,d0.w),d1
-                move.w  ram_FF13CC,d2
+                move.w  (ram_FF13CC).l,d2
                 cmp.w   #7,d1
-                ble.w   @loc_A1D4
+                ble.w   .loc_A1D4
                 ext.w   d1
                 neg.w   d1
                 asl.w   d1,d2
-                bra.w   @loc_A1D6
-@loc_A1D4:
+                bra.w   .loc_A1D6
+.loc_A1D4:
                 lsr.w   d1,d2
-@loc_A1D6:
-                move.w  d2,ram_FF13CC
-                move.b  d2,ram_FF13BA
+.loc_A1D6:
+                move.w  d2,(ram_FF13CC).l
+                move.b  d2,(ram_FF13BA).l
                 clr.w   d0
-                move.b  ram_FF13C6,d0
+                move.b  (ram_FF13C6).l,d0
                 addq.w  #1,d0
-                add.w   d0,ram_FF13CE
-                move.w  ram_FF13CE,d0
+                add.w   d0,(ram_FF13CE).l
+                move.w  (ram_FF13CE).l,d0
                 lsr.w   #3,d0
-                move.w  d0,ram_FF13D0
-                cmp.w   ram_FF13D2,d0
-                beq.w   @loc_A262
-                move.b  (a0)+,ram_FF13B9
-                move.w  ram_FF13CE,d0
+                move.w  d0,(ram_FF13D0).l
+                cmp.w   (ram_FF13D2).l,d0
+                beq.w   .loc_A262
+                move.b  (a0)+,(ram_FF13B9).l
+                move.w  (ram_FF13CE).l,d0
                 andi.w  #7,d0
-                beq.w   @loc_A256
-                move.w  ram_FF13CE,d0
+                beq.w   .loc_A256
+                move.w  (ram_FF13CE).l,d0
                 subq.w  #1,d0
                 andi.w  #7,d0
-                move.w  d0,ram_FF13CA
-                lea     unk_A0CC,a5
+                move.w  d0,(ram_FF13CA).l
+                lea     (unk_A0CC).l,a5
                 clr.w   d1
                 move.b  (a5,d0.w),d1
-                lea     unk_A08C,a5
+                lea     (unk_A08C).l,a5
                 clr.w   d2
-                move.b  ram_FF13B9,d2
+                move.b  (ram_FF13B9).l,d2
                 and.b   (a5,d0.w),d2
                 lsr.w   d1,d2
-                or.b    d2,ram_FF13BA
-@loc_A256:
-                move.w  ram_FF13D0,d0
-                move.w  d0,ram_FF13D2
-@loc_A262:
-                move.b  ram_FF13B8,d0
-                tst.b   ram_FF13C2
-                bne.w   @loc_A27C
-                add.b   ram_FF13BA,d0
-                bra.w   @loc_A282
-@loc_A27C:
-                sub.b   ram_FF13BA,d0
-@loc_A282:
-                move.b  d0,ram_FF13B8
+                or.b    d2,(ram_FF13BA).l
+.loc_A256:
+                move.w  (ram_FF13D0).l,d0
+                move.w  d0,(ram_FF13D2).l
+.loc_A262:
+                move.b  (ram_FF13B8).l,d0
+                tst.b   (ram_FF13C2).l
+                bne.w   .loc_A27C
+                add.b   (ram_FF13BA).l,d0
+                bra.w   .loc_A282
+.loc_A27C:
+                sub.b   (ram_FF13BA).l,d0
+.loc_A282:
+                move.b  d0,(ram_FF13B8).l
                 move.b  d0,(a1)
                 addq.l  #2,a1
-                subq.w  #1,ram_FF13B2
-                tst.w   ram_FF13B2
-                bmi.w   @loc_A2C0
-@loc_A29C:
-                addq.w  #1,ram_FF13C8
-                subq.w  #1,ram_FF13C4
-                bra.w   @loc_A172
-@loc_A2AC:
-                addq.w  #1,ram_FF13BC
-                bra.w   @loc_A128
-@loc_A2B6:
-                subq.w  #1,ram_FF13BC
-                bra.w   @loc_A2C8
-@loc_A2C0:
-                move.w  #1,ram_FF13E2
-@loc_A2C8:
-                move.l  a1,ram_FF13D8
-                move.l  a0,ram_FF13D4
+                subq.w  #1,(ram_FF13B2).l
+                tst.w   (ram_FF13B2).l
+                bmi.w   .loc_A2C0
+.loc_A29C:
+                addq.w  #1,(ram_FF13C8).l
+                subq.w  #1,(ram_FF13C4).l
+                bra.w   .loc_A172
+.loc_A2AC:
+                addq.w  #1,(ram_FF13BC).l
+                bra.w   .loc_A128
+.loc_A2B6:
+                subq.w  #1,(ram_FF13BC).l
+                bra.w   .loc_A2C8
+.loc_A2C0:
+                move.w  #1,(ram_FF13E2).l
+.loc_A2C8:
+                move.l  a1,(ram_FF13D8).l
+                move.l  a0,(ram_FF13D4).l
                 movem.l (sp)+,d0-d7/a0-a6
                 rts
 ; End of function sub_A0D4
@@ -302,126 +302,126 @@ sub_A0D4:
 
 sub_A2DA:
                 movem.l d0-d7/a0-a6,-(sp)
-                tst.w   ram_FF140E
-                bne.w   @loc_A30C
-                clr.w   ram_FF13E8
-                clr.b   ram_FF13E4
-                clr.w   ram_FF13FA
-                clr.w   ram_FF13FC
-                clr.w   ram_FF13FE
-                clr.w   ram_FF13F4
-@loc_A30C:
-                movea.l ram_FF1400,a0
+                tst.w   (ram_FF140E).l
+                bne.w   .loc_A30C
+                clr.w   (ram_FF13E8).l
+                clr.b   (ram_FF13E4).l
+                clr.w   (ram_FF13FA).l
+                clr.w   (ram_FF13FC).l
+                clr.w   (ram_FF13FE).l
+                clr.w   (ram_FF13F4).l
+.loc_A30C:
+                movea.l (ram_FF1400).l,a0
                 addq.l  #1,a1
-                movea.l ram_FF140A,a2
-                move.w  d1,ram_FF13B2
-                tst.w   ram_FF140E
-                bne.w   @loc_A4A4
-                move.b  (a0)+,ram_FF13E5
-@loc_A330:
-                move.w  ram_FF13E8,d0
-                cmp.w   ram_FF1408,d0
-                bgt.w   @loc_A4BE
-                move.w  ram_FF13E8,d7
-                move.b  (a2,d7.w),ram_FF13F2
-                andi.b  #7,ram_FF13F2
+                movea.l (ram_FF140A).l,a2
+                move.w  d1,(ram_FF13B2).l
+                tst.w   (ram_FF140E).l
+                bne.w   .loc_A4A4
+                move.b  (a0)+,(ram_FF13E5).l
+.loc_A330:
+                move.w  (ram_FF13E8).l,d0
+                cmp.w   (ram_FF1408).l,d0
+                bgt.w   .loc_A4BE
+                move.w  (ram_FF13E8).l,d7
+                move.b  (a2,d7.w),(ram_FF13F2).l
+                andi.b  #7,(ram_FF13F2).l
                 clr.l   d0
                 move.b  (a2,d7.w),d0
                 andi.w  #$F0,d0
                 lsr.w   #4,d0
                 addq.w  #1,d0
-                move.w  d0,ram_FF13F0
-                move.b  (a2,d7.w),ram_FF13EE
-                andi.b  #8,ram_FF13EE
-@loc_A37A:
-                tst.w   ram_FF13F0
-                beq.w   @loc_A4B4
-                move.w  ram_FF13FA,d0
+                move.w  d0,(ram_FF13F0).l
+                move.b  (a2,d7.w),(ram_FF13EE).l
+                andi.b  #8,(ram_FF13EE).l
+.loc_A37A:
+                tst.w   (ram_FF13F0).l
+                beq.w   .loc_A4B4
+                move.w  (ram_FF13FA).l,d0
                 andi.w  #7,d0
                 clr.w   d1
-                move.b  ram_FF13F2,d1
+                move.b  (ram_FF13F2).l,d1
                 asl.b   #3,d1
                 add.w   d1,d0
-                move.w  d0,ram_FF13F6
-                lea     unk_A054,a5
+                move.w  d0,(ram_FF13F6).l
+                lea     (unk_A054).l,a5
                 clr.w   d1
-                move.b  ram_FF13E5,d1
+                move.b  (ram_FF13E5).l,d1
                 and.b   (a5,d0.w),d1
-                move.w  d1,ram_FF13F8
-                lea     unk_A094,a5
+                move.w  d1,(ram_FF13F8).l
+                lea     (unk_A094).l,a5
                 clr.l   d1
                 move.b  (a5,d0.w),d1
-                move.w  ram_FF13F8,d2
+                move.w  (ram_FF13F8).l,d2
                 cmp.w   #7,d1
-                ble.w   @loc_A3DC
+                ble.w   .loc_A3DC
                 ext.w   d1
                 neg.w   d1
                 asl.w   d1,d2
-                bra.w   @loc_A3DE
-@loc_A3DC:
+                bra.w   .loc_A3DE
+.loc_A3DC:
                 lsr.w   d1,d2
-@loc_A3DE:
-                move.w  d2,ram_FF13F8
-                move.b  d2,ram_FF13E6
+.loc_A3DE:
+                move.w  d2,(ram_FF13F8).l
+                move.b  d2,(ram_FF13E6).l
                 clr.w   d0
-                move.b  ram_FF13F2,d0
+                move.b  (ram_FF13F2).l,d0
                 addq.w  #1,d0
-                add.w   d0,ram_FF13FA
-                move.w  ram_FF13FA,d0
+                add.w   d0,(ram_FF13FA).l
+                move.w  (ram_FF13FA).l,d0
                 lsr.w   #3,d0
-                move.w  d0,ram_FF13FC
-                cmp.w   ram_FF13FE,d0
-                beq.w   @loc_A46A
-                move.b  (a0)+,ram_FF13E5
-                move.w  ram_FF13FA,d0
+                move.w  d0,(ram_FF13FC).l
+                cmp.w   (ram_FF13FE).l,d0
+                beq.w   .loc_A46A
+                move.b  (a0)+,(ram_FF13E5).l
+                move.w  (ram_FF13FA).l,d0
                 andi.w  #7,d0
-                beq.w   @loc_A45E
-                move.w  ram_FF13FA,d0
+                beq.w   .loc_A45E
+                move.w  (ram_FF13FA).l,d0
                 subq.w  #1,d0
                 andi.w  #7,d0
-                move.w  d0,ram_FF13F6
-                lea     unk_A0CC,a5
+                move.w  d0,(ram_FF13F6).l
+                lea     (unk_A0CC).l,a5
                 clr.w   d1
                 move.b  (a5,d0.w),d1
-                lea     unk_A08C,a5
+                lea     (unk_A08C).l,a5
                 clr.w   d2
-                move.b  ram_FF13E5,d2
+                move.b  (ram_FF13E5).l,d2
                 and.b   (a5,d0.w),d2
                 lsr.w   d1,d2
-                or.b    d2,ram_FF13E6
-@loc_A45E:
-                move.w  ram_FF13FC,d0
-                move.w  d0,ram_FF13FE
-@loc_A46A:
-                move.b  ram_FF13E4,d0
-                tst.b   ram_FF13EE
-                bne.w   @loc_A484
-                add.b   ram_FF13E6,d0
-                bra.w   @loc_A48A
-@loc_A484:
-                sub.b   ram_FF13E6,d0
-@loc_A48A:
-                move.b  d0,ram_FF13E4
+                or.b    d2,(ram_FF13E6).l
+.loc_A45E:
+                move.w  (ram_FF13FC).l,d0
+                move.w  d0,(ram_FF13FE).l
+.loc_A46A:
+                move.b  (ram_FF13E4).l,d0
+                tst.b   (ram_FF13EE).l
+                bne.w   .loc_A484
+                add.b   (ram_FF13E6).l,d0
+                bra.w   .loc_A48A
+.loc_A484:
+                sub.b   (ram_FF13E6).l,d0
+.loc_A48A:
+                move.b  d0,(ram_FF13E4).l
                 move.b  d0,(a1)
                 addq.l  #2,a1
-                subq.w  #1,ram_FF13B2
-                tst.w   ram_FF13B2
-                bmi.w   @loc_A4C8
-@loc_A4A4:
-                addq.w  #1,ram_FF13F4
-                subq.w  #1,ram_FF13F0
-                bra.w   @loc_A37A
-@loc_A4B4:
-                addq.w  #1,ram_FF13E8
-                bra.w   @loc_A330
-@loc_A4BE:
-                subq.w  #1,ram_FF13E8
-                bra.w   @loc_A4D0
-@loc_A4C8:
-                move.w  #1,ram_FF140E
-@loc_A4D0:
-                move.l  a1,ram_FF1404
-                move.l  a0,ram_FF1400
+                subq.w  #1,(ram_FF13B2).l
+                tst.w   (ram_FF13B2).l
+                bmi.w   .loc_A4C8
+.loc_A4A4:
+                addq.w  #1,(ram_FF13F4).l
+                subq.w  #1,(ram_FF13F0).l
+                bra.w   .loc_A37A
+.loc_A4B4:
+                addq.w  #1,(ram_FF13E8).l
+                bra.w   .loc_A330
+.loc_A4BE:
+                subq.w  #1,(ram_FF13E8).l
+                bra.w   .loc_A4D0
+.loc_A4C8:
+                move.w  #1,(ram_FF140E).l
+.loc_A4D0:
+                move.l  a1,(ram_FF1404).l
+                move.l  a0,(ram_FF1400).l
                 movem.l (sp)+,d0-d7/a0-a6
                 rts
 ; End of function sub_A2DA

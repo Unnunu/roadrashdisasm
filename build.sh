@@ -1,20 +1,28 @@
-#!/usr/bin/bash
+#!/usr/bin/env bash
+set -e
 
-# build
-if tools/asm68k -i main.asm -o roadrash.md -l roadrash.lst ; then
-    echo "Build OK"
-else
-    echo "Build FAILED"
-    exit
+AS=tools/asl
+P2BIN=tools/p2bin
+
+if [ ! -f baserom.md ]; then
+    echo "baserom.md not found. Copy the reference ROM to baserom.md first, e.g.:"
+    echo "    cp roadrash.md baserom.md"
+    exit 1
 fi
 
-# check for match
-cmp_result=$(cmp roadrash.md baserom.md 2>&1)
-if [[ "$cmp_result" == *"EOF"* ]]; then
-    matched_size=$(wc -c roadrash.md | awk '{print $1;}')
-    total_size=$(wc -c baserom.md | awk '{print $1;}')
-    echo "Matched OK: $matched_size bytes of $total_size bytes"
+# assemble
+if ! "$AS" -cpu 68000 -L -olist roadrash.lst -o roadrash.p main.asm; then
+    echo "Build FAILED"
+    exit 1
+fi
+
+# convert to binary
+"$P2BIN" roadrash.p roadrash.md
+
+# check for exact match
+if cmp -s roadrash.md baserom.md; then
+    echo "Matched OK: $(wc -c < roadrash.md) bytes"
 else
     echo "No matching"
-    exit
+    exit 1
 fi

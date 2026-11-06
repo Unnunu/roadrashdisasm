@@ -8,10 +8,10 @@ Message_ShowEmpty:
                 move.w  (dStringCodeTable + 2 * ' ').w,d1
                 swap    d1
                 move.w  (dStringCodeTable + 2 * ' ').w,d1
-                lea     Intro_ram_ImageBuffer,a0
-@loopFill:
+                lea     (Intro_ram_ImageBuffer).l,a0
+.loopFill:
                 move.l  d1,(a0)+
-                dbf     d0,@loopFill
+                dbf     d0,.loopFill
 
                 move.w  #40,d0 ; width
                 move.w  #6,d1 ; height
@@ -19,8 +19,8 @@ Message_ShowEmpty:
                 move.w  #22,d3 ; y
                 move.w  #0,d4 ; base tile
                 move.w  #64,d6 ; plane width
-                lea     Intro_ram_ImageBuffer,a0
-                lea     Menu_ram_FrameBuffer,a1
+                lea     (Intro_ram_ImageBuffer).l,a0
+                lea     (Menu_ram_FrameBuffer).l,a1
                 bsr.w   WriteNametableToBuffer
 sub_4268:
                 rts
@@ -34,10 +34,10 @@ Message_Clear:
 ; clear message field
                 move.w  #119,d0
                 move.l  #$7FF07FF,d1
-                lea     Intro_ram_ImageBuffer,a0
-@loopClear:
+                lea     (Intro_ram_ImageBuffer).l,a0
+.loopClear:
                 move.l  d1,(a0)+
-                dbf     d0,@loopClear
+                dbf     d0,.loopClear
 ; write it to framebuffer
                 move.w  #40,d0 ; width
                 move.w  #6,d1 ; height
@@ -45,8 +45,8 @@ Message_Clear:
                 move.w  #22,d3 ; y
                 move.w  #0,d4 ; base tile
                 move.w  #64,d6 ; plane width
-                lea     Intro_ram_ImageBuffer,a0 ; source
-                lea     Menu_ram_FrameBuffer,a1 ; destination
+                lea     (Intro_ram_ImageBuffer).l,a0 ; source
+                lea     (Menu_ram_FrameBuffer).l,a1 ; destination
                 bsr.w   WriteNametableToBuffer
                 rts
 ; End of function Message_Clear
@@ -57,11 +57,11 @@ Message_Clear:
 
 Message_BlinkButtonA:
                 bsr.s   Message_Clear
-                move.w  Message_ram_ButtonBlinkCounter,d0
-                move.w  Message_ram_ButtonBlinkPeriod,d1
+                move.w  (Message_ram_ButtonBlinkCounter).l,d0
+                move.w  (Message_ram_ButtonBlinkPeriod).l,d1
                 addq.w  #1,d0
                 and.w   d1,d0
-                move.w  d0,Message_ram_ButtonBlinkCounter
+                move.w  d0,(Message_ram_ButtonBlinkCounter).l
                 lsr.w   #1,d1
                 eori.w  #$FFFF,d1
                 and.w   d1,d0
@@ -69,15 +69,15 @@ Message_BlinkButtonA:
                 rts
 Message_DrawButtonA:
 ; draw blue "A" button
-                move.w  #4,Intro_ram_ImageBuffer ; tile #4
+                move.w  #4,(Intro_ram_ImageBuffer).l ; tile #4
                 move.w  #1,d0 ; width
                 move.w  #1,d1 ; height
                 move.w  #10,d2 ; x
                 move.w  #25,d3 ; y
                 move.w  #$2500,d4 ; base tile index = $500, address = $A000, palette line = 1
                 move.w  #64,d6 ; plane width
-                lea     Intro_ram_ImageBuffer,a0 ; source
-                lea     Menu_ram_FrameBuffer,a1 ; destination
+                lea     (Intro_ram_ImageBuffer).l,a0 ; source
+                lea     (Menu_ram_FrameBuffer).l,a1 ; destination
                 bsr.w   WriteNametableToBuffer
                 rts
 ; End of function Message_BlinkButtonA
@@ -88,18 +88,18 @@ Message_DrawButtonA:
 
 Message_BlinkButtonB:
                 bsr.w   Message_Clear
-                move.w  Message_ram_ButtonBlinkCounter,d0
-                move.w  Message_ram_ButtonBlinkPeriod,d1
+                move.w  (Message_ram_ButtonBlinkCounter).l,d0
+                move.w  (Message_ram_ButtonBlinkPeriod).l,d1
                 addq.w  #1,d0
                 and.w   d1,d0
-                move.w  d0,Message_ram_ButtonBlinkCounter
+                move.w  d0,(Message_ram_ButtonBlinkCounter).l
                 lsr.w   #1,d1
                 eori.w  #$FFFF,d1
                 and.w   d1,d0
                 beq.w   Message_DrawButtonB
                 rts
 Message_DrawButtonB:
-                lea     Intro_ram_ImageBuffer,a0
+                lea     (Intro_ram_ImageBuffer).l,a0
                 move.w  #5,(a0)+ ; tile #5
                 move.w  #6,(a0)+ ; and tile #6
                 move.w  #1,d0 ; width
@@ -108,8 +108,8 @@ Message_DrawButtonB:
                 move.w  #24,d3 ; y
                 move.w  #$2500,d4 ; base tile index = $500, address = $A000, palette line = 1
                 move.w  #64,d6 ; plane width
-                lea     Intro_ram_ImageBuffer,a0
-                lea     Menu_ram_FrameBuffer,a1
+                lea     (Intro_ram_ImageBuffer).l,a0
+                lea     (Menu_ram_FrameBuffer).l,a1
                 bsr.w   WriteNametableToBuffer
                 rts
 ; End of function Message_BlinkButtonB
@@ -120,17 +120,17 @@ Message_DrawButtonB:
 
 Message_BlinkButtonsAB:
                 bsr.w   Message_Clear
-                move.w  Message_ram_ButtonBlinkCounter,d0
-                move.w  Message_ram_ButtonBlinkPeriod,d1
+                move.w  (Message_ram_ButtonBlinkCounter).l,d0
+                move.w  (Message_ram_ButtonBlinkPeriod).l,d1
                 addq.w  #1,d0
                 and.w   d1,d0
-                move.w  d0,Message_ram_ButtonBlinkCounter
+                move.w  d0,(Message_ram_ButtonBlinkCounter).l
                 lsr.w   #1,d1
                 eori.w  #$FFFF,d1
                 and.w   d1,d0
-                beq.w   @draw
+                beq.w   .draw
                 rts
-@draw:
+.draw:
                 bsr.w   Message_DrawButtonA
                 bsr.s   Message_DrawButtonB
                 rts
@@ -142,19 +142,19 @@ Message_BlinkButtonsAB:
 
 Message_BlinkButtonC:
                 bsr.w   Message_Clear
-                move.w  Message_ram_ButtonBlinkCounter,d0
-                move.w  Message_ram_ButtonBlinkPeriod,d1
+                move.w  (Message_ram_ButtonBlinkCounter).l,d0
+                move.w  (Message_ram_ButtonBlinkPeriod).l,d1
                 addq.w  #1,d0
                 and.w   d1,d0
-                move.w  d0,Message_ram_ButtonBlinkCounter
+                move.w  d0,(Message_ram_ButtonBlinkCounter).l
                 lsr.w   #1,d1
                 eori.w  #$FFFF,d1
                 and.w   d1,d0
-                beq.w   @draw
+                beq.w   .draw
                 rts
-@draw:
+.draw:
                 bsr.w   Message_Clear
-                lea     Intro_ram_ImageBuffer,a0
+                lea     (Intro_ram_ImageBuffer).l,a0
                 move.w  #7,(a0)+
                 move.w  #8,(a0)+
                 move.w  #1,d0
@@ -163,8 +163,8 @@ Message_BlinkButtonC:
                 move.w  #$18,d3
                 move.w  #$2500,d4
                 move.w  #$40,d6
-                lea     Intro_ram_ImageBuffer,a0
-                lea     Menu_ram_FrameBuffer,a1
+                lea     (Intro_ram_ImageBuffer).l,a0
+                lea     (Menu_ram_FrameBuffer).l,a1
                 bsr.w   WriteNametableToBuffer
                 rts
 ; End of function Message_BlinkButtonC
@@ -175,19 +175,19 @@ Message_BlinkButtonC:
 
 Message_BlinkButtonStart:
                 bsr.w   Message_Clear
-                move.w  Message_ram_ButtonBlinkCounter,d0
-                move.w  Message_ram_ButtonBlinkPeriod,d1
+                move.w  (Message_ram_ButtonBlinkCounter).l,d0
+                move.w  (Message_ram_ButtonBlinkPeriod).l,d1
                 addq.w  #1,d0
                 and.w   d1,d0
-                move.w  d0,Message_ram_ButtonBlinkCounter
+                move.w  d0,(Message_ram_ButtonBlinkCounter).l
                 lsr.w   #1,d1
                 eori.w  #$FFFF,d1
                 and.w   d1,d0
-                beq.w   @draw
+                beq.w   .draw
                 rts
-@draw:
+.draw:
                 bsr.w   Message_Clear
-                lea     Intro_ram_ImageBuffer,a0
+                lea     (Intro_ram_ImageBuffer).l,a0
                 move.w  #9,(a0)+
                 move.w  #$A,(a0)+
                 move.w  #$B,(a0)+
@@ -197,8 +197,8 @@ Message_BlinkButtonStart:
                 move.w  #23,d3
                 move.w  #$2500,d4
                 move.w  #64,d6
-                lea     Intro_ram_ImageBuffer,a0
-                lea     Menu_ram_FrameBuffer,a1
+                lea     (Intro_ram_ImageBuffer).l,a0
+                lea     (Menu_ram_FrameBuffer).l,a1
                 bsr.w   WriteNametableToBuffer
                 rts
 ; End of function Message_BlinkButtonStart
@@ -207,18 +207,18 @@ Message_BlinkButtonStart:
 
 sub_445E:
                 bsr.w   Message_Clear
-                move.w  Message_ram_ButtonBlinkCounter,d0
-                move.w  Message_ram_ButtonBlinkPeriod,d1
+                move.w  (Message_ram_ButtonBlinkCounter).l,d0
+                move.w  (Message_ram_ButtonBlinkPeriod).l,d1
                 addq.w  #1,d0
                 and.w   d1,d0
-                move.w  d0,Message_ram_ButtonBlinkCounter
+                move.w  d0,(Message_ram_ButtonBlinkCounter).l
                 lsr.w   #1,d1
                 eori.w  #$FFFF,d1
                 and.w   d1,d0
                 beq.w   loc_4486
                 rts
 loc_4486:
-                lea     Intro_ram_ImageBuffer,a0
+                lea     (Intro_ram_ImageBuffer).l,a0
                 move.w  #0,(a0)+
                 move.w  #$2FF,(a0)+
                 move.w  #$2FF,(a0)+
@@ -233,8 +233,8 @@ loc_4486:
                 move.w  #$18,d3
                 move.w  #$2500,d4
                 move.w  #$40,d6 ; '@'
-                lea     Intro_ram_ImageBuffer,a0
-                lea     Menu_ram_FrameBuffer,a1
+                lea     (Intro_ram_ImageBuffer).l,a0
+                lea     (Menu_ram_FrameBuffer).l,a1
                 bsr.w   WriteNametableToBuffer
                 rts
 ; End of function sub_445E
@@ -245,18 +245,18 @@ loc_4486:
 
 sub_44D6:
                 bsr.w   Message_Clear
-                move.w  Message_ram_ButtonBlinkCounter,d0
-                move.w  Message_ram_ButtonBlinkPeriod,d1
+                move.w  (Message_ram_ButtonBlinkCounter).l,d0
+                move.w  (Message_ram_ButtonBlinkPeriod).l,d1
                 addq.w  #1,d0
                 and.w   d1,d0
-                move.w  d0,Message_ram_ButtonBlinkCounter
+                move.w  d0,(Message_ram_ButtonBlinkCounter).l
                 lsr.w   #1,d1
                 eori.w  #$FFFF,d1
                 and.w   d1,d0
                 beq.w   loc_44FE
                 rts
 loc_44FE:
-                lea     Intro_ram_ImageBuffer,a0
+                lea     (Intro_ram_ImageBuffer).l,a0
                 move.w  #$C,(a0)+
                 move.w  #$D,(a0)+
                 move.w  #$2FF,(a0)+
@@ -271,8 +271,8 @@ loc_44FE:
                 move.w  #$17,d3
                 move.w  #$2500,d4
                 move.w  #$40,d6 ; '@'
-                lea     Intro_ram_ImageBuffer,a0
-                lea     Menu_ram_FrameBuffer,a1
+                lea     (Intro_ram_ImageBuffer).l,a0
+                lea     (Menu_ram_FrameBuffer).l,a1
                 bsr.w   WriteNametableToBuffer
                 rts
 ; End of function sub_44D6
@@ -283,17 +283,17 @@ loc_44FE:
 
 Message_BlinkDirectionalPad:
                 bsr.w   Message_Clear
-                move.w  Message_ram_ButtonBlinkCounter,d0
-                move.w  Message_ram_ButtonBlinkPeriod,d1
+                move.w  (Message_ram_ButtonBlinkCounter).l,d0
+                move.w  (Message_ram_ButtonBlinkPeriod).l,d1
                 addq.w  #1,d0
                 and.w   d1,d0
-                move.w  d0,Message_ram_ButtonBlinkCounter
+                move.w  d0,(Message_ram_ButtonBlinkCounter).l
                 lsr.w   #1,d1
                 eori.w  #$FFFF,d1
                 and.w   d1,d0
-                beq.w   @draw
+                beq.w   .draw
                 rts
-@draw:
+.draw:
                 bsr.w   loc_4486
                 bsr.s   loc_44FE
                 rts

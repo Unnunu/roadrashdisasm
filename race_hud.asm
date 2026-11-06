@@ -19,21 +19,21 @@ RaceHud_Draw:
 
 
 RaceHud_DrawSpeedArrow:
-                move.w  ram_FF1EAA + STRUCT_OFFSET_SPEED,d0
+                move.w  (ram_FF1EAA + STRUCT_OFFSET_SPEED).l,d0
                 cmp.w   #14500,d0
-                bcs.w   @loc_D2B4
+                bcs.w   .loc_D2B4
                 move.w  #31,d0
-                bra.w   @loc_D2BA
-@loc_D2B4:
+                bra.w   .loc_D2BA
+.loc_D2B4:
                 ext.l   d0
                 divu.w  #453,d0
-@loc_D2BA:
-                movea.l Race_ram_CurrentSpriteAttributeTable,a0; sprite attribute table
-                movea.l Race_ram_CurrentSpriteTileArray,a1 ; sprite tile array
-                lea     unk_7DEAA,a4 ; animation script
+.loc_D2BA:
+                movea.l (Race_ram_CurrentSpriteAttributeTable).l,a0; sprite attribute table
+                movea.l (Race_ram_CurrentSpriteTileArray).l,a1 ; sprite tile array
+                lea     (unk_7DEAA).l,a4 ; animation script
                 move.w  #$88,d1 ; X = 8 + $80
                 move.w  #$80,d2 ; Y = 0 + $80
-                jsr     UpdateAnimation
+                jsr     (UpdateAnimation).l
                 rts
 ; End of function RaceHud_DrawSpeedArrow
 
@@ -42,29 +42,29 @@ RaceHud_DrawSpeedArrow:
 
 
 RaceHud_DrawRPMArrow:
-                lea     ram_FF1A70,a0
-                move.w  ram_FF1EAA + STRUCT_OFFSET_GEAR,d1
+                lea     (ram_FF1A70).l,a0
+                move.w  (ram_FF1EAA + STRUCT_OFFSET_GEAR).l,d1
                 asl.w   #1,d1
                 move.w  $E(a0,d1.w),d1
                 ext.l   d1
                 swap    d1
                 lsr.l   #8,d1
                 lsr.l   #6,d1
-                move.w  d1,ram_FF1AA2
-                move.w  ram_FF1EAA + STRUCT_OFFSET_SPEED,d0
+                move.w  d1,(ram_FF1AA2).l
+                move.w  (ram_FF1EAA + STRUCT_OFFSET_SPEED).l,d0
                 ext.l   d0
                 swap    d0
                 divu.w  d1,d0
-                beq.w   @loc_D312
+                beq.w   .loc_D312
                 ext.l   d0
                 divu.w  #682,d0
-@loc_D312:
+.loc_D312:
                 move.w  #$C4,d1 ; X = 68 + $80
                 move.w  #$6C,d2 ; Y = -14 + $80
-                movea.l Race_ram_CurrentSpriteAttributeTable,a0
-                movea.l Race_ram_CurrentSpriteTileArray,a1
-                lea     unk_7DEAA,a4
-                jsr     UpdateAnimation
+                movea.l (Race_ram_CurrentSpriteAttributeTable).l,a0
+                movea.l (Race_ram_CurrentSpriteTileArray).l,a1
+                lea     (unk_7DEAA).l,a4
+                jsr     (UpdateAnimation).l
                 rts
 ; End of function RaceHud_DrawRPMArrow
 
@@ -73,9 +73,9 @@ RaceHud_DrawRPMArrow:
 
 
 RaceHud_DrawOdometer:
-                movea.l Race_ram_CurrentHudBuffer,a1
+                movea.l (Race_ram_CurrentHudBuffer).l,a1
                 adda.w  #$E00,a1
-                move.l  ram_FF1EAA + STRUCT_OFFSET_POSX_HIGH,d1
+                move.l  (ram_FF1EAA + STRUCT_OFFSET_POSX_HIGH).l,d1
                 move.l  d1,d0
                 clr.w   d0
                 swap    d0
@@ -89,7 +89,7 @@ RaceHud_DrawOdometer:
                 addi.w  #$50,d0 ; 'P'
                 asl.w   #2,d0
                 move.w  d0,d2
-                lea     ram_FF352C,a0
+                lea     (ram_FF352C).l,a0
                 adda.w  d0,a0
                 move.l  (a0)+,(a1)+
                 move.l  (a0)+,(a1)+
@@ -110,11 +110,11 @@ RaceHud_DrawOdometer:
                 addi.w  #$50,d0 ; 'P'
                 asl.w   #2,d0
                 subi.w  #$20,d2 ; ' '
-                bpl.w   @loc_D39E
+                bpl.w   .loc_D39E
                 add.w   d2,d0
-@loc_D39E:
+.loc_D39E:
                 move.w  d0,d2
-                lea     ram_FF352C,a0
+                lea     (ram_FF352C).l,a0
                 adda.w  d0,a0
                 move.l  (a0)+,(a1)+
                 move.l  (a0)+,(a1)+
@@ -135,11 +135,11 @@ RaceHud_DrawOdometer:
                 addi.w  #$50,d0 ; 'P'
                 asl.w   #2,d0
                 subi.w  #$20,d2 ; ' '
-                bpl.w   @loc_D3DA
+                bpl.w   .loc_D3DA
                 add.w   d2,d0
-@loc_D3DA:
+.loc_D3DA:
                 move.w  d0,d2
-                lea     ram_FF352C,a0
+                lea     (ram_FF352C).l,a0
                 adda.w  d0,a0
                 move.l  (a0)+,(a1)+
                 move.l  (a0)+,(a1)+
@@ -157,10 +157,10 @@ RaceHud_DrawOdometer:
 
 
 RaceHud_DrawPlace:
-                move.w  ram_FF1B40,d0
+                move.w  (ram_FF1B40).l,d0
                 move.w  #$181B,d1 ; x = 27, y = 24
                 move.w  #3,d2
-                movea.l Race_ram_CurrentHudBuffer,a0
+                movea.l (Race_ram_CurrentHudBuffer).l,a0
                 bsr.w   RaceHud_DrawNumber2Digits
                 rts
 ; End of function RaceHud_DrawPlace
@@ -171,22 +171,22 @@ RaceHud_DrawPlace:
 
 RaceHud_DrawTime:
 ; draw minutes
-                move.b  Race_ram_TimeMinutes,d0
+                move.b  (Race_ram_TimeMinutes).l,d0
                 move.w  #$1A18,d1 ; x = 24, y = 26
                 move.w  #3,d2
-                movea.l Race_ram_CurrentHudBuffer,a0
+                movea.l (Race_ram_CurrentHudBuffer).l,a0
                 bsr.w   RaceHud_DrawNumber2Digits
 ; draw ':'
                 move.w  #$1FE,d0 ; base tile index, address = $3E80 + $A * $20
                 move.w  #$1A1A,d1 ; x = 26, y = 26
                 move.w  #3,d2 ; palette line
-                movea.l Race_ram_CurrentHudBuffer,a0
+                movea.l (Race_ram_CurrentHudBuffer).l,a0
                 bsr.w   RaceHud_DrawSymbol
 ; draw seconds
-                move.b  Race_ram_TimeSeconds,d0
+                move.b  (Race_ram_TimeSeconds).l,d0
                 move.w  #$1A1B,d1 ; x = 27, y = 26
                 move.w  #3,d2
-                movea.l Race_ram_CurrentHudBuffer,a0
+                movea.l (Race_ram_CurrentHudBuffer).l,a0
                 bsr.w   RaceHud_DrawNumber2Digits
                 rts
 ; End of function RaceHud_DrawTime
@@ -196,7 +196,7 @@ RaceHud_DrawTime:
 
 
 RaceHud_DrawStamina:
-                movea.l Race_ram_CurrentHudBuffer,a0
+                movea.l (Race_ram_CurrentHudBuffer).l,a0
                 adda.w  #$9B8,a0 ; x = 28, y = 19
                 move.l  #$84308430,d0
                 move.l  d0,(a0)
@@ -204,34 +204,34 @@ RaceHud_DrawStamina:
                 move.l  d0,8(a0)
                 move.l  d0,$C(a0)
                 move.l  d0,$10(a0)
-                movea.l ram_FF1908,a1
+                movea.l (ram_FF1908).l,a1
                 cmpa.l  #$FFFFFFFF,a1
-                beq.w   @loc_D4CC
+                beq.w   .loc_D4CC
                 move.w  $5C(a1),d1
                 lsr.w   #5,d1
                 cmp.w   #$51,d1 ; 'Q'
-                bcs.w   @loc_D49C
+                bcs.w   .loc_D49C
                 move.w  #$50,d1 ; 'P'
-@loc_D49C:
+.loc_D49C:
                 move.w  #$E5FF,d0
                 cmp.w   #$1E,d1
-                bpl.w   @loc_D4B8
+                bpl.w   .loc_D4B8
                 move.w  #$A427,d0
                 cmp.w   #$F,d1
-                bpl.w   @loc_D4B8
+                bpl.w   .loc_D4B8
                 move.w  #$842F,d0
-@loc_D4B8:
+.loc_D4B8:
                 subq.w  #8,d1
-                bmi.w   @loc_D4C2
+                bmi.w   .loc_D4C2
                 move.w  d0,(a0)+
-                bra.s   @loc_D4B8
-@loc_D4C2:
+                bra.s   .loc_D4B8
+.loc_D4C2:
                 add.w   d1,d0
                 addq.w  #8,d1
-                beq.w   @loc_D4CC
+                beq.w   .loc_D4CC
                 move.w  d0,(a0)+
-@loc_D4CC:
-                movea.l Race_ram_CurrentHudBuffer,a0
+.loc_D4CC:
+                movea.l (Race_ram_CurrentHudBuffer).l,a0
                 adda.w  #$984,a0 ; x = 2, y = 19
                 move.l  #$84308430,d0
                 move.l  d0,(a0)
@@ -239,30 +239,30 @@ RaceHud_DrawStamina:
                 move.l  d0,8(a0)
                 move.l  d0,$C(a0)
                 move.l  d0,$10(a0)
-                move.w  ram_FF1EAA + STRUCT_OFFSET_5C,d1
+                move.w  (ram_FF1EAA + STRUCT_OFFSET_5C).l,d1
                 lsr.w   #5,d1
                 cmp.w   #$51,d1 ; 'Q'
-                bcs.w   @loc_D502
+                bcs.w   .loc_D502
                 move.w  #$50,d1 ; 'P'
-@loc_D502:
+.loc_D502:
                 move.w  #$E5FF,d0
                 cmp.w   #$1E,d1
-                bpl.w   @loc_D51E
+                bpl.w   .loc_D51E
                 move.w  #$A427,d0
                 cmp.w   #$F,d1
-                bpl.w   @loc_D51E
+                bpl.w   .loc_D51E
                 move.w  #$842F,d0
-@loc_D51E:
+.loc_D51E:
                 subq.w  #8,d1
-                bmi.w   @loc_D528
+                bmi.w   .loc_D528
                 move.w  d0,(a0)+
-                bra.s   @loc_D51E
-@loc_D528:
+                bra.s   .loc_D51E
+.loc_D528:
                 add.w   d1,d0
                 addq.w  #8,d1
-                beq.w   @locret_D532
+                beq.w   .locret_D532
                 move.w  d0,(a0)+
-@locret_D532:
+.locret_D532:
                 rts
 ; End of function RaceHud_DrawStamina
 
@@ -271,34 +271,34 @@ RaceHud_DrawStamina:
 
 
 Race_DrawBikeHPBar:
-                movea.l Race_ram_CurrentHudBuffer,a0
+                movea.l (Race_ram_CurrentHudBuffer).l,a0
                 adda.w  #$99C,a0 ; x = 14, y = 19
                 move.l  #$84308430,d0
                 move.l  d0,(a0)
                 move.l  d0,4(a0)
                 move.w  #$20,d1
-                sub.w   Race_ram_BikeDamage,d1
-                bpl.w   @loc_D55C
+                sub.w   (Race_ram_BikeDamage).l,d1
+                bpl.w   .loc_D55C
                 move.w  #0,d1
-@loc_D55C:
+.loc_D55C:
                 move.w  #$E5FF,d0
                 cmp.w   #$10,d1
-                bpl.w   @loc_D578
+                bpl.w   .loc_D578
                 move.w  #$A427,d0
                 cmp.w   #8,d1
-                bpl.w   @loc_D578
+                bpl.w   .loc_D578
                 move.w  #$842F,d0
-@loc_D578:
+.loc_D578:
                 subq.w  #8,d1
-                bmi.w   @loc_D582
+                bmi.w   .loc_D582
                 move.w  d0,(a0)+
-                bra.s   @loc_D578
-@loc_D582:
+                bra.s   .loc_D578
+.loc_D582:
                 add.w   d1,d0
                 addq.w  #8,d1
-                beq.w   @return
+                beq.w   .return
                 move.w  d0,(a0)+
-@return:
+.return:
                 rts
 ; End of function Race_DrawBikeHPBar
 
@@ -325,64 +325,64 @@ unk_D58E:
 
 
 Race_DrawPlayerNameOrPlace:
-                cmpi.w  #$30,ram_FF14B8
-                ble.w   @loc_D5E2
-                move.w  #$30,ram_FF14B8
-@loc_D5E2:
-                move.w  ram_FF1B40,d0
-                cmp.w   ram_FF14BA,d0
-                beq.w   @loc_D628
-                move.w  d0,ram_FF14BA
-                tst.w   ram_FF14B8
-                bpl.w   @loc_D614
+                cmpi.w  #$30,(ram_FF14B8).l
+                ble.w   .loc_D5E2
+                move.w  #$30,(ram_FF14B8).l
+.loc_D5E2:
+                move.w  (ram_FF1B40).l,d0
+                cmp.w   (ram_FF14BA).l,d0
+                beq.w   .loc_D628
+                move.w  d0,(ram_FF14BA).l
+                tst.w   (ram_FF14B8).l
+                bpl.w   .loc_D614
                 btst    #4,d0
-                beq.w   @loc_D60C
+                beq.w   .loc_D60C
                 subq.w  #6,d0
-@loc_D60C:
+.loc_D60C:
                 subq.w  #1,d0
-                move.w  d0,ram_FF14BC
+                move.w  d0,(ram_FF14BC).l
 
-@loc_D614:                               ; CODE XREF: Race_DrawPlayerNameOrPlace+30↑j
-                cmpi.w  #$18,ram_FF14B8
-                bpl.w   @loc_D628
-                addi.w  #$18,ram_FF14B8
+.loc_D614:                               ; CODE XREF: Race_DrawPlayerNameOrPlace+30↑j
+                cmpi.w  #$18,(ram_FF14B8).l
+                bpl.w   .loc_D628
+                addi.w  #$18,(ram_FF14B8).l
 
-@loc_D628:                               ; CODE XREF: Race_DrawPlayerNameOrPlace+20↑j
-                                        ; Race_DrawPlayerNameOrPlace+4E↑j
-                lea     ram_FF14BE,a0
+.loc_D628:                               ; CODE XREF: Race_DrawPlayerNameOrPlace+20↑j
+; Race_DrawPlayerNameOrPlace+4E↑j
+                lea     (ram_FF14BE).l,a0
                 move.w  #$A,6(a0)
                 move.w  #1,4(a0)
                 move.w  #2,2(a0)
                 move.w  #$14,(a0)
-                tst.w   ram_FF14B8
-                bpl.w   @loc_D684
+                tst.w   (ram_FF14B8).l
+                bpl.w   .loc_D684
 
-@loc_D64E:                               ; CODE XREF: Race_DrawPlayerNameOrPlace+C0↓j
-                tst.w   ram_FF14B8
-                bmi.w   @loc_D65E
-                subq.w  #1,ram_FF14B8
+.loc_D64E:                               ; CODE XREF: Race_DrawPlayerNameOrPlace+C0↓j
+                tst.w   (ram_FF14B8).l
+                bmi.w   .loc_D65E
+                subq.w  #1,(ram_FF14B8).l
 
-@loc_D65E:                               ; CODE XREF: Race_DrawPlayerNameOrPlace+86↑j
-                lea     MenuPassword_ram_StrPlayerAName + 8,a1
-                tst.w   Menu_ram_Player
-                beq.w   @loc_D674
-                lea     MenuPassword_ram_StrPlayerBName + 8,a1
+.loc_D65E:                               ; CODE XREF: Race_DrawPlayerNameOrPlace+86↑j
+                lea     (MenuPassword_ram_StrPlayerAName + 8).l,a1
+                tst.w   (Menu_ram_Player).l
+                beq.w   .loc_D674
+                lea     (MenuPassword_ram_StrPlayerBName + 8).l,a1
 
-@loc_D674:                               ; CODE XREF: Race_DrawPlayerNameOrPlace+9C↑j
+.loc_D674:                               ; CODE XREF: Race_DrawPlayerNameOrPlace+9C↑j
                 move.l  (a1)+,8(a0)
                 move.l  (a1)+,$C(a0)
                 move.w  (a1)+,$10(a0)
-                bra.w   @loc_D702
+                bra.w   .loc_D702
 
 
-@loc_D684:                               ; CODE XREF: Race_DrawPlayerNameOrPlace+7C↑j
-                move.w  ram_FF14BC,d0
+.loc_D684:                               ; CODE XREF: Race_DrawPlayerNameOrPlace+7C↑j
+                move.w  (ram_FF14BC).l,d0
                 cmp.w   #$10,d0
-                bcc.s   @loc_D64E
-                btst    #1,ram_FF14B9
-                beq.w   @loc_D6CE
-                subq.w  #1,ram_FF14B8
-                lea     unk_D58E,a1
+                bcc.s   .loc_D64E
+                btst    #1,(ram_FF14B9).l
+                beq.w   .loc_D6CE
+                subq.w  #1,(ram_FF14B8).l
+                lea     (unk_D58E).l,a1
                 asl.w   #2,d0
                 adda.w  d0,a1
                 move.b  (a1)+,8(a0)
@@ -391,31 +391,31 @@ Race_DrawPlayerNameOrPlace:
                 move.b  (a1)+,$B(a0)
                 move.l  #' PLA',$C(a0)
                 move.w  #'CE',$10(a0)
-                bra.w   @loc_D702
-@loc_D6CE:                               ; CODE XREF: Race_DrawPlayerNameOrPlace+CA↑j
+                bra.w   .loc_D702
+.loc_D6CE:                               ; CODE XREF: Race_DrawPlayerNameOrPlace+CA↑j
                 move.l  #'    ',8(a0)
                 move.l  #'    ',$C(a0)
                 move.w  #'  ',$10(a0)
-                subq.w  #1,ram_FF14B8
-                move.w  ram_FF14BA,d0
+                subq.w  #1,(ram_FF14B8).l
+                move.w  (ram_FF14BA).l,d0
                 btst    #4,d0
-                beq.w   @loc_D6FA
+                beq.w   .loc_D6FA
                 subq.w  #6,d0
-@loc_D6FA:
+.loc_D6FA:
                 subq.w  #1,d0
-                move.w  d0,ram_FF14BC
-@loc_D702:
-                movea.l Race_ram_CurrentSpriteTileArray,a1
+                move.w  d0,(ram_FF14BC).l
+.loc_D702:
+                movea.l (Race_ram_CurrentSpriteTileArray).l,a1
                 jsr     (EncodeString).w
-                lea     ram_FF14BE,a0
+                lea     (ram_FF14BE).l,a0
                 move.w  6(a0),d0
                 move.w  4(a0),d1
                 move.w  2(a0),d2
                 move.w  (a0),d3
                 move.w  #$85C0,d4
                 move.w  #$40,d6 ; '@'
-                movea.l Race_ram_CurrentSpriteTileArray,a0
-                movea.l Race_ram_CurrentHudBuffer,a1
+                movea.l (Race_ram_CurrentSpriteTileArray).l,a0
+                movea.l (Race_ram_CurrentHudBuffer).l,a1
                 jsr     (WriteNametableToBuffer).w
                 rts
 ; End of function Race_DrawPlayerNameOrPlace
@@ -425,32 +425,32 @@ Race_DrawPlayerNameOrPlace:
 
 
 Race_DrawOpponentName:
-                lea     Menu_ram_PlayerAOpponents,a0
-                tst.w   Menu_ram_Player
-                beq.w   @loc_D750
-                lea     Menu_ram_PlayerBOpponents,a0
-@loc_D750:
-                lea     unk_CCDA,a1
-                movea.l ram_FF1908,a2
+                lea     (Menu_ram_PlayerAOpponents).l,a0
+                tst.w   (Menu_ram_Player).l
+                beq.w   .loc_D750
+                lea     (Menu_ram_PlayerBOpponents).l,a0
+.loc_D750:
+                lea     (unk_CCDA).l,a1
+                movea.l (ram_FF1908).l,a2
                 cmpa.l  #-1,a2
-                beq.w   @noOpponentAround
+                beq.w   .noOpponentAround
                 cmpa.l  #ram_FF1F2A,a2
-                bne.w   @loc_D788
-                move.w  ram_FF1B38,d1
+                bne.w   .loc_D788
+                move.w  (ram_FF1B38).l,d1
                 subq.w  #1,d1
-                lea     unk_CCD0,a4
+                lea     (unk_CCD0).l,a4
                 asl.w   #1,d1
                 move.w  (a4,d1.w),d1
-                bra.w   @loc_D794
-@loc_D788:
+                bra.w   .loc_D794
+.loc_D788:
                 clr.w   d1
                 move.b  $71(a2),d1 ; get actor index
                 asl.w   #1,d1
                 move.w  (a0,d1.w),d1 ; get actor id
-@loc_D794:
+.loc_D794:
                 asl.w   #4,d1
                 lea     6(a1,d1.w),a1 ; get name
-                lea     ram_FF14BE,a0
+                lea     (ram_FF14BE).l,a0
                 move.w  #10,6(a0) ; width
                 move.w  #1,4(a0) ; height
                 move.w  #28,2(a0) ; x
@@ -458,9 +458,9 @@ Race_DrawOpponentName:
                 move.l  (a1)+,8(a0) ; copy name
                 move.l  (a1)+,$C(a0)
                 move.w  (a1)+,$10(a0)
-                bra.w   @draw
-@noOpponentAround:
-                lea     ram_FF14BE,a0
+                bra.w   .draw
+.noOpponentAround:
+                lea     (ram_FF14BE).l,a0
                 move.w  #10,6(a0) ; width
                 move.w  #1,4(a0) ; height
                 move.w  #28,2(a0) ; x
@@ -468,10 +468,10 @@ Race_DrawOpponentName:
                 move.l  #'    ',8(a0) ; draw empty string
                 move.l  #'    ',$C(a0)
                 move.w  #'  ',$10(a0)
-@draw:
-                movea.l Race_ram_CurrentSpriteTileArray,a1
+.draw:
+                movea.l (Race_ram_CurrentSpriteTileArray).l,a1
                 jsr     (EncodeString).w
-                lea     ram_FF14BE,a0
+                lea     (ram_FF14BE).l,a0
 ; draw opponent's name
                 move.w  6(a0),d0 ; width
                 move.w  4(a0),d1 ; height
@@ -479,8 +479,8 @@ Race_DrawOpponentName:
                 move.w  (a0),d3 ; y
                 move.w  #$85C0,d4 ; base tile index, address = $B800, high priority
                 move.w  #64,d6 ; plane width
-                movea.l Race_ram_CurrentSpriteTileArray,a0 ; source
-                movea.l Race_ram_CurrentHudBuffer,a1 ; destination
+                movea.l (Race_ram_CurrentSpriteTileArray).l,a0 ; source
+                movea.l (Race_ram_CurrentHudBuffer).l,a1 ; destination
                 jsr     (WriteNametableToBuffer).w
                 rts
 ; End of function Race_DrawOpponentName

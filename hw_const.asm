@@ -2,26 +2,26 @@ VdpCtrl     equ $C00004  ; VDP control port
 VdpData     equ $C00000  ; VDP data port
 HvCounter   equ $C00008  ; H/V counter
 
-VDP_VRAM_READ macro
-    move.l #$00000000+((\1 & $3FFF)<<16)+((\1 & $C000)>>14),\2
+VDP_VRAM_READ macro addr,dest
+    move.l #$00000000+((addr & $3FFF)<<16)+((addr & $C000)>>14),dest
     endm
 
-VDP_VRAM_WRITE macro
-    move.l #$40000000+((\1 & $3FFF)<<16)+((\1 & $C000)>>14),\2
+VDP_VRAM_WRITE macro addr,dest
+    move.l #$40000000+((addr & $3FFF)<<16)+((addr & $C000)>>14),dest
     endm
 
-VDP_CRAM_READ macro
-    move.l #$00000020+(\1<<16),\2
+VDP_CRAM_READ macro ram,dest
+    move.l #$00000020+(ram<<16),dest
     endm
 
-VDP_CRAM_WRITE macro
-    move.l #$C0000000+(\1<<16),\2
+VDP_CRAM_WRITE macro ram,dest
+    move.l #$C0000000+(ram<<16),dest
     endm
 
-VDP_VSRAM_READ macro
-    move.l #$00000010+(\1<<16),\2
+VDP_VSRAM_READ macro ram,dest
+    move.l #$00000010+(ram<<16),dest
     endm
 
-VDP_VSRAM_WRITE macro
-    move.l #$40000010+(\1<<16),\2
+VDP_VSRAM_WRITE macro ram,dest
+    move.l #$40000010+(ram<<16),dest
     endm
