@@ -221,8 +221,8 @@ Current static evidence:
   the main update pointer `ram_UpdateFunction` is `$FF1A62`.
 - `[static]` The addresses of `Fade_InitFadeOut` / `Fade_InitFadeIn` do **not** occur as
   4-byte values in `baserom.md`, and the sources contain no symbolic references.
-  **But** they are referenced in the not-yet-disassembled region at `0x07E6A2`
-  (outside the current `0x16E70` coverage) via `jsr` with a 16-bit absolute operand:
+  **But** they are referenced in the top-level flow at `0x07E6A2` (now
+  `top_level.asm`) via `jsr` with a 16-bit absolute operand:
   `4EB8 1180` (`Fade_InitFadeOut`) and `4EB8 11C0` (`Fade_InitFadeIn`).
   **`[refuted]` earlier "dead code" hypothesis** — the 4-byte pointer scan was not
   sufficient; 16-bit absolute operands must be searched too.
@@ -279,7 +279,8 @@ Conclusion: `[confirmed]` the static reading of `Fade_GameTick` — reload 3, st
 4th frame, install/clear `ram_UpdateFunction`.
 
 The same session disassembled the full top-level flow with `tools/disasm.py`
-(`0x7E6A2`–`0x7EA66`); see `docs/architecture.md` for the resulting screen-flow map.
+(`0x7E6A2`–`0x7EA66`); it is now committed as `top_level.asm` and verified by the
+build. See `docs/architecture.md` for the screen-flow map.
 
 Open questions: meaning of `$FF3692` and of the `$00FF0586` callback.
 
@@ -287,8 +288,9 @@ Open questions: meaning of `$FF3692` and of the `$00FF0586` callback.
 
 - Absence of a reference in the disassembly is evidence, not proof, of dead code
   (computed jumps/pointers may exist). Mark it `[hypothesis]` until tested.
-- The sources currently cover only the first `0x16E70` bytes. References may live in
-  the **not-yet-disassembled** part of the full ROM — always check `baserom.md` too.
+- The sources cover `0x000000`–`0x016E6F` and `0x07E6A2`–`0x07EA65`. The gap
+  `0x016E70`–`0x07E6A1` is bridged with raw ROM bytes, so references may live in
+  either the **not-yet-disassembled** interval or in `baserom.md` — always check it.
 - Reference operands may be 16-bit (`4EB8 xxxx` = `jsr abs.w`) or 32-bit. Scan both
   forms; a 4-byte search alone can miss real callers.
 - A coincidental value match in ROM is not a pointer until the surrounding instructions

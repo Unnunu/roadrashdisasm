@@ -21,7 +21,7 @@ Related:
 | Header title | Road Rash |
 | Region | US (`U  ` in header) |
 | Entry | `RESET` at `0x000200` |
-| Disassembly coverage | first 93808 bytes (`0x16E70`) |
+| Disassembly coverage | `0x000000`–`0x016E6F` and `0x07E6A2`–`0x07EA65` (gap `0x016E70`–`0x07E6A1` is raw ROM bridge) |
 
 `./build.sh` compares the built image against the same-length **prefix** of
 `baserom.md`; it grows as more of the ROM is disassembled.
@@ -59,14 +59,14 @@ Note: `main.asm` is not a single contiguous block. Its code is interleaved with
 4. Control passes to `doStart` (`0x2FA`), which drives the top-level flow
    (logo → intro → menus → race …). See below.
 
-### Top-level flow (full ROM, outside current 0x16E70 coverage)
+### Top-level flow (`top_level.asm`, `0x07E6A2`–`0x07EA65`)
 
 `main.asm` ends `doStart` with `jmp (loc_7E6A2).l`. At `0x07E6A2` starts the
 screen-flow state machine. It uses `ram_UpdateFunction` (`$FF1A62`) as the per-frame
-update pointer and `Fade_*` for transitions. `[static]` from `baserom.md`; regenerated
-with `tools/disasm.py`:
-`python3 tools/disasm.py 0x7E6A2 0x7EA66 --mode project --symbolize-immediates`
-(local output: `analysis/disasm/top_level.asm`).
+update pointer and `Fade_*` for transitions. The source is `top_level.asm`, generated from `baserom.md` with
+`python3 tools/disasm.py 0x7E6A2 0x7EA66 --mode project --symbolize-immediates --entry-name TopLevel_Init`.
+The not-yet-disassembled gap before it is bridged with raw ROM bytes in `main.asm`;
+shrink that bridge as the gap is disassembled.
 
 Entry / intro (`$7E6A2`):
 
@@ -113,9 +113,8 @@ Each screen runs the same fade-in (with `FadeWithFunction_GameTick`) / fade-out 
 `Menu_ram_PlayerMode == 3` toggles `Menu_ram_Player` with `eori.w #3`, then jumps back
 to the menu.
 
-Exact meanings of `ram_FF0918`, `$FF3692`, `$FF3696`, `$FF369A`: **TODO**. This region
-is not yet part of the disassembly sources; treat it as `[static]` evidence until
-ported and re-verified.
+Exact meanings of `ram_FF0918`, `$FF3692`, `$FF3696`, `$FF369A`: **TODO**. The region
+is assembled from `top_level.asm` and verified byte-for-byte by `./build.sh`.
 
 ### Interrupts
 
@@ -152,6 +151,7 @@ tentative until the module card is filled in.
 | `0x00D278` | `race_hud.asm` | Race HUD (included by `race.asm`) | TODO |
 | `0x00E732` | `road_marking.asm` | Road marking / sprite placement (included by `race.asm`) | TODO |
 | `0x016860` | `animation.asm` | Sprite animation (included by `race.asm`) | TODO |
+| `0x07E6A2` | `top_level.asm` | Top-level screen flow (intro/menu/race/results) | [top_level.md](modules/top_level.md) |
 
 Helpers without code in the image: `hw_const.asm` (constants/macros),
 `unknown.asm` (address equates), `ram_const.asm` (RAM equates).

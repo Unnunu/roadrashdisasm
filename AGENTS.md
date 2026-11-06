@@ -9,16 +9,18 @@ Matching disassembly of **Road Rash** (Sega Genesis, 1991, US region).
 - Goal: the assembly sources must assemble **byte-for-byte** into the original ROM.
 - Reference ROM: `baserom.md`, the **full ROM**, **786432 bytes** (`0xC0000`),
   md5 `543b64ccb26c18edc6c98c12b1302dc0`.
-- The disassembly currently covers only the **first 93808 bytes** (`0x16E70`) of the
-  ROM. The build emits that prefix, which must be byte-identical to the start of
-  `baserom.md`. As more of the ROM is disassembled, the built image grows.
+- Current coverage: `0x000000`–`0x016E6F` (fully disassembled) and
+  `0x07E6A2`–`0x07EA65` (top-level flow, `top_level.asm`). The gap
+  `0x016E70`–`0x07E6A1` is **not disassembled yet** and is bridged with raw bytes from
+  `baserom.md` in `main.asm`. As the gap is disassembled, shrink the bridge and grow
+  the real source coverage.
 - `baserom.md` is local-only (git-ignored). Ask the user for it if missing.
 - All documentation and source comments in this project are **English**.
 
 ## Golden rule
 
 `./build.sh` must print `Matched OK: ...` after every change (currently
-`Matched OK: 93808 bytes of 786432 bytes`). The built image must be byte-identical to
+`Matched OK: 518758 bytes of 786432 bytes`). The built image must be byte-identical to
 the matching prefix of `baserom.md`. A change that breaks byte-exactness is not done,
 even if it assembles without errors.
 
@@ -43,11 +45,13 @@ tools/p2bin build/roadrash.p build/roadrash.bin
 cmp -n <built-size> build/roadrash.bin baserom.md
 ```
 
-Because only a prefix of the ROM is reconstructed so far, the check compares the
-built image against the same-length prefix of `baserom.md`. On success the temporary
-`build/roadrash.bin` is removed; on mismatch it is kept and the first differing byte
-is reported. `baserom.md` is the only ROM file and is git-ignored; `build/` and
-`analysis/` are git-ignored working directories.
+The build now covers `0x000000`–`0x07EA65`. The top-level flow at `0x07E6A2` is
+real source (`top_level.asm`); the not-yet-disassembled gap before it is included from
+`baserom.md` with `binclude "baserom.md",$016E70,<length>` in `main.asm`. The check
+compares the built image against the same-length prefix of `baserom.md`. On success the
+temporary `build/roadrash.bin` is removed; on mismatch it is kept and the first
+differing byte is reported. `baserom.md` is the only ROM file and is git-ignored;
+`build/` and `analysis/` are git-ignored working directories.
 
 ## Repository layout
 
@@ -72,6 +76,7 @@ is reported. `baserom.md` is the only ROM file and is git-ignored; `build/` and
 | `8FB4.asm`, `98C2.asm`, `9FE4.asm` | Not yet identified routine blocks. |
 | `uncompress.asm` | Decompression routines. |
 | `race.asm` | Main gameplay (largest file); includes `race_hud.asm`, `road_marking.asm`, `animation.asm`. |
+| `top_level.asm` | Top-level screen flow at `0x07E6A2` (intro/menu/race/results); generated with `tools/disasm.py`. |
 | `race_hud.asm` | Race HUD. |
 | `road_marking.asm` | Road marking / sprite placement. |
 | `animation.asm` | Sprite animation. |
@@ -242,6 +247,6 @@ The build must report `0 errors`. The only accepted warning class is the one abo
 
 - [ ] Change is limited to the requested scope.
 - [ ] AS syntax rules above are respected.
-- [ ] `./build.sh` reports `0 errors` and `Matched OK: 93808 bytes`.
+- [ ] `./build.sh` reports `0 errors` and `Matched OK: 518758 bytes`.
 - [ ] Module documentation updated when a module was studied/ported.
 - [ ] No generated or ignored files staged.

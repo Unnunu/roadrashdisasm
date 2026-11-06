@@ -29,5 +29,6 @@ row to the table below.
 | `race_hud.asm` | `0x00D278` | Race HUD (included by `race.asm`) | TODO |
 | `road_marking.asm` | `0x00E732` | Road marking / sprite placement (included by `race.asm`) | TODO |
 | `animation.asm` | `0x016860` | Sprite animation (included by `race.asm`) | TODO |
+| `top_level.asm` | `0x07E6A2` | Top-level screen flow (intro/menu/race/results) | [top_level.md](top_level.md) |
 
 Helper files without code in the image: `hw_const.asm`, `unknown.asm`, `ram_const.asm`.
