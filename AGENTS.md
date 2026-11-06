@@ -158,9 +158,23 @@ Non-negotiables when porting a listing:
   user asks for it (e.g. "study this file and then rename").
 - When a rename is requested, do it as its own change and re-verify the build.
 
+## In-code documentation
+
+Read and follow `docs/coding-style.md` when editing sources. In short:
+
+- Identifiers carry the meaning; comments explain *why*, not the mnemonic.
+- Every function gets a `; *****` header with mandatory
+  Purpose / In / Out / Clobbers / Notes fields, closed by `; End of function <Name>`.
+- RAM equates normally live in `ram_const.asm`; module-local maps are allowed only for
+  documented overlay/scratch regions (see the `logoEA.asm` exception in the guide).
+- Remove IDA cross-reference comments (`CODE XREF`, `DATA XREF`, `↑`/`↓` continuations).
+- Apply the guide incrementally when touching a file; do not mass-reformat.
+- After any rename, re-run `./build.sh` and require `Matched OK`.
+
 ## Documentation
 
 - `docs/architecture.md` — ROM map, boot/interrupt flow, module index, RAM overview.
+- `docs/coding-style.md` — identifiers, comments, function headers, RAM/overlay policy.
 - `docs/modules/<file>.md` — one card per module, based on
   `docs/modules/_template.md`. Fields: role, control flow, RAM/ROM & structures,
   external calls/API, hacks/bugs, TODO.

@@ -5,7 +5,11 @@
 
 - **ROM range:** `0x??????`–`0x??????` (see `roadrash.lst`)
 - **Status:** unknown / partially analyzed / analyzed
-- **Related:** `docs/architecture.md`
+- **Related:** `docs/architecture.md`, `docs/coding-style.md`
+
+This card documents the module at the architecture level. Per-function contracts
+(Purpose / In / Out / Clobbers / Notes) live in the source itself — see
+`docs/coding-style.md`.
 
 ## Role / purpose
 
