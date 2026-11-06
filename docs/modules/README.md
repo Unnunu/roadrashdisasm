@@ -10,7 +10,7 @@ row to the table below.
 |------|---------|------------------|------|
 | `main.asm` | `0x000000` (entry `RESET` `0x000200`) | Vectors, header, boot, interrupts | TODO |
 | `logoEA.asm` | `0x000366` | EA logo, decompression, drawing | TODO |
-| `fade.asm` | `0x001180` | Palette fade in/out | TODO |
+| `fade.asm` | `0x001180` | Palette fade in/out | [fade.md](fade.md) |
 | `intro.asm` | `0x001704` | Intro sequence | TODO |
 | `menu_password.asm` | `0x002446` | Password menu | TODO |
 | `menu_main.asm` | `0x003400` | Main menu | TODO |

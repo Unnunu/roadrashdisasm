@@ -147,18 +147,27 @@ Current static evidence:
   `Fade_GameTickWithInit $1200`, `Fade_GameTick $1242`,
   `FadeWithFunction_GameTick $12F8`.
 - RAM: `Fade_ram_Timer $FF0300`, `Fade_ram_UpdateFunction $FF0302`,
-  `Fade_ram_CurrentPalette $FF0306`, `Fade_ram_TargetPalette $FF0386`.
-- `[static]` `Fade_InitFadeOut` and `Fade_InitFadeIn` have **no references** in the
-  sources, and their addresses appear **0 times** as 4-byte values in `baserom.md`.
-  Hypothesis: dead code (needs dynamic confirmation).
-- `[static]` `Fade_GameTickWithInit`, `Fade_GameTick`, and `FadeWithFunction_GameTick`
-  appear as 4-byte values around `$7E6xx`, likely an update-function pointer table
-  (verify by disassembling that region).
+  `Fade_ram_CurrentPalette $FF0306`, `Fade_ram_TargetPalette $FF0386`;
+  the main update pointer `ram_UpdateFunction` is `$FF1A62`.
+- `[static]` The addresses of `Fade_InitFadeOut` / `Fade_InitFadeIn` do **not** occur as
+  4-byte values in `baserom.md`, and the sources contain no symbolic references.
+  **But** they are referenced in the not-yet-disassembled region at `0x07E6A2`
+  (outside the current `0x16E70` coverage) via `jsr` with a 16-bit absolute operand:
+  `4EB8 1180` (`Fade_InitFadeOut`) and `4EB8 11C0` (`Fade_InitFadeIn`).
+  **`[refuted]` earlier "dead code" hypothesis** — the 4-byte pointer scan was not
+  sufficient; 16-bit absolute operands must be searched too.
+- `[static]` The boot/attract sequence at `0x07E6A2` installs the fade tick by writing
+  the literal `$00001242` (`Fade_GameTick`) to `ram_UpdateFunction` (`$FF1A62`) via
+  `23FC 0000 1242 00FF1A62`, then polls `$FF1A62` until it becomes zero. The 4-byte
+  matches around `$7E6xx` are **immediate loads**, not a data pointer table;
+  **`[refuted]` "pointer table" hypothesis**.
 
 Planned experiment (to be run by the user):
 
 ```
-b 1200      ; Fade_GameTickWithInit
+b 7E6A2     ; boot/attract sequence (full ROM, outside coverage)
+b 1180      ; Fade_InitFadeOut
+b 11C0      ; Fade_InitFadeIn
 b 1242      ; Fade_GameTick
 c
 ```
@@ -170,18 +179,25 @@ bt
 p pc
 p d0
 p a0
-p/(x) $FF0300   ; timer
-p/(x) $FF0302   ; update-function pointer
+p/(x) $FF1A62   ; ram_UpdateFunction (main update pointer)
+p/(x) $FF0300   ; Fade_ram_Timer
+p/(x) $FF0302   ; Fade_ram_UpdateFunction
 vr
 ```
 
-Goals: confirm the timer sequence 3→2→1→0 and its 4-frame cadence, confirm whether the
-init functions ever run, and save a savestate at the first fade for repeatable tests.
+Goals: confirm the init functions run during the boot/attract transition, confirm the
+timer sequence 3→2→1→0 and its 4-frame cadence, confirm `$FF1A62` is set to `$1242`
+and cleared when the fade completes, and save a savestate at the first fade for
+repeatable tests.
 
 ## 10. Caveats
 
 - Absence of a reference in the disassembly is evidence, not proof, of dead code
   (computed jumps/pointers may exist). Mark it `[hypothesis]` until tested.
-- A coincidental value match in ROM is not a pointer until the surrounding data is
-  verified.
+- The sources currently cover only the first `0x16E70` bytes. References may live in
+  the **not-yet-disassembled** part of the full ROM — always check `baserom.md` too.
+- Reference operands may be 16-bit (`4EB8 xxxx` = `jsr abs.w`) or 32-bit. Scan both
+  forms; a 4-byte search alone can miss real callers.
+- A coincidental value match in ROM is not a pointer until the surrounding instructions
+  or data are verified.
 - When BlastEm behavior and the static reading disagree, record both; do not paper over it.
