@@ -1,4 +1,13 @@
-; RAM memory map
+; *************************************************
+; logoEA RAM map (overlay / scratch)
+; The EA-logo phase runs before the menus and reuses memory that later becomes
+; Menu_ram_FrameBuffer / Menu_ram_FrameBuffer2 (e.g. LogoEA_ram_TilesSquare $FFC0E4
+; overlaps Menu_ram_FrameBuffer2 at $FFC4AC). The map is therefore kept local.
+;
+; Addresses are intentionally 32-bit ($FFFFxxxx): "movea.l #LogoEA_ram_Base,a0"
+; emits the literal 207C FFFF 0000, so they must NOT be normalized to $FFxxxx.
+; The cross-module LogoEA_ram_Finished lives in ram_const.asm.
+; *************************************************
 LogoEA_ram_Base                     equ     $FFFF0000
 LogoEA_ram_TextTimer                equ     $FFFFC000
 LogoEA_ram_FigureAnimationFrame      equ     $FFFFC002
