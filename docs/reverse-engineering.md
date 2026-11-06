@@ -34,11 +34,13 @@ Only `[confirmed]` facts may drive identifier renames or definitive code comment
 6. **Update code comments/names only for confirmed facts.**
 7. Keep `docs/modules/<file>.md` in sync.
 
-## 3. BlastEm console debugger
+## 3. BlastEm debuggers
 
-The ROM is the full `baserom.md`. The user runs it in BlastEm and reports back.
+The ROM is the full `baserom.md`. Two interfaces are available.
 
-Currently available console commands (from BlastEm's `?` help):
+### 3.1 Native console debugger
+
+The user can open it in BlastEm. Console commands (from `?` help):
 
 - `b ADDRESS` — execution breakpoint; `d BREAKPOINT` — delete.
 - `co BREAKPOINT` — run a list of debugger commands on every hit.
@@ -51,10 +53,11 @@ Currently available console commands (from BlastEm's `?` help):
 - `vs` — VDP sprite list; `vr` — VDP register info.
 - `yc`, `yt` — YM-2612 channel/timer info; `zb`, `zp` — Z80 breakpoints/print.
 
-**Important limitations of the console debugger:**
+**Limitations of the console debugger:**
 
 - There are **no RAM read/write watchpoints**, only execution breakpoints.
 - There is **no memory dump-to-file** command.
+- Saving a savestate requires the GUI, which is unavailable while stopped here.
 
 ### Address / print syntax gotchas (BlastEm 0.6.3.4)
 
@@ -73,12 +76,53 @@ These are verified from BlastEm's `debug.c` and cause confusing results if misse
   frame-counter branch and returns the same frame count for every `ff....` address.
   Always prefix memory addresses with `$` (or `0x`) in `p`.
 
+### 3.2 GDB remote (recommended for dumps and automated experiments)
+
+BlastEm can act as a GDB remote stub with `-D`. On Unix it speaks the protocol over
+stdin/stdout, so GDB can spawn it directly with `target remote | ...`. It also runs
+**headless** with `-b <huge frame count>` (no window needed). This is the preferred
+path when we need memory dumps or many automatic captures.
+
+Example GDB script (`gdb-multiarch`):
+
+```
+set pagination off
+set confirm off
+set architecture m68k
+set endian big
+target remote | /usr/games/blastem -b 100000000 -g /path/to/baserom.md -D
+
+break *0x1180
+commands
+silent
+printf "pc=%08x a0=%08x sp=%08x ret=%08x\n", $pc, $a0, $sp, {unsigned int}$sp
+continue
+end
+continue
+```
+
+Important details:
+
+- `set endian big` is **required**. Without it, memory/registers look byte-swapped
+  (e.g. PC `0x200` shows as `0x20000`).
+- On the 68K, `jsr` pushes the return address on the stack, so at a function entry
+  `{unsigned int}$sp` gives the caller's return address.
+- Dump the whole work RAM to a file:
+  `dump binary memory /path/file 0xff0000 0x1000000`.
+- Memory read/write and register access work. **Watchpoints are still not implemented**
+  by BlastEm's GDB stub (`gdb_remote.c`: "watchpoints are not currently supported"),
+  so keep using static cross-references + execution breakpoints.
+
+Prefer the native console for quick interactive checks and GDB remote when a script,
+many hits, or a RAM dump is needed.
+
 Consequences:
 
 - To find possible writers/readers of a RAM variable, enumerate references **statically**
   (grep the address/symbol in the sources and scan the ROM for pointer values), then use
-  execution breakpoints on those PCs and `bt` to see the call path.
-- To capture state at a hit, use `p` / `di` / `co` and have the user paste the output.
+  execution breakpoints on those PCs and the stack return address to see the caller.
+- Prefer GDB remote for automated captures and memory dumps; it can be run headless by
+  the agent. Use the native console for quick interactive checks by the user.
 - BlastEm also has GUI viewers (VRAM/CRAM/plane/sprite views); use them for visual checks.
 
 ## 4. Static cross-reference technique
@@ -202,42 +246,30 @@ Static call sites (full ROM, outside current coverage):
     settles, `FadeWithFunction_GameTick` copies `Fade_ram_UpdateFunction` to
     `ram_UpdateFunction` and calls it.
 
-Dynamic experiment 1 (performed in BlastEm):
+Dynamic experiments (performed):
 
-- Breakpoint at `$1180` (`Fade_InitFadeOut`) hit; `bt` reported the caller
-  `$7E8D6`: `jsr $1180.w`.
-- At the hit: `pc = $1180` (`p pc` printed decimal `4480`), `a0 = $00FF411C`,
-  `d0 = $00FF0002`.
-- `[static]` In this path the next update function is `Fade_GameTickWithInit` (`$1200`),
-  which does not read `Fade_ram_UpdateFunction`; the `a0` value (`$FF411C`) is therefore
-  not used as a callback here.
+**Experiment 1 (native console, user).** Breakpoint at `$1180`
+(`Fade_InitFadeOut`) hit from the caller `$7E8D6` (`jsr $1180.w`, race-exit path).
+At the hit: `pc = $1180`, `a0 = $00FF411C`, `d0 = $00FF0002`. That path installs
+`$1200` (`Fade_GameTickWithInit`), which never reads `Fade_ram_UpdateFunction`, so the
+`a0` value is unused there.
 
-Remaining experiment (corrected syntax):
+**Experiment 2 (GDB remote, headless).** Boot/attract path:
 
-```
-b 1180
-b 11C0
-b 1242
-c
-```
+- First `$1180` hit: `a0 = $FFFFC078`, `d0 = $0000FF00`, `sp = $00FFFFF2`,
+  return address `$0007E6C0` → caller `jsr $1180.w` at `$7E6BC`.
+- `$1242` (`Fade_GameTick`) hits: `$FF0300` (timer) = 3, 2, 1, 0, then 3, 2, 1, 0;
+  `$FF1A62` (`ram_UpdateFunction`) = `$00001242` throughout.
+- `$FF0302` (`Fade_ram_UpdateFunction`) = `$FFFFC078` for the first fade cycle, then
+  `$00FF0586` after `Fade_InitFadeIn` (`$11C0`) runs with that callback.
+- The VBlank handler `VerticalInterrupt` (`$1164`) loads `$FF1A62` into `a0` and calls
+  `jsr (a0)` each frame; the observed return address `$117A` matches this.
+- RAM dump at the first `$1180` hit: `analysis/dumps/fade_boot_ram.bin` (64 KiB).
 
-On a hit:
+Conclusion: `[confirmed]` the static reading of `Fade_GameTick` — reload 3, step every
+4th frame, install/clear `ram_UpdateFunction`.
 
-```
-bt
-p/x pc
-p/x a0
-p/x d0
-p/x $ff1a62.l    ; ram_UpdateFunction
-p/x $ff0300      ; Fade_ram_Timer (word)
-p/x $ff0302.l    ; Fade_ram_UpdateFunction
-p/x $ff3692      ; top-level state flag
-vr
-```
-
-Goals: confirm the timer sequence 3→2→1→0 and its 4-frame cadence, confirm
-`$FF1A62` is `$1242`/`$12F8`/`$1200` during the corresponding fade phases and 0 after,
-and record the meaning of `$FF3692`.
+Open questions: meaning of `$FF3692` and of the `$00FF0586` callback.
 
 ## 10. Caveats
 

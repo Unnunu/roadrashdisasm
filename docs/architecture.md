@@ -87,7 +87,7 @@ until ported and re-verified.
 
 | Handler | Address | Notes |
 |---|---|---|
-| `VerticalInterrupt` | `0x1164` | VBlank (IRQ level 6). TODO: describe work done. |
+| `VerticalInterrupt` | `0x1164` | VBlank (IRQ level 6). Saves registers, loads `ram_UpdateFunction` (`$FF1A62`) into `a0`, returns if zero, otherwise `jsr (a0)`. This is the per-frame update dispatcher. `[static]`+`[dynamic]`. |
 | `HorizontalInterrupt` | `0x145A` | HBlank (IRQ level 4). TODO. |
 | Exception handlers | see `main.asm` | Bus/address/illegal/etc.; most write a tag and `stop`. |
 

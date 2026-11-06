@@ -77,29 +77,42 @@ palette has finished changing.
   installed and a callback in `a0`) with a fade-out (with `Fade_GameTick` installed)
   around `Menu_Init` (`$3400`), `Character_Init` (`$59C4`), `HighScore_Init` (`$6DC0`),
   and `Race_Init` (`$A4E2`). See `docs/reverse-engineering.md` section 9.
-- `[dynamic]` BlastEm: a breakpoint at `$1180` hit with the caller `$7E8D6`
-  (`jsr $1180.w`), `pc = $1180`, `a0 = $00FF411C`, `d0 = $00FF0002`.
+- `[dynamic]` BlastEm native console: a breakpoint at `$1180` hit with the caller
+  `$7E8D6` (`jsr $1180.w`, race-exit path), `pc = $1180`, `a0 = $00FF411C`,
+  `d0 = $00FF0002`.
 - `[static]` On that path the next update function is `Fade_GameTickWithInit` (`$1200`),
   which never reads `Fade_ram_UpdateFunction`; the observed `a0` is not used here.
+- `[confirmed]` GDB remote, boot/attract: `Fade_GameTick` (`$1242`) runs with
+  `$FF0300` = 3, 2, 1, 0 and then reloads to 3; `$FF1A62` = `$00001242` throughout.
+  This confirms the 4-frame cadence.
+- `[confirmed]` The VBlank handler `VerticalInterrupt` (`$1164`) loads `$FF1A62` into
+  `a0` and executes `jsr (a0)` every frame (observed return address `$117A`).
+- `[dynamic]` Boot fade-out: first `$1180` hit with `a0 = $FFFFC078`,
+  `d0 = $0000FF00`, return address `$0007E6C0` (caller `jsr $1180.w` at `$7E6BC`).
+- `[dynamic]` `$FF0302` (`Fade_ram_UpdateFunction`) = `$FFFFC078` during the first fade
+  cycle, then `$00FF0586` after `Fade_InitFadeIn` (`$11C0`) runs.
 
 ## Hypotheses
 
 - `[hypothesis]` `$FF3692` is a top-level state/selection flag that decides whether the
-  flow goes to Character/HighScore/Race or back to the menu. Test: read `$FF3692` with
-  `p/x $ff3692` at the branch points `$7E7C2`, `$7E802`, `$7E8CC`, `$7E8D2`.
+  flow goes to Character/HighScore/Race or back to the menu. Test: read `$FF3692` at
+  the branch points `$7E7C2`, `$7E802`, `$7E8CC`, `$7E8D2`.
 - `[hypothesis]` `$FF1A62` is set to `$BA76` as the race per-frame tick after
   `Race_Init`; verify with a breakpoint at `$7E82C` and by watching `$FF1A62`.
+- `[hypothesis]` `$00FF0586` is the per-frame update function of the intro/first screen
+  installed by `Fade_InitFadeIn`; identify its role.
 
 ## Experiments performed
 
 | Goal | Setup / breakpoint | Observed | Conclusion |
 |------|--------------------|----------|------------|
-| Identify a real `Fade_InitFadeOut` caller | `b 1180`, then `bt` | caller `$7E8D6` (`jsr $1180.w`), `a0=$FF411C`, `d0=$00FF0002` | `[dynamic]` confirmed; the race-exit path calls the fade-out. |
-| Confirm timer cadence and update pointer | pending (corrected syntax): `b 1242`, `p/x $ff0300`, `p/x $ff1a62.l` | TODO | TODO |
+| Identify a real `Fade_InitFadeOut` caller | native `b 1180`, `bt` | caller `$7E8D6` (`jsr $1180.w`), `a0=$FF411C`, `d0=$00FF0002` | race-exit path calls the fade-out. |
+| Confirm timer cadence and update pointer | GDB remote: `break *0x1180`, `break *0x1242`, RAM dump | timer 3,2,1,0,3,2,1,0; `$FF1A62=$1242`; callers `$7E6BC` / `$117A`; dump saved | `[confirmed]` static reading. |
 
 ## Open questions
 
 - [ ] Meaning of `$FF3692`, `$FF3696`, `$FF369A` in the top-level flow.
-- [ ] Confirm the 4-frame cadence and the `±2` / `±$20` step constants in the emulator.
+- [ ] Identify the callbacks `$3802` (menu), `$5E66` (character), `$72BA` (highscore),
+  and `$00FF0586`.
+- [ ] Verify the `±2` / `±$20` palette step constants with a CRAM/palette check.
 - [ ] Verify the exact end address of `fade.asm` in the ROM layout.
-- [ ] Identify the callbacks `$3802` (menu), `$5E66` (character), `$72BA` (highscore).
