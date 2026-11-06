@@ -3,3 +3,5 @@
 !docs/**
 *.lst
 *.p
+build/
+analysis/

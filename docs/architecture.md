@@ -6,6 +6,8 @@ This document is the top-level map of the ROM and the source modules. It is a
 Related:
 
 - `AGENTS.md` — build rules, AS syntax requirements, IDA porting workflow.
+- `docs/coding-style.md` — identifiers, comments, function headers, RAM/overlay policy.
+- `docs/reverse-engineering.md` — evidence rules, BlastEm workflow, experiment format.
 - `docs/modules/_template.md` — template for per-module cards.
 - `docs/modules/README.md` — index of module cards.
 
@@ -24,8 +26,8 @@ Related:
 `./build.sh` compares the built image against the same-length **prefix** of
 `baserom.md`; it grows as more of the ROM is disassembled.
 
-Generated map file: `roadrash.lst` (from `./build.sh`, git-ignored). Use it to look up
-addresses and the exact bytes emitted for each source line.
+Generated map file: `build/roadrash.lst` (from `./build.sh`, git-ignored). Use it to
+look up addresses and the exact bytes emitted for each source line.
 
 ## ROM layout (top level)
 
