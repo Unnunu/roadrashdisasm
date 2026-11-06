@@ -3,9 +3,10 @@
 > Copy this file to `docs/modules/<file>.md` and fill in what is known. Keep it in
 > English. Everything not yet verified should stay marked `TODO` — do not guess.
 
-- **ROM range:** `0x??????`–`0x??????` (see `roadrash.lst`)
+- **ROM range:** `0x??????`–`0x??????` (see `build/roadrash.lst`)
 - **Status:** unknown / partially analyzed / analyzed
-- **Related:** `docs/architecture.md`, `docs/coding-style.md`
+- **Related:** `docs/architecture.md`, `docs/coding-style.md`,
+  `docs/reverse-engineering.md`
 
 This card documents the module at the architecture level. Per-function contracts
 (Purpose / In / Out / Clobbers / Notes) live in the source itself — see
@@ -42,6 +43,26 @@ Other modules/routines called, and known callers from other modules.
 Original-game oddities, dead code, workarounds, and ROM-encoding quirks that must be
 preserved for byte-exactness (e.g. bit numbers `> 7` on memory operands).
 
-## TODO / open questions
+## Verified facts
+
+Confirmed behavior with evidence tags (see `docs/reverse-engineering.md`).
+
+- `[static]` `TODO`
+- `[dynamic]` `TODO`
+- `[confirmed]` `TODO`
+
+## Hypotheses
+
+Unverified ideas. State the experiment that would confirm or refute each one.
+
+- `[hypothesis]` `TODO` — test: `TODO`
+
+## Experiments performed
+
+| Goal | Setup / breakpoint | Observed | Conclusion |
+|------|--------------------|----------|------------|
+| `TODO` | `TODO` | `TODO` | `TODO` |
+
+## Open questions
 
 - [ ] `TODO`

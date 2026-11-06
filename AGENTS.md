@@ -18,11 +18,13 @@ Matching disassembly of **Road Rash** (Sega Genesis, 1991, US region).
 ## Golden rule
 
 `./build.sh` must print `Matched OK: ...` after every change (currently
-`Matched OK: 93808 bytes`). The built image must be byte-identical to the matching
-prefix of `baserom.md`. A change that breaks byte-exactness is not done, even if it
-assembles without errors.
+`Matched OK: 93808 bytes of 786432 bytes`). The built image must be byte-identical to
+the matching prefix of `baserom.md`. A change that breaks byte-exactness is not done,
+even if it assembles without errors.
 
 ## Build
+
+There is a **single ROM file**: `baserom.md` (the full 786432-byte ROM).
 
 ```sh
 # one-time: put the reference ROM in place
@@ -35,15 +37,17 @@ assembles without errors.
 `build.sh` runs:
 
 ```sh
-tools/asl -cpu 68000 -L -olist roadrash.lst -o roadrash.p main.asm
-tools/p2bin roadrash.p roadrash.md
-cmp -n <built-size> roadrash.md baserom.md
+mkdir -p build
+tools/asl -cpu 68000 -L -olist build/roadrash.lst -o build/roadrash.p main.asm
+tools/p2bin build/roadrash.p build/roadrash.bin
+cmp -n <built-size> build/roadrash.bin baserom.md
 ```
 
 Because only a prefix of the ROM is reconstructed so far, the check compares the
-built image against the same-length prefix of `baserom.md`. Generated artifacts
-(`roadrash.md`, `roadrash.p`, `roadrash.lst`) and `baserom.md` are git-ignored and
-must never be committed.
+built image against the same-length prefix of `baserom.md`. On success the temporary
+`build/roadrash.bin` is removed; on mismatch it is kept and the first differing byte
+is reported. `baserom.md` is the only ROM file and is git-ignored; `build/` and
+`analysis/` are git-ignored working directories.
 
 ## Repository layout
 
@@ -74,6 +78,8 @@ must never be committed.
 | `tools/asl`, `tools/p2bin` | Assembler (Macro Assembler AS) and binary converter. Do not modify. |
 | `tools/extract.py` | Asset extraction helper (Python 3 + Pillow). |
 | `docs/` | Reverse-engineering documentation (see below). |
+| `build/` | Generated build artifacts (git-ignored). |
+| `analysis/` | Local RE working data: IDA listing exports, BlastEm savestates, notes (git-ignored). |
 
 Include order matters: it determines code layout in the ROM. Do not reorder includes.
 
@@ -171,10 +177,24 @@ Read and follow `docs/coding-style.md` when editing sources. In short:
 - Apply the guide incrementally when touching a file; do not mass-reformat.
 - After any rename, re-run `./build.sh` and require `Matched OK`.
 
+## Reverse engineering
+
+Read and follow `docs/reverse-engineering.md` when analyzing code behavior.
+
+- **No speculation.** Every claim must have evidence; tag it
+  `[static]`, `[dynamic]`, `[confirmed]`, `[hypothesis]`, or `[refuted]`.
+- Unverified behavior stays `TODO`; do not encode guesses in names or confident comments.
+- The user can run the ROM in BlastEm and report registers/memory/VDP. Ask for a small,
+  targeted experiment instead of guessing.
+- Use `analysis/` for IDA exports (`analysis/ida/`) and BlastEm savestates
+  (`analysis/states/`); it is git-ignored.
+- Record verified facts, hypotheses, and experiments in the module card.
+
 ## Documentation
 
 - `docs/architecture.md` — ROM map, boot/interrupt flow, module index, RAM overview.
 - `docs/coding-style.md` — identifiers, comments, function headers, RAM/overlay policy.
+- `docs/reverse-engineering.md` — evidence rules, BlastEm workflow, experiment format.
 - `docs/modules/<file>.md` — one card per module, based on
   `docs/modules/_template.md`. Fields: role, control flow, RAM/ROM & structures,
   external calls/API, hacks/bugs, TODO.
@@ -196,8 +216,8 @@ The build must report `0 errors`. The only accepted warning class is the one abo
 
 ## Do not touch
 
-- `baserom.md` (reference ROM), `roadrash.md`, `roadrash.p`, `roadrash.lst`
-  (generated / ignored).
+- `baserom.md` (the single reference ROM; git-ignored).
+- `build/` (generated artifacts) and `analysis/` (local RE working data).
 - `tools/asl`, `tools/p2bin` (prebuilt toolchain).
 - `LogoEA_Image_ElectronicArts.bin` (asset used by `binclude`).
 
