@@ -1,0 +1,33 @@
+# Module cards
+
+One card per source module, based on [`_template.md`](_template.md).
+See [`../architecture.md`](../architecture.md) for the ROM map and include order.
+
+To add a card: copy `_template.md` to `<file>.md`, fill in what is verified, and add a
+row to the table below.
+
+| File | Address | Role (tentative) | Card |
+|------|---------|------------------|------|
+| `main.asm` | `0x000000` (entry `RESET` `0x000200`) | Vectors, header, boot, interrupts | TODO |
+| `logoEA.asm` | `0x000366` | EA logo, decompression, drawing | TODO |
+| `fade.asm` | `0x001180` | Palette fade in/out | TODO |
+| `intro.asm` | `0x001704` | Intro sequence | TODO |
+| `menu_password.asm` | `0x002446` | Password menu | TODO |
+| `menu_main.asm` | `0x003400` | Main menu | TODO |
+| `message.asm` | `0x004226` | On-screen messages / button prompts | TODO |
+| `sub_5760.asm` | `0x005760` | Not yet identified | TODO |
+| `character.asm` | `0x0059C4` | Character screen / rider rendering | TODO |
+| `race_results.asm` | `0x005F28` | Post-race results screen | TODO |
+| `highscore.asm` | `0x006DC0` | High-score screen | TODO |
+| `shop.asm` | `0x0074AA` | Bike shop | TODO |
+| `endlevel.asm` | `0x008342` | End-of-level menu | TODO |
+| `8FB4.asm` | `0x008FB4` | Not yet identified | TODO |
+| `98C2.asm` | `0x0098C2` | Not yet identified | TODO |
+| `uncompress.asm` | `0x009B9E` | Decompression routines | TODO |
+| `9FE4.asm` | `0x009FE4` | Not yet identified | TODO |
+| `race.asm` | `0x00A4E2` | Main gameplay | TODO |
+| `race_hud.asm` | `0x00D278` | Race HUD (included by `race.asm`) | TODO |
+| `road_marking.asm` | `0x00E732` | Road marking / sprite placement (included by `race.asm`) | TODO |
+| `animation.asm` | `0x016860` | Sprite animation (included by `race.asm`) | TODO |
+
+Helper files without code in the image: `hw_const.asm`, `unknown.asm`, `ram_const.asm`.

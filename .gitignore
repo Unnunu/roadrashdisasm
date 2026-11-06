@@ -1,3 +1,5 @@
 *.md
+!AGENTS.md
+!docs/**
 *.lst
 *.p
