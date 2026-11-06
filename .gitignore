@@ -5,3 +5,5 @@
 *.p
 build/
 analysis/
+__pycache__/
+*.pyc
