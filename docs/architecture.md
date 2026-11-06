@@ -5,7 +5,7 @@ This document is the top-level map of the ROM and the source modules. It is a
 
 Related:
 
-- `AGENTS.md` — build rules, AS syntax requirements, IDA porting workflow.
+- `AGENTS.md` — build rules, AS syntax requirements, ROM disassembly workflow.
 - `docs/coding-style.md` — identifiers, comments, function headers, RAM/overlay policy.
 - `docs/reverse-engineering.md` — evidence rules, BlastEm workflow, experiment format.
 - `docs/modules/_template.md` — template for per-module cards.
@@ -61,27 +61,61 @@ Note: `main.asm` is not a single contiguous block. Its code is interleaved with
 
 ### Top-level flow (full ROM, outside current 0x16E70 coverage)
 
-`[static]` Disassembling `baserom.md` around `0x07E6A2`–`0x07EA2E` reveals the
+`main.asm` ends `doStart` with `jmp (loc_7E6A2).l`. At `0x07E6A2` starts the
 screen-flow state machine. It uses `ram_UpdateFunction` (`$FF1A62`) as the per-frame
-update pointer and the fade helpers for transitions:
+update pointer and `Fade_*` for transitions. `[static]` from `baserom.md`; regenerated
+with `tools/disasm.py`:
+`python3 tools/disasm.py 0x7E6A2 0x7EA66 --mode project --symbolize-immediates`
+(local output: `analysis/disasm/top_level.asm`).
 
-- `$7E74C`: `Menu_Init` (`$3400`), `Fade_InitFadeIn` with `a0 = $3802`,
-  install `FadeWithFunction_GameTick` (`$12F8`), wait, `Fade_InitFadeOut`,
-  install `Fade_GameTick` (`$1242`), wait; branches on `$FF3692`.
-- `$7E78C`: `Character_Init` (`$59C4`), same fade-in/out pair (`a0 = $5E66`).
-- `$7E7CC`: `HighScore_Init` (`$6DC0`), same fade-in/out pair (`a0 = $72BA`).
-- `$7E80C`: `Race_Init` (`$A4E2`), `Fade_InitFadeIn`, install
-  `Fade_GameTickWithInit` (`$1200`); then `$FF1A62` is set to `$BA76` (race tick) and
-  the race loop runs.
-- `$7E8D6` (race exit): `Fade_InitFadeOut`, install `Fade_GameTickWithInit` (`$1200`),
-  wait, `move.w #$2500,sr`, jump back to `$7E74C`.
+Entry / intro (`$7E6A2`):
 
-The `a0` passed to `Fade_InitFadeIn` becomes the next update function when the fade
-settles (`FadeWithFunction_GameTick` copies `Fade_ram_UpdateFunction` to
-`ram_UpdateFunction`). Exact meanings of `$FF3692`/`$FF3696`/`$FF369A`: **TODO**.
+- clear `ram_FF1B3E`, `sr=$2500`, write VDP register `$8174`; wait for
+  `ram_UpdateFunction == 0`.
+- `Fade_InitFadeOut`, copy target palette -> current palette, install
+  `Fade_GameTick`, wait.
+- `sub_B770`, `AudioFunc2`, `Intro_Init`, `Fade_InitFadeIn`, install `Fade_GameTick`,
+  wait; install `Intro_GameTick`, wait; `Fade_InitFadeOut`, install `Fade_GameTick`,
+  wait.
+- If `Intro_ram_TextTimer >= 0` -> menu (`$7E74C`); otherwise set
+  `MainMenu_ram_DemoMode = -1` and enter the demo high-score path (`$7E7CC`).
 
-This region is not yet part of the disassembly sources; treat it as `[static]` evidence
-until ported and re-verified.
+Menu loop (`$7E74C`):
+
+- `Menu_Init`, `a0 = MainMenu_GameTick`, `Fade_InitFadeIn`, install
+  `FadeWithFunction_GameTick`, wait; fade out with `Fade_GameTick`, wait.
+- If `MainMenu_ram_DemoMode != 0` -> high score (`$7E7CC`).
+- Otherwise `Character_Init`, `a0 = Character_GameTick`, same fade-in/out pair.
+- If `MainMenu_ram_DemoMode == 0` -> race (`$7E80C`); otherwise high score.
+
+High score (`$7E7CC`):
+
+- `HighScore_Init`, `a0 = HighScore_GameTick_Demo`, same fade-in/out pair.
+- If `MainMenu_ram_DemoMode == 0` -> menu; otherwise race.
+
+Race (`$7E80C`):
+
+- `Race_Init`, `Fade_InitFadeIn`, `sr=$2300`, install `Fade_GameTickWithInit`, wait;
+  install `Race_GameTick` (`$BA76`).
+- Frame loop (`$7E836`): optional demo reset; call `Race_Update`; track
+  `ram_FF1E68`/`ram_FF1E82`; on `Race_ram_GameEnded` either return to the menu (demo)
+  or go to the results dispatcher (`$7E924`).
+
+Results dispatcher (`$7E924`) uses `ram_FF0910` as the next-screen selector:
+
+- `RaceResults_Init` -> `RaceResults_GameTick`
+- `HighScore_Init` -> `HighScore_GameTick`
+- `Shop_Init` -> `Shop_GameTick`
+- `EndLevel_Init` (when `ram_FF0918 == 4`) -> `EndLevel_GameTick`
+
+Each screen runs the same fade-in (with `FadeWithFunction_GameTick`) / fade-out (with
+`Fade_GameTick`) pair and loops back to the dispatcher. After the dispatcher,
+`Menu_ram_PlayerMode == 3` toggles `Menu_ram_Player` with `eori.w #3`, then jumps back
+to the menu.
+
+Exact meanings of `ram_FF0918`, `$FF3692`, `$FF3696`, `$FF369A`: **TODO**. This region
+is not yet part of the disassembly sources; treat it as `[static]` evidence until
+ported and re-verified.
 
 ### Interrupts
 

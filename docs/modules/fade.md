@@ -91,16 +91,24 @@ palette has finished changing.
   `d0 = $0000FF00`, return address `$0007E6C0` (caller `jsr $1180.w` at `$7E6BC`).
 - `[dynamic]` `$FF0302` (`Fade_ram_UpdateFunction`) = `$FFFFC078` during the first fade
   cycle, then `$00FF0586` after `Fade_InitFadeIn` (`$11C0`) runs.
+- `[static]` In the menu/character/results/shop/endlevel paths, `Fade_InitFadeIn` runs
+  with `a0` = the next update function (`MainMenu_GameTick`, `Character_GameTick`,
+  `HighScore_GameTick_Demo`, `RaceResults_GameTick`, `HighScore_GameTick`,
+  `Shop_GameTick`, `EndLevel_GameTick`) and `FadeWithFunction_GameTick` is installed.
+  When the fade settles, that callback replaces `ram_UpdateFunction`.
+- `[static]` In the intro path, `Fade_GameTick` (not `FadeWithFunction_GameTick`) is
+  installed after `Fade_InitFadeIn`; the `a0` value is ignored there.
+  `[refuted]` the hypothesis that `$00FF0586` (the observed `$FF0302`) is a callback:
+  it is a leftover value from `Intro_Init`, not a function pointer.
+- `[confirmed]` `$BA76` installed after `Race_Init` is `Race_GameTick`.
 
 ## Hypotheses
 
 - `[hypothesis]` `$FF3692` is a top-level state/selection flag that decides whether the
   flow goes to Character/HighScore/Race or back to the menu. Test: read `$FF3692` at
   the branch points `$7E7C2`, `$7E802`, `$7E8CC`, `$7E8D2`.
-- `[hypothesis]` `$FF1A62` is set to `$BA76` as the race per-frame tick after
-  `Race_Init`; verify with a breakpoint at `$7E82C` and by watching `$FF1A62`.
-- `[hypothesis]` `$00FF0586` is the per-frame update function of the intro/first screen
-  installed by `Fade_InitFadeIn`; identify its role.
+- `[confirmed]` `$FF1A62` is set to `$BA76` (`Race_GameTick`) as the race per-frame
+  tick after `Race_Init`.
 
 ## Experiments performed
 
@@ -112,7 +120,9 @@ palette has finished changing.
 ## Open questions
 
 - [ ] Meaning of `$FF3692`, `$FF3696`, `$FF369A` in the top-level flow.
-- [ ] Identify the callbacks `$3802` (menu), `$5E66` (character), `$72BA` (highscore),
-  and `$00FF0586`.
+- [ ] Meaning of the `FadeWithFunction_GameTick` callbacks' per-frame behavior
+  (`MainMenu_GameTick`, `Character_GameTick`, ...): follow up in their own cards.
+- [ ] Confirm that `$00FF0586` is really just leftover `a0` from `Intro_Init` (static
+  reading; dynamic trace of `Intro_Init` would settle it).
 - [ ] Verify the `±2` / `±$20` palette step constants with a CRAM/palette check.
 - [ ] Verify the exact end address of `fade.asm` in the ROM layout.

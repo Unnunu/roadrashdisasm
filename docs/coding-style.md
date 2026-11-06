@@ -6,7 +6,7 @@ the documentation. Byte-exactness is non-negotiable.
 
 See also:
 
-- `AGENTS.md` — build, toolchain, AS syntax, IDA porting workflow.
+- `AGENTS.md` — build, toolchain, AS syntax, ROM disassembly workflow.
 - `docs/architecture.md` — ROM map and module index.
 - `docs/modules/_template.md` — per-module cards (architecture level).
 
@@ -148,12 +148,13 @@ structure offsets. This is some of the most valuable documentation in the ROM.
 - Explicitly mark raw/unidentified data (`; raw data - not identified`).
 - For reused/overlay memory, say so (see section 6).
 
-## 5. IDA artifacts
+## 5. Legacy artifacts and placeholders
 
-- Remove IDA cross-reference comments: `CODE XREF`, `DATA XREF`, and continuation
-  lines ending in `↑`/`↓` (e.g. `; sub_1234+56↑j`).
-- Keep IDA placeholder identifiers (`sub_`, `loc_`, `ram_`, `unk_`, `off_`, `byte_`,
-  `word_`) until a dedicated rename pass.
+- Legacy external-disassembler cross-reference comments (`CODE XREF`, `DATA XREF`,
+  `↑`/`↓` continuations) were removed from the tree; do not reintroduce them.
+- Placeholder identifiers (`sub_`, `loc_`, `ram_`, `unk_`, `off_`, `byte_`, `word_`) are
+  produced by `tools/disasm.py` for not-yet-understood code and may stay until a
+  dedicated rename pass.
 
 ## 6. RAM equates and overlays
 
@@ -234,6 +235,6 @@ Fade_InitFadeOut:
 - [ ] Every touched function has Purpose/In/Out/Clobbers/Notes.
 - [ ] Magic numbers and hardware accesses are explained.
 - [ ] Raw/unknown data is marked.
-- [ ] No `CODE XREF` / `DATA XREF` / `↑↓` artifacts remain.
+- [ ] No legacy `CODE XREF` / `DATA XREF` / `↑↓` artifacts remain.
 - [ ] RAM equates are in the right place; overlays are documented.
 - [ ] `./build.sh` reports `Matched OK`.

@@ -29,7 +29,9 @@ Only `[confirmed]` facts may drive identifier renames or definitive code comment
 1. **Read the code.** Build a control-flow/data-flow picture for the region.
 2. **Write explicit hypotheses.** State both "what it does" and "why".
 3. **Design a minimal experiment** that distinguishes the hypotheses (see section 5).
-4. **Ask the user to run it in BlastEm** and report the requested values.
+4. **Run it**: the agent can drive BlastEm's GDB remote stub headless (section 3.2);
+   use the native console when the user wants to run it interactively. For visual
+   checks (VRAM/CRAM/planes), ask the user.
 5. **Record the result** with an evidence tag in the module card.
 6. **Update code comments/names only for confirmed facts.**
 7. Keep `docs/modules/<file>.md` in sync.
@@ -168,18 +170,25 @@ when possible.
 
 `analysis/` is git-ignored and holds local RE data:
 
-- `analysis/ida/` — IDA listing exports (text), one file per module/region when possible.
-- `analysis/states/` — BlastEm savestates (`*.state`), named by scene/experiment.
+- `analysis/dumps/` — RAM dumps captured through GDB remote (or the user).
+- `analysis/disasm/` — generated disassembly that is not yet integrated into the build.
+- `analysis/logs/` — BlastEm address logs and other traces.
 - `analysis/notes/` — optional scratch notes (durable facts still go to module cards).
 
-Tell the user exactly what to export/save and where to put it.
+### Generating disassembly
 
-### IDA listings
+Use the project tool instead of an external disassembler:
 
-When requesting an IDA listing, ask for a text export of a specific function or address
-range with addresses, bytes, labels, operands, and data. The user places it under
-`analysis/ida/`; the agent normalizes it into AS syntax (see the IDA→AS workflow in
-`AGENTS.md`).
+```sh
+# project-style source for a range (symbols resolved)
+python3 tools/disasm.py 0x7E6A2 0x7EA66 --mode project --symbolize-immediates
+
+# validate the range end-to-end before trusting it
+python3 tools/roundtrip.py 0x7E6A2 0x7EA66
+```
+
+`tools/roundtrip.py` must print `Round-trip OK`. Code that cannot be reproduced
+byte-for-byte is not ready to be integrated.
 
 ## 7. Recording evidence
 
@@ -268,6 +277,9 @@ At the hit: `pc = $1180`, `a0 = $00FF411C`, `d0 = $00FF0002`. That path installs
 
 Conclusion: `[confirmed]` the static reading of `Fade_GameTick` — reload 3, step every
 4th frame, install/clear `ram_UpdateFunction`.
+
+The same session disassembled the full top-level flow with `tools/disasm.py`
+(`0x7E6A2`–`0x7EA66`); see `docs/architecture.md` for the resulting screen-flow map.
 
 Open questions: meaning of `$FF3692` and of the `$00FF0586` callback.
 

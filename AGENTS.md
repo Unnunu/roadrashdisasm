@@ -76,10 +76,12 @@ is reported. `baserom.md` is the only ROM file and is git-ignored; `build/` and
 | `road_marking.asm` | Road marking / sprite placement. |
 | `animation.asm` | Sprite animation. |
 | `tools/asl`, `tools/p2bin` | Assembler (Macro Assembler AS) and binary converter. Do not modify. |
+| `tools/disasm.py` | Capstone-based ROM range -> project AS source generator. |
+| `tools/roundtrip.py` | Round-trip verifier for `disasm.py` (ROM -> AS -> assemble -> compare). |
 | `tools/extract.py` | Asset extraction helper (Python 3 + Pillow). |
 | `docs/` | Reverse-engineering documentation (see below). |
 | `build/` | Generated build artifacts (git-ignored). |
-| `analysis/` | Local RE working data: IDA listing exports, BlastEm savestates, notes (git-ignored). |
+| `analysis/` | Local RE working data: RAM dumps, address logs, generated disassembly, notes (git-ignored). |
 
 Include order matters: it determines code layout in the ROM. Do not reorder includes.
 
@@ -119,46 +121,50 @@ Also:
 - AS is case-insensitive for symbols by default. Follow the existing spelling of each
   symbol; do not introduce case-only duplicates.
 
-## IDA Pro listing → assemblable AS source
+## ROM → AS source (`tools/disasm.py`)
 
-The user will often hand over a listing produced by IDA Pro. Treat it as raw material:
-it is frequently not directly assemblable and must be normalized by the agent.
+New disassembly is produced by our own capstone-based tool; no external
+disassembler is required.
 
-Workflow:
+```sh
+# project-style source for a code range
+python3 tools/disasm.py 0x1180 0x13c0
 
-1. **Understand first.** Identify which module/region the listing belongs to, where it
-   is placed in the ROM, and whether it is code, data, or unknown bytes.
-2. **Place it correctly.** Append/insert into the right `.asm` file, preserving include
+# self-contained round-trip source (raw external refs + org)
+python3 tools/disasm.py 0x1180 0x13c0 --mode roundtrip --org -o /tmp/range.asm
+
+# validate a range end-to-end (ROM -> AS -> assemble -> compare)
+python3 tools/roundtrip.py 0x1180 0x13c0
+```
+
+The tool resolves known symbols from `build/roadrash.lst` and the equates in
+`ram_const.asm` / `unknown.asm` / `hw_const.asm`, creates `sub_XXXX` / `loc_XXXX`
+labels for internal branch/call targets, and preserves the original encoding sizes
+(`.s`/`.w` branches, abs.w/abs.l, `0.w(aN)`, ...).
+
+Workflow for adding a region:
+
+1. **Find the boundaries.** Use `tools/disasm.py`/`objdump` and the build listing to
+   separate code from data. Pass data ranges with `--data START-END`.
+2. **Round-trip first.** Run `python3 tools/roundtrip.py START END` (plus `--data`).
+   It must print `Round-trip OK` before the code is trusted.
+3. **Place it correctly.** Append/insert into the right `.asm` file, preserving include
    order and address layout. Do not reorder existing code.
-3. **Normalize the syntax** using the AS rules above and the IDA mapping below.
-4. **Assemble iteratively.** Fix the first reported error, re-run, repeat until
-   `0 errors`. AS reports the first offending line with file and line number.
-5. **Verify byte-exactness** with `./build.sh`. If it does not match, find the first
-   differing offset and compare against `baserom.md` before changing anything.
-6. **Document** the module in `docs/modules/<file>.md` and update the conversion table
-   below if a new IDA construct was encountered.
+4. **Assemble and verify.** `./build.sh` must report `Matched OK`.
+5. **Document** the module in `docs/modules/<file>.md` and update the module map.
 
-Common IDA → project conversions (extend this table as new cases appear):
-
-| IDA listing | Project source |
-|---|---|
-| `@label` | `.label` |
-| `db` / `dw` / `dd` / `dt` | `dc.b` / `dc.w` / `dc.l` (adjust per size) |
-| `align N` | explicit padding only if the ROM actually contains those bytes |
-| `public`, `extrn`, `assume`, `model`, `dseg`, `cseg`, `segment`, `ends`, `proc`, `endp` | drop or translate to the project's flat layout |
-| `offset symbol` / address-of forms | plain `(symbol).l` where an absolute EA is required |
-| `?` / uninitialized data | `dc.b $00` only when the ROM bytes are actually zero |
-| IDA header/preamble and metadata | remove |
-
-Non-negotiables when porting a listing:
+Rules for generated code:
 
 - Never invent or "improve" bytes. The target is the ROM, not clean-looking code.
 - Keep every referenced label consistent; if a label moves, update all users.
 - Do not reformat unrelated code or rename existing symbols as part of a port.
+- `--symbolize-immediates` is opt-in and can mis-name constants that coincide with
+  addresses; review its output before trusting it.
+- The generated code still follows the AS syntax rules above.
 
 ## Naming policy
 
-- Preserve IDA identifiers while porting: `sub_XXXX`, `loc_XXXX`, `byte_XXXX`,
+- Preserve auto-generated placeholders: `sub_XXXX`, `loc_XXXX`, `byte_XXXX`,
   `word_XXXX`, `off_XXXX`, `unk_XXXX`, etc.
 - Renaming to meaningful names is a **separate, explicit task**. Only rename when the
   user asks for it (e.g. "study this file and then rename").
@@ -173,7 +179,8 @@ Read and follow `docs/coding-style.md` when editing sources. In short:
   Purpose / In / Out / Clobbers / Notes fields, closed by `; End of function <Name>`.
 - RAM equates normally live in `ram_const.asm`; module-local maps are allowed only for
   documented overlay/scratch regions (see the `logoEA.asm` exception in the guide).
-- Remove IDA cross-reference comments (`CODE XREF`, `DATA XREF`, `↑`/`↓` continuations).
+- Do not introduce legacy cross-reference artifacts (`CODE XREF`, `DATA XREF`,
+  `↑`/`↓` continuations); they were removed from the tree.
 - Apply the guide incrementally when touching a file; do not mass-reformat.
 - After any rename, re-run `./build.sh` and require `Matched OK`.
 
@@ -184,10 +191,11 @@ Read and follow `docs/reverse-engineering.md` when analyzing code behavior.
 - **No speculation.** Every claim must have evidence; tag it
   `[static]`, `[dynamic]`, `[confirmed]`, `[hypothesis]`, or `[refuted]`.
 - Unverified behavior stays `TODO`; do not encode guesses in names or confident comments.
-- The user can run the ROM in BlastEm and report registers/memory/VDP. Ask for a small,
-  targeted experiment instead of guessing.
-- Use `analysis/` for IDA exports (`analysis/ida/`) and BlastEm savestates
-  (`analysis/states/`); it is git-ignored.
+- Dynamic checks run in BlastEm: the user can use the native console, and the agent can
+  drive the GDB remote stub headless (see `docs/reverse-engineering.md`). Prefer a
+  small, targeted experiment over guessing.
+- Use `analysis/` for RAM dumps (`analysis/dumps/`), generated disassembly
+  (`analysis/disasm/`) and logs; it is git-ignored.
 - Record verified facts, hypotheses, and experiments in the module card.
 
 ## Documentation
@@ -198,7 +206,7 @@ Read and follow `docs/reverse-engineering.md` when analyzing code behavior.
 - `docs/modules/<file>.md` — one card per module, based on
   `docs/modules/_template.md`. Fields: role, control flow, RAM/ROM & structures,
   external calls/API, hacks/bugs, TODO.
-- After integrating a new IDA listing, update the matching module card.
+- After integrating a newly disassembled region, update the matching module card.
 
 ## Known warnings (expected)
 
