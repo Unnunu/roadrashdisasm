@@ -57,7 +57,31 @@ Note: `main.asm` is not a single contiguous block. Its code is interleaved with
    ports, Z80 bus/reset lines, etc.
 3. Z80 program is copied/started (`z80_start` … `z80_end`).
 4. Control passes to `doStart` (`0x2FA`), which drives the top-level flow
-   (logo → intro → menus → race …). Exact flow: **TODO**.
+   (logo → intro → menus → race …). See below.
+
+### Top-level flow (full ROM, outside current 0x16E70 coverage)
+
+`[static]` Disassembling `baserom.md` around `0x07E6A2`–`0x07EA2E` reveals the
+screen-flow state machine. It uses `ram_UpdateFunction` (`$FF1A62`) as the per-frame
+update pointer and the fade helpers for transitions:
+
+- `$7E74C`: `Menu_Init` (`$3400`), `Fade_InitFadeIn` with `a0 = $3802`,
+  install `FadeWithFunction_GameTick` (`$12F8`), wait, `Fade_InitFadeOut`,
+  install `Fade_GameTick` (`$1242`), wait; branches on `$FF3692`.
+- `$7E78C`: `Character_Init` (`$59C4`), same fade-in/out pair (`a0 = $5E66`).
+- `$7E7CC`: `HighScore_Init` (`$6DC0`), same fade-in/out pair (`a0 = $72BA`).
+- `$7E80C`: `Race_Init` (`$A4E2`), `Fade_InitFadeIn`, install
+  `Fade_GameTickWithInit` (`$1200`); then `$FF1A62` is set to `$BA76` (race tick) and
+  the race loop runs.
+- `$7E8D6` (race exit): `Fade_InitFadeOut`, install `Fade_GameTickWithInit` (`$1200`),
+  wait, `move.w #$2500,sr`, jump back to `$7E74C`.
+
+The `a0` passed to `Fade_InitFadeIn` becomes the next update function when the fade
+settles (`FadeWithFunction_GameTick` copies `Fade_ram_UpdateFunction` to
+`ram_UpdateFunction`). Exact meanings of `$FF3692`/`$FF3696`/`$FF369A`: **TODO**.
+
+This region is not yet part of the disassembly sources; treat it as `[static]` evidence
+until ported and re-verified.
 
 ### Interrupts
 

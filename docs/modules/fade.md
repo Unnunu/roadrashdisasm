@@ -71,21 +71,35 @@ palette has finished changing.
 - `[static]` Boot/attract at `0x07E6A2` calls `Fade_InitFadeOut`, then installs
   `Fade_GameTick` into `$FF1A62`, then calls `Intro_Init` (`0x1704`) and
   `Fade_InitFadeIn`.
+- `[static]` `Fade_InitFadeOut` has 11 call sites and `Fade_InitFadeIn` has 9, all in
+  the top-level flow at `$7E6A2`–`$7EA2E` (outside current disassembly coverage).
+- `[static]` The top-level flow pairs a fade-in (with `FadeWithFunction_GameTick`
+  installed and a callback in `a0`) with a fade-out (with `Fade_GameTick` installed)
+  around `Menu_Init` (`$3400`), `Character_Init` (`$59C4`), `HighScore_Init` (`$6DC0`),
+  and `Race_Init` (`$A4E2`). See `docs/reverse-engineering.md` section 9.
+- `[dynamic]` BlastEm: a breakpoint at `$1180` hit with the caller `$7E8D6`
+  (`jsr $1180.w`), `pc = $1180`, `a0 = $00FF411C`, `d0 = $00FF0002`.
+- `[static]` On that path the next update function is `Fade_GameTickWithInit` (`$1200`),
+  which never reads `Fade_ram_UpdateFunction`; the observed `a0` is not used here.
 
 ## Hypotheses
 
-- `[hypothesis]` The boot/attract sequence fades out the EA logo, runs the intro init,
-  and fades back in. Test: run the breakpoint experiment below and watch `$FF1A62`,
-  `$FF0300`, and `vr` across the logo→intro transition.
+- `[hypothesis]` `$FF3692` is a top-level state/selection flag that decides whether the
+  flow goes to Character/HighScore/Race or back to the menu. Test: read `$FF3692` with
+  `p/x $ff3692` at the branch points `$7E7C2`, `$7E802`, `$7E8CC`, `$7E8D2`.
+- `[hypothesis]` `$FF1A62` is set to `$BA76` as the race per-frame tick after
+  `Race_Init`; verify with a breakpoint at `$7E82C` and by watching `$FF1A62`.
 
 ## Experiments performed
 
 | Goal | Setup / breakpoint | Observed | Conclusion |
 |------|--------------------|----------|------------|
-| Confirm boot/attract fade sequence | pending: `b 7E6A2`, `b 1180`, `b 11C0`, `b 1242` | TODO | TODO |
+| Identify a real `Fade_InitFadeOut` caller | `b 1180`, then `bt` | caller `$7E8D6` (`jsr $1180.w`), `a0=$FF411C`, `d0=$00FF0002` | `[dynamic]` confirmed; the race-exit path calls the fade-out. |
+| Confirm timer cadence and update pointer | pending (corrected syntax): `b 1242`, `p/x $ff0300`, `p/x $ff1a62.l` | TODO | TODO |
 
 ## Open questions
 
-- [ ] Exact scenes that use `FadeWithFunction_GameTick` and what callback is installed.
+- [ ] Meaning of `$FF3692`, `$FF3696`, `$FF369A` in the top-level flow.
 - [ ] Confirm the 4-frame cadence and the `±2` / `±$20` step constants in the emulator.
 - [ ] Verify the exact end address of `fade.asm` in the ROM layout.
+- [ ] Identify the callbacks `$3802` (menu), `$5E66` (character), `$72BA` (highscore).

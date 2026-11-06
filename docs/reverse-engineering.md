@@ -56,6 +56,23 @@ Currently available console commands (from BlastEm's `?` help):
 - There are **no RAM read/write watchpoints**, only execution breakpoints.
 - There is **no memory dump-to-file** command.
 
+### Address / print syntax gotchas (BlastEm 0.6.3.4)
+
+These are verified from BlastEm's `debug.c` and cause confusing results if missed:
+
+- **Breakpoints** parse the parameter with `strtol(param, NULL, 16)`: use a **bare hex
+  number**. `b 1180` works; `b $1180` and `b #1180` are parsed as 0.
+- **`p` (print)** has a different parameter grammar:
+  - registers: `p/x d0`, `p/x a0`, `p/x pc`, `p/x sr` (optional `.w` / `.b` suffix on
+    data/address registers);
+  - special values: `p/x c` = cycle count, `p/x f` = **frame counter**;
+  - memory: `$ADDRESS` or `0xADDRESS`, optional `.l` / `.b` suffix, default is **word**:
+    `p/x $ff1a62.l`, `p/x $ff0300`, `p/x $ff0300.b`;
+  - indirect: `p/x (a0).l`, `p/x (d0)`.
+- **Pitfall:** a bare token starting with `f` (e.g. `p/x ff1a62`) hits the `f` =
+  frame-counter branch and returns the same frame count for every `ff....` address.
+  Always prefix memory addresses with `$` (or `0x`) in `p`.
+
 Consequences:
 
 - To find possible writers/readers of a RAM variable, enumerate references **statically**
@@ -162,33 +179,65 @@ Current static evidence:
   matches around `$7E6xx` are **immediate loads**, not a data pointer table;
   **`[refuted]` "pointer table" hypothesis**.
 
-Planned experiment (to be run by the user):
+Static call sites (full ROM, outside current coverage):
+
+- `Fade_InitFadeOut` (`$1180`) is called from 11 sites: `$7E6BC`, `$7E720`, `$7E76C`,
+  `$7E7AC`, `$7E7EC`, `$7E8D6`, `$7E8F4`, `$7E952`, `$7E998`, `$7E9E0`, `$7EA2E`.
+- `Fade_InitFadeIn` (`$11C0`) is called from 9 sites, including `$7E6F8`, `$7E756`,
+  `$7E796`, `$7E7D6`, `$7E812`, `$7E93C`, `$7E982`.
+- The top-level flow at `$7E74C`/`$7E80C` pairs fade-out and fade-in around the
+  screens:
+  - `$7E74C`: `Menu_Init` (`$3400`), then `Fade_InitFadeIn` with `a0 = $3802`,
+    install `FadeWithFunction_GameTick` (`$12F8`), wait, `Fade_InitFadeOut`,
+    install `Fade_GameTick` (`$1242`), wait; branches on `$FF3692` to
+    `Character_Init` (`$59C4`) or `HighScore_Init` (`$6DC0`).
+  - `$7E78C`: `Character_Init` (`$59C4`) with `a0 = $5E66`, same fade-in/out pair.
+  - `$7E7CC`: `HighScore_Init` (`$6DC0`) with `a0 = $72BA`, same fade-in/out pair.
+  - `$7E80C`: `Race_Init` (`$A4E2`), `Fade_InitFadeIn`, then install
+    `Fade_GameTickWithInit` (`$1200`); afterwards `$FF1A62` is set to `$BA76` (race
+    tick) and the race loop runs.
+  - `$7E8D6` (race exit path): `Fade_InitFadeOut`, install `Fade_GameTickWithInit`
+    (`$1200`), wait, `move.w #$2500,sr`, then jump back to `$7E74C` (menu flow).
+  - The `a0` passed to `Fade_InitFadeIn` is the **next** update function: when the fade
+    settles, `FadeWithFunction_GameTick` copies `Fade_ram_UpdateFunction` to
+    `ram_UpdateFunction` and calls it.
+
+Dynamic experiment 1 (performed in BlastEm):
+
+- Breakpoint at `$1180` (`Fade_InitFadeOut`) hit; `bt` reported the caller
+  `$7E8D6`: `jsr $1180.w`.
+- At the hit: `pc = $1180` (`p pc` printed decimal `4480`), `a0 = $00FF411C`,
+  `d0 = $00FF0002`.
+- `[static]` In this path the next update function is `Fade_GameTickWithInit` (`$1200`),
+  which does not read `Fade_ram_UpdateFunction`; the `a0` value (`$FF411C`) is therefore
+  not used as a callback here.
+
+Remaining experiment (corrected syntax):
 
 ```
-b 7E6A2     ; boot/attract sequence (full ROM, outside coverage)
-b 1180      ; Fade_InitFadeOut
-b 11C0      ; Fade_InitFadeIn
-b 1242      ; Fade_GameTick
+b 1180
+b 11C0
+b 1242
 c
 ```
 
-On a hit, report:
+On a hit:
 
 ```
 bt
-p pc
-p d0
-p a0
-p/(x) $FF1A62   ; ram_UpdateFunction (main update pointer)
-p/(x) $FF0300   ; Fade_ram_Timer
-p/(x) $FF0302   ; Fade_ram_UpdateFunction
+p/x pc
+p/x a0
+p/x d0
+p/x $ff1a62.l    ; ram_UpdateFunction
+p/x $ff0300      ; Fade_ram_Timer (word)
+p/x $ff0302.l    ; Fade_ram_UpdateFunction
+p/x $ff3692      ; top-level state flag
 vr
 ```
 
-Goals: confirm the init functions run during the boot/attract transition, confirm the
-timer sequence 3→2→1→0 and its 4-frame cadence, confirm `$FF1A62` is set to `$1242`
-and cleared when the fade completes, and save a savestate at the first fade for
-repeatable tests.
+Goals: confirm the timer sequence 3→2→1→0 and its 4-frame cadence, confirm
+`$FF1A62` is `$1242`/`$12F8`/`$1200` during the corresponding fade phases and 0 after,
+and record the meaning of `$FF3692`.
 
 ## 10. Caveats
 
