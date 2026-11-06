@@ -676,3 +676,13 @@ sub_1652:
     include "uncompress.asm"
     include "9FE4.asm"
     include "race.asm"
+; *****************************************************************
+; Raw bridge for the not-yet-disassembled gap.
+; The top-level flow at $7E6A2 is assembled from top_level.asm; the bytes between
+; the current coverage ($16E70) and that entry are copied from the reference ROM.
+; *****************************************************************
+    org     $016E70
+    binclude "baserom.md",$016E70,($7E6A2-$016E70)
+
+    org     $7E6A2
+    include "top_level.asm"

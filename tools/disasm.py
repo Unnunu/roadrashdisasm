@@ -232,7 +232,7 @@ def format_operands(ins, symbols, labels, mode, symbolize_imm=False):
     return mn, ops
 
 
-def collect_labels(insns, symbols, start, end):
+def collect_labels(insns, symbols, start, end, entry_name=None):
     call_targets = set()
     branch_targets = set()
     addrs = {ins.address for ins in insns}
@@ -250,7 +250,7 @@ def collect_labels(insns, symbols, start, end):
 
     labels = {}
     # The range entry point is always a function label.
-    labels[start] = symbols.name_for(start) or "sub_%05X" % start
+    labels[start] = entry_name or symbols.name_for(start) or "sub_%05X" % start
     for addr in sorted(call_targets):
         if addr not in labels:
             labels[addr] = symbols.name_for(addr) or "sub_%05X" % addr
@@ -261,9 +261,9 @@ def collect_labels(insns, symbols, start, end):
     return labels
 
 
-def emit_code(rom, start, end, symbols, mode, out, symbolize_imm=False):
+def emit_code(rom, start, end, symbols, mode, out, symbolize_imm=False, entry_name=None):
     insns = disassemble_segment(rom, start, end)
-    labels = collect_labels(insns, symbols, start, end)
+    labels = collect_labels(insns, symbols, start, end, entry_name)
     for ins in insns:
         if ins.address in labels:
             out.write("%s:\n" % labels[ins.address])
@@ -295,6 +295,8 @@ def main():
     ap.add_argument("--listing", default=DEFAULT_LISTING)
     ap.add_argument("--mode", choices=("project", "roundtrip"), default="project")
     ap.add_argument("--org", action="store_true", help="emit an org directive")
+    ap.add_argument("--entry-name", default=None,
+                    help="label name for the first address of the range")
     ap.add_argument("--symbolize-immediates", action="store_true",
                     help="replace #$ADDR immediates with known symbol names where possible")
     ap.add_argument("--data", action="append", default=[],
@@ -333,11 +335,11 @@ def main():
             if dend <= addr or dstart >= end:
                 continue
             if addr < dstart:
-                emit_code(rom, addr, dstart, symbols, args.mode, out, args.symbolize_immediates)
+                emit_code(rom, addr, dstart, symbols, args.mode, out, args.symbolize_immediates, args.entry_name)
             emit_data(rom, dstart, dend, out)
             addr = dend
         if addr < end:
-            emit_code(rom, addr, end, symbols, args.mode, out, args.symbolize_immediates)
+            emit_code(rom, addr, end, symbols, args.mode, out, args.symbolize_immediates, args.entry_name)
     finally:
         if out is not sys.stdout:
             out.close()
