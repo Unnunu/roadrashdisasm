@@ -106,6 +106,21 @@ changes bike damage, or only speed/Y/knockdown, is an open dynamic question.
 Attack SFX: `Audio_UpdateEngine0` sets `ram_FF1AD7=$0E` at attack phase 1;
 `sub_14E38` passes `ram_FF1AD6/AD7` to `Audio_PlaySfx`.
 
+## Dynamic test 1 (player attack, native console)
+
+With C near an opponent, breakpoint `0x16320` (`sub_162B0` after state setup):
+
+- `ram_FF1B22 = 1`
+- player `$69 = $12` (bit4 attack active; bit1 also set)
+- player `$6B = $01` (high flag)
+- player `$6C = 0`, `$6D = 1`, `$5A = 0`
+- nearest actor = `$FF232A`
+- backtrace: `Race_Update` -> `Race_UpdateNearestTarget` -> `sub_162B0`
+
+This confirms the attack path and the `$6C/$6D` phase/timer fields. `$69` bit5
+(attack side) is set/cleared after the Y comparison, so it must be captured after
+stepping to `0x16346`. Up/Down comparisons and AI handlers are still pending.
+
 ## Open questions / next experiments
 
 - Confirm attack phase semantics (`$6C` 0..3), high/low/side bits, `$5A`.
