@@ -1,5 +1,18 @@
 ; *************************************************
+; character.asm - pre-race rider/opponent introduction
+; ROM range: $59C4-$5F27
+; Status:    analyzed (static; rendering dynamically TODO)
+; API:       Character_Init, Character_GameTick
+; *************************************************
+
+; *************************************************
 ; Function Character_Init
+; Builds the rider/opponent intro: VDP setup, background/gamepad/portrait, opponent
+; record (unk_19A12), name/quote/palette, optional bike overlay, font, message, DMA.
+; In:  Menu_ram_Player, PlayerA/BLevel, CurrentTrackId, ram_FF0520 (extra field)
+; Out: Menu_ram_FrameBuffer -> VRAM $7000; VRAM $A000-$D000 assets; palette
+; Clobbers: d0-d7, a0-a3
+; Notes: only reached on the non-demo path (top_level.asm $7E782).
 ; *************************************************
 
 Character_Init:
@@ -52,7 +65,8 @@ Character_Init:
 .loopClearAB:
                 move.l  d1,(a0)
                 dbf     d0,.loopClearAB
-; load background image
+; load the main-menu background (the visible tiles stay at $8000 from the menu;
+; this write targets $4000 and is later overwritten by the nametable)
                 lea     (img_MainMenu_Background).l,a3
                 lea     (Intro_ram_ImageBuffer).l,a1
                 jsr     (UncompressW).l
@@ -70,7 +84,7 @@ Character_Init:
                 move.w  #128,d6 ; plane width
                 lea     (Intro_ram_ImageBuffer + $4E8).l,a0
                 jsr     (WriteNametable).w
-; load gamepad image
+; load the gamepad diagram (also supplies the button-icon tiles at $A000)
                 lea     (img_Gamepad).l,a3
                 lea     (Intro_ram_ImageBuffer).l,a1
                 jsr     (UncompressB).l
@@ -88,7 +102,7 @@ Character_Init:
                 move.w  #128,d6 ; plane width
                 lea     (Intro_ram_ImageBuffer + $B48).l,a0
                 jsr     (WriteNametable).w
-; clear framebuffer
+; clear the 64x28 window frame buffer to the default tile
                 lea     (Menu_ram_FrameBuffer).l,a0
                 move.l  #$7FF07FF,d1
                 move.w  #$37F,d0
@@ -96,6 +110,7 @@ Character_Init:
                 move.l  d1,(a0)+
                 dbf     d0,.loopClearFB
 
+; load the portrait panel (11 tiles + 12x14 nametable) to VRAM $B000
                 lea     (unk_7EA66).l,a3
                 lea     (Intro_ram_ImageBuffer).l,a1
                 jsr     (UncompressB).l
@@ -115,6 +130,8 @@ Character_Init:
                 jsr     (WriteNametableToBuffer).w
 
 .loc_5BAA:
+; select the opponent record: copy the player's 2-bit "extra" field, then pick a
+; random variant (0/8/$10; $18 is used instead of 0 when extra != 0)
                 move.w  (ram_FF0522).l,(ram_FF0520).l
                 tst.w   (Menu_ram_Player).l
                 beq.w   .loc_5BC8
@@ -131,6 +148,7 @@ Character_Init:
                 ble.w   .loc_5BEC
                 move.w  #$18,d0
 .loc_5BEC:
+; unk_19A12 = [level][track][variant] records of (quote_ptr, image_ptr)
                 lea     (unk_19A12).l,a0
                 adda.w  d0,a0
                 move.w  (Menu_ram_PlayerALevel).l,d0
@@ -144,9 +162,12 @@ Character_Init:
                 move.w  (Menu_ram_CurrentTrackId).l,d0
                 mulu.w  #$10,d0
                 adda.w  d0,a0
+; record: (a0)=quote, 4(a0)=image. The image is preceded by an 8-byte prefix
+; whose odd bytes form the image-header pointer.
                 movea.l 4(a0),a3 ; get character image
                 move.l  a3,-(sp)
                 move.l  (a0),-(sp) ; get character quote
+; rebuild the header pointer from the four odd bytes of the prefix
                 move.b  -7(a3),d0
                 lsl.l   #8,d0
                 move.b  -5(a3),d0
@@ -159,12 +180,13 @@ Character_Init:
                 lea     (Intro_ram_ImageBuffer).l,a1 ; destination
                 jsr     (UncompressW).l
 
+; write the portrait tiles: header -6 = image offset in the decompressed buffer
                 move.l  #$C000,d0 ; chararcter image VRAM address
                 movea.l (sp),a0
                 movea.w -6(a0),a0
                 adda.l  #Intro_ram_ImageBuffer,a0
                 jsr     (WriteToVRAM).l
-; write image to fb
+; draw the 10x12 portrait at (3,6); header -4 = nametable offset (+4 skips header)
                 move.w  #10,d0 ; width
                 move.w  #12,d1 ; height
                 move.w  #3,d2 ; x
@@ -176,7 +198,7 @@ Character_Init:
                 adda.l  #Intro_ram_ImageBuffer + 4,a0 ; source
                 lea     (Menu_ram_FrameBuffer).l,a1 ; destination
                 jsr     (WriteNametableToBuffer).w
-; copy palette
+; header -2 = palette offset; copy 4x8 longs (64 colours) to the global palette
                 movea.l (sp),a0
                 movea.w -2(a0),a0
                 adda.l  #Intro_ram_ImageBuffer,a0
@@ -202,6 +224,7 @@ Character_Init:
                 move.l  (a0)+,(a1)+
                 dbf     d0,.loopCopyPalette3
 
+; header -10 = name string pointer; +6 skips the 6-byte name descriptor
                 movea.l (sp)+,a0
                 movea.l -10(a0),a0
                 addq.w  #6,a0
@@ -284,6 +307,7 @@ Character_Init:
                 bsr.w   WriteNametableToBuffer
 
                 move.l  (sp)+,d0
+; Natasha's default image with a non-zero extra field also shows the overlaid bike
                 cmp.l   #unk_AF902,d0
                 bne.w   .loc_5E2C
                 tst.w   (ram_FF0520).l
@@ -307,6 +331,7 @@ Character_Init:
                 lea     (Intro_ram_ImageBuffer + $548).l,a0
                 jsr     (WriteNametableToBuffer).w
 .loc_5E2C:
+; load the font used by the name, quote and message text
                 lea     (img_Intro_Font).l,a3
                 lea     (Intro_ram_ImageBuffer).l,a1
                 jsr     (UncompressW).l
@@ -317,6 +342,7 @@ Character_Init:
 
                 bsr.w   Menu_ShowMessage
 
+; push the 64x28 window buffer to VRAM $7000
                 move.l  #Menu_ram_FrameBuffer,d0
                 move.w  #$7000,d1
                 move.w  #$700,d2
@@ -326,14 +352,21 @@ Character_Init:
 
 ; *************************************************
 ; Function Character_GameTick
+; Per-frame update: push the frame buffer, edge-detect pad A/B, advance the timed
+; message, and exit to the race on a newly pressed button or the message terminator.
+; In:  pad input; Menu_ram_CurrentMessageId/NextMessageTimer
+; Out: Race_ram_ActiveController (0/1) on exit; ram_UpdateFunction=0 at end stage
+; Clobbers: d0-d2/a0
 ; *************************************************
 
 Character_GameTick:
+; push the window buffer every frame
                 move.l  #Menu_ram_FrameBuffer,d0
                 move.w  #$7000,d1
                 move.w  #$700,d2
                 jsr     (DmaWriteVRAM).l
 
+; pad A: ~input & previous raw buttons detects a newly pressed button
                 move.w  (MainMenu_ram_ButtonsPlayerA).l,(MainMenu_ram_ChangedButtonsPlayerA).l
                 jsr     (GetInputPlayerA).w
                 move.w  d0,(MainMenu_ram_ButtonsPlayerA).l
@@ -355,6 +388,7 @@ Character_GameTick:
                 bra.w   .endStage
 
 .loc_5EDA:
+; every 300 frames (5 s) advance to the next message; $FFFFFFFF ends the screen
                 subq.w  #1,(Menu_ram_NextMessageTimer).l
                 bpl.w   .loc_5F0A
                 move.w  #300,(Menu_ram_NextMessageTimer).l
@@ -371,6 +405,7 @@ Character_GameTick:
 .loc_5F0E:
                 jsr     (AudioFunc1).l
                 rts
+; exit stage: stop the screen and play the transition sound
 .endStage:
                 jsr     (AudioFunc4).l
                 move.l  #0,(ram_UpdateFunction).l
