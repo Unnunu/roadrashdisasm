@@ -1,5 +1,21 @@
-; =============== S U B R O U T I N E =======================================
+; *************************************************
+; race.asm - main gameplay (top-level)
+; ROM range: $A4E2-$16E6F; includes race_hud ($D278), road_marking ($E732),
+; animation ($16860)
+; Status:    partial (top-level flow/init/loop/input; actors/physics/AI TODO)
+; API:       Race_Init, Race_GameTick, Race_Update, Race_GetInput, Race_SwapFrames,
+;            Race_FinishFrame, Race_UpdateTime, Race_ResetFrameTimers
+; *************************************************
 
+; *************************************************
+; Function Race_Init
+; Full race setup: variables/bike/buffers/HUD/fonts/track assets, road image, actors,
+; track data decode, VDP, opponent spawn, track parameters, audio; warm-up frames.
+; In:  Menu_ram_Player/CurrentTrackId/PlayerLevel, Menu_ram_BikeIdPlayerA/B
+; Out: race state and assets; Race_ram_State=0
+; Clobbers: all
+; Notes: warm-up runs Race_Update twice and waits two GameTick/frame-ready cycles.
+; *************************************************
 
 Race_Init:
                 jsr     (Race_InitVariables).l
@@ -97,8 +113,13 @@ ClearVRAM:
 ; End of function ClearVRAM
 
 
-; =============== S U B R O U T I N E =======================================
-
+; *************************************************
+; Function Race_InitAudio
+; Initializes the engine/skid audio channels and starts the track song.
+; In:  Menu_ram_CurrentTrackId, ram_MusicEnabled
+; Out: ram_FF36B6..C2, audio channels; ram_CurrentSong
+; Clobbers: d0/d1/a0
+; *************************************************
 
 Race_InitAudio:
                 move.b  #0,(ram_FF1AD5).l
@@ -140,6 +161,11 @@ Race_dTrackSongs:
 
 ; *************************************************
 ; Function Race_InitVdp
+; Race VDP setup: H-int on, line scroll, window $3000 (Y=19), SAT $C400,
+; H-scroll table $C000.
+; In:  -
+; Out: VDP registers; first sprite entry cleared
+; Clobbers: a0/a1
 ; *************************************************
 
 Race_InitVdp:
@@ -165,8 +191,13 @@ Race_InitVdp:
 ; End of function Race_InitVdp
 
 
-; =============== S U B R O U T I N E =======================================
-
+; *************************************************
+; Function Race_ClearSprites
+; Clears the scroll/sprite work tables (0xB4 entries).
+; In:  -
+; Out: Intro_TitleScrollTable+$400 / Intro_TitleScrollSpeed+$400
+; Clobbers: d0/d1/a0/a1
+; *************************************************
 
 Race_ClearSprites:
                 movea.l #Intro_TitleScrollTable + $400,a0
@@ -181,8 +212,13 @@ Race_ClearSprites:
 ; End of function Race_ClearSprites
 
 
-; =============== S U B R O U T I N E =======================================
-
+; *************************************************
+; Function sub_A79C
+; Draws the top HUD/border tiles on both planes and palette rows.
+; In:  -
+; Out: VRAM $4700/$6700, planes $4000/$6000; palette
+; Clobbers: d0-d6/a0/a1/a3
+; *************************************************
 
 sub_A79C:
                 VDP_VRAM_WRITE $4700,VdpCtrl
@@ -280,8 +316,13 @@ sub_A79C:
 ; End of function sub_A79C
 
 
-; =============== S U B R O U T I N E =======================================
-
+; *************************************************
+; Function Race_LoatTrackGfx
+; Loads the current track's background graphics/palette (RaceTrack_Data6).
+; In:  RaceTrack_Data6
+; Out: VRAM $1000, planes; palette rows
+; Clobbers: d0-d6/a0/a1/a3
+; *************************************************
 
 Race_LoatTrackGfx:
                 movea.l (RaceTrack_Data6).l,a3
@@ -345,8 +386,13 @@ Race_LoatTrackGfx:
 ; End of function Race_LoatTrackGfx
 
 
-; =============== S U B R O U T I N E =======================================
-
+; *************************************************
+; Function Race_LoadMoreTrackGfx
+; Loads additional per-track plane graphics and clears the plane/HScroll regions.
+; In:  Menu_ram_CurrentTrackId
+; Out: VRAM $8000/$6400/$4400/$6000/$4000; planes
+; Clobbers: d0-d6/a0/a1/a3
+; *************************************************
 
 Race_LoadMoreTrackGfx:
                 move.w  (Menu_ram_CurrentTrackId).l,d0
@@ -441,8 +487,13 @@ Race_LoadMoreTrackGfx:
 ; End of function Race_LoadMoreTrackGfx
 
 
-; =============== S U B R O U T I N E =======================================
-
+; *************************************************
+; Function Race_ClearFrameBuffers
+; Clears the window plane and both HUD frame buffers.
+; In:  -
+; Out: VRAM $3000; Menu_ram_FrameBuffer/2
+; Clobbers: d0/d1/a0
+; *************************************************
 
 Race_ClearFrameBuffers:
                 VDP_VRAM_WRITE $3000,VdpCtrl
@@ -496,8 +547,13 @@ sub_AB9A:
 ; End of function sub_AB9A
 
 
-; =============== S U B R O U T I N E =======================================
-
+; *************************************************
+; Function Race_LoadHUD
+; Loads/draws the race HUD and player name into both HUD buffers.
+; In:  Menu_ram_Player, MenuPassword_ram_StrPlayerA/BName
+; Out: VRAM $0/$3E00/$B800; Menu_ram_FrameBuffer/2
+; Clobbers: d0-d6/a0/a1/a3
+; *************************************************
 
 Race_LoadHUD:
                 lea     (unk_9C82A).l,a3
@@ -648,8 +704,13 @@ Race_LoadHUD:
 ; End of function Race_LoadHUD
 
 
-; =============== S U B R O U T I N E =======================================
-
+; *************************************************
+; Function Race_LoadRoadImage
+; Loads the road image, builds the pre-scaled road tile rows and calls sub_D9DA.
+; In:  unk_9DDCC
+; Out: VRAM $F880/$7800/$7900; ram_FF33CC tiles
+; Clobbers: d0-d6/a0/a1/a3
+; *************************************************
 
 Race_LoadRoadImage:
                 lea     (unk_9DDCC).l,a3
@@ -757,8 +818,13 @@ Race_LoadRoadImage:
 ; End of function Race_LoadRoadImage
 
 
-; =============== S U B R O U T I N E =======================================
-
+; *************************************************
+; Function Race_LoadFonts
+; Loads the HUD/digit fonts to VRAM.
+; In:  unk_9E3A2/unk_9DB68/unk_9DC4C
+; Out: VRAM $B800/$3E80/$BF00/$8300
+; Clobbers: d0/a0/a1/a3
+; *************************************************
 
 Race_LoadFonts:
 ; load font
@@ -814,8 +880,10 @@ sub_AFC0:
 
 ; *************************************************
 ; Function WriteToVRAM
-; d0 - VRAM address
-; a0 - data, first long is number of tiles, the rest is tile data
+; Copies decompressed tile data to VRAM; the first long is the tile count.
+; In:  d0 - VRAM address; a0 - [tile count][tile data]
+; Out: VRAM
+; Clobbers: d0/d1/a0/a1
 ; *************************************************
 
 WriteToVRAM:
@@ -835,8 +903,14 @@ WriteToVRAM:
 ; End of function WriteToVRAM
 
 
-; =============== S U B R O U T I N E =======================================
-
+; *************************************************
+; Function Race_InitTrack
+; Selects the current track record, its per-level word and data streams, and sets the
+; initial race state/time/position parameters.
+; In:  Menu_ram_CurrentTrackId, Menu_ram_PlayerLevel
+; Out: RaceTrack_Data1..6, Race_ram_State/Time*, position/state fields
+; Clobbers: d0/a0/a1
+; *************************************************
 
 Race_InitTrack:
                 move.w  (Menu_ram_CurrentTrackId).l,d0
@@ -875,8 +949,14 @@ Race_InitTrack:
 ; End of function Race_InitTrack
 
 
-; =============== S U B R O U T I N E =======================================
-
+; *************************************************
+; Function Race_InitVariables
+; Clears/sets the race state, timers, sprite/HUD/scroll buffers and player pointers;
+; selects the player level and the per-level curve factor.
+; In:  Menu_ram_Player, Menu_ram_PlayerA/BLevel
+; Out: race RAM state; buffers; ram_FF1ADB
+; Clobbers: all
+; *************************************************
 
 Race_InitVariables:
                 move.l  #0,(ram_FF1E5C).l
@@ -1061,8 +1141,13 @@ Race_InitVariables:
 ; End of function Race_InitVariables
 
 
-; =============== S U B R O U T I N E =======================================
-
+; *************************************************
+; Function sub_B6C4
+; Builds the actor/object pointer tables and counts from unk_25856/unk_2585E.
+; In:  -
+; Out: ram_FF1A08/ram_FF1982 lists; ram_FF1A06; sentinels
+; Clobbers: d0/a1/a2
+; *************************************************
 
 sub_B6C4:
                 move.w  #0,(ram_FF1EA6).l
@@ -1092,8 +1177,13 @@ sub_B6C4:
 ; End of function sub_B6C4
 
 
-; =============== S U B R O U T I N E =======================================
-
+; *************************************************
+; Function sub_B72A
+; Initializes the actor screen positions/scales (0x1A/0x30 fields) in the list.
+; In:  ram_FF1A08 list
+; Out: actor structs
+; Clobbers: d0-d3/a0/a1
+; *************************************************
 
 sub_B72A:
                 move.w  #7,d0
@@ -1119,8 +1209,13 @@ sub_B72A:
 ; End of function sub_B72A
 
 
-; =============== S U B R O U T I N E =======================================
-
+; *************************************************
+; Function sub_B770
+; Initializes the bike/engine/steering physics constants and HUD/scroll defaults.
+; In:  -
+; Out: ram_FF1AB6/D330/D338, ram_FF1AE8..F4, ram_FF18A8..B6, ram_FF1A9E/A0
+; Clobbers: d0/a0/a1
+; *************************************************
 
 sub_B770:
                 move.w  #$20,(ram_FF1AC8).l
@@ -1160,8 +1255,13 @@ sub_B770:
 ; End of function sub_B770
 
 
-; =============== S U B R O U T I N E =======================================
-
+; *************************************************
+; Function sub_B840
+; Loads per-track parameters from unk_1471A into ram_FF302E..3034.
+; In:  Menu_ram_CurrentTrackId
+; Out: ram_FF302E/3030/3032/3034
+; Clobbers: d0/a0
+; *************************************************
 
 sub_B840:
                 lea     (unk_1471A).l,a0
@@ -1176,8 +1276,13 @@ sub_B840:
 ; End of function sub_B840
 
 
-; =============== S U B R O U T I N E =======================================
-
+; *************************************************
+; Function Race_LoadBikeData
+; Loads the selected bike's parameter block and steering/engine values.
+; In:  Menu_ram_Player, Menu_ram_BikeIdPlayerA/B
+; Out: ram_FF1A70 (0x13 words); ram_FF1AA6/AAA; RaceBike_ram_*; ram_FF1AB2/B4
+; Clobbers: d0/d1/a0/a1
+; *************************************************
 
 Race_LoadBikeData:
                 move.w  (Menu_ram_BikeIdPlayerA).l,d0
@@ -1208,8 +1313,14 @@ Race_LoadBikeData:
 ; End of function Race_LoadBikeData
 
 
-; =============== S U B R O U T I N E =======================================
-
+; *************************************************
+; Function sub_B8D0
+; Expands the track spawn records (RaceTrack_Data5) into the object lists, using the
+; per-level thresholds word_B976/word_B980 and the color table off_B98A.
+; In:  RaceTrack_Data5, Menu_ram_PlayerLevel
+; Out: ram_FFD7D4/ram_FFDBD8 lists; pointers/counts
+; Clobbers: d0-d7/a0-a3
+; *************************************************
 
 sub_B8D0:
                 lea     (ram_FFD7D4).l,a1
@@ -1282,8 +1393,13 @@ byte_B9A6:
 byte_B9AA:
     dc.b 1, 2, 3, 4
 
-; =============== S U B R O U T I N E =======================================
-
+; *************************************************
+; Function Race_ResetFrameTimers
+; Measures the rendering frame ticks (60 ticks/s) and updates the frame delay.
+; In:  Race_ram_FrameCounter
+; Out: Race_ram_FrameDelay, ram_FF304C/304E/3050
+; Clobbers: d0/d1
+; *************************************************
 
 Race_ResetFrameTimers:
                 move.w  (Race_ram_FrameCounter).l,d1
@@ -1307,8 +1423,13 @@ Race_ResetFrameTimers:
 ; End of function Race_ResetFrameTimers
 
 
-; =============== S U B R O U T I N E =======================================
-
+; *************************************************
+; Function Race_UpdateTime
+; Advances the BCD race timer while the player is not finished (player $68 bit7).
+; In:  player struct $68; Race_ram_TimeTicks/Seconds/Minutes
+; Out: timer fields; ram_FF1E96 frame count
+; Clobbers: d0/d1
+; *************************************************
 
 Race_UpdateTime:
                 addi.l  #1,(ram_FF1E96).l
@@ -1339,8 +1460,14 @@ Race_UpdateTime:
 ; End of function Race_UpdateTime
 
 
-; =============== S U B R O U T I N E =======================================
-
+; *************************************************
+; Function Race_GameTick
+; Per-frame VDP/input update: VScroll info, H-int state, sprite/HUD/scroll/palette DMA,
+; frame swap, pause/demo/end handling.
+; In:  Race_ram_State, NextFrameReady/Next* buffers, pad input
+; Out: VDP/VRAM; Race_ram_* buffers; ram_UpdateFunction=0 at the end
+; Clobbers: all
+; *************************************************
 
 Race_GameTick:
                 tst.w   (Race_ram_FrameDelay).l
@@ -1440,8 +1567,13 @@ Race_GameTick:
 ; End of function Race_GameTick
 
 
-; =============== S U B R O U T I N E =======================================
-
+; *************************************************
+; Function Race_SwapFrames
+; Switches the next HScroll/SAT/HUD/sprite/VScroll buffers to the other parity.
+; In:  Race_ram_NextFrameReady/NextScrollTable/NextHudBuffer/...
+; Out: Next* buffers/pointers; Animation_ram_BaseTile/SpriteDestination
+; Clobbers: d0/a2
+; *************************************************
 
 Race_SwapFrames:
                 movea.l (Race_ram_NextFrameReady).l,a2
@@ -1492,8 +1624,14 @@ Race_SwapFrames:
 ; End of function Race_SwapFrames
 
 
-; =============== S U B R O U T I N E =======================================
-
+; *************************************************
+; Function Race_FinishFrame
+; Publishes the current frame, switches the current buffers and rotates the
+; alpha/VScroll buffers.
+; In:  Race_ram_CurrentFrameReady/Current* buffers
+; Out: Current* pointers; Animation_ram_BaseTile; VScroll info
+; Clobbers: d0/a2
+; *************************************************
 
 Race_FinishFrame:
                 movea.l (Race_ram_CurrentFrameReady).l,a2
@@ -1542,6 +1680,10 @@ Race_FinishFrame:
 
 ; *************************************************
 ; Function Race_GetInputDemo
+; Demo input: any button on either pad ends the demo.
+; In:  pad input
+; Out: Race_ram_GameEnded/DemoGameEnded
+; Clobbers: d0
 ; *************************************************
 
 Race_GetInputDemo:
@@ -1560,6 +1702,10 @@ Race_GetInputDemo:
 
 ; *************************************************
 ; Function Race_GetInput
+; Reads the active pad; updates steering, B/A input bits, pause/start and debounce.
+; In:  Race_ram_ActiveController, RaceBike_ram_*; player struct $68
+; Out: Race_ram_CurrentButtons; RaceBike_ram_CurrentSteering; player $68 bits
+; Clobbers: d0/d1
 ; *************************************************
 
 Race_GetInput:
@@ -1675,8 +1821,14 @@ Race_GetInput:
 ; End of function Race_GetInput
 
 
-; =============== S U B R O U T I N E =======================================
-
+; *************************************************
+; Function Race_Update
+; Main simulation/render prep: bike damage/end, player/opponent update chain, road
+; interpolation, object lists, HUD/road/actor/sprite rendering, finish frame.
+; In:  player/actor state, track data, input flags
+; Out: next frame buffers; Race_ram_GameEnded; race state fields
+; Clobbers: all
+; *************************************************
 
 Race_Update:
                 cmpi.w  #$20,(Race_ram_BikeDamage).l
