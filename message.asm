@@ -1,5 +1,16 @@
 ; *************************************************
+; message.asm - bottom-screen tooltips, button prompts, shared strings/tables
+; ROM range: $4226-$575F
+; Status:    analyzed (message system/strings; shared tables partly TODO)
+; API:       Message_ShowEmpty/Clear, Message_Blink*, Message_MsgArray
+; *************************************************
+
+; *************************************************
 ; Function Message_ShowEmpty
+; Fills the bottom 40x6 message field with spaces.
+; In:  -
+; Out: Menu_ram_FrameBuffer rows 22-27
+; Clobbers: d0/d1/d4/d6/a0/a1
 ; *************************************************
 
 Message_ShowEmpty:
@@ -23,11 +34,15 @@ Message_ShowEmpty:
                 lea     (Menu_ram_FrameBuffer).l,a1
                 bsr.w   WriteNametableToBuffer
 sub_4268:
-                rts
+                rts ; no-op show function (no icon/blink)
 ; End of function Message_ShowEmpty
 
 ; *************************************************
 ; Function Message_Clear
+; Fills the bottom 40x6 message field with the black/default tile.
+; In:  -
+; Out: Menu_ram_FrameBuffer rows 22-27
+; Clobbers: d0/d1/d4/d6/a0/a1
 ; *************************************************
 
 Message_Clear:
@@ -53,6 +68,11 @@ Message_Clear:
 
 ; *************************************************
 ; Function Message_BlinkButtonA
+; Blinks the A button icon in the message field.
+; In:  Message_ram_ButtonBlinkCounter/Period
+; Out: Menu_ram_FrameBuffer message field
+; Clobbers: d0/d1/d2/d3/d4/d6/a0/a1
+; Notes: draws gamepad tile 4 at (10,25); on for half the blink period.
 ; *************************************************
 
 Message_BlinkButtonA:
@@ -84,6 +104,7 @@ Message_DrawButtonA:
 
 ; *************************************************
 ; Function Message_BlinkButtonB
+; Blinks the B button icon (tiles 5/6 at 11,24).
 ; *************************************************
 
 Message_BlinkButtonB:
@@ -116,6 +137,7 @@ Message_DrawButtonB:
 
 ; *************************************************
 ; Function Message_BlinkButtonsAB
+; Blinks both A and B button icons.
 ; *************************************************
 
 Message_BlinkButtonsAB:
@@ -138,6 +160,7 @@ Message_BlinkButtonsAB:
 
 ; *************************************************
 ; Function Message_BlinkButtonC
+; Blinks the C button icon (tiles 7/8 at 12,24).
 ; *************************************************
 
 Message_BlinkButtonC:
@@ -171,6 +194,7 @@ Message_BlinkButtonC:
 
 ; *************************************************
 ; Function Message_BlinkButtonStart
+; Blinks the Start button icon (tiles 9/$A/$B at 9,23).
 ; *************************************************
 
 Message_BlinkButtonStart:
@@ -204,6 +228,11 @@ Message_BlinkButtonStart:
 ; End of function Message_BlinkButtonStart
 
 
+
+; *************************************************
+; Function sub_445E
+; Draws the vertical part of the directional-pad icon (4x2 tiles at 3,24).
+; *************************************************
 
 sub_445E:
                 bsr.w   Message_Clear
@@ -240,8 +269,10 @@ loc_4486:
 ; End of function sub_445E
 
 
-; =============== S U B R O U T I N E =======================================
-
+; *************************************************
+; Function sub_44D6
+; Draws the right half of the directional-pad icon (2x4 tiles at 4,23).
+; *************************************************
 
 sub_44D6:
                 bsr.w   Message_Clear
@@ -279,6 +310,7 @@ loc_44FE:
 
 ; *************************************************
 ; Function Message_BlinkDirectionalPad
+; Blinks the directional-pad icon (sub_445E + sub_44D6).
 ; *************************************************
 
 Message_BlinkDirectionalPad:
@@ -300,6 +332,8 @@ Message_BlinkDirectionalPad:
 ; End of function Message_BlinkDirectionalPad
 
 Message_MsgArray:
+; 8-byte entries: dc.l text_pointer,show_function; index = CurrentMessageId/8.
+; $FFFFFFFF pairs terminate a tooltip group.
 ; Main menu
     dc.l StrOnePlayerModeSelected,Message_ShowEmpty
     dc.l StrTwoPlayerModeSelected,Message_ShowEmpty
@@ -423,7 +457,7 @@ StrMusicOff:
     dc.b "                    "
     dc.b "        OFF         "
 
-unk_49E8:
+unk_49E8: ; race-name/tooltip pointers (indexed by track id * 2 bytes)
     dc.l unk_49FC,unk_4AE8,unk_4AD4,unk_4B40,unk_4BAC
 
 unk_49FC:
@@ -462,7 +496,7 @@ unk_4BAC:
     dc.b "    Grass Valley    "
     dc.b "          miles     "
 
-unk_4C18:
+unk_4C18: ; demo high-score table (used by intro.asm)
     dc.b "Fang         $51,320"
     dc.b "Helldog      $44,790"
     dc.b "Lubster      $34,260"
@@ -503,7 +537,7 @@ unk_4DDC:
     dc.b "                    "
     dc.b " select a new track "
 
-unk_4E20:
+unk_4E20: ; ".. password invalid .." string (password status)
     dc.w 22,12,5,16
     dc.b "   PLAYERNAME   "
     dc.b "                "
@@ -523,7 +557,7 @@ unk_4EE4:
     dc.w 27,1,1,1
     dc.b "  "
 
-word_4EEE:
+word_4EEE: ; password screen labels
     dc.w 8,4,7,12
     dc.b "    Name    "
     dc.b "            "
@@ -627,7 +661,7 @@ unk_53A6:
     dc.b " the trade in value "
     dc.b "  of your old bike. "
 
-unk_53FE:
+unk_53FE: ; shop bike descriptions / shop tooltips
     dc.w 23,4,3,32
     dc.b "Big on Handling, short on power."
     dc.b "It's important to maintain speed"

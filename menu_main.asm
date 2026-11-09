@@ -162,8 +162,8 @@ Menu_Init:
                 lea     (Intro_ram_ImageBuffer).l,a0
                 jsr     (WriteToVRAM).l
 ; create nametable in Race_ram_ImageBuffer2
-                move.w  #12,d0 ; height
-                move.w  #12,d1 ; width
+                move.w  #12,d0 ; width
+                move.w  #12,d1 ; height
                 move.w  #0,d2 ; x
                 move.w  #0,d3 ; y
                 move.w  #0,d4 ; base tile
@@ -180,8 +180,8 @@ Menu_Init:
                 lea     (Intro_ram_ImageBuffer).l,a0
                 jsr     (WriteToVRAM).l
 ; and append nametable in Race_ram_ImageBuffer2, just below names images
-                move.w  #12,d0 ; height
-                move.w  #30,d1 ; width
+                move.w  #12,d0 ; width
+                move.w  #30,d1 ; height
                 move.w  #0,d2 ; x
                 move.w  #12,d3 ; y
                 move.w  #0,d4 ; base tile
@@ -244,8 +244,8 @@ Menu_Init:
 ; *************************************************
 ; Function WriteNametableToBuffer
 ; Copies a rectangular nametable region into a buffer with a fixed row stride.
-; d0 - height in cells
-; d1 - width in cells
+; d0 - width in cells
+; d1 - height in cells
 ; d2 - topLeftX
 ; d3 - topLeftY
 ; d4 - base tile index
@@ -283,8 +283,8 @@ WriteNametableToBuffer:
 ; Function WriteNametableToBufferMasked
 ; Like WriteNametableToBuffer, but writes only where the destination word equals the
 ; mask tile (used for the race cards: only black/default tiles are replaced).
-; d0 - height in cells
-; d1 - width in cells
+; d0 - width in cells
+; d1 - height in cells
 ; d2 - topLeftX
 ; d3 - topLeftY
 ; d4 - base tile index
@@ -973,8 +973,8 @@ Menu_DrawRaceCard:
                 subi.w  #$680,(a0)+
                 subi.w  #$680,(a0)+
 .draw:
-                move.w  #12,d0 ; height
-                move.w  #6,d1 ; width
+                move.w  #12,d0 ; width
+                move.w  #6,d1 ; height
                 move.w  #$680,d4 ; base tile index, address $D000
                 move.w  #$7FF,d5 ; mask tile - default black tile
                 move.w  #64,d6 ; plane width
