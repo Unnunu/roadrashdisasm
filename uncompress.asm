@@ -1,11 +1,25 @@
-; =============== S U B R O U T I N E =======================================
+; *************************************************
+; uncompress.asm - LZSS decompressors (byte/word/streaming/VRAM)
+; ROM range: $9B9E-$9FE3
+; Status:    analyzed (algorithm validated with a Python decoder)
+; API:       UncompressB, UncompressW, sub_9CC6, sub_9DC2, UncompressToVRAM
+; *************************************************
 
+; *************************************************
+; Function UncompressB
+; Byte-format LZSS: 32-bit output size, 0x1000 ring at Road_ram_XLeftArray, ring
+; pointer $FEE; flags LSB-first, 1 = literal, 0 = 12-bit distance + length nibble+3.
+; In:  a3 - compressed data (32-bit size first), a1 - output
+; Out: decompressed bytes at a1
+; Clobbers: all (saved/restored)
+; *************************************************
 
 UncompressB:
                 movem.l d0-d7/a0-a6,-(sp)
                 move.l  (a3)+,d2
                 lea     (Road_ram_XLeftArray).l,a2
                 movea.l a2,a0
+; ring buffer prefilled with spaces; the window starts at $FEE
                 move.l  #$20202020,d3
                 move.w  #$3FF,d0
 .loc_9BB6:
@@ -57,17 +71,27 @@ UncompressB:
 ; End of function UncompressB
 
 
-; =============== S U B R O U T I N E =======================================
-
+; *************************************************
+; Function UncompressW
+; Word-format LZSS: the 8-byte header stores the size in its odd bytes; the stream
+; stores every flag/literal/match byte in the low byte of a 16-bit word (high byte
+; skipped). Same ring/match rules as UncompressB.
+; In:  a3 - compressed data (8-byte size header), a1 - output
+; Out: decompressed bytes at a1
+; Clobbers: all (saved/restored)
+; *************************************************
 
 UncompressW:
                 movem.l d0-d7/a0-a6,-(sp)
+; size = bytes 1,3,5,7 of the 8-byte interleaved header
                 addq.w  #1,a3
                 move.b  (a3)+,d2
                 asl.l   #8,d2
+; size = bytes 1,3,5,7 of the 8-byte interleaved header
                 addq.w  #1,a3
                 move.b  (a3)+,d2
                 asl.l   #8,d2
+; size = bytes 1,3,5,7 of the 8-byte interleaved header
                 addq.w  #1,a3
                 move.b  (a3)+,d2
                 asl.l   #8,d2
@@ -127,8 +151,14 @@ UncompressW:
 ; End of function UncompressW
 
 
-; =============== S U B R O U T I N E =======================================
-
+; *************************************************
+; Function sub_9CC6
+; Starts an interruptible byte-format LZSS decode: total size from the source,
+; per-call output budget in d1, state saved at ram_FF136C..13A8.
+; In:  a3 - source; a1 - output; d1 - max bytes this call
+; Out: decoded bytes; state block; rings persist
+; Clobbers: all (saved/restored)
+; *************************************************
 
 sub_9CC6:
                 movem.l d0-d7/a0-a6,-(sp)
@@ -187,6 +217,7 @@ sub_9CC6:
                 dbf     d5,.loc_9D32
                 bra.s   .loc_9CEC
 .loc_9D62:
+; save the full decoder state for the next chunk
                 move.l  a0,(ram_FF136C).l
                 move.l  a1,(ram_FF1370).l
                 move.l  a2,(ram_FF1374).l
@@ -207,8 +238,14 @@ sub_9CC6:
 ; End of function sub_9CC6
 
 
-; =============== S U B R O U T I N E =======================================
-
+; *************************************************
+; Function sub_9DC2
+; Resumes the interruptible byte decode. Restores the ring/source/decoder state, but
+; a1 (output) and d1 (new budget) are supplied by the caller.
+; In:  a1 - output; d1 - budget; ram_FF136C..13A8 state
+; Out: decoded bytes; updated state
+; Clobbers: all (saved/restored)
+; *************************************************
 
 sub_9DC2:
                 movem.l d0-d7/a0-a6,-(sp)
@@ -225,6 +262,7 @@ sub_9DC2:
                 move.l  (ram_FF139C).l,d5
                 move.l  (ram_FF13A0).l,d6
                 move.l  (ram_FF13A4).l,d7
+; resume inside a back-reference if the previous chunk stopped mid-match
                 tst.w   (ram_FF13A8).l
                 beq.w   .loc_9E46
                 bra.w   .loc_9E88
@@ -294,8 +332,14 @@ sub_9DC2:
 ; End of function sub_9DC2
 
 
-; =============== S U B R O U T I N E =======================================
-
+; *************************************************
+; Function UncompressToVRAM
+; Word-format LZSS straight to the VDP: a1 = VRAM tile address; the output is
+; assembled 4 bytes at a time in ram_FF13AA and written to VdpData.
+; In:  a3 - compressed data (word format), a1 - VRAM destination
+; Out: VRAM
+; Clobbers: all (saved/restored)
+; *************************************************
 
 UncompressToVRAM:
                 movem.l d0-d7/a0-a6,-(sp)
@@ -307,14 +351,18 @@ UncompressToVRAM:
                 swap    d0
                 move.l  d0,(VdpCtrl).l
                 lea     (VdpData).l,a1
+; 4-byte VRAM assembly buffer
                 lea     (ram_FF13AA).l,a4
                 move.w  #0,d1
+; size = bytes 1,3,5,7 of the 8-byte interleaved header
                 addq.w  #1,a3
                 move.b  (a3)+,d2
                 asl.l   #8,d2
+; size = bytes 1,3,5,7 of the 8-byte interleaved header
                 addq.w  #1,a3
                 move.b  (a3)+,d2
                 asl.l   #8,d2
+; size = bytes 1,3,5,7 of the 8-byte interleaved header
                 addq.w  #1,a3
                 move.b  (a3)+,d2
                 asl.l   #8,d2
