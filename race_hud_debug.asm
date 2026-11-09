@@ -56,7 +56,7 @@ RaceHud_DrawStandings:
 
 ; *************************************************
 ; Function RaceDebug_ShowDistanceTravelled
-; Shows the player's POSX_HIGH (formatted by sub_F11C) at HUD cell $1A13.
+; Shows the player's POSX_HIGH (formatted by Race_FormatDecimal) at HUD cell $1A13.
 ; In:  player struct RacePlayerA
 ; Out: Race_ram_CurrentHudBuffer
 ; Clobbers: d0/d1/d2/a0
@@ -64,7 +64,7 @@ RaceHud_DrawStandings:
 
 RaceDebug_ShowDistanceTravelled:
                 move.w  (RacePlayerA + STRUCT_OFFSET_POSX_HIGH).l,d0
-                jsr     (sub_F11C).l
+                jsr     (Race_FormatDecimal).l
                 move.w  d1,d0
                 move.w  #$1A13,d1
                 move.w  #0,d2
@@ -84,7 +84,7 @@ RaceDebug_ShowDistanceTravelled:
 
 RaceDebug_ShowPosZ:
                 move.w  (RacePlayerA + STRUCT_OFFSET_POSZ).l,d0
-                jsr     (sub_F11C).l
+                jsr     (Race_FormatDecimal).l
                 move.w  d1,d0
                 move.w  #$1508,d1
                 move.w  #0,d2
@@ -105,7 +105,7 @@ RaceDebug_ShowPosZ:
 
 RaceDebug_ShowFrameDelay:
                 move.w  (Race_ram_FrameDelay).l,d0
-                jsr     (sub_F11C).l
+                jsr     (Race_FormatDecimal).l
                 move.w  d1,d0
                 move.w  #0,d2
                 movea.l (Race_ram_CurrentHudBuffer).l,a0
@@ -124,7 +124,7 @@ RaceDebug_ShowFrameDelay:
 
 sub_999E:
                 move.w  (ram_FF304C).l,d0
-                jsr     (sub_F11C).l
+                jsr     (Race_FormatDecimal).l
                 move.w  d1,d0
                 move.w  #$1914,d1
                 move.w  #0,d2

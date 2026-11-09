@@ -32,6 +32,10 @@ marking/animation, and the race outcome. `top_level.asm` calls `Race_Init`, inst
 | `Race_CreateActors` | `0xCAD0` | `Race_Init` | Rider/opponent actor structs and tables. |
 | `Race_InitActorLists`/`Positions` | `0xB6C4`/`0xB72A` | `Race_Init` | Actor pointer groups + screen spots. |
 | `Race_ComputeResults` | `0xC3F8` | race end | Outcome/places/password/money. |
+| `Race_UpdateSpeedDisplay` | `0xF108` | `Race_Update` | Speed -> `ram_FF3046`. |
+| `Race_FormatDecimal` | `0xF11C` | HUD/debug | Packed 5-digit decimal. |
+| `Race_SpawnTick` | `0x16AF6` | `Race_Update` | Opponent/traffic spawning. |
+| `Race_SpawnOpponent`/`Traffic` | `0x16BD6`/`0x16C1A` | spawn tick | Ahead/behind spawn paths. |
 
 ## Control flow / state machine
 
@@ -52,6 +56,11 @@ marking/animation, and the race outcome. `top_level.asm` calls `Race_Init`, inst
   `+$68` flags (bit1 B, bit2 A, bit7 timer stop), `+$71 Index`.
 - `$FF2FAA`: a further actor-like instance used by `sub_12868` (`$68` bit6), not in
   the static list; role/layout TODO (`docs/analysis/race_actors.md`).
+- Spawn lists: `ram_FF1A0C` active actors, `ram_FF1A06` count, `ram_FF1982` opponent
+  free list, `ram_FF19C4` traffic free list; `ram_FF1E68` progress, `ram_FF1E9C`
+  distance scale, `ram_FF1EA6` spawn timer, `ram_FF1F2A` first opponent,
+  `ram_FF1B38/34/36` level/recycle state; speed display `ram_FF3046`.
+  Details: `docs/analysis/race_spawn.md`.
 - `$FFD37C`: 0x14-byte road/actor objects (`docs/analysis/road_render.md`).
 - Actors: `Race_ActorList` `0x25856` (player A + 15 opponents, `$80` each),
   `Race_ActorDefinitionTable` `0xCCDA` (76 x 16-byte definitions; player def `$4B`),
@@ -87,6 +96,7 @@ marking/animation, and the race outcome. `top_level.asm` calls `Race_Init`, inst
 | `Race_Update` | `0xC00C` | [x] | [~] | [x] | [x] | [x] | [ ] | partial |
 | `Race_ComputeResults` | `0xC3F8` | [x] | [~] | [x] | - | [x] | [ ] | partial |
 | `Race_CreateActors` | `0xCAD0` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
+| `Race_SpawnTick` + spawn | `0x16AF6`+ | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
 | Actors/physics/AI | `0xD9DA`+ | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | TODO |
 | `race_hud.asm` | `0xD278` | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | TODO |
 | `road_marking.asm` | `0xE732` | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | TODO |
@@ -100,7 +110,8 @@ Detailed top-level flow: `docs/analysis/race.md`; actors: `docs/analysis/race_ac
 - Uses `UncompressW/B`, `UncompressToVRAM`, `WriteToVRAM`, `WriteNametable(ToBuffer)`,
   `DmaWriteVRAM`, `DmaWriteCRAM`, `PiecewiseLinearInterpolation`, `Road_DrawObjects`
   (`road_render`), `RaceHud_Draw`, `RoadMarking_Draw`, `UpdateAnimation(2)`, the audio
-  functions, `GetInputPlayerA/B`, `Rand_GetWord`, `track_data` decoder, `Race_LoadActorPalette`.
+  functions, `GetInputPlayerA/B`, `Rand_GetWord`, `track_data` decoder, `Race_LoadActorPalette`,
+  `Race_FormatDecimal`; spawn helpers `sub_13746`/`sub_13FE6` (physics TODO).
 
 ## Hacks / bugs / quirks
 
@@ -126,12 +137,17 @@ Detailed top-level flow: `docs/analysis/race.md`; actors: `docs/analysis/race_ac
 - `[static]` Race outcome fields (`ram_FF0526/28`, `Race_EventBuffer`, `ram_FF0918`).
 - `[static]` Actor tables: 76 definitions, 16-pointer rider list (player A + 15
   opponents), graphics/static tables (parsed from `baserom.md`).
+- `[static]` Spawn flow: `Race_SpawnTick` -> opponent (ahead, x+$200000) or traffic
+  (behind, x-$100000), active/free lists, distance checks, rating from the opponent
+  definition; speed display `ram_FF3046`.
 
 ## Hypotheses / next steps
 
 - `[hypothesis]` `ram_FF2FAA` is a further actor-like instance (not in the static
   list); trace `sub_12868`.
 - TODO: actor fields `+$66/+$73/+$74/+$75/+$77/+$5C/+$5E/+$60`, player B, 8+7 split.
+- TODO: initial active/free list counts and `ram_FF1A08`/`ram_FF1A0C` overlap. Test:
+  break at `Race_SpawnTick` in a race and dump the lists.
 - TODO: trace the `a1` bases and map the player/actor structures field by field.
 - TODO: actor/physics/AI functions; `race_hud`/`road_marking`/`animation` cards.
 - Only after the field layout is confirmed: AS `STRUCT`s, convert confirmed uses,
@@ -153,3 +169,4 @@ Detailed top-level flow: `docs/analysis/race.md`; actors: `docs/analysis/race_ac
 | Demo race renderer | GDB demo, `0x942A`/`0x8FB4` | object list/road strip | `road_render` card |
 | Track decoder | GDB demo, `0x9FE4` | stream pointers/lengths | `track_data` card |
 | Actor tables | parse `baserom.md` `0x25856/0xCCDA/0x258EE` | 16 pointers, 76 defs | `race_actors.md` |
+| Spawn helpers | static code review `0x16AF6`..`0x16E6E` | active/free lists, ahead/behind | `race_spawn.md` |

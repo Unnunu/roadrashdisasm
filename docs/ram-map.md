@@ -131,7 +131,7 @@ definitions are in `docs/analysis/race_actors.md`. Initial field inventory:
 | `+$02` | word | `PosZ` | 98C2/endlevel debug, main HInt |
 | `+$04` | word | `PosXHigh` | `Race_Update`, 98C2 |
 | `+$06` | word | `PosXLow` | 98C2 |
-| `+$12` | word | `Speed` | `Race_Update` (`sub_F108`), main HInt |
+| `+$12` | word | `Speed` | `Race_Update` (`Race_UpdateSpeedDisplay`), main HInt |
 | `+$16` | byte | `ActorType` | actor definition byte0 |
 | `+$5C`/`+$5E`/`+$60` | word | actor graphics/sprite fields | `Race_ActorGraphicsTable` |
 | `+$66` | word | `ActorRating` (definition byte5*100) | `Race_CreateActors` |
@@ -166,6 +166,27 @@ Buffers: `Intro_TitleScrollTable`/`Intro_TitleScrollSpeed` (+$400 SAT),
 `Menu_ram_FrameBuffer/2`, `Race_ram_FrameReady/2`, `Race_ram_SpriteSize1/2`,
 `Intro_ram_ImageBuffer`/`Race_ram_ImageBuffer2`, VScroll info
 `ram_FF3FDC/$411C/$425C` with `Race_ram_Alpha1/2/3`, HUD/SAT/HScroll DMA targets.
+
+### Spawn/traffic (`race.asm`)
+
+| Address | Name | Size | Meaning |
+|---|---|---|---|
+| `$FF1A0C` | `ram_FF1A0C` | - | Active actor list (`FFFFFFFF`-terminated). |
+| `$FF1A06` | `ram_FF1A06` | 2 | Active actor count (spawn threshold `< 6`). |
+| `$FF1982` | `ram_FF1982` | - | Opponent free list (7 initial; push/pop). |
+| `$FF19C4` | `ram_FF19C4` | - | Traffic free list (push/pop; initial count TODO). |
+| `$FF1E68` | `ram_FF1E68` | 4 | Player progress for ahead/behind checks. |
+| `$FF1E9C` | `ram_FF1E9C` | 2 | Actor-distance scale (`+$66 * scale >> 16`). |
+| `$FF1EA6` | `ram_FF1EA6` | 2 | Spawn timer (0..511 frames). |
+| `$FF1F2A` | `ram_FF1F2A` | - | First opponent actor (special cases). |
+| `$FF1B20` | `ram_FF1B20` | 2 | Race started flag. |
+| `$FF1B38` | `ram_FF1B38` | 2 | Current level/cop index used by the recycler. |
+| `$FF1B34`/`$FF1B36` | `ram_FF1B34/36` | 2 each | Reset on the first-opponent level transition. |
+| `$FF3046` | `ram_FF3046` | 2 | Speed display (`Race_UpdateSpeedDisplay`). |
+
+`Race_SpawnTick` spawns ahead opponents (`x+$200000`) or behind traffic
+(`x-$100000`), with active/free lists and distance checks; `Race_UpdateSpeedDisplay`
++ `Race_FormatDecimal` produce `ram_FF3046`. See `docs/analysis/race_spawn.md`.
 
 ### Race results (`race_results.asm`)
 
@@ -229,7 +250,7 @@ current price/2; money -= price - current/2; regenerate the password. See
 
 Digit HUD: `d1` packed row/column -> offset `row*128+column*2`; tile `$5C0+digit`, bit15
 priority, `d2` palette/priority. Buffers `Race_ram_CurrentHudBuffer`/`NextHudBuffer`.
-`sub_F11C` (`race.asm`) formats distance/POSZ values. No direct callers; likely debug/
+`Race_FormatDecimal` (`race.asm`) formats distance/POSZ values. No direct callers; likely debug/
 alternate HUD. See `docs/analysis/race_hud_debug.md`.
 
 ### Road/object renderer (`road_render.asm`)

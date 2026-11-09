@@ -108,7 +108,7 @@ This is the double/quad buffering that avoids tearing.
 1. Bike damage `>= $20` -> set the race-end timers (`ram_FF3698=$171`,
    `ram_FF1B18=480`), eventually `Race_ram_GameEnded`.
 2. Clear the per-frame player flags `ram_FF1AD6/D7/DD`.
-3. `sub_F108` with the player Speed; `sub_16AF6`; if the race has started
+3. `Race_UpdateSpeedDisplay` with the player Speed; `Race_SpawnTick`; if the race has started
    (`ram_FF1B20`): the player/opponent update chain (`sub_160E2`, `sub_13EA0`,
    `sub_1383E`, `sub_13A92`, `sub_10E66`, `sub_13E94`, `sub_10DBE`, `sub_10DDA`,
    `sub_13BF4`, `sub_12868`, `sub_128E0`, `sub_12974`, `sub_138CE`, `sub_1281E`,
@@ -143,6 +143,9 @@ This is the double/quad buffering that avoids tearing.
   `Race_ActorList`, `Menu_ram_PlayerA/BOpponents`, `Race_ActorDefinitionTable` and
   `Race_ActorGraphicsTable`; the `0x14`-byte `Road_ObjectArray` is separate.
   Details: `docs/analysis/race_actors.md`.
+- `Race_SpawnTick`/`Race_SpawnOpponent`/`Race_SpawnTraffic`: dynamic actor spawning,
+  active/free lists and distance checks; `Race_UpdateSpeedDisplay`/`Race_FormatDecimal`
+  produce `ram_FF3046`. Details: `docs/analysis/race_spawn.md`.
 
 ## RAM / structures (initial inventory)
 
@@ -164,10 +167,10 @@ Actors/player structures:
 | `+$02` | word | `PosZ` | 98C2/endlevel debug, main HInt |
 | `+$04` | word | `PosXHigh` | `Race_Update`, 98C2 |
 | `+$06` | word | `PosXLow` | 98C2 |
-| `+$12` | word | `Speed` | `Race_Update` (`sub_F108`), main HInt |
+| `+$12` | word | `Speed` | `Race_Update` (`Race_UpdateSpeedDisplay`), main HInt |
 | `+$16` | byte | `ActorType` | actor definition byte0 |
 | `+$5C`/`+$5E`/`+$60` | word | actor graphics/sprite fields | `Race_ActorGraphicsTable` |
-| `+$66` | word | `Unk66`/ActorRating (definition byte5*100; divisor use) | `Race_CreateActors` |
+| `+$66` | word | `ActorRating`/speed (definition byte5*100; `Race_ApplyActorRating`) | `Race_CreateActors` |
 | `+$73`/`+$74`/`+$75`/`+$77` | byte | actor definition bytes 3/1/2/4 | `Race_CreateActors` |
 | `+$18` | word | `Gear` | 98C2, shop/gear |
 | `+$30` | word | `PosY` | 98C2, main HInt |
@@ -194,7 +197,8 @@ Actors/player structures:
 | Input | `Race_GetInput` `0xBE56`, `Race_GetInputDemo` `0xBE2C`, steering/pause |
 | Time | `Race_UpdateTime` `0xBA02`, `Race_ResetFrameTimers` `0xB9AE` |
 | Track/actors | `Race_InitTrack` `0xB016`, `Race_InitActorLists/Positions/PhysicsConstants/LoadTrackParams/SpawnOpponents`, `Race_CreateActors` `0xCAD0`; `Race_ActorList/DefinitionTable/GraphicsTable/StaticActorList` |
-| Physics/AI | `sub_F108`, `sub_16AF6`, `sub_13EA0`..`sub_13106` (TODO) |
+| Spawn/traffic | `Race_SpawnTick` `0x16AF6`, `Race_SpawnOpponent/Traffic`, active/free lists, `Race_UpdateSpeedDisplay`/`Race_FormatDecimal` |
+| Physics/AI | `Race_UpdateSpeedDisplay`, `Race_SpawnTick`, `sub_13EA0`..`sub_13106` (TODO) |
 | Road/render | `PiecewiseLinearInterpolation`, `Road_FillProfileTables`, `sub_FD96/FB1E/F40C`, `sub_109B6/FC0E`, `Road_BuildVisibleList`, `Road_DrawObjects` (`road_render`), `RoadMarking_Draw` |
 | HUD | `RaceHud_Draw` (`race_hud.asm`) |
 | Animation | `UpdateAnimation(2)` (`animation.asm`), `RiderSprites_Build` |
@@ -205,7 +209,7 @@ Actors/player structures:
 
 1. Trace the `a1` bases in the physics/AI chain and map the actor struct fields
    (see `docs/analysis/race_actors.md`; `RacePlayer`/`RaceActor`, `$FF2FAA`).
-2. Analyze the actor/physics functions (`sub_F108`, `sub_16AF6`, `sub_13xxx`,
+2. Analyze the actor/physics functions (`Race_UpdateSpeedDisplay`, `Race_SpawnTick`, `sub_13xxx`,
    `sub_Dxxx`, `sub_Exxx`) and the object list.
 3. `race_hud.asm`, `road_marking.asm`, `animation.asm` cards + internals.
 4. The race outcome (`Race_ComputeResults`/`Race_SortResults`/`Race_UpdateHighScoreTable`) and the standings.

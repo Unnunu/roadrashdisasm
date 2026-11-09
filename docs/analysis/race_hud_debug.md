@@ -62,7 +62,7 @@ offset is `((d1 & $FF00) >> 1) + ((d1 & $FF) << 1)` = `row*128 + column*2`
 
 | Function | Value | HUD position |
 |---|---|---|
-| `RaceDebug_ShowDistanceTravelled` | player `POSX_HIGH` (formatted by `sub_F11C`) | `$1A13` |
+| `RaceDebug_ShowDistanceTravelled` | player `POSX_HIGH` (formatted by `Race_FormatDecimal`) | `$1A13` |
 | `RaceDebug_ShowPosZ` | player `POSZ` (formatted) | `$1508` |
 | `RaceDebug_ShowFrameDelay` | `Race_ram_FrameDelay` | none (bug, see below) |
 | `sub_999E` | `ram_FF304C` (formatted) | `$1914` |
@@ -70,13 +70,13 @@ offset is `((d1 & $FF00) >> 1) + ((d1 & $FF) << 1)` = `row*128 + column*2`
 | `sub_9A98` | `ram_FF3046` | `$180D` |
 | `RaceHud_DrawGear` | player `GEAR` + `$5C1` | `$1716` |
 
-`sub_F11C` (`race.asm` `0xF11C`) converts the value for the distance readouts. These
+`Race_FormatDecimal` (`race.asm` `0xF11C`) converts the value for the distance readouts. These
 are internal race variables shown at fixed HUD cells, characteristic of a debug
 overlay.
 
 ## Quirks / notes
 
-- `RaceDebug_ShowFrameDelay` calls `sub_F11C`, moves the returned `d1` to `d0`, but never sets a HUD
+- `RaceDebug_ShowFrameDelay` calls `Race_FormatDecimal`, moves the returned `d1` to `d0`, but never sets a HUD
   position before `RaceHud_WriteDigit4`; `d1` still holds the formatted value, so the digit
   position is wrong. Likely unfinished debug code. `[static]`
 - No direct callers in the disassembled source; the normal race HUD lives in

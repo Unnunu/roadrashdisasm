@@ -1852,8 +1852,8 @@ Race_Update:
                 move.b  #0,(ram_FF1AD6).l
                 move.b  #0,(ram_FF1ADD).l
                 move.w  (RacePlayerA + STRUCT_OFFSET_SPEED).l,d0
-                jsr     (sub_F108).l
-                jsr     (sub_16AF6).l
+                jsr     (Race_UpdateSpeedDisplay).l ; HUD speed value
+                jsr     (Race_SpawnTick).l ; dynamic opponent/traffic spawn
                 tst.w   (ram_FF1B20).l
                 beq.w   .loc_C15A
 ; race started ??
@@ -5083,24 +5083,40 @@ sub_F0E4:
 ; End of function sub_F0E4
 
 ; *************************************************
-; Function sub_F108
+; Function Race_UpdateSpeedDisplay
 ; *************************************************
 
-sub_F108:
+; *************************************************
+; Function Race_UpdateSpeedDisplay
+; Converts the player Speed to a packed decimal and stores the HUD speed value.
+; In:  d0 - player Speed
+; Out: ram_FF3046
+; Clobbers: d0/d1
+; *************************************************
+
+Race_UpdateSpeedDisplay:
                 lsr.w   #7,d0
                 move.w  d0,d1
                 lsr.w   #2,d1
                 add.w   d1,d0
-                bsr.w   sub_F11C
+                bsr.w   Race_FormatDecimal
                 move.w  d1,(ram_FF3046).l
                 rts
-; End of function sub_F108
+; End of function Race_UpdateSpeedDisplay
 
 
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_F11C:
+; *************************************************
+; Function Race_FormatDecimal
+; Packs a 16-bit value into five decimal digits (BCD nibbles).
+; In:  d0 - value
+; Out: d1 - packed decimal
+; Clobbers: d0/d1
+; *************************************************
+
+Race_FormatDecimal:
                 movem.l d0,-(sp)
 
                 clr.l   d1
@@ -5144,7 +5160,7 @@ sub_F11C:
 .return:
                 movem.l (sp)+,d0
                 rts
-; End of function sub_F11C
+; End of function Race_FormatDecimal
 
 ; *************************************************
 ; Function PiecewiseLinearInterpolation
@@ -11919,7 +11935,7 @@ sub_12EA2:
                 cmp.w   #$FFEE,d0
                 bpl.w   .loc_12F60
                 bclr    #6,$68(a1)
-                bsr.w   sub_16CAE
+                bsr.w   Race_RecycleActor
                 bra.w   .loc_12FDC
 
 
@@ -11927,7 +11943,7 @@ sub_12EA2:
                 cmp.w   #$22,d0 ; '"'
                 bmi.w   .loc_12F60
                 bclr    #6,$68(a1)
-                bsr.w   sub_16C9A
+                bsr.w   Race_RecycleOpponent
                 bra.w   .loc_12FDC
 
 
@@ -13719,8 +13735,8 @@ sub_13BF4:
 
 
 sub_13CFE:
-                bsr.w   sub_16D0A
-                bsr.w   sub_16D9A
+                bsr.w   Race_ActivateActor
+                bsr.w   Race_SetupActor
                 bsr.w   sub_13FE6
                 cmp.w   $12(a1),d0
                 bpl.w   .loc_13D16
@@ -20535,7 +20551,15 @@ word_16AEC:     dc.w $B333
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_16AF6:
+; *************************************************
+; Function Race_SpawnTick
+; Opponent/traffic spawn ticker: timer, active-count and speed gates.
+; In:  player A $68/Speed, ram_FF1EA6 timer, ram_FF1A06 active count
+; Out: active/free lists; spawned actor; ram_FF1EA6 next timer
+; Clobbers: d0/a1
+; *************************************************
+
+Race_SpawnTick:
                 btst    #7,(RacePlayerA + STRUCT_OFFSET_68).l
                 bne.w   .return
                 tst.w   (ram_FF1EA6).l
@@ -20555,12 +20579,12 @@ sub_16AF6:
                 bpl.w   .return
                 cmpi.w  #6000,(RacePlayerA + STRUCT_OFFSET_SPEED).l
                 bmi.w   .loc_16B54
-                bsr.w   sub_16BD6
+                bsr.w   Race_SpawnOpponent
                 cmpa.l  #$FFFFFFFF,a1
                 bne.w   .loc_16B58
 
 .loc_16B54:
-                bsr.w   sub_16C1A
+                bsr.w   Race_SpawnTraffic
 
 .loc_16B58:
                 jsr     (Rand_GetWord).l
@@ -20569,68 +20593,101 @@ sub_16AF6:
 
 .return:
                 rts
-; End of function sub_16AF6
+; End of function Race_SpawnTick
 
 
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_16B6A:
+; *************************************************
+; Function Race_CheckOpponentAhead
+; Recycles an actor that is too far ahead of the player progress.
+; In:  a1 - actor, a2 - free list
+; Out: a1 - still valid or $FFFFFFFF; free list
+; Clobbers: d0/d1/a1
+; *************************************************
+
+Race_CheckOpponentAhead:
                 cmpa.l  #ram_FF1F2A,a1
                 beq.w   .locret_16B9C
-                bsr.w   sub_16BC8
+                bsr.w   Race_GetActorDistance
                 move.w  (ram_FF1E68).l,d1
                 addi.w  #$20,d1
                 cmp.w   d1,d0
                 ble.w   .locret_16B9C
                 cmp.w   (RaceTrack_Data1).l,d1
                 blt.w   .locret_16B9C
-                bsr.w   sub_16E48
+                bsr.w   Race_PushFreeActor
                 movea.l #$FFFFFFFF,a1
 .locret_16B9C:
                 rts
-; End of function sub_16B6A
+; End of function Race_CheckOpponentAhead
 
 
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_16B9E:
+; *************************************************
+; Function Race_CheckTrafficBehind
+; Recycles a traffic actor that is too far behind the player progress.
+; In:  a1 - actor, a2 - free list
+; Out: a1 - still valid or $FFFFFFFF; free list
+; Clobbers: d0/d1/a1
+; *************************************************
+
+Race_CheckTrafficBehind:
                 cmpa.l  #ram_FF1F2A,a1
                 beq.w   .locret_16BC6
-                bsr.w   sub_16BC8
+                bsr.w   Race_GetActorDistance
                 move.w  (ram_FF1E68).l,d1
                 subi.w  #$10,d1
                 cmp.w   d1,d0
                 bgt.w   .locret_16BC6
-                bsr.w   sub_16E48
+                bsr.w   Race_PushFreeActor
                 movea.l #$FFFFFFFF,a1
 .locret_16BC6:
                 rts
-; End of function sub_16B9E
+; End of function Race_CheckTrafficBehind
 
 
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_16BC8:
+; *************************************************
+; Function Race_GetActorDistance
+; Scales the actor rating (+$66) by ram_FF1E9C.
+; In:  a1 - actor
+; Out: d0 - distance value
+; Clobbers: d0
+; *************************************************
+
+Race_GetActorDistance:
                 move.w  STRUCT_OFFSET_66(a1),d0
                 mulu.w  (ram_FF1E9C).l,d0
                 swap    d0
                 rts
-; End of function sub_16BC8
+; End of function Race_GetActorDistance
 
 
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_16BD6:
+; *************************************************
+; Function Race_SpawnOpponent
+; Pops a free opponent, checks it is not too far ahead, activates it and places it
+; ahead of the player.
+; In:  ram_FF1982 free list, player A x
+; Out: actor fields/active list; a1
+; Clobbers: d0/a1/a2
+; *************************************************
+
+Race_SpawnOpponent:
                 move.l  a2,-(sp)
                 lea     (ram_FF1982).l,a2
-                bsr.w   sub_16E54
+                bsr.w   Race_PopFreeActor
                 cmpa.l  #$FFFFFFFF,a1
                 beq.w   .loc_16C16
-                bsr.w   sub_16B6A
+                bsr.w   Race_CheckOpponentAhead
                 cmpa.l  #$FFFFFFFF,a1
                 beq.w   .loc_16C16
                 cmpa.l  #ram_FF1F2A,a1
@@ -20638,40 +20695,56 @@ sub_16BD6:
                 btst    #6,$68(a1)
                 bne.w   .loc_16C16
 .loc_16C0E:
-                bsr.w   sub_16D0A
-                bsr.w   sub_16D2A
+                bsr.w   Race_ActivateActor
+                bsr.w   Race_InitOpponentActor
 .loc_16C16:
                 movea.l (sp)+,a2
                 rts
-; End of function sub_16BD6
+; End of function Race_SpawnOpponent
 
 
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_16C1A:
+; *************************************************
+; Function Race_SpawnTraffic
+; Pops a free traffic actor, checks it is not too far behind, activates/sets it up.
+; In:  ram_FF19C4 free list, player A x
+; Out: actor fields/active list; a1
+; Clobbers: d0/a1/a2
+; *************************************************
+
+Race_SpawnTraffic:
                 move.l  a2,-(sp)
                 lea     (ram_FF19C4).l,a2
-                bsr.w   sub_16E54
+                bsr.w   Race_PopFreeActor
                 cmpa.l  #$FFFFFFFF,a1
                 beq.w   .loc_16C4A
-                bsr.w   sub_16B9E
+                bsr.w   Race_CheckTrafficBehind
                 cmpa.l  #$FFFFFFFF,a1
                 beq.w   .loc_16C4A
-                bsr.w   sub_16D0A
-                bsr.w   sub_16D60
-                bsr.w   sub_16C4E
+                bsr.w   Race_ActivateActor
+                bsr.w   Race_InitTrafficActor
+                bsr.w   Race_ApplyActorRating
 
 .loc_16C4A:
                 movea.l (sp)+,a2
                 rts
-; End of function sub_16C1A
+; End of function Race_SpawnTraffic
 
 
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_16C4E:
+; *************************************************
+; Function Race_ApplyActorRating
+; Looks up the actor's opponent definition and writes rating*100 into +$66.
+; In:  a1 - actor; Menu_ram_PlayerA/BOpponents
+; Out: actor +$66
+; Clobbers: d0/a2
+; *************************************************
+
+Race_ApplyActorRating:
                 movem.l d0-d1/a2,-(sp)
                 lea     (Race_ActorList).l,a0
                 lea     (Menu_ram_PlayerAOpponents).l,a2
@@ -20693,26 +20766,43 @@ sub_16C4E:
                 move.w  d0,STRUCT_OFFSET_66(a1)
                 movem.l (sp)+,d0-d1/a2
                 rts
-; End of function sub_16C4E
+; End of function Race_ApplyActorRating
 
 
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_16C9A:
+; *************************************************
+; Function Race_RecycleOpponent
+; Pushes the actor to the opponent free list and removes it from the active list.
+; In:  a1 - actor
+; Out: ram_FF1982/ram_FF1A0C/ram_FF1A06
+; Clobbers: a1/a2
+; *************************************************
+
+Race_RecycleOpponent:
                 move.l  a2,-(sp)
                 lea     (ram_FF1982).l,a2
-                bsr.w   sub_16E48
-                bsr.w   sub_16E26
+                bsr.w   Race_PushFreeActor
+                bsr.w   Race_RemoveActiveActor
                 movea.l (sp)+,a2
                 rts
-; End of function sub_16C9A
+; End of function Race_RecycleOpponent
 
 
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_16CAE:
+; *************************************************
+; Function Race_RecycleActor
+; Removes an actor from the race, pushes traffic actors to ram_FF19C4 and handles
+; the first-opponent level transition.
+; In:  a1 - actor
+; Out: free/active lists; ram_FF1B38/34/36
+; Clobbers: d0/a1/a2
+; *************************************************
+
+Race_RecycleActor:
                 movem.l d0-d1/a2,-(sp)
                 cmpa.l  #ram_FF1F2A,a1
                 bne.w   .loc_16CE8
@@ -20729,22 +20819,30 @@ sub_16CAE:
 
 .loc_16CE8:
                 lea     (ram_FF19C4).l,a2
-                bsr.w   sub_16E48
+                bsr.w   Race_PushFreeActor
 
 .loc_16CF2:
-                bsr.w   sub_16E26
+                bsr.w   Race_RemoveActiveActor
                 move.l  4(a1),d0
                 divu.w  (ram_FF1E9C).l,d0
                 move.w  d0,STRUCT_OFFSET_66(a1)
                 movem.l (sp)+,d0-d1/a2
                 rts
-; End of function sub_16CAE
+; End of function Race_RecycleActor
 
 
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_16D0A:
+; *************************************************
+; Function Race_ActivateActor
+; Appends the actor to the active list and increments the count.
+; In:  a1 - actor
+; Out: ram_FF1A0C/ram_FF1A06
+; Clobbers: a2
+; *************************************************
+
+Race_ActivateActor:
                 move.l  a2,-(sp)
                 lea     (ram_FF1A0C).l,a2
 .loc_16D12:
@@ -20755,13 +20853,21 @@ sub_16D0A:
                 addq.w  #1,(ram_FF1A06).l
                 movea.l (sp)+,a2
                 rts
-; End of function sub_16D0A
+; End of function Race_ActivateActor
 
 
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_16D2A:
+; *************************************************
+; Function Race_InitOpponentActor
+; Places a new opponent $200000 ahead, sets Speed from +$66 and runs the setup.
+; In:  a1 - actor; player A
+; Out: actor fields
+; Clobbers: d0/a1/a2
+; *************************************************
+
+Race_InitOpponentActor:
                 move.l  a2,-(sp)
                 lea     (RacePlayerA).l,a2
                 move.l  4(a2),d0
@@ -20769,7 +20875,7 @@ sub_16D2A:
                 move.l  d0,4(a1)
                 move.w  STRUCT_OFFSET_66(a1),d0
                 move.w  d0,$12(a1)
-                bsr.w   sub_16D9A
+                bsr.w   Race_SetupActor
                 bsr.w   sub_13FE6
                 cmp.w   $12(a1),d0
                 bpl.w   .loc_16D5C
@@ -20777,13 +20883,21 @@ sub_16D2A:
 .loc_16D5C:
                 movea.l (sp)+,a2
                 rts
-; End of function sub_16D2A
+; End of function Race_InitOpponentActor
 
 
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_16D60:
+; *************************************************
+; Function Race_InitTrafficActor
+; Places new traffic $100000 behind, sets Speed from +$66 and runs the setup.
+; In:  a1 - actor; player A
+; Out: actor fields
+; Clobbers: d0/a1/a2
+; *************************************************
+
+Race_InitTrafficActor:
                 move.l  a2,-(sp)
                 lea     (RacePlayerA).l,a2
                 move.l  STRUCT_OFFSET_POSX_HIGH(a2),d0
@@ -20792,7 +20906,7 @@ sub_16D60:
                 move.l  d0,$1E(a1)
                 move.w  STRUCT_OFFSET_66(a1),d0
                 move.w  d0,$12(a1)
-                bsr.w   sub_16D9A
+                bsr.w   Race_SetupActor
                 bsr.w   sub_13FE6
                 cmp.w   $12(a1),d0
                 bpl.w   .loc_16D96
@@ -20801,13 +20915,21 @@ sub_16D60:
 .loc_16D96:
                 movea.l (sp)+,a2
                 rts
-; End of function sub_16D60
+; End of function Race_InitTrafficActor
 
 
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_16D9A:
+; *************************************************
+; Function Race_SetupActor
+; Common actor setup: curve at the actor position, flags, sprite/tile base.
+; In:  a1 - actor
+; Out: actor fields
+; Clobbers: d0/a4; calls sub_13746
+; *************************************************
+
+Race_SetupActor:
                 lea     (Track_CurveBuffer).l,a4
                 move.l  4(a1),d0
                 move.l  d0,$1E(a1)
@@ -20843,13 +20965,21 @@ sub_16D9A:
                 move.w  d0,0.w(a1)
                 jsr     (sub_13746).l
                 rts
-; End of function sub_16D9A
+; End of function Race_SetupActor
 
 
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_16E26:
+; *************************************************
+; Function Race_RemoveActiveActor
+; Removes the actor from the active list and decrements the count.
+; In:  a1 - actor
+; Out: ram_FF1A0C/ram_FF1A06
+; Clobbers: a2/a3
+; *************************************************
+
+Race_RemoveActiveActor:
                 movem.l a2-a3,-(sp)
                 lea     (ram_FF1A0C).l,a2
 
@@ -20865,25 +20995,41 @@ sub_16E26:
                 subq.w  #1,(ram_FF1A06).l
                 movem.l (sp)+,a2-a3
                 rts
-; End of function sub_16E26
+; End of function Race_RemoveActiveActor
 
 
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_16E48:
+; *************************************************
+; Function Race_PushFreeActor
+; Pushes a1 onto the free list at a2.
+; In:  a1 - actor; a2 - free list
+; Out: list
+; Clobbers: d0
+; *************************************************
+
+Race_PushFreeActor:
                 move.w  (a2),d0
                 addq.w  #1,(a2)
                 asl.w   #2,d0
                 move.l  a1,2(a2,d0.w)
                 rts
-; End of function sub_16E48
+; End of function Race_PushFreeActor
 
 
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_16E54:
+; *************************************************
+; Function Race_PopFreeActor
+; Pops an actor from the free list at a2; $FFFFFFFF when empty.
+; In:  a2 - free list
+; Out: a1 - actor or $FFFFFFFF
+; Clobbers: d0/a1
+; *************************************************
+
+Race_PopFreeActor:
                 move.w  (a2),d0
                 bne.w   .loc_16E64
                 movea.l #$FFFFFFFF,a1
@@ -20895,4 +21041,4 @@ sub_16E54:
                 movea.l 2(a2,d0.w),a1
 .locret_16E6E:
                 rts
-; End of function sub_16E54
+; End of function Race_PopFreeActor

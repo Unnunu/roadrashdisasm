@@ -33,7 +33,7 @@ is in `race_hud.asm`.
   `$5C0 + digit`, bit 15 set, OR `d2` (palette/priority).
 - `RaceHud_DrawStandings`: `ram_FF1AE4` (2 digits) at `$1602`; walk `ram_FF1AE0` list, draw each
   value at `$1606/$160C/...`; current row (`ram_FF1AE6`) palette 0, others palette 2.
-- Debug functions: format the value (`sub_F11C` for distance/POSZ/frame delay/
+- Debug functions: format the value (`Race_FormatDecimal` for distance/POSZ/frame delay/
   `ram_FF304C`) or write raw hex (`RaceHud_WriteDigit4`) at fixed HUD cells; the gear uses the
   tile base `$5C1+gear`.
 
@@ -46,7 +46,7 @@ is in `race_hud.asm`.
 - Debug values: `RacePlayerA + STRUCT_OFFSET_*` (`POSZ/POSX_HIGH/POSX_LOW/POSY/GEAR/
   +$68`), `Race_ram_NumSprites`, `ram_FF1B3E`, `ram_FF3046/304C`, `ram_FF1786`,
   `Race_ram_FrameDelay`.
-- `sub_F11C` (`race.asm` `0xF11C`) number formatter.
+- `Race_FormatDecimal` (`race.asm` `0xF11C`) number formatter.
 
 ## Coverage matrix
 
@@ -66,7 +66,7 @@ Detailed listing: `docs/analysis/race_hud_debug.md`.
 
 ## Hacks / bugs / quirks
 
-- `RaceDebug_ShowFrameDelay` does not set a HUD position after `sub_F11C`; the position is the
+- `RaceDebug_ShowFrameDelay` does not set a HUD position after `Race_FormatDecimal`; the position is the
   formatted value. Likely unfinished debug code. `[static]`
 - No direct callers; the normal HUD is `race_hud.asm`. `[static]`
 - HUD buffers are double-buffered; `RaceHud_DrawStandings` uses the next buffer, the debug readouts

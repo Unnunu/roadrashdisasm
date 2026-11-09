@@ -98,7 +98,7 @@ special traffic actor; the exact role is TODO.
 - Field meanings `+$73/+$74/+$77/+$66/+$5E/+$60/+$5C` need the physics/AI analysis.
 - The 2P/player-B role, the `$FF2FAA` actor, and the `Race_ActorList` 8+7 split.
 - The static group's purpose (police/traffic).
-- Next: physics/AI (`sub_F108`, `sub_16AF6`, `sub_13xxx`), then the AS `RaceActor`
+- Next: physics/AI (`Race_UpdateSpeedDisplay`, `Race_SpawnTick`, `sub_13xxx`), then the AS `RaceActor`
   struct (fields above + the existing `STRUCT_OFFSET_*`).
 
 ## Rename proposals (apply only on request)
