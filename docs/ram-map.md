@@ -121,6 +121,40 @@ ROM: `unk_19A12` = `[5 levels][5 tracks][4 variants]` 8-byte records
 carry an 8-byte interleaved `size/header` prefix; the header gives the name string,
 image/nametable/palette offsets (see `docs/analysis/character.md`).
 
+### Player/bike and race state (`race.asm`)
+
+The top-level `race.asm` analysis is in `docs/analysis/race.md`. Initial structure
+inventory:
+
+| Offset | Size | Field | Evidence |
+|---|---|---|---|
+| `+$02` | word | `PosZ` | 98C2/endlevel debug, main HInt |
+| `+$04` | word | `PosXHigh` | `Race_Update`, 98C2 |
+| `+$06` | word | `PosXLow` | 98C2 |
+| `+$12` | word | `Speed` | `Race_Update` (`sub_F108`), main HInt |
+| `+$18` | word | `Gear` | 98C2/gear |
+| `+$30` | word | `PosY` | 98C2, main HInt |
+| `+$66` | word | `Unk66` (copied from `+$56`; divisor use) | `STRUCT_OFFSET_66` code uses |
+| `+$68` | byte | flags: bit1 = B, bit2 = A, bit7 = timer stop | `Race_GetInput`, `Race_UpdateTime` |
+| `+$71` | byte | `Index` | `STRUCT_OFFSET_INDEX` |
+
+Bases: `$FF1EAA` (player A), `$FF26AA` (player B), size `$80`. `$FF2FAA` is a
+**different** player/actor-like struct used by `sub_12868` (`$68` bit6) - the flat
+`STRUCT_OFFSET_*` symbols must not be assigned to one struct globally.
+`$FFD37C` is the 0x14-byte road/actor object array (see the `8FB4` section).
+
+Top-level state: `Race_ram_State` (0 running, non-zero paused/loading),
+`Race_ram_TimeTicks/Seconds/Minutes` (BCD timer), `Race_ram_FrameCounter/Delay`,
+`Race_ram_ActiveController`/`CurrentButtons`, `Race_ram_GameEnded`/`DemoGameEnded`,
+`ram_FF1B20` (race started), `ram_FF1B18` (finish timer), `ram_FF3698/369A/368E`
+(pause/demo), `ram_FF1E96` (frame count), interpolation arrays
+`ram_FF1E50/52/54/56/58/5A`, `ram_FF3036` (player x difference).
+
+Buffers: `Intro_TitleScrollTable`/`Intro_TitleScrollSpeed` (+$400 SAT),
+`Menu_ram_FrameBuffer/2`, `Race_ram_FrameReady/2`, `Race_ram_SpriteSize1/2`,
+`Intro_ram_ImageBuffer`/`Race_ram_ImageBuffer2`, VScroll info
+`ram_FF3FDC/$411C/$425C` with `Race_ram_Alpha1/2/3`, HUD/SAT/HScroll DMA targets.
+
 ### Race results (`race_results.asm`)
 
 | Address | Name | Size | Meaning |
@@ -283,7 +317,7 @@ Known so far:
 | `$FF369E` | `ram_FF369E` | 2 | `$FFFF` disables the HInt raster effect; 0 enables it. |
 | `$FF05D6` | `ram_MusicEnabled` | 2 | Music-enabled flag used by the HInt audio block. |
 | `$FF1AA2`/`$FF1AA4` | `ram_FF1AA2/A4` | 2 | Divisors for the engine-speed scaling (`divu`). |
-| `$FF1EAA`/`$FF26AA` | `ram_FF1EAA/26AA` | `$80` | Player/bike-like structures (`struct of size $80`). |
+| `$FF1EAA`/`$FF26AA` | `ram_FF1EAA/26AA` | `$80` | Player A/B (`RacePlayer` candidate; see below). |
 | `$FF1908` | `ram_FF1908` | 4 | Object pointer passed to `sub_1652`. |
 | `$FF36B6`/`$FF36B8` | `ram_FF36B6/B8` | 2 | Target/current smoothed engine value (rate-limited to ±`$64`). |
 | `$FF36BE`/`$FF36C0` | `ram_FF36BE/C0` | 2 | Second object's target/current smoothed value. |
