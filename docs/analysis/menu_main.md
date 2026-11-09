@@ -125,13 +125,15 @@ C (password entry):
 
 ## Drawing (`Menu_DrawPlayerInfo`, `Menu_DrawRaceSelection`, `Menu_DrawRaceCard`, `sub_3B56`)
 
+- Note: `WriteNametableToBuffer`/`Masked` take `d0 = width`, `d1 = height` (the source
+  headers had them swapped; fixed).
 - `Menu_DrawPlayerInfo`: clears rows 17-20, draws the player-selection border (x=1 or 27,
   y=17), then the active player's name + "Level X" at x=2/28, y=18, using palette 2
   (`$4000`) or 3 (`$6000`) depending on the active player. Mode bits 0/1 select A/B.
 - `Menu_DrawRaceSelection`: clears the race area, draws the race badge at (14,18), then
   five race cards at (14,10), (21,8), (25,6), (7,8), (3,6) using the player's places
   array and the current track id (0,2,4,6,8).
-- `Menu_DrawRaceCard`: copies a 6x12 card nametable from `Race_ram_ImageBuffer2+$120`,
+- `Menu_DrawRaceCard`: copies a 12-wide x6-high card nametable from `Race_ram_ImageBuffer2+$120`,
   writes "1st/2nd/3rd/Nth" into the bottom middle, then writes it with
   `WriteNametableToBufferMasked` (mask `$7FF` = black) so only the card's opaque pixels
   replace the background.

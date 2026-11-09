@@ -103,6 +103,18 @@ The player state used by the password system: `Menu_ram_Player` `$FF0508`, level
 | `$FF046A` | `Menu_ram_StrPlayerName` | `8+50` | Player name + level string. |
 | `$FFB62C` | `Menu_ram_FrameBuffer` | `$E00` | 64x28 window/text frame buffer (DMA to `$7000`). |
 | `$FF8364` | `Race_ram_ImageBuffer2` | TODO | Race badge/card nametable staging. |
+
+### Messages (`message.asm`)
+
+| Address | Name | Size | Meaning |
+|---|---|---|---|
+| `$FF05D0` | `Menu_ram_NextMessageTimer` | 2 | Next tooltip delay. |
+| `$FF05D2` | `Menu_ram_MessageBlinkTimer` | 2 | Tooltip text blink phase. |
+| `$FF05D4` | `Menu_ram_CurrentMessageId` | 2 | Message array index (multiple of 8). |
+| `$FF05E6` | `Message_ram_ButtonBlinkCounter` | 2 | Button icon blink counter. |
+| `$FF05E8` | `Message_ram_ButtonBlinkPeriod` | 2 | Button icon blink period. |
+
+The message field is rows 22-27 (40x6) of `Menu_ram_FrameBuffer`.
 - `Character_ram_*`, `RaceResults_ram_*`, `HighScore_ram_*`, `Shop_ram_*`,
   `EndLevel_ram_*` — TODO.
 

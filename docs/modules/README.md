@@ -14,7 +14,7 @@ row to the table below.
 | `intro.asm` | `0x001704` | Intro sequence | [intro.md](intro.md) |
 | `menu_password.asm` | `0x002446` | Password menu | [menu_password.md](menu_password.md) |
 | `menu_main.asm` | `0x003400` | Main menu | [menu_main.md](menu_main.md) |
-| `message.asm` | `0x004226` | On-screen messages / button prompts | TODO |
+| `message.asm` | `0x004226` | On-screen messages / button prompts | [message.md](message.md) |
 | `sub_5760.asm` | `0x005760` | Not yet identified | TODO |
 | `character.asm` | `0x0059C4` | Character screen / rider rendering | TODO |
 | `race_results.asm` | `0x005F28` | Post-race results screen | TODO |

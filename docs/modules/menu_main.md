@@ -72,7 +72,7 @@ reg92 $1C   WindowY 28 cells (window covers the screen)
   player's name + "Level X" at x=2/28,y=18, palette 2/3.
 - `Menu_DrawRaceSelection`: clears the race area; race badge at (14,18); five cards at
   (14,10), (21,8), (25,6), (7,8), (3,6), using the places array and track id 0,2,4,6,8.
-- `Menu_DrawRaceCard`: copies a 6x12 card nametable from `Race_ram_ImageBuffer2+$120`,
+- `Menu_DrawRaceCard`: copies a 12-wide x6-high card nametable from `Race_ram_ImageBuffer2+$120`,
   writes "1st/2nd/3rd/Nth" (or nothing for place 0), then writes it with the mask
   `$7FF` (only opaque/black tiles are replaced).
 - `sub_3B56`: race name + decimal distance/record from `unk_49E8`/`unk_25EC0`.
