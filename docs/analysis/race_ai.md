@@ -82,9 +82,11 @@ Profile map from the ROM (slot -> actions at `+0/+4/+8/+C`):
 
 - `[dynamic]` Demo trace at `0x12FD8` (before `jsr (a6)`) observed the normal path
   for every active actor: player `$74=0` -> `$12D2A`/`sub_1300E`; opponents with
-  `$74=6/8/9` -> `$12D8A/$12DB2/$12DC6` and also `sub_1300E`. The dispatcher/action+C
-  paths were not reached in the untriggered demo; forcing a nearest-target/collision
-  state is the next experiment.
+  `$74=6/8/9` -> `$12D8A/$12DB2/$12DC6` and also `sub_1300E`.
+- `[dynamic]` Forcing PlayerA Speed to `$3000` and `ram_FF1A96=$FFFF` at
+  `sub_12EA2` entry made profiles `6/8/9` advance to slot+4 and call `sub_16458`
+  (`$12D8E/$12DB6/$12DCA`), confirming the dispatcher path. The action2/action3
+  branches inside `sub_16458` still need a target/cooldown test.
 - Handler roles: `sub_1300E` normal target/curve update; `sub_1307C` variant;
   `sub_130D2` recovery timer; `sub_12FE4` state/collision + `sub_13A92`;
   `sub_13004` movement/`sub_131BE`; `sub_16458` dispatcher; `sub_165D0/165E0`
