@@ -117,6 +117,11 @@ With C near an opponent, breakpoint `0x16320` (`sub_162B0` after state setup):
 - nearest actor = `$FF232A`
 - backtrace: `Race_Update` -> `Race_UpdateNearestTarget` -> `sub_162B0`
 
+Follow-up trace: `a1 = $FF1EAA` (player A), `Race_ram_CurrentButtons = $30`
+(B+C); at `0x16338` the player Y was below the target Y, so the branch was not
+taken and `$69` bit5 was cleared. This confirms the side branch but the test must
+be repeated with pure C / C+Up / C+Down.
+
 This confirms the attack path and the `$6C/$6D` phase/timer fields. `$69` bit5
 (attack side) is set/cleared after the Y comparison, so it must be captured after
 stepping to `0x16346`. Up/Down comparisons and AI handlers are still pending.
