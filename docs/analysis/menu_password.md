@@ -33,8 +33,11 @@
 - `MenuPassword_SetCursorPos` writes the **high byte** of `d0` into the frame buffer cell
   (`y*128 + x*2`); the game calls it with `$6000` to restore the text palette and `0`
   to draw/erase the cursor cell. The character (low byte) is unchanged.
-- The module does not program VDP registers; it relies on the main-menu VDP setup in
-  `menu_main.asm` (`Menu_Init`) — see that module card (TODO).
+- The VDP context is `Menu_Init` (`menu_main.asm`): planes A/B share `$4000`, the window
+  nametable at `$7000` holds the 64x28 frame buffer, and the window covers the screen
+  (`WindowY=28`). The password DMA destination `$7200` is therefore window row 4; the
+  64x24 password area occupies rows 4-27. The sprite and H-scroll tables overlap at
+  `$6000` (unused by this screen).
 
 ## Input / editing
 
@@ -161,8 +164,8 @@ For player A/B (selected by `d0`), a valid password is applied to:
 - `[ ]` Confirm the sample password in BlastEm (enter it in the password menu).
 - `[ ]` Confirm the exact cursor visual (high-byte palette toggle) and the `sub_2BEE`
   block swap.
-- `[ ]` The main-menu VDP setup (`menu_main.asm`) is still TODO; it determines the
-  frame-buffer plane and the `$7200` destination.
+- `[x]` The main-menu VDP setup is now known: window `$7000`, password rows 4-27 at
+  `$7200` (see `docs/analysis/menu_main.md`).
 
 ## Rename proposals (apply only on request)
 

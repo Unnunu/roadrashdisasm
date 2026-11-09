@@ -64,7 +64,7 @@ the valid password `00000  00001010D8  101MN` (validation sum 21, mask 21).
 - Text font base `$6000` (palette line 3), `WriteNametableToBuffer` with plane width 64.
 - Cursor: `SetCursorPos` writes the high byte of `d0` to a frame-buffer cell; `$6000`
   restores the text palette, `0` draws/erases the cursor cell.
-- VDP registers are set by the main menu (`menu_main.asm`), not here (TODO).
+- VDP registers are set by the main menu (`menu_main.asm`): planes A/B `$4000`, window `$7000` (64x28 frame buffer, covers the screen); `$7200` is window row 4.
 
 ## RAM / ROM & structures
 

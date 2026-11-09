@@ -85,7 +85,24 @@ The player state used by the password system: `Menu_ram_Player` `$FF0508`, level
 `$FF0522/$FF0524`, places `$FF052E/$FF0538`, opponents `$FF0546/$FF0566`, bike ids
 `$FF0542/$FF0544`.
 
-- `MainMenu_ram_*` — buttons/changed buttons per player, `DemoMode`.
+### Main menu (`menu_main.asm`)
+
+| Address | Name | Size | Meaning |
+|---|---|---|---|
+| `$FF3692` | `MainMenu_ram_DemoMode` | 2 | Demo/attract flag (set after 30 s idle). |
+| `$FF3694` | `MainMenu_ram_FrameCounter` | 2 | Idle frame counter (1800 frames = 30 s). |
+| `$FF05C8`/`$FF05CA` | `MainMenu_ram_ButtonsPlayerA` / `ChangedButtonsPlayerA` | 2 each | Pad A state/edge. |
+| `$FF05CC`/`$FF05CE` | `MainMenu_ram_ButtonsPlayerB` / `ChangedButtonsPlayerB` | 2 each | Pad B state/edge. |
+| `$FF05DE` | `MainMenu_ram_CurrentButtons` | 2 | Buttons being handled. |
+| `$FF05DA` | `Menu_ram_PlayerMode` | 2 | 1 = A, 2 = B, 3 = two players. |
+| `$FF0508` | `Menu_ram_Player` | 2 | 0 = A, `$FFFF` = B. |
+| `$FF05DC` | `Menu_ram_CurrentTrackId` | 2 | 0,2,4,6,8 (five races). |
+| `$FF05E4` | `Menu_ram_CurrentlyDrawnRaceCard` | 2 | Currently drawn race id. |
+| `$FF05E0` | `Menu_PlayerPlacesPtr` | 4 | Pointer to the active player's places. |
+| `$FF0756` | `Menu_ram_TempString` | TODO | Race-name/distance tooltip string. |
+| `$FF046A` | `Menu_ram_StrPlayerName` | `8+50` | Player name + level string. |
+| `$FFB62C` | `Menu_ram_FrameBuffer` | `$E00` | 64x28 window/text frame buffer (DMA to `$7000`). |
+| `$FF8364` | `Race_ram_ImageBuffer2` | TODO | Race badge/card nametable staging. |
 - `Character_ram_*`, `RaceResults_ram_*`, `HighScore_ram_*`, `Shop_ram_*`,
   `EndLevel_ram_*` — TODO.
 
