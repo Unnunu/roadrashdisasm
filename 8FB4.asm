@@ -1,3 +1,18 @@
+; *************************************************
+; 8FB4.asm - race road/object renderer
+; ROM range: $8FB4-$98C1
+; Status:    partially analyzed (object list/records confirmed; shape math TODO)
+; API:       sub_942A (called from race.asm), sub_9484, sub_8FB4, helpers
+; *************************************************
+
+; *************************************************
+; Function sub_8FB4
+; Builds the road strip/tile columns for the object and the rider/vehicle sprite chain.
+; In:  d0, d1 - road-edge geometry; a0 - shape data
+; Out: road tiles in Race_ram_CurrentSpriteTileArray; SAT chain via sub_5760
+; Clobbers: d0-d7, a0-a4
+; *************************************************
+
 sub_8FB4:
                 cmp.l   #0,d0
                 bne.w   .loc_8FCC
@@ -96,8 +111,13 @@ sub_8FB4:
                 rts
 ; End of function sub_8FB4
 
-; =============== S U B R O U T I N E =======================================
-
+; *************************************************
+; Function sub_9142
+; Interpolates the left road edge into the ram_FF0D2E strip array.
+; In:  a0 - shape data; d3 - scale; ram_FF135E edge offset
+; Out: ram_FF0D2E strips, ram_FF1332/1336; d6 - strip count
+; Clobbers: d0/d2/d4-d7, a2
+; *************************************************
 
 sub_9142:
                 clr.w   d2
@@ -173,8 +193,13 @@ sub_9142:
 
 
 
-; =============== S U B R O U T I N E =======================================
-
+; *************************************************
+; Function sub_91F0
+; Interpolates the right road edge into the ram_FF102E strip array.
+; In:  a0 - shape data; d3 - scale; ram_FF1332/1340
+; Out: ram_FF102E strips, ram_FF0D28; d6 - strip count
+; Clobbers: d0-d7, a2
+; *************************************************
 
 sub_91F0:
                 move.l  #$10000,d0
@@ -226,8 +251,13 @@ sub_91F0:
                 rts
 ; End of function sub_91F0
 
-; =============== S U B R O U T I N E =======================================
-
+; *************************************************
+; Function sub_9272
+; Alternate right-edge interpolation with fixed $10000 scaling; no direct caller.
+; In:  a0 - shape data; d3 - scale
+; Out: ram_FF102E strips, ram_FF0D28
+; Clobbers: d1/d2/d4-d6, a2
+; *************************************************
 
 sub_9272:
                 clr.w   d2
@@ -279,8 +309,13 @@ sub_9272:
 
 
 
-; =============== S U B R O U T I N E =======================================
-
+; *************************************************
+; Function sub_9306
+; Writes the road tile columns (0x1F wide) into the sprite tile array.
+; In:  ram_FF0D2A/0D2E/102E strip data, ram_FF132E/1330, ram_FFDE68/6A/66
+; Out: Race_ram_CurrentSpriteTileArray + ram_FF0D26
+; Clobbers: d1-d5, a0-a4
+; *************************************************
 
 sub_9306:
                 movea.l (ram_FF0D2A).l,a0
@@ -363,8 +398,13 @@ sub_9306:
 
 
 
-; =============== S U B R O U T I N E =======================================
-
+; *************************************************
+; Function sub_93D2
+; Clears the remaining road edge tiles (writes 0) for ram_FF0D28 strips.
+; In:  ram_FF0D28, ram_FFDE66
+; Out: sprite tile array (zeroed edge rows)
+; Clobbers: d0-d3, a1/a4
+; *************************************************
 
 sub_93D2:
                 clr.w   d0
@@ -405,8 +445,14 @@ sub_93D2:
                 rts
 ; End of function sub_93D2
 
-; =============== S U B R O U T I N E =======================================
-; called from race code
+; *************************************************
+; Function sub_942A
+; Public entry (race.asm 0x1809): walks the visible-object list and renders each
+; object record via sub_9484. Saves/restores the animation tile/sprite indices.
+; In:  ram_FF1D50 visible list, ram_FFD37C records
+; Out: SAT/tile arrays; Animation_ram_SpriteIndex/TileIndex
+; Clobbers: d0/a0/a1
+; *************************************************
 
 sub_942A:
                 movea.l (Race_ram_CurrentSpriteAttributeTable).l,a0
@@ -434,8 +480,15 @@ sub_942A:
 
 
 
-; =============== S U B R O U T I N E =======================================
-
+; *************************************************
+; Function sub_9484
+; Renders one 0x14-byte object record: projection/shape(s), road strip, sprite chain
+; copy into the SAT with clipping. Record fields: +0 x, +2 y, +4 scale, +6 horizon,
+; +8 shape, +$A flags, +$C x offset, +$12 second shape.
+; In:  a0 - object record; current animation indices
+; Out: SAT chain; ram_FF1366 end flag; Animation_ram_SpriteIndex
+; Clobbers: d0-d7, a0-a2
+; *************************************************
 
 sub_9484:
                 move.w  #0,(ram_FFDE62).l
@@ -461,6 +514,7 @@ sub_9484:
                 move.w  8(a0),d2
                 move.w  $12(a0),d3
                 move.l  a0,-(sp)
+; shape pointer table (shared with race.asm)
                 lea     (unk_3BF1A).l,a1
                 asl.w   #2,d2
                 movea.l (a1,d2.w),a2
@@ -576,6 +630,7 @@ sub_9484:
                 beq.w   .locret_978A
                 tst.w   (ram_FF135E).l
                 bne.w   .locret_978A
+; copy the built sprite chain into the SAT slots with the object x offset/clipping
                 movea.l (Race_ram_CurrentSpriteAttributeTable).l,a1
                 move.w  d1,d2
                 asl.w   #3,d2
@@ -626,8 +681,13 @@ sub_9484:
 
 
 
-; =============== S U B R O U T I N E =======================================
-
+; *************************************************
+; Function sub_978C
+; Reads three shape bytes at (a2) and scales them by scale>>2.
+; In:  a0 - object; a2 - shape; d0 - scale
+; Out: d5/d6 - scaled shape values
+; Clobbers: d2/d5/d6/d7
+; *************************************************
 
 sub_978C:
                 move.b  (a2),d5
@@ -654,8 +714,14 @@ sub_978C:
 
 
 
-; =============== S U B R O U T I N E =======================================
-
+; *************************************************
+; Function sub_97BC
+; Projects the shape edge: adds the object x, applies the mirror bit and the
+; $C0/$200 constants; sets ram_FFDE62 when out of range.
+; In:  a0 - object; a2 - shape; d0 - scale; d5 - edge
+; Out: d1 - projected value; ram_FFDE62
+; Clobbers: d1-d3/d5
+; *************************************************
 
 sub_97BC:
                 move.b  (a2),d1
@@ -709,8 +775,13 @@ sub_97BC:
 
 
 
-; =============== S U B R O U T I N E =======================================
-
+; *************************************************
+; Function sub_9836
+; Like sub_97BC for the non-special path; stores the clip in ram_FF135E.
+; In:  a0 - object; a2 - shape; d0 - scale
+; Out: ram_FF135E; ram_FFDE62 on overflow
+; Clobbers: d1-d3
+; *************************************************
 
 sub_9836:
                 move.b  (a2),d1
