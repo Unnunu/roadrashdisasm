@@ -1,22 +1,23 @@
 # Analysis: ROM tail (`0x7EA66`–`0xBFFFF`, `RomTail`)
 
-- **Status:** full ROM now assembles byte-exactly; tail is raw/labelled only
-- **Source:** `main.asm` (`RomTail` `binclude` from `baserom.md`)
+- **Status:** full ROM assembles byte-exactly; tail split at 53 known labels, bytes raw
+- **Source:** `rom_assets.asm` (`binclude` chunks from `baserom.md`)
+- **Code:** `Boot_CheckRomChecksum` at `0x7FF98` is real code inside the tail; it remains raw but labelled
 - **Related:** `docs/analysis/rider_intro.md`, `docs/analysis/highscore.md`,
   `docs/analysis/shop.md`, `docs/analysis/endlevel.md`,
   `docs/analysis/race_results.md`, `docs/architecture.md`
 
 ## Build
 
-`./build.sh` now prints `Matched OK: 786432 bytes of 786432 bytes` (full ROM). The
-tail after `top_level.asm` (`0x7EA66`–`0xBFFFF`) is included raw; the audio range
-`0x19F62`–`0x257CF` remains the other raw bridge.
+`./build.sh` prints `Matched OK: 786432 bytes of 786432 bytes` (full ROM). The tail
+after `top_level.asm` (`0x7EA66`–`0xBFFFF`) is split into labelled `binclude` chunks by
+`rom_assets.asm`; the audio range `0x19F62`–`0x257CF` remains the other raw bridge.
 
 ## Known assets (from `unknown.asm` / callers)
 
 | Address | Symbol | Used by |
 |---|---|---|
-| `$7EA66` | `unk_7EA66` | results / intro / end-level image data |
+| `$7EA66` | `RomTail`/`unk_7EA66` | results / intro / end-level image data |
 | `$7EB72` | `ImgHighScoreBadge` | high score |
 | `$7ED66` | `unk_7ED66` | unknown |
 | `$80000` | `EndLevel_AnimationTiles` | end-level |
@@ -41,10 +42,17 @@ tail after `top_level.asm` (`0x7EA66`–`0xBFFFF`) is included raw; the audio ra
 | `$AF902`..`$BE628` | 11 intro portraits | `RiderIntro_RecordTable` |
 | `$B1506` | `unk_B1506` | Natasha bike overlay |
 
+## Known code / asset boundaries
+
+The 53 labels include `Boot_CheckRomChecksum` (`$7FF98`), `EndLevel_WindowImage`
+(`$7F400`), `img_Gamepad` (`$7F834`), `EndLevel_AnimationTiles/Data`,
+`RaceResults_TrackImage_0..4`, the 11 `RiderIntro_Portrait_*`, `unk_B1506`, and the
+high-score/menu/intro/shop/end-level image/font labels. See `rom_assets.asm`.
+
 ## TODO
 
-- Split the tail into labelled asset modules (`binclude` chunks) like
-  `road_shapes.asm`/`race_misc_data.asm`.
+- Disassemble `Boot_CheckRomChecksum` and any other code hidden in the tail.
+- Parse the image headers/sizes and the sound samples.
 - Map the compressed image headers/sizes for each asset and the sound samples.
 - Determine whether any code or tables hide between the assets.
 - Dynamic verification (intro portraits, high-score/menu/shop/end-level images).

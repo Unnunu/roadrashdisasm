@@ -742,5 +742,4 @@ Audio_UpdateEngine:
 ; Kept byte-exact from the reference ROM.
 ; *****************************************************************
     org     $7EA66
-RomTail:
-    binclude "baserom.md",$7EA66,($C0000-$7EA66)
+    include "rom_assets.asm"

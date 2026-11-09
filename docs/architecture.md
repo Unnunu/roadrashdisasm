@@ -26,7 +26,7 @@ Related:
 | Header title | Road Rash |
 | Region | US (`U  ` in header) |
 | Entry | `RESET` at `0x000200` |
-| Disassembly coverage | full ROM `0x000000`–`0x0BFFFF`; source/data `0x000000`–`0x019F61`, `0x0257D0`–`0x07EA65`; raw bridge `0x019F62`–`0x0257CF` (audio) + `0x07EA66`–`0x0BFFFF` (assets) |
+| Disassembly coverage | full ROM `0x000000`–`0x0BFFFF`; source/data `0x000000`–`0x019F61`, `0x0257D0`–`0x07EA65`; raw bridge `0x019F62`–`0x0257CF` (audio); tail `0x07EA66`–`0x0BFFFF` labelled in `rom_assets.asm` |
 
 `./build.sh` compares the built image against the same-length **prefix** of
 `baserom.md`; it grows as more of the ROM is disassembled.
@@ -172,13 +172,13 @@ tentative until the module card is filled in.
 | `0x03BF1A` | `road_shapes.asm` | Road/object shape table/data (ROM gap) | [road_shapes.md](modules/road_shapes.md) |
 | `0x07DCA8` | `race_misc_data.asm` | HUD/palette/results tables (ROM gap) | [race_misc_data.md](modules/race_misc_data.md) |
 | `0x07E6A2` | `top_level.asm` | Top-level screen flow (intro/menu/race/results) | [top_level.md](modules/top_level.md) |
-| `0x07EA66` | `main.asm` (`RomTail`) | Raw ROM asset tail (images/fonts/sound) | [rom_tail.md](analysis/rom_tail.md) |
+| `0x07EA66` | `rom_assets.asm` | Labelled ROM asset/code tail | [rom_assets.md](modules/rom_assets.md) |
 
 Helpers/data without code in the image: `hw_const.asm` (constants/macros),
 `unknown.asm` (address equates), `ram_const.asm` (RAM equates),
 `race_actor_tables.asm`, `race_data_tables.asm`, `race_engine_tables.asm`,
 `rider_intro_quotes.asm`, `race_actor_extra_tables.asm`, `race_track_data.asm`,
-`road_shapes.asm`, `race_misc_data.asm`.
+`road_shapes.asm`, `race_misc_data.asm`, `rom_assets.asm`.
 
 ## RAM overview
 

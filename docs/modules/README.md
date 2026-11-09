@@ -42,9 +42,10 @@ row to the table below.
 | `race_track_data.asm` | `0x025EC0` | Per-track records/streams (ROM gap) | [race_track_data.md](race_track_data.md) |
 | `road_shapes.asm` | `0x03BF1A` | Road/object shape table/data (ROM gap) | [road_shapes.md](road_shapes.md) |
 | `race_misc_data.asm` | `0x07DCA8` | HUD/palette/results tables (ROM gap) | [race_misc_data.md](race_misc_data.md) |
+| `rom_assets.asm` | `0x07EA66` | Labelled asset/code tail | [rom_assets.md](rom_assets.md) |
 | `top_level.asm` | `0x07E6A2` | Top-level screen flow (intro/menu/race/results) | [top_level.md](top_level.md) |
 
 Helper/data files without code: `hw_const.asm`, `unknown.asm`, `ram_const.asm`,
 `race_actor_tables.asm`, `rider_intro_quotes.asm`, `race_data_tables.asm`,
 `race_engine_tables.asm`, `race_actor_extra_tables.asm`, `race_track_data.asm`,
-`road_shapes.asm`, `race_misc_data.asm`.
+`road_shapes.asm`, `race_misc_data.asm`, `rom_assets.asm`.

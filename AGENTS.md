@@ -87,6 +87,7 @@ differing byte is reported. `baserom.md` is the only ROM file and is git-ignored
 | `race_track_data.asm` | Per-track records and data streams ($25EC0-$3BF19). |
 | `road_shapes.asm` | Road/object shape table and shape bytes ($3BF1A-$7DCA7). |
 | `race_misc_data.asm` | HUD/needle, palette and results tables ($7DCA8-$7E6A1). |
+| `rom_assets.asm` | Labelled asset/code tail ($7EA66-$BFFFF). |
 | `race.asm` | Include list for the split main gameplay (order: race_core, race_hud, race_physics, road_marking, race_ai, animation, race_spawn). |
 | `race_core.asm` | Race top-level/init/results/actor data. |
 | `race_hud.asm` | Race HUD. |
