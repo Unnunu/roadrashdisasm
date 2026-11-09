@@ -248,7 +248,11 @@ doStart:
 
 ; *************************************************
 ; Function GetInputPlayerA
-; d0 - (out) button state (SACBRLDU)
+; Reads player 1's 3-button pad (TH protocol).
+; In:  -
+; Out: d0.b - SACBRLDU button state (1 = pressed); upper d0 bits undefined
+; Clobbers: d0, d1, I/O ports $A10003/$A10009
+; Notes: waits $A dbf iterations; does not pause the Z80; 3-button only.
 ; *************************************************
 
 GetInputPlayerA:
@@ -256,12 +260,12 @@ GetInputPlayerA:
                 move.b  #$40,($A10009).l	; TH pin to write, others to read
                 move.b  #0,($A10003).l     ; clear TH
 ; wait 10 ticks
-                move.w  #$A,d1
+                move.w  #$A,d1 ; delay for TH settle
 .wait:
                 dbf     d1,.wait
 
                 move.b  ($A10003).l,d0      ; read inputs
-                asl.b   #2,d0
+                asl.b   #2,d0 ; move Start/A into bits 7-6
                 andi.b  #$C0,d0             ; shift bits so A is bit 6 and START is bit 7
 
                 move.b  #$40,($A10003).l    ; set TH
@@ -271,16 +275,20 @@ GetInputPlayerA:
                 dbf     d1,.wait2
 
                 move.b  ($A10003).l,d1      ; read inputs
-                andi.b  #$3F,d1             ; get state of 6 buttons
+                andi.b  #$3F,d1 ; keep C/B/Right/Left/Down/Up
                 or.b    d1,d0               ; move everything to d0
-                not.b   d0                  ; invert bits
+                not.b   d0 ; active-low -> 1 = pressed
                 move.l  (sp)+,d1
                 rts
 ; End of function GetInputPlayerA
 
 ; *************************************************
 ; Function GetInputPlayerB
-; d0 - (out) button state (SACBRLDU)
+; Reads player 2's 3-button pad (TH protocol).
+; In:  -
+; Out: d0.b - SACBRLDU button state (1 = pressed); upper d0 bits undefined
+; Clobbers: d0, d1, I/O ports $A10005/$A1000B
+; Notes: waits $14 dbf iterations (twice player A); 3-button only.
 ; *************************************************
 
 GetInputPlayerB:
@@ -288,12 +296,12 @@ GetInputPlayerB:
                 move.b  #$40,($A1000B).l
                 move.b  #0,($A10005).l
 
-                move.w  #$14,d1
+                move.w  #$14,d1 ; delay for TH settle
 .wait:
                 dbf     d1,.wait
 
                 move.b  ($A10005).l,d0
-                asl.b   #2,d0
+                asl.b   #2,d0 ; move Start/A into bits 7-6
                 andi.b  #$C0,d0
                 move.b  #$40,($A10005).l
 
@@ -311,6 +319,11 @@ GetInputPlayerB:
 
 ; *************************************************
 ; Interrupt Handler VerticalInterrupt
+; Runs the per-frame update function in VBlank.
+; In:  ram_UpdateFunction - pointer to call (0 = idle)
+; Out: -
+; Clobbers: none (all registers saved/restored)
+; Notes: the called function may clobber all registers.
 ; *************************************************
 
 VerticalInterrupt:
@@ -325,6 +338,10 @@ VerticalInterrupt:
 ; End of Interrupt Handler VerticalInterrupt
 
     include "fade.asm"
+
+; Note: exception handlers below write a 4-char tag to address 0 (cartridge ROM, so the
+; write is ignored) and then execute "stop #$2700" (permanent halt). The tags are only
+; useful as markers in the source/ROM.
 
 ; *************************************************
 ; Interrupt Handler BusError
@@ -438,18 +455,24 @@ SpuriousInterrupt:
 
 ; *************************************************
 ; Interrupt Handler HorizontalInterrupt
+; Per-line VSRAM/scroll raster effect + engine-audio update.
+; In:  ram_FF369E - $FFFF disables the effect
+;      Race_ram_NextVScrollInfo - scroll table
+; Out: -
+; Clobbers: d0-d2/a0-a2 (saved/restored)
+; Notes: HV-counter-synchronised VDP writes; 36 NOPs delay; audio calls.
 ; *************************************************
 
 HorizontalInterrupt:
                 move.w  #$8AFF,(VdpCtrl).l ; next Hint after 255 scanlines
-                cmpi.w  #$FFFF,(ram_FF369E).l
+                cmpi.w  #$FFFF,(ram_FF369E).l ; $FFFF = raster effect disabled
                 beq.w   .return
                 movem.l d0-d2/a0-a2,-(sp)
                 lea     (VdpCtrl).l,a1
                 lea     (VdpData).l,a2
-                move.w  (ram_FF0406).l,d0
+                move.w  (ram_FF0406).l,d0 ; scroll-table offset
                 ble.w   .loc_1632
-                movea.l (Race_ram_NextVScrollInfo).l,a0
+                movea.l (Race_ram_NextVScrollInfo).l,a0 ; scroll/VSRAM command table
                 adda.w  d0,a0
                 move.w  (a0)+,(a1)
                 move.w  (a0)+,d0
@@ -459,19 +482,19 @@ HorizontalInterrupt:
                 VDP_VSRAM_WRITE $0,(a1) ; VSRAM from offset 0
                 movea.w d0,a0
                 andi.w  #$FF00,d0
-.loc_14AA:
+.loc_14AA: ; wait for the target V counter
                 cmp.w   (HvCounter).l,d0
                 bcc.s   .loc_14AA ; wait until VCounter > d0
-.loc_14B2:
+.loc_14B2: ; wait until the H counter bit7 is clear
                 move.b  (HvCounter + 1).l,d0
                 bmi.s   .loc_14B2 ; wait until HCounter > 0
                 move.w  a0,d0
-.loc_14BC:
+.loc_14BC: ; wait for the target HV position
                 cmp.w   (HvCounter).l,d0
                 bcc.s   .loc_14BC ; wait until HVCounter > a0
 
-                move.l  d2,(a2)
-; 36 nops
+                move.l  d2,(a2) ; write VSRAM data at the raster position
+; 36 NOPs: VDP write-recovery delay (timing-tuned)
                 nop
                 nop
                 nop
@@ -508,8 +531,8 @@ HorizontalInterrupt:
                 nop
                 nop
                 nop
-                move.w  d1,(a1)
-                cmpi.w  #$90,(ram_FF0406).l
+                move.w  d1,(a1) ; next VSRAM command
+                cmpi.w  #$90,(ram_FF0406).l ; next offset $90 -> once-per-frame audio
                 bne.w   .loc_164C
 ; run this only if ram_FF0406 == $90
                 move.w  #0,(ram_FF0406).l
@@ -586,11 +609,11 @@ HorizontalInterrupt:
                 jsr     (AudioFunc11).l
 .loc_162C:
                 jsr     (AudioFunc1).l
-.loc_1632:
+.loc_1632: ; disable the raster effect until the next request
                 move.w  #$FFFF,(ram_FF369E).l
                 tst.w   (ram_FF0406).l
                 ble.w   .loc_164C
-                move.w  #0,(ram_FF369E).l
+                move.w  #0,(ram_FF369E).l ; effect re-enabled
 .loc_164C:
                 movem.l (sp)+,d0-d2/a0-a2
 .return:
@@ -599,21 +622,26 @@ HorizontalInterrupt:
 
 ; *************************************************
 ; Function sub_1652
+; Computes engine-audio parameters for the object in a1.
+; In:  a1 - object pointer ($FFFFFFFF = invalid)
+; Out: d0 - smoothed value; d1 - distance parameter (0..$1F)
+; Clobbers: d0/d1
+; Notes: mirrors the player-A math in HorizontalInterrupt.
 ; *************************************************
 
 sub_1652:
-                cmpa.l  #$FFFFFFFF,a1
+                cmpa.l  #$FFFFFFFF,a1 ; invalid object
                 bne.w   .loc_1664
                 moveq   #$1F,d1
                 moveq   #0,d0
                 bra.w   .return
 .loc_1664:
                 clr.w   d0
-                tst.b   $6E(a1)
+                tst.b   $6E(a1) ; bit7 = engine-active flag?
                 bpl.w   .loc_169C
-                move.w  $14(a1),d0
-                muls.w  (Race_ram_FrameCounter).l,d0
-                add.w   $12(a1),d0
+                move.w  $14(a1),d0 ; speed multiplier
+                muls.w  (Race_ram_FrameCounter).l,d0 ; frame counter
+                add.w   $12(a1),d0 ; speed base
                 bpl.w   .loc_1682
                 clr.w   d0
 
