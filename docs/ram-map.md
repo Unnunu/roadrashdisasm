@@ -50,7 +50,9 @@ Status tags: `[static]` from code; `[dynamic]` observed; `[confirmed]` both;
 | `$FF040C` | `Intro_ram_PlayerBPressedStart` | 2 | Player B pressed Start. |
 | `$FF040E` | `Intro_ram_TextTimer` | 2 | Intro text timer; `>= 0` at the end of the intro leads to the menu. |
 | `$FF0410` | `Intro_ram_CurrentStringOffset` | 2 | Current intro string offset. |
-| `$FF509C` | `Intro_ram_ImageBuffer` | TODO | Nametable/image staging buffer. |
+| `$FF439C` | `Intro_TitleScrollTable` | `$400 + $280` | Per-line H-scroll values (fg/bg) for the title/credits. |
+| `$FF4A1C` | `Intro_TitleScrollSpeed` | `$400 + $280` | Per-line scroll speeds (fixed-point). |
+| `$FF509C` | `Intro_ram_ImageBuffer` | TODO | Decompressed background/title/font staging buffer. |
 
 ## Menu / password / main menu / character / results / high score / shop / end level
 

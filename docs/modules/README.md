@@ -11,7 +11,7 @@ row to the table below.
 | `main.asm` | `0x000000` (entry `RESET` `0x000200`) | Vectors, header, boot, interrupts | [main.md](main.md) |
 | `logoEA.asm` | `0x000366` | EA logo, decompression, drawing | [logoEA.md](logoEA.md) |
 | `fade.asm` | `0x001180` | Palette fade in/out | [fade.md](fade.md) |
-| `intro.asm` | `0x001704` | Intro sequence | TODO |
+| `intro.asm` | `0x001704` | Intro sequence | [intro.md](intro.md) |
 | `menu_password.asm` | `0x002446` | Password menu | TODO |
 | `menu_main.asm` | `0x003400` | Main menu | TODO |
 | `message.asm` | `0x004226` | On-screen messages / button prompts | TODO |

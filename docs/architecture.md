@@ -138,7 +138,7 @@ tentative until the module card is filled in.
 |---|---|---|---|
 | `0x000366` | `logoEA.asm` | EA logo, decompression, drawing | [logoEA.md](modules/logoEA.md) |
 | `0x001180` | `fade.asm` | Palette fade in/out | [fade.md](modules/fade.md) |
-| `0x001704` | `intro.asm` | Intro sequence | TODO |
+| `0x001704` | `intro.asm` | Intro sequence | [intro.md](modules/intro.md) |
 | `0x002446` | `menu_password.asm` | Password menu | TODO |
 | `0x003400` | `menu_main.asm` | Main menu | TODO |
 | `0x004226` | `message.asm` | On-screen messages / button prompts | TODO |
