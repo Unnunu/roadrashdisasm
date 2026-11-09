@@ -172,6 +172,26 @@ ROM: `Shop_BikeDescriptions` `$81D2`, `Shop_dPrices` `$8312`, `Shop_BikeImageTab
 current price/2; money -= price - current/2; regenerate the password. See
 `docs/analysis/shop.md`.
 
+### Road/object renderer (`8FB4.asm`)
+
+| Address | Name | Size | Meaning |
+|---|---|---|---|
+| `$FF1D50` | `ram_FF1D50` | - | Visible-object index list (`$FFFF`-terminated). |
+| `$FFD37C` | `ram_FFD37C` | 0x14/entry | Object array: x,y,scale,horizon,shape,flags,x offset,second shape. |
+| `$FF0D26`/`$FF0D2A`/`$FF0D2E`/`$FF102E` | road buffers | - | Tile cursor, strip data, left/right strip offsets. |
+| `$FF132E`/`$FF1330`/`$FF1332`/`$FF1336` | road strip state | 2 each | Strip counts/height/x offset. |
+| `$FF133A`/`$FF133C`/`$FF133E` | object flags | 2 each | Shadow, mirror, priority bits. |
+| `$FF1340`/`$FF1342`/`$FF1344` | projection | 2 each | Acceleration, base x/y. |
+| `$FF1348`/`$FF134C` | shape pointers | 4 each | Current/second shape data. |
+| `$FF1350` | scale | 4 | Object scale (`record+4 << 2`). |
+| `$FF1354`/`$FF1356`/`$FF1358` | special road | 2 each | Elevated/overpass offset. |
+| `$FF135A`..`$FF1364` | shape state | 2 each | Second-shape/saved animation indices. |
+| `$FF1366` | chain end | 2 | Sprite-chain overflow flag. |
+| `$FF136A` | horizon | 2 | Road horizon/limit. |
+
+SAT is double-buffered: `$FF479C`/`$FF4E1C`. Shape table `unk_3BF1A` (`$3BF1A`) points
+to shape data in the gap. See `docs/analysis/8FB4.md`; the exact projection math is TODO.
+
 ### End level (`endlevel.asm`)
 
 | Address | Name | Size | Meaning |

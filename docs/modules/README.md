@@ -21,7 +21,7 @@ row to the table below.
 | `highscore.asm` | `0x006DC0` | High-score screen | [highscore.md](highscore.md) |
 | `shop.asm` | `0x0074AA` | Bike shop | [shop.md](shop.md) |
 | `endlevel.asm` | `0x008342` | Level-complete animation / level-up | [endlevel.md](endlevel.md) |
-| `8FB4.asm` | `0x008FB4` | Not yet identified | TODO |
+| `8FB4.asm` | `0x008FB4` | Road/object renderer (partial) | [8FB4.md](8FB4.md) |
 | `98C2.asm` | `0x0098C2` | Not yet identified | TODO |
 | `uncompress.asm` | `0x009B9E` | Decompression routines | TODO |
 | `9FE4.asm` | `0x009FE4` | Not yet identified | TODO |
