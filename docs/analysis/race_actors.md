@@ -1,8 +1,9 @@
 # Analysis: `race.asm` actors (riders/opponents)
 
 - **Module:** actor/rider initialization for the race
-- **Source:** `race.asm` (`Race_CreateActors` `0xCAD0`, `Race_InitActorLists`
-  `0xB6C4`-area, `Race_InitActorPositions`)
+- **Source:** `race_core.asm` (`Race_CreateActors` `0xCAD0`, `Race_InitActorLists`
+  `0xB6C4`-area, `Race_InitActorPositions`, actor tables) + `race_spawn.asm`
+  (dynamic spawn).
 - **Status:** analyzed statically (tables parsed from `baserom.md`); field semantics
   partly TODO
 - **Related:** `docs/analysis/race.md`, `docs/ram-map.md`, `docs/modules/race.md`

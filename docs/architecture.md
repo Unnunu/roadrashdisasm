@@ -152,10 +152,14 @@ tentative until the module card is filled in.
 | `0x0098C2` | `race_hud_debug.asm` | HUD digit writers / debug overlay | [race_hud_debug.md](modules/race_hud_debug.md) |
 | `0x009B9E` | `uncompress.asm` | LZSS decompressors (B/W/stream/VRAM) | [uncompress.md](modules/uncompress.md) |
 | `0x009FE4` | `track_data.asm` | Track/road data decompressor | [track_data.md](modules/track_data.md) |
-| `0x00A4E2` | `race.asm` | Main gameplay (top-level analyzed) | [race.md](modules/race.md) |
-| `0x00D278` | `race_hud.asm` | Race HUD (included by `race.asm`) | TODO |
-| `0x00E732` | `road_marking.asm` | Road marking / sprite placement (included by `race.asm`) | TODO |
-| `0x016860` | `animation.asm` | Sprite animation (included by `race.asm`) | TODO |
+| `0x00A4E2` | `race.asm` | Include list (split main gameplay) | [race.md](modules/race.md) |
+| `0x00A4E2` | `race_core.asm` | Race top-level/init/results/actor data | [race_core.md](modules/race_core.md) |
+| `0x00D278` | `race_hud.asm` | Race HUD | [race_hud.md](modules/race_hud.md) |
+| `0x00D8FA` | `race_physics.asm` | DmaWriteVRAM + actor/physics/AI | [race_physics.md](modules/race_physics.md) |
+| `0x00E732` | `road_marking.asm` | Road marking / sprite placement | [road_marking.md](modules/road_marking.md) |
+| `0x00EB34` | `race_ai.asm` | Main gameplay/AI/physics | [race_ai.md](modules/race_ai.md) |
+| `0x016860` | `animation.asm` | Sprite animation | [animation.md](modules/animation.md) |
+| `0x0169B0` | `race_spawn.asm` | Track data + dynamic spawn | [race_spawn.md](modules/race_spawn.md) |
 | `0x07E6A2` | `top_level.asm` | Top-level screen flow (intro/menu/race/results) | [top_level.md](modules/top_level.md) |
 
 Helpers without code in the image: `hw_const.asm` (constants/macros),

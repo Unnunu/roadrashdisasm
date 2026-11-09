@@ -1,0 +1,35 @@
+# Module card: `race_core.asm`
+
+- **ROM range:** `0x00A4E2`–`0x00D277` (`race_hud.asm` follows at `0xD278`)
+- **Status:** partially analyzed (top-level/init/results/actor tables; physics/AI TODO)
+- **Related:** `docs/analysis/race.md`, `docs/analysis/race_actors.md`,
+  `docs/analysis/race_spawn.md`, `docs/ram-map.md`, `docs/modules/race.md`
+
+## Role / purpose
+
+Race top-level and setup: `Race_Init`, asset loaders, track/bike/actor initialization,
+`Race_GameTick`, `Race_Update`, buffer rotation, input, race outcome helpers and the
+actor definition tables. This is the code executed around the `race_hud` module.
+
+## Entry points & API
+
+| Symbol | Address | Called by | Description |
+|--------|---------|-----------|-------------|
+| `Race_Init` | `0xA4E2` | `top_level.asm` | Full level setup + warm-up frames. |
+| `Race_GameTick` | `0xBA76` | fade wrapper | VDP/input/pause/demo. |
+| `Race_Update` | `0xC00C` | `top_level.asm` | Simulation + render prep driver. |
+| `Race_GetInput`/`Demo` | `0xBE56`/`0xBE2C` | `Race_GameTick` | Steering/buttons/pause. |
+| `Race_ComputeResults` | `0xC3F8` | race end | Outcome/places/password/money. |
+| `Race_CreateActors` | `0xCAD0` | `Race_Init` | Actor structs from definitions. |
+
+## Coverage matrix
+
+| Function | Address | Contract | Algorithm | Data | Hardware | Why | Dynamic | Status |
+|----------|---------|----------|-----------|------|----------|-----|---------|--------|
+| `Race_Init`/loaders | `0xA4E2`+ | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
+| `Race_GameTick`/`Update` | `0xBA76`/`0xC00C` | [x] | [~] | [x] | [x] | [x] | [ ] | partial |
+| `Race_CreateActors` | `0xCAD0` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
+| `Race_ComputeResults` | `0xC3F8` | [x] | [~] | [x] | - | [x] | [ ] | partial |
+| actor definitions | `0xCCDA` | [x] | [x] | [x] | - | [x] | - | parsed |
+
+Detailed flow/structures: `docs/analysis/race.md`; actors: `docs/analysis/race_actors.md`.

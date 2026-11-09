@@ -1,7 +1,6 @@
 # Module card: `race.asm`
 
-- **ROM range:** `0x00A4E2`–`0x016E6F`; includes `race_hud.asm` (`0xD278`),
-  `road_marking.asm` (`0xE732`), `animation.asm` (`0x16860`)
+- **ROM range:** `0x00A4E2`–`0x016E6F`; include split (order below)
 - **Status:** partially analyzed (top-level flow, init/assets, input/loop, buffer
   rotation, initial structure inventory; actor/physics/AI and sub-module internals
   TODO)
@@ -14,6 +13,21 @@ Main gameplay: level/asset setup, the per-frame simulation/render loop, player i
 steering, actor/opponent/physics updates, road interpolation and rendering, HUD/road
 marking/animation, and the race outcome. `top_level.asm` calls `Race_Init`, installs
 `Race_GameTick` as the frame update, and calls `Race_Update` each frame.
+
+## Split modules
+
+| File | ROM | Role | Card |
+|---|---|---|---|
+| `race_core.asm` | `$A4E2-$D277` | Top-level/init/results/actor data | [race_core.md](race_core.md) |
+| `race_hud.asm` | `$D278-$D8F9` | Race HUD | [race_hud.md](race_hud.md) |
+| `race_physics.asm` | `$D8FA-$E731` | DmaWriteVRAM + actor/physics/AI | [race_physics.md](race_physics.md) |
+| `road_marking.asm` | `$E732-$EB33` | Road marking / sprite placement | [road_marking.md](road_marking.md) |
+| `race_ai.asm` | `$EB34-$1685F` | Main gameplay/AI/physics | [race_ai.md](race_ai.md) |
+| `animation.asm` | `$16860-$169AF` | Sprite animation | [animation.md](animation.md) |
+| `race_spawn.asm` | `$169B0-$16E6F` | Track data + dynamic spawn | [race_spawn.md](race_spawn.md) |
+
+`race.asm` includes these in exactly that order; the code is split at the original
+`race_hud`/`road_marking`/`animation` include boundaries.
 
 ## Entry points & API
 
@@ -102,7 +116,7 @@ marking/animation, and the race outcome. `top_level.asm` calls `Race_Init`, inst
 | `road_marking.asm` | `0xE732` | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | TODO |
 | `animation.asm` | `0x16860` | [~] | [~] | [x] | [x] | [x] | [ ] | partial |
 
-Detailed top-level flow: `docs/analysis/race.md`; actors: `docs/analysis/race_actors.md`.
+Detailed top-level flow: `docs/analysis/race.md`; actors: `docs/analysis/race_actors.md`; spawn: `docs/analysis/race_spawn.md`; split cards above.
 
 ## External calls / dependencies
 

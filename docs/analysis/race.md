@@ -2,8 +2,11 @@
 
 - **Module:** race/gameplay: init, assets, per-frame simulation/render loop, input,
   actors/physics/AI, road/HUD/animation pipeline, race outcome
-- **ROM range:** `0x00A4E2`–`0x016E6F`; includes `race_hud.asm` (`0xD278`),
-  `road_marking.asm` (`0xE732`), `animation.asm` (`0x16860`)
+- **ROM range:** `0x00A4E2`–`0x016E6F`; split modules: `race_core.asm`
+  (`0xA4E2`-`0xD277`), `race_hud.asm` (`0xD278`-`0xD8F9`), `race_physics.asm`
+  (`0xD8FA`-`0xE731`), `road_marking.asm` (`0xE732`-`0xEB33`), `race_ai.asm`
+  (`0xEB34`-`0x1685F`), `animation.asm` (`0x16860`-`0x169AF`), `race_spawn.asm`
+  (`0x169B0`-`0x16E6F`); `race.asm` is the include list.
 - **Status:** partially analyzed (top-level flow, init/assets, input/loop, buffer
   rotation, initial struct inventory; actor/physics/AI and sub-module internals TODO)
 - **Related:** `docs/architecture.md`, `docs/ram-map.md`, `docs/hardware.md`,

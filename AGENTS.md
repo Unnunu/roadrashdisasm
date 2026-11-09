@@ -75,11 +75,15 @@ differing byte is reported. `baserom.md` is the only ROM file and is git-ignored
 | `endlevel.asm` | End-of-level menu. |
 | `road_render.asm`, `race_hud_debug.asm`, `track_data.asm` | Road/object renderer; HUD digits/debug; track data decompressor. |
 | `uncompress.asm` | Decompression routines. |
-| `race.asm` | Main gameplay (largest file); includes `race_hud.asm`, `road_marking.asm`, `animation.asm`. |
-| `top_level.asm` | Top-level screen flow at `0x07E6A2` (intro/menu/race/results); generated with `tools/disasm.py`. |
+| `race.asm` | Include list for the split main gameplay (order: race_core, race_hud, race_physics, road_marking, race_ai, animation, race_spawn). |
+| `race_core.asm` | Race top-level/init/results/actor data. |
 | `race_hud.asm` | Race HUD. |
+| `race_physics.asm` | DmaWriteVRAM + actor/physics/AI functions. |
 | `road_marking.asm` | Road marking / sprite placement. |
+| `race_ai.asm` | Main gameplay/AI/physics. |
 | `animation.asm` | Sprite animation. |
+| `race_spawn.asm` | Track data + dynamic spawn. |
+| `top_level.asm` | Top-level screen flow at `0x07E6A2` (intro/menu/race/results); generated with `tools/disasm.py`. |
 | `tools/asl`, `tools/p2bin` | Assembler (Macro Assembler AS) and binary converter. Do not modify. |
 | `tools/disasm.py` | Capstone-based ROM range -> project AS source generator. |
 | `tools/roundtrip.py` | Round-trip verifier for `disasm.py` (ROM -> AS -> assemble -> compare). |
