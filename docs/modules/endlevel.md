@@ -66,7 +66,7 @@ Detailed listing: `docs/analysis/endlevel.md`.
 - Uses `UncompressW/B`, `UncompressToVRAM`, `WriteToVRAM`, `WriteNametable(ToBuffer)`,
   `EncodeString`, `Menu_ShowMessage`, `DmaWriteVRAM`, `DmaWriteCRAM`,
   `UpdateAnimation2`, `Race_FinishFrame`, `Race_SwapFrames`, `GetInputPlayerA/B`,
-  `MenuPassword_CreatePassword`, `AudioFunc1/3/4`.
+  `MenuPassword_CreatePassword`, `Audio_Update/3/4`.
 
 ## Hacks / bugs / quirks
 

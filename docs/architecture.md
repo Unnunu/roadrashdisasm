@@ -81,7 +81,7 @@ Entry / intro (`$7E6A2`):
   `ram_UpdateFunction == 0`.
 - `Fade_InitFadeOut`, copy target palette -> current palette, install
   `Fade_GameTick`, wait.
-- `Race_InitPhysicsConstants`, `AudioFunc2`, `Intro_Init`, `Fade_InitFadeIn`, install `Fade_GameTick`,
+- `Race_InitPhysicsConstants`, `Audio_Init`, `Intro_Init`, `Fade_InitFadeIn`, install `Fade_GameTick`,
   wait; install `Intro_GameTick`, wait; `Fade_InitFadeOut`, install `Fade_GameTick`,
   wait.
 - If `Intro_ram_TextTimer >= 0` -> menu (`$7E74C`); otherwise set

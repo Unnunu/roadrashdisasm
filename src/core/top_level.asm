@@ -29,7 +29,7 @@ loc_7E6E0:
                 tst.l       (ram_UpdateFunction).l
                 bne.s       loc_7E6E0
                 jsr         (Race_InitPhysicsConstants).l
-                jsr         (AudioFunc2).l
+                jsr         (Audio_Init).l
                 jsr         (Intro_Init).w
                 jsr         (Fade_InitFadeIn).w
                 move.l      #Fade_GameTick,(ram_UpdateFunction).l

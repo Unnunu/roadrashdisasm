@@ -139,7 +139,7 @@ RaceResults_Init:
                 bra.w   .loc_6190
 .loc_616E:
                 move.l  #10,d0
-                jsr     (AudioFunc3).l
+                jsr     (Audio_StartMusic).l
 ; cop index != 0 -> caught by the cops; 0 -> bike destroyed/repair
                 tst.w   (Race_CopIndex).l
                 beq.w   .loc_618C
@@ -221,10 +221,10 @@ RaceResults_Init:
                 add.b   d0,(a1)
                 cmpi.w  #$FFFF,(Race_EventBuffer).l
                 beq.w   .return
-                jsr     (AudioFunc4).l
+                jsr     (Audio_StopMusic).l
                 move.l  #9,d0
                 move.w  d0,(ram_CurrentSong).l
-                jsr     (AudioFunc3).l
+                jsr     (Audio_StartMusic).l
 .return:
                 rts
 ; End of function RaceResults_Init
@@ -872,10 +872,10 @@ RaceResults_GameTick:
                 cmpi.l  #0,(ram_FF0910).l
                 bne.w   .endStage
 .loc_6BBA:
-                jsr     (AudioFunc1).l
+                jsr     (Audio_Update).l
                 rts
 .endStage:
-                jsr     (AudioFunc4).l
+                jsr     (Audio_StopMusic).l
                 move.l  #0,(ram_UpdateFunction).l
                 bra.s   .loc_6BBA
 ; End of function RaceResults_GameTick

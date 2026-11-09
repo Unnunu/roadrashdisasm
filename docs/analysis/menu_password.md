@@ -48,7 +48,7 @@
 - Start handling: if Start is currently pressed -> keep editing; if the **changed** Start
   bit is set (released) -> `.endStage`. The password screen exits on Start **release**.
 - Draw/restore the cursor, handle newly pressed buttons, hold-repeat (30-frame delay,
-  then every 8 frames), blink the message/tooltip, `Menu_ShowMessage`, `AudioFunc1`.
+  then every 8 frames), blink the message/tooltip, `Menu_ShowMessage`, `Audio_Update`.
 - `.endStage`: `MenuPassword_UpdateStatus` (validate/parse + status), `Menu_DrawPlayerInfo`, clear the
   `FrameBuffer + $280` region with `$67FF67FF`, `Menu_DrawRaceSelection`, redraw player
   info, install `MainMenu_GameTick`.

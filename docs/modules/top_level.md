@@ -33,7 +33,7 @@ results/shop/end-level dispatcher. It runs the per-frame update function through
 - **Intro (`$7E6A2`).** Clears `ram_FF1B3E`, sets `sr=$2500`, writes VDP `$8174`.
   Waits for `ram_UpdateFunction==0`, runs `Fade_InitFadeOut`, copies the target
   palette to the current palette, installs `Fade_GameTick`, waits.
-  Calls `Race_InitPhysicsConstants`, `AudioFunc2`, `Intro_Init`, `Fade_InitFadeIn`; installs
+  Calls `Race_InitPhysicsConstants`, `Audio_Init`, `Intro_Init`, `Fade_InitFadeIn`; installs
   `Fade_GameTick`, waits; installs `Intro_GameTick`, waits; `Fade_InitFadeOut`,
   installs `Fade_GameTick`, waits.
   `Intro_ram_TextTimer >= 0` -> menu; otherwise `MainMenu_ram_DemoMode = -1` and the
@@ -78,7 +78,7 @@ results/shop/end-level dispatcher. It runs the per-frame update function through
   `Fade_GameTickWithInit`, `FadeWithFunction_GameTick` (see `fade.md`).
 - Screens: `Intro_*`, `Menu_Init`/`MainMenu_GameTick`, `Character_*`, `HighScore_*`,
   `Race_Init`/`Race_GameTick`/`Race_Update`, `RaceResults_*`, `Shop_*`, `EndLevel_*`.
-- Audio: `AudioFunc2` (`$19F66`).
+- Audio: `Audio_Init` (`$19F66`).
 - Helpers: `Race_InitPhysicsConstants`, `TrackData_DecodeNextChunk`, `Race_ComputeStandings`, `Race_ComputeResults`.
 
 ## Hacks / bugs / quirks
@@ -119,5 +119,5 @@ results/shop/end-level dispatcher. It runs the per-frame update function through
 
 - [ ] Meaning of `ram_FF0918`, `$FF3692`, `$FF3696`, `$FF369A`.
 - [ ] What `Race_InitPhysicsConstants`, `TrackData_DecodeNextChunk`, `Race_ComputeStandings`, `Race_ComputeResults` do.
-- [ ] What `AudioFunc2` (`$19F66`) starts.
+- [ ] What `Audio_Init` (`$19F66`) starts.
 - [ ] Shrink the raw gap bridge as the region below `$7E6A2` is disassembled.

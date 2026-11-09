@@ -61,7 +61,7 @@ reg92 $1C   WindowY 28 cells (window covers the screen)
   copy palettes; clear/draw the frame buffer; DMA to `$7000`; start music.
 - **GameTick:** demo timer 1800 frames (30 s) -> demo mode and exit; DMA frame buffer;
   read pads A/B; Start exits on release; handle input; tooltip cycle (240 frames/8 ids);
-  `Menu_ShowMessage`, `AudioFunc1`, `sub_160B0/CC`, `Rand_GetWord`.
+  `Menu_ShowMessage`, `Audio_Update`, `sub_160B0/CC`, `Rand_GetWord`.
 - **Input:** A cycles player mode 1/2/3; B toggles music; Up/Right and Down/Left move the
   current track by 2; C opens the password screen (installs `MenuPassword_GameTick`,
   via `Fade_ram_UpdateFunction` if a fade is running).
@@ -98,7 +98,7 @@ reg92 $1C   WindowY 28 cells (window covers the screen)
 - `UncompressW`/`UncompressB`, `WriteToVRAM`, `DmaWriteVRAM`,
   `EncodeString`/`WriteNametable`, `WriteNametableToBuffer`, `Menu_ShowMessage`,
   `Menu_DrawRaceSelection`, `Menu_DrawPlayerInfo`, `MenuPassword_SelectCurrentTrack`, `MenuPassword_GameTick`,
-  `Fade_ram_UpdateFunction`, `AudioFunc1/3/4`, `Rand_GetWord`, `sub_160B0/CC`.
+  `Fade_ram_UpdateFunction`, `Audio_Update/3/4`, `Rand_GetWord`, `sub_160B0/CC`.
 
 ## Hacks / bugs / quirks
 

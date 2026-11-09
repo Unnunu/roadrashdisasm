@@ -69,7 +69,7 @@ Detailed listing/table/purchase logic: `docs/analysis/shop.md`.
   HighScore/RaceResults/Shop.
 - Uses `UncompressW/B`, `WriteToVRAM`, `WriteNametable(ToBuffer)`, `EncodeString`,
   `Menu_ShowMessage`, `DmaWriteVRAM`, `DmaWriteCRAM`, `GetInputPlayerA/B`, `Race_FormatNumber`,
-  `MenuPassword_CreatePassword`, `AudioFunc1/3/4`.
+  `MenuPassword_CreatePassword`, `Audio_Update/3/4`.
 
 ## Buying / trade-in
 

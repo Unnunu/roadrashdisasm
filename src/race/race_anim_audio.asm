@@ -2078,9 +2078,9 @@ sub_14D84:
 sub_14E38:
                 tst.w   (Race_ram_GameEnded).l
                 beq.w   .loc_14E58
-                jsr     (AudioFunc7).l
-                jsr     (AudioFunc10).l
-                jsr     (AudioFunc13).l
+                jsr     (Audio_Engine1Stop).l
+                jsr     (Audio_Engine2Stop).l
+                jsr     (Audio_Engine3Stop).l
                 bra.w   .loc_14E62
 
 
@@ -2118,7 +2118,7 @@ sub_14E38:
                 cmp.b   (ram_FF1AD4).l,d0
                 beq.w   .loc_14EE6
                 move.b  d0,(ram_FF1AD4).l
-                jsr     (AudioFunc5).l
+                jsr     (Audio_PlaySfx).l
                 bra.w   .loc_14EE6
 
 
@@ -2147,7 +2147,7 @@ sub_14E38:
                 clr.l   d0
                 move.b  (ram_FF1AD6).l,d0
                 beq.w   .loc_14F34
-                jsr     (AudioFunc5).l
+                jsr     (Audio_PlaySfx).l
                 bra.w   .loc_14F58
 
 
@@ -2161,7 +2161,7 @@ sub_14E38:
                 beq.w   .loc_14F58
 
 .loc_14F52:
-                jsr     (AudioFunc5).l
+                jsr     (Audio_PlaySfx).l
 
 .loc_14F58:
                 tst.w   (ram_FF1B32).l
@@ -2183,7 +2183,7 @@ sub_14E38:
                 cmp.b   (ram_FF1AD5).l,d0
                 beq.w   .loc_14FA2
                 move.b  d0,(ram_FF1AD5).l
-                jsr     (AudioFunc5).l
+                jsr     (Audio_PlaySfx).l
 
 .loc_14FA2:
                 move.b  #0,(ram_FF1AD6).l

@@ -71,7 +71,7 @@ reg90 $03   128x32 planes
 ## External calls / dependencies
 
 - `UncompressW`, `WriteToVRAM`, `DmaWriteVRAM` (asset upload).
-- `GetInputPlayerA/B`, `DmaWriteVRAM`, `AudioFunc1/3/4`, `Rand_Init`, `sub_16088`.
+- `GetInputPlayerA/B`, `DmaWriteVRAM`, `Audio_Update/3/4`, `Rand_Init`, `sub_16088`.
 - `Menu_*`, `MenuPassword_*`, `HighScore_*` state (initial values).
 
 ## Hacks / bugs / quirks

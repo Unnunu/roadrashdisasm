@@ -542,8 +542,8 @@ HorizontalInterrupt:
                 beq.w   .loc_154E
                 clr.l   d0
                 move.w  #$1F,d1
-                jsr     (AudioFunc8).l
-                jsr     (AudioFunc11).l
+                jsr     (Audio_Engine1Update).l
+                jsr     (Audio_Engine2Update).l
                 bra.w   .loc_162C
 .loc_154E:
                 lea     (RacePlayerA).l,a1
@@ -603,12 +603,12 @@ HorizontalInterrupt:
                 bmi.w   .loc_1616
                 move.w  #$1F,d1
 .loc_1616:
-                jsr     (AudioFunc8).l
+                jsr     (Audio_Engine1Update).l
                 movea.l (ram_FF1908).l,a1
                 bsr.w   Audio_UpdateEngine
-                jsr     (AudioFunc11).l
+                jsr     (Audio_Engine2Update).l
 .loc_162C:
-                jsr     (AudioFunc1).l
+                jsr     (Audio_Update).l
 .loc_1632: ; disable the raster effect until the next request
                 move.w  #$FFFF,(ram_FF369E).l
                 tst.w   (ram_FF0406).l

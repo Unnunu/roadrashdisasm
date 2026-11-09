@@ -111,7 +111,7 @@ code (`src/core/fade.asm`) uses DMA to upload the 64-word palette to CRAM (`DmaW
   - writes a longword to `VdpData`, then **36 NOPs** (VDP write-recovery delay), then
     writes the next command word to `VdpCtrl`;
   - when the next `ram_FF0406 == $90`, runs a once-per-frame engine-audio update
-    (`AudioFunc1/8/11`, `Audio_UpdateEngine`).
+    (`Audio_Update/8/11`, `Audio_UpdateEngine`).
 - **HV counter** (`$C00008`): high byte = vertical counter, low byte = horizontal
   counter. The handler polls both to place writes at a specific raster position.
 - **VDP status** read via `$C00004`; a control-port read resets the command latch. Where
@@ -164,7 +164,7 @@ Quirks (see `docs/analysis/main.md`):
 - Boot loads a 38-byte Z80 stub and leaves the Z80 in reset; the sound code later
   (`$1D9C2`) loads the real driver from `$1DA12` (~3003 bytes) and releases reset.
 - The 68k side (`$19F62-$1D9C1`) builds six channel commands and sends them to Z80
-  RAM; see `docs/analysis/audio.md` for `AudioFunc1..18`, work-RAM fields and the
+  RAM; see `docs/analysis/audio.md` for the audio functions, work-RAM fields and the
   Z80 mailbox.
 - The current Z80 driver binary (`$1DA12`, `$BBB` bytes) and sound data
   (`$1E5CD-$257CF`) are extracted by `tools/assets.py`; Z80 code/data and

@@ -403,11 +403,11 @@ RiderIntro_GameTick:
                 bsr.w   Menu_ShowMessage
 
 .loc_5F0E:
-                jsr     (AudioFunc1).l
+                jsr     (Audio_Update).l
                 rts
 ; exit stage: stop the screen and play the transition sound
 .endStage:
-                jsr     (AudioFunc4).l
+                jsr     (Audio_StopMusic).l
                 move.l  #0,(ram_UpdateFunction).l
                 bra.s   .loc_5F0E
 ; End of function RiderIntro_GameTick

@@ -60,7 +60,7 @@ Detailed listing/table: `docs/analysis/highscore.md`.
 - Callers: `src/core/top_level.asm`; `src/screens/race_results.asm`/`src/screens/shop.asm` set `ram_FF0910` to
   `HighScore_Init`.
 - Uses `UncompressW/B`, `WriteToVRAM`, `WriteNametable(ToBuffer)`, `EncodeString`,
-  `Menu_ShowMessage`, `DmaWriteVRAM`, `GetInputPlayerA/B`, `AudioFunc1/3/4`.
+  `Menu_ShowMessage`, `DmaWriteVRAM`, `GetInputPlayerA/B`, `Audio_Update/3/4`.
 
 ## Hacks / bugs / quirks
 

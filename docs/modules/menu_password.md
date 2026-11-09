@@ -28,7 +28,7 @@ characters, switches players, validates the entered password, applies it to the 
 - **GameTick:** DMA `Menu_ram_FrameBuffer + $200` (rows 4-27) to VRAM `$7200`; read pads
   A/B and edge-detect Start (exit on **release**); draw/restore the cursor; handle newly
   pressed buttons and hold-repeat; blink the status/tooltip; `Menu_ShowMessage`,
-  `AudioFunc1`.
+  `Audio_Update`.
 - **Start release -> endStage:** `MenuPassword_UpdateStatus` (validate/parse/status), draw player info and
   race selection, install `MainMenu_GameTick`.
 - **Editing:** A = previous character, B = next character, C = switch player A/B,
@@ -83,7 +83,7 @@ the valid password `00000  00001010D8  101MN` (validation sum 21, mask 21).
 
 - `DmaWriteVRAM`, `EncodeString`/`DecodeString` (intro), `WriteNametableToBuffer`
   (menu_main), `Menu_ShowMessage`, `Menu_DrawPlayerInfo`, `Menu_DrawRaceSelection`,
-  `GetInputPlayerA/B`, `AudioFunc1`.
+  `GetInputPlayerA/B`, `Audio_Update`.
 
 ## Hacks / bugs / quirks
 

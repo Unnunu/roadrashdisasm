@@ -89,8 +89,8 @@ index 28 (`unk_52CE`: complete every course in 4th place or better); 4 -> index 
 `RaceResults_Init` repurposes `MenuPassword_StrPasswordStatus` as a 12x5 box at
 (14,22): player name (10 chars), "cash" + money (`Race_FormatMoney`; negative money adjusts
 `ram_FF0682`), and the 24-char password. It copies `unk_533A` ("Congratulations! ... on
-level 1") to `ram_FF089A` and patches the level digit. If not busted: `AudioFunc4`,
-song 9, `AudioFunc3`; the bust path plays `AudioFunc3(10)`.
+level 1") to `ram_FF089A` and patches the level digit. If not busted: `Audio_StopMusic`,
+song 9, `Audio_StartMusic`; the bust path plays `Audio_StartMusic(10)`.
 
 ## Input & messages
 

@@ -126,8 +126,8 @@ Per frame: DMA the frame buffer to `$7000`; read pad A, then pad B; on a **relea
 edge** (`~input & previous raw buttons`; `GetInput` returns 1 = pressed) set
 `Race_ram_ActiveController` to 0/1 and end the screen. Otherwise decrement `Menu_ram_NextMessageTimer`; every 300
 frames (5 s) advance `Menu_ram_CurrentMessageId` by 8; when the message array entry is
-`$FFFFFFFF`, end. Then `Menu_ShowMessage` and `AudioFunc1`. End stage: `AudioFunc4`,
-clear `ram_UpdateFunction`, `AudioFunc1`.
+`$FFFFFFFF`, end. Then `Menu_ShowMessage` and `Audio_Update`. End stage: `Audio_StopMusic`,
+clear `ram_UpdateFunction`, `Audio_Update`.
 
 Message sequence: index 18 = blank `unk_4E78`, index 19 = `StrPressStartToExit` with
 the blinking Start icon, index 20 = terminator. The screen therefore auto-exits after

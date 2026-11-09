@@ -68,7 +68,7 @@ background palette (at `ImageBuffer+$4E4`) is copied to the global palette.
    `$1000` (loaded; its use is not visible in this screen).
 5. Clear 22 frame-buffer lines to `$7FF`, six lines to spaces; encode the table; draw
    the 5 top rows and the two player rows; DMA to `$7000`.
-6. `AudioFunc4`; if music enabled, `AudioFunc3(1)`.
+6. `Audio_StopMusic`; if music enabled, `Audio_StartMusic(1)`.
 
 ## `HighScore_GameTick` (`0x732E`)
 
@@ -79,14 +79,14 @@ background palette (at `ImageBuffer+$4E4`) is copied to the global palette.
   C -> `Shop_Init`.
 - Message cycle: every 300 frames, advance by 8 within group 42 (reset at the
   `$FFFFFFFF` terminator); the `Menu_ram_MessageBlinkTimer` decrements each frame.
-- End when `ram_FF0910 != 0`; `AudioFunc1` per frame, `AudioFunc4` at the end.
+- End when `ram_FF0910 != 0`; `Audio_Update` per frame, `Audio_StopMusic` at the end.
 
 ## `HighScore_GameTick_Demo` (`0x72BA`)
 
 - Waits for a **release edge** on pad A or B, or a 600-frame (10 s) timeout.
 - On release: clear `MainMenu_ram_DemoMode`; then end the stage. The top level checks
   the flag (`0x7E7FA`): 0 -> main menu, 1 -> demo race.
-- No message cycling; `AudioFunc1` per frame, `AudioFunc4` at the end.
+- No message cycling; `Audio_Update` per frame, `Audio_StopMusic` at the end.
 
 ## `HighScore_HandleInput` (`0x7460`)
 

@@ -141,7 +141,7 @@ Intro_Init:
 
                 moveq   #1,d0
                 move.w  d0,(ram_CurrentSong).l
-                jsr     (AudioFunc3).l
+                jsr     (Audio_StartMusic).l
 ; create String "Player A  " on the left
                 lea     (Menu_DefaultName).l,a0
                 lea     (MenuPassword_ram_StrPlayerAName).l,a1
@@ -437,10 +437,10 @@ Intro_GameTick:
 
                 bra.w   .end
 .end:
-                jsr     (AudioFunc1).l
+                jsr     (Audio_Update).l
                 rts
 .endStage:
-                jsr     (AudioFunc4).l
+                jsr     (Audio_StopMusic).l
                 move.l  #0,(ram_UpdateFunction).l
                 bra.s   .end
 ; End of function Intro_GameTick

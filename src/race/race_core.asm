@@ -135,18 +135,18 @@ Race_InitAudio:
                 move.w  #$7D0,(ram_FF36BE).l
                 move.w  #$7D0,(ram_FF36C0).l
                 move.w  #60,(ram_FF36C2).l
-                jsr     (AudioFunc6).l
+                jsr     (Audio_Engine1Start).l
                 move.w  (ram_FF36B8).l,d0
                 move.w  #$1F,d1
-                jsr     (AudioFunc8).l
-                jsr     (AudioFunc9).l
+                jsr     (Audio_Engine1Update).l
+                jsr     (Audio_Engine2Start).l
                 move.w  (ram_FF36BC).l,d0
                 move.w  #$1F,d1
-                jsr     (AudioFunc11).l
-                jsr     (AudioFunc12).l
+                jsr     (Audio_Engine2Update).l
+                jsr     (Audio_Engine3Start).l
                 move.w  (ram_FF36BE).l,d0
                 move.w  #$1F,d1
-                jsr     (AudioFunc14).l
+                jsr     (Audio_Engine3Update).l
                 tst.w   (ram_MusicEnabled).l
                 beq.w   .return
 
@@ -155,7 +155,7 @@ Race_InitAudio:
                 move.w  (a0,d0.w),d0
                 ext.l   d0
                 move.w  d0,(ram_CurrentSong).l
-                jsr     (AudioFunc3).l
+                jsr     (Audio_StartMusic).l
 .return:
                 rts
 ; End of function Race_InitAudio
@@ -1565,9 +1565,9 @@ Race_GameTick:
 .loc_BBCE:
                 tst.w   (Race_ram_DemoGameEnded).l
                 beq.w   .return
-                jsr     (AudioFunc7).l
-                jsr     (AudioFunc10).l
-                jsr     (AudioFunc13).l
+                jsr     (Audio_Engine1Stop).l
+                jsr     (Audio_Engine2Stop).l
+                jsr     (Audio_Engine3Stop).l
                 move.l  #0,(ram_UpdateFunction).l
                 move.w  #-1,(ram_FF369E).l
 .return:
@@ -1808,7 +1808,7 @@ Race_GetInput:
                 move.w  #0,(ram_FF369A).l
                 tst.w   (ram_MusicEnabled).l
                 beq.w   .loc_BFC6
-                jsr     (AudioFunc4).l
+                jsr     (Audio_StopMusic).l
 .loc_BFC6:
                 move.w  #1,(ram_FF368E).l
                 bra.w   .return

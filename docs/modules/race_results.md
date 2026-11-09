@@ -71,7 +71,7 @@ Detailed listing and table parse: `docs/analysis/race_results.md`.
   `RaceResults_Init`).
 - Uses `UncompressW/B`, `WriteToVRAM`, `WriteNametable(ToBuffer)`, `EncodeString`,
   `Menu_ShowMessage`, `DmaWriteVRAM`, `GetInputPlayerA/B`, `Rand_GetWord`, `Race_FormatMoney`,
-  `Race_FormatNumber`, `AudioFunc1/3/4`.
+  `Race_FormatNumber`, `Audio_Update/3/4`.
 - Race outcome fields are computed by `Race_ComputeResults` in `src/race/race.asm`.
 
 ## Hacks / bugs / quirks

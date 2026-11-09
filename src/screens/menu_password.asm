@@ -141,7 +141,7 @@ MenuPassword_GameTick:
                 move.w  #(8*12),(Menu_ram_CurrentMessageId).l
 .end:
                 jsr     (Menu_ShowMessage).l
-                jsr     (AudioFunc1).l
+                jsr     (Audio_Update).l
                 rts
 .endStage:
                 jsr     (MenuPassword_UpdateStatus).l

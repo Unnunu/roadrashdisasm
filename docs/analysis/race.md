@@ -101,7 +101,7 @@ This is the double/quad buffering that avoids tearing.
   `RaceBike_ram_SteeringPower`, `ReturnToStraightPower`, `MaxSteering` (clamped).
 - B sets/clears player `$68` bit1; A sets/clears player `$68` bit2; C returns.
 - Start toggles `Race_ram_State` (pause/resume), sets `ram_FF3698/369A`, plays
-  `AudioFunc18`/`AudioFunc4`, debounced by `ram_FF368E`.
+  `AudioFunc18`/`Audio_StopMusic`, debounced by `ram_FF368E`.
 - No buttons: return the steering to straight, clear the player `$68` bits1/2 and the
   debounce.
 - `Race_GetInputDemo`: any pad button ends the demo (GameEnded/DemoGameEnded).
@@ -209,7 +209,7 @@ Actors/player structures:
 | HUD | `RaceHud_Draw` (`src/race/race_hud.asm`) |
 | Animation | `UpdateAnimation(2)` (`src/race/animation.asm`), `RiderSprites_Build` |
 | Outcome | `Race_ComputeResults` (`0xC3F8`), `Race_SortResults`, `Race_UpdateHighScoreTable`, password/highscore |
-| Audio | `Race_InitAudio` `0xA674`, engine channels (`AudioFunc6/8/9/11/12/14`) |
+| Audio | `Race_InitAudio` `0xA674`, engine channels (`Audio_Engine1Start/8/9/11/12/14`) |
 
 ## Open questions / next steps
 

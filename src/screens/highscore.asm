@@ -329,11 +329,11 @@ HighScore_Init:
                 move.w  #$700,d2
                 bsr.w   DmaWriteVRAM
 
-                jsr     (AudioFunc4).l
+                jsr     (Audio_StopMusic).l
                 tst.w   (ram_MusicEnabled).l
                 beq.w   .return
                 moveq   #1,d0
-                jsr     (AudioFunc3).l
+                jsr     (Audio_StartMusic).l
 .return:
                 rts
 ; End of function HighScore_Init
@@ -372,10 +372,10 @@ HighScore_GameTick_Demo:
 .buttonReleased:
                 clr.w   (MainMenu_ram_DemoMode).l
 .endStage:
-                jsr     (AudioFunc4).l
+                jsr     (Audio_StopMusic).l
                 move.l  #0,(ram_UpdateFunction).l
 .end:
-                jsr     (AudioFunc1).l
+                jsr     (Audio_Update).l
                 rts
 ; End of function HighScore_GameTick_Demo
 
@@ -447,12 +447,12 @@ HighScore_GameTick:
                 cmpi.l  #0,(ram_FF0910).l
                 bne.w   .endStage
 .loc_743C:
-                jsr     (AudioFunc1).l
+                jsr     (Audio_Update).l
                 rts
 .buttonReleased:
                 move.l  #RaceResults_Init,(ram_FF0910).l ; restart this menu
 .endStage:
-                jsr     (AudioFunc4).l
+                jsr     (Audio_StopMusic).l
                 move.l  #0,(ram_UpdateFunction).l
                 bra.s   .loc_743C
 ; End of function HighScore_GameTick

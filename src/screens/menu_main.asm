@@ -235,7 +235,7 @@ Menu_Init:
                 tst.w   (ram_MusicEnabled).l
                 beq.w   .return
                 moveq   #1,d0
-                jsr     (AudioFunc3).l
+                jsr     (Audio_StartMusic).l
 
 .return:
                 rts
@@ -413,14 +413,14 @@ MainMenu_GameTick:
                 beq.w   .end
 .end:
                 jsr     (Menu_ShowMessage).l
-                jsr     (AudioFunc1).l
+                jsr     (Audio_Update).l
                 move.w  #1,d2
                 jsr     (sub_160B0).l
                 jsr     (sub_160CC).l
                 jsr     (Rand_GetWord).l
                 rts
 .endStage:
-                jsr     (AudioFunc4).l
+                jsr     (Audio_StopMusic).l
                 move.l  #0,(ram_UpdateFunction).l
                 bra.s   .end
 ; End of function MainMenu_GameTick
@@ -669,14 +669,14 @@ MainMenu_HandleInput:
                 move.w  #30,(Menu_ram_MessageBlinkTimer).l
                 move.w  #240,(Menu_ram_NextMessageTimer).l
                 move.w  #(8*3),(Menu_ram_CurrentMessageId).l ; music is off
-                jsr     (AudioFunc4).l
+                jsr     (Audio_StopMusic).l
                 move.w  #0,(ram_CurrentSong).l
                 eori.w  #1,(ram_MusicEnabled).l ; enable or disable music
                 beq.w   .checkUpRight
                 move.w  #(8*2),(Menu_ram_CurrentMessageId).l ; music is on
                 moveq   #1,d0
                 move.w  d0,(ram_CurrentSong).l
-                jsr     (AudioFunc3).l
+                jsr     (Audio_StartMusic).l
 .checkUpRight:
                 btst    #0,(MainMenu_ram_CurrentButtons).l
                 bne.w   .handleUpRight

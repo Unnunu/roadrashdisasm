@@ -78,7 +78,7 @@ expiry it advances `Intro_ram_CurrentStringOffset` by 4 and encodes/writes the n
 string. The last `$FFFFFFFF` entry ends the stage. Start on pad A or B is detected with
 the "pressed then released" edge (`Intro_ram_PlayerAPressedStart`/`B` set to `$80`, then
 the next frame without Start ends the stage). `.endStage` clears `ram_UpdateFunction`
-(the top-level flow then proceeds), calls `AudioFunc4` and returns.
+(the top-level flow then proceeds), calls `Audio_StopMusic` and returns.
 
 ## Title/credits scroll effect
 
@@ -129,7 +129,7 @@ persistent player/menu/high-score state:
 - level 1, money 100, bike 0, five race places = 0, opponents list `$4B,0..$E`;
 - the high-score table is initialized from `unk_4C18` (demo data, 34 longs);
 - `Menu_ram_CurrentTrackId = 0`, `Menu_ram_PlayerMode = 1`, `Menu_ram_PlayerLevel = 1`,
-  `Menu_ram_Player = 0`, music enabled, `Rand_Init`, `sub_16088`, `AudioFunc3`.
+  `Menu_ram_Player = 0`, music enabled, `Rand_Init`, `sub_16088`, `Audio_StartMusic`.
 
 ## Verified facts
 

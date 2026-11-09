@@ -180,11 +180,11 @@ EndLevel_Init:
                 lea     (Intro_ram_ImageBuffer).l,a1
                 jsr     (UncompressW).l
 
-                jsr     (AudioFunc4).l
+                jsr     (Audio_StopMusic).l
                 tst.w   (ram_MusicEnabled).l
                 beq.w   .return
                 move.l  #9,d0
-                jsr     (AudioFunc3).l
+                jsr     (Audio_StartMusic).l
 .return:
                 rts
 ; End of function EndLevel_Init
@@ -491,10 +491,10 @@ EndLevel_GameTickVictoryCharacter:
                 cmpi.l  #0,(ram_FF0910).l
                 bne.w   .loc_8ADC
 .loc_8AD4:
-                jsr     (AudioFunc1).l
+                jsr     (Audio_Update).l
                 rts
 .loc_8ADC:
-                jsr     (AudioFunc4).l
+                jsr     (Audio_StopMusic).l
                 move.l  #0,(ram_UpdateFunction).l
                 bra.s   .loc_8AD4
 ; End of function EndLevel_GameTickVictoryCharacter
@@ -542,7 +542,7 @@ EndLevel_GameTick:
 
                 jsr     (Race_SwapFrames).l
 .end:
-                jsr     (AudioFunc1).l
+                jsr     (Audio_Update).l
                 rts
 .endStage:
 ; animation done: show the level-up rider screen and keep updating it

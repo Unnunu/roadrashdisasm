@@ -87,7 +87,7 @@ row 4 (`$7000 + $200`), matching `src/screens/menu_password.asm`.
    `Race_ram_ImageBuffer2`).
 5. Copy the 4 palette lines from the background image into `Global_ram_Palette`.
 6. Clear the frame buffer, `Menu_ShowMessage`, `MenuPassword_SelectCurrentTrack`, `Menu_DrawRaceSelection`,
-   `Menu_DrawPlayerInfo`; DMA the frame buffer to `$7000`; start music (`AudioFunc3`).
+   `Menu_DrawPlayerInfo`; DMA the frame buffer to `$7000`; start music (`Audio_StartMusic`).
 
 ## Per-frame flow (`MainMenu_GameTick`, `0x3802`)
 
@@ -100,7 +100,7 @@ row 4 (`$7000 + $200`), matching `src/screens/menu_password.asm`.
 - Handle newly pressed buttons for B/A (`MainMenu_HandleInput`); if the update function
   changed (password screen), skip the tooltip update.
 - Tooltip cycle: every 240 frames (4 s) advance `Menu_ram_CurrentMessageId` by 8 (tooltip
-  array `Message_MsgArray`); `Menu_ShowMessage`; `AudioFunc1`, `sub_160B0/CC`,
+  array `Message_MsgArray`); `Menu_ShowMessage`; `Audio_Update`, `sub_160B0/CC`,
   `Rand_GetWord`.
 
 ## Input (`MainMenu_HandleInput`, `0x3BE2`)
@@ -108,7 +108,7 @@ row 4 (`$7000 + $200`), matching `src/screens/menu_password.asm`.
 | Button | Action |
 |---|---|
 | A (`$40`) | cycle player mode 1 (A) -> 3 (two players) -> 2 (B) -> 1; redraw player info/race selection |
-| B (`$10`) | toggle music (`AudioFunc4`, `ram_MusicEnabled`, `AudioFunc3`), tooltips 8*2/8*3 |
+| B (`$10`) | toggle music (`Audio_StopMusic`, `ram_MusicEnabled`, `Audio_StartMusic`), tooltips 8*2/8*3 |
 | Up/Right (`$01`/`$08`) | current track +2 (wrap 0..8) |
 | Down/Left (`$02`/`$04`) | current track -2 (wrap 0..8) |
 | C (`$20`) | open the password screen for the player who pressed C |

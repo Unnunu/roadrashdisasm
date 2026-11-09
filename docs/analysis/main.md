@@ -263,20 +263,20 @@ budget.
 8. Write `d1` to `VdpCtrl`.
 9. If the next `ram_FF0406 == $90`, run the once-per-frame engine-audio update:
    - reset `ram_FF0406 = 0`;
-   - if `ram_MusicEnabled != 0`, skip to `AudioFunc1`;
-   - if `Race_ram_State != 0`, call `AudioFunc8`/`AudioFunc11` and skip;
+   - if `ram_MusicEnabled != 0`, skip to `Audio_Update`;
+   - if `Race_ram_State != 0`, call `Audio_Engine1Update`/`Audio_Engine2Update` and skip;
    - otherwise compute a speed/engine parameter from `RacePlayerA` (struct offset `$14`
      × `Race_ram_FrameCounter` + `STRUCT_OFFSET_SPEED`, scaled by `ram_FF1AA2` and
      `$3800`), smooth it into `ram_FF36B8` with a ±`$64` rate limit, derive `d1`
      (`>>5 + 2`, min 0), handle player B's struct `RacePlayerB` (distance to
-     `ram_FF1E68`), call `AudioFunc8`, `Audio_UpdateEngine` (with `ram_FF1908`) and
-     `AudioFunc11`.
+     `ram_FF1E68`), call `Audio_Engine1Update`, `Audio_UpdateEngine` (with `ram_FF1908`) and
+     `Audio_Engine2Update`.
 10. Set `ram_FF369E = $FFFF`; if `ram_FF0406 > 0`, set it back to 0 (re-enable the
     effect next time).
 
 `[dynamic]` GDB-remote observed `ram_FF369E = $FFFF` during the logo, then `0` once the
 effect was enabled; `ram_FF0406 = $10` and `ram_MusicEnabled = 1` in the observed
-frames. `[static]` The audio calls are sound-driver entry points (`AudioFunc1/8/11`);
+frames. `[static]` The audio calls are sound-driver entry points (`Audio_Update/8/11`);
 their exact parameters are deferred with the audio deep dive.
 
 ## 10. `Audio_UpdateEngine` (`0x1652`)
@@ -370,6 +370,6 @@ exception the game freezes.
 - [ ] Identify what the 38-byte Z80 stub is for (placeholder vs. a real init step).
 - [ ] Where is the VDP V-int flag cleared (handler does not read the status)?
 - [ ] HInt timing: confirm the 36-NOP delay and the HV-counter windows in BlastEm.
-- [ ] Audio semantics of `AudioFunc1/8/11` and `Audio_UpdateEngine` (deferred audio deep dive).
+- [ ] Audio semantics of `Audio_Update/8/11` and `Audio_UpdateEngine` (deferred audio deep dive).
 - [ ] 6-button pad behaviour (the code only implements the 3-button protocol).
 - [ ] Confirm the VDP VRAM map after boot with `vr` / a VRAM viewer.

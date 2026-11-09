@@ -109,5 +109,5 @@ parameters inside `HorizontalInterrupt`/`Audio_UpdateEngine` are deferred with t
 - [ ] Trigger a real soft reset and confirm the boot skips init/logo.
 - [ ] Confirm where the VDP V-int flag is cleared (the handler does not read status).
 - [ ] Confirm the HInt timing/36-NOP delay and the 6-button-pad behaviour.
-- [ ] Audio semantics of `AudioFunc1/8/11` and `Audio_UpdateEngine` (deferred).
+- [ ] Audio semantics of `Audio_Update/8/11` and `Audio_UpdateEngine` (deferred).
 - [ ] Identify the purpose of the 38-byte Z80 stub.

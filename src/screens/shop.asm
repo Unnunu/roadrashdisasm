@@ -319,11 +319,11 @@ Shop_Init:
                 move.w  #$700,d2
                 bsr.w   DmaWriteVRAM
 
-                jsr     (AudioFunc4).l
+                jsr     (Audio_StopMusic).l
                 tst.w   (ram_MusicEnabled).l
                 beq.w   .return
                 moveq   #1,d0
-                jsr     (AudioFunc3).l
+                jsr     (Audio_StartMusic).l
 .return:
                 rts
 ; End of function Shop_Init
@@ -448,12 +448,12 @@ Shop_GameTick:
                 cmpi.l  #0,(ram_FF0910).l
                 bne.w   .loc_7B3A
 .loc_7B28:
-                jsr     (AudioFunc1).l
+                jsr     (Audio_Update).l
                 rts
 .loc_7B30:
                 move.l  #$5F28,(ram_FF0910).l
 .loc_7B3A:
-                jsr     (AudioFunc4).l
+                jsr     (Audio_StopMusic).l
                 move.l  #0,(ram_UpdateFunction).l
                 bra.s   .loc_7B28
 ; End of function Shop_GameTick

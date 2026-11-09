@@ -37,7 +37,7 @@ The 68k audio control block starts at `$FFFF0000`; see
 |---|---|---|---|
 | `$FF0000` | audio active byte | 1 | `$FF` when the sound engine is active/resumed. |
 | `$FF0006 + n*$48` | audio channel n | `$48` | Six 68k sequence channels (`n=0..5`). |
-| `$FF01B6` | current song id | 4 | Written by `AudioFunc3`. |
+| `$FF01B6` | current song id | 4 | Written by `Audio_StartMusic`. |
 | `$FF01BE` | command buffer | `$30` | Six 8-byte commands copied to Z80 `$A00256`. |
 | `$FF01EE` | special command | 5 | Copied to Z80 `$A000BB..BF` when `$FF01F3` is set. |
 | `$FF01F4` | resume flag | 1 | `1` prevents `AudioFunc18` from re-arming audio. |
