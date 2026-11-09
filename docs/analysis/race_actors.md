@@ -119,7 +119,7 @@ routines; `+$06` is its low word, not an independent X coordinate.
 |---|---|---|---|
 | `+$00` | word | current screen/draw Y; source uses `0(a1)` | `[dynamic]` steering `$35`; hard-left `$FF89`; no-steer `$A0` |
 | `+$02` | word | `PosZ` (existing name) | `[static]` endlevel/HInt |
-| `+$04` | long | current X position; `PosXHigh/Low` are one 32-bit value | `[confirmed]` `$04 = $1E + $26` in all snapshots |
+| `+$04` | long | current X position; `RaceActor_X/XLow` are one 32-bit value | `[confirmed]` `$04 = $1E + $26` in all snapshots |
 | `+$06` | word | low word of `+$04`; no separate field | same |
 | `+$08`/`+$0A`/`+$0C` | word | unknown animation/impact registers; zero in snapshots | `[dynamic]`; writes in `race_anim_audio` |
 | `+$12` | word | `Speed` | `[confirmed]` PlayerA `$EE`, opponents `$111/$118`; steering `$2D15` |
@@ -276,15 +276,14 @@ open semantic question, not a reason to rename the field.
 
 | Current | Proposed | Evidence | Confidence |
 |---|---|---|---|
-| `+$04` | `ActorX` (long) | `move.l 4(a1)`; dynamic current X; `$06` is its low word | high |
-| `+$06` | `ActorXLow` (word) | low half of `+$04`, not a separate coordinate | high |
-| `+$14` | `ActorAcceleration` | added to Speed in `Race_UpdateActorAI`; dynamic `$22/$27/$28` | high |
-| `+$1E` | `ActorPreviousX` (long) | `sub_11448` copies `+$04` here; `$04-$1E=$26` | high |
-| `+$26` | `ActorFrameDistance` | `Speed * Race_ram_FrameDelay`; dynamic exact | high |
-| `+$66` | `ActorRating`/`ActorSkill` | definition byte5*100; also speed seed/distance at spawn/recycle | medium |
-| `+$68` | `ActorFlags` | bit6 active/update marker; multiple AI bits | medium |
-| `+$5C` | `ActorTileBase` | graphics +$E / `ram_FF18AA`; dynamic animation base | medium |
-| `+$5E`/`+$60` | `ActorSpritePosX/Y` | graphics +$A/+$C | low |
+| `$1E` (literal) | `RaceActor_PreviousX` (long) | `sub_11448` copies `+$04` here; `$04-$1E=$26` | high |
+| `$68` | `RaceActor_Flags` | bit6 active/update marker; multiple AI bits | medium |
+| `$5E`/`$60` | `ActorSpritePosX/Y` | graphics +$A/+$C | low |
 
 Applied in Batch 3a: `+$02/+$04/+$06/+$12/+$16/+$18/+$30/+$71/+$75` ->
-`RaceActor_PosZ/PosXHigh/PosXLow/Speed/Type/Gear/PosY/Index/GraphicsIndex`.
+`RaceActor_PosZ/X/XLow/Speed/Type/Gear/PosY/Index/GraphicsIndex`.
+
+Applied in R1: `RaceActor_X` (`$04`), `RaceActor_XLow` (`$06`),
+`RaceActor_Acceleration` (`$14`), `RaceActor_FrameDistance` (`$26`),
+`RaceActor_Lean` (`$42`), `RaceActor_TileBase` (`$5C`),
+`RaceActor_Rating` (`$66`).

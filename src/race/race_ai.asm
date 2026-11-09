@@ -3388,7 +3388,7 @@ sub_12EA2:
                 btst    #7,(RacePlayerA + STRUCT_OFFSET_68).l
                 bne.w   .loc_12F60
                 move.w  4(a1),d0
-                sub.w   (RacePlayerA + RaceActor_PosXHigh).l,d0
+                sub.w   (RacePlayerA + RaceActor_X).l,d0
                 bpl.w   .loc_12F4A
                 cmp.w   #$FFEE,d0
                 bpl.w   .loc_12F60
@@ -3423,7 +3423,7 @@ sub_12EA2:
                 bne.w   .loc_12FD8
 
 .loc_12FA6:
-                move.w  STRUCT_OFFSET_66(a1),d0
+                move.w  RaceActor_Rating(a1),d0
                 cmp.w   (RacePlayerA + RaceActor_Speed).l,d0
                 bgt.w   .loc_12FD8
                 cmpa.l  (Race_ram_NearestActor).l,a1
@@ -3611,7 +3611,7 @@ sub_131BE:
                 movea.l (ram_FF1A68).l,a4
                 cmpa.l  #ram_FF1F2A,a1
                 beq.w   .loc_131E0
-                cmp.w   STRUCT_OFFSET_66(a1),d6
+                cmp.w   RaceActor_Rating(a1),d6
                 bmi.w   .loc_1325E
 
 .loc_131E0:
@@ -4686,7 +4686,7 @@ sub_13A26:
 sub_13A92:
                 btst    #7,STRUCT_OFFSET_68(a1)
                 beq.w   .loc_13AA6
-                move.w  #$FFEC,STRUCT_OFFSET_14(a1)
+                move.w  #$FFEC,RaceActor_Acceleration(a1)
                 bra.w   .locret_13BBA
 .loc_13AA6:
                 btst    #4,STRUCT_OFFSET_68(a1)
@@ -4773,7 +4773,7 @@ sub_13A92:
                 bcc.w   .loc_13BB6
                 subi.w  #1,RaceActor_Gear(a1)
 .loc_13BB6:
-                move.w  d1,STRUCT_OFFSET_14(a1)
+                move.w  d1,RaceActor_Acceleration(a1)
 .locret_13BBA:
                 rts
 ; End of function sub_13A92
@@ -4791,7 +4791,7 @@ sub_13BBC:
 .loc_13BCE:
                 move.w  #-5,d1
 .loc_13BD2:
-                move.w  d1,STRUCT_OFFSET_14(a1)
+                move.w  d1,RaceActor_Acceleration(a1)
                 rts
 ; End of function sub_13BBC
 
@@ -4830,7 +4830,7 @@ sub_13BF4:
 .loc_13C1C:
                 btst    #6,$68(a1)
                 bne.w   .locret_13CFC
-                move.w  STRUCT_OFFSET_66(a1),d0
+                move.w  RaceActor_Rating(a1),d0
                 move.w  (Race_ram_ActorDistanceScale).l,d1
                 sub.w   (ram_FF1B34).l,d1
                 bmi.w   .loc_13C88
@@ -4861,7 +4861,7 @@ sub_13BF4:
                 beq.w   .locret_13CFC
                 move.l  d0,d1
                 clr.w   d0
-                sub.l   (RacePlayerA + RaceActor_PosXHigh).l,d0
+                sub.l   (RacePlayerA + RaceActor_X).l,d0
                 cmp.l   #$200000,d0
                 bpl.w   .locret_13CFC
                 addi.l  #4,(ram_FFDBD4).l
@@ -5194,10 +5194,10 @@ Race_UpdateBikeLean:
                 bpl.w   .loc_13EEA
                 neg.w   d0
 .loc_13EEA:
-                move.w  d0,STRUCT_OFFSET_42(a1)
+                move.w  d0,RaceActor_Lean(a1)
                 bra.w   .return
 .loc_13EF2:
-                move.w  #0,STRUCT_OFFSET_42(a1)
+                move.w  #0,RaceActor_Lean(a1)
 .return:
                 rts
 ; End of function Race_UpdateBikeLean

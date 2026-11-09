@@ -373,19 +373,19 @@ ram_FF1EA8 equ $FF1EA8
 
 RacePlayerA equ $FF1EAA ; struct of size $80
 RaceActor_PosZ equ $2
-RaceActor_PosXHigh equ $4
-RaceActor_PosXLow equ $6
+RaceActor_X equ $4 ; 32-bit X; word access reads the high half
+RaceActor_XLow equ $6 ; low word of RaceActor_X
 STRUCT_OFFSET_8 equ $8
 STRUCT_OFFSET_A equ $A
 STRUCT_OFFSET_C equ $C
 RaceActor_Speed equ $12
-STRUCT_OFFSET_14 equ $14
+RaceActor_Acceleration equ $14 ; signed per-frame acceleration
 RaceActor_Type equ $16
 RaceActor_Gear equ $18
 STRUCT_OFFSET_1C equ $1C
 STRUCT_OFFSET_22 equ $22
 STRUCT_OFFSET_24 equ $24
-STRUCT_OFFSET_26 equ $26
+RaceActor_FrameDistance equ $26 ; Speed * Race_ram_FrameDelay
 STRUCT_OFFSET_2C equ $2C
 RaceActor_PosY equ $30
 STRUCT_OFFSET_32 equ $32
@@ -394,13 +394,13 @@ STRUCT_OFFSET_38 equ $38
 STRUCT_OFFSET_3A equ $3A
 STRUCT_OFFSET_3C equ $3C
 STRUCT_OFFSET_3E equ $3E
-STRUCT_OFFSET_42 equ $42
+RaceActor_Lean equ $42 ; signed lean/curve value
 STRUCT_OFFSET_46 equ $46
 STRUCT_OFFSET_56 equ $56
-STRUCT_OFFSET_5C equ $5C
+RaceActor_TileBase equ $5C ; current animation/tile base
 STRUCT_OFFSET_5E equ $5E
 STRUCT_OFFSET_60 equ $60
-STRUCT_OFFSET_66 equ $66
+RaceActor_Rating equ $66 ; definition byte5*100; also spawn/recycle distance
 STRUCT_OFFSET_68 equ $68
 STRUCT_OFFSET_69 equ $69
 STRUCT_OFFSET_6A equ $6A

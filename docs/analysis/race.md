@@ -266,6 +266,9 @@ Actors/player structures:
 | `+$66` actor field | `ActorRating` | definition byte5*100 | medium |
 | `RacePlayer`/`RaceActor` | (same actor struct type) | player A/B + 15 opponents + static | medium |
 
-Applied in Batch 3a: `RaceActor_PosZ/PosXHigh/PosXLow/Speed/Type/Gear/PosY/Index/GraphicsIndex`.
+Applied in Batch 3a: `RaceActor_PosZ/X/XLow/Speed/Type/Gear/PosY/Index/GraphicsIndex`.
+Applied in R1: `RaceActor_X`/`XLow`, `RaceActor_Acceleration`,
+`RaceActor_FrameDistance`, `RaceActor_Lean`, `RaceActor_TileBase`,
+`RaceActor_Rating`.
 | `$FF2FAA` struct | `RaceActor`/`RacePlayerVisual` | not in static list | low |
 

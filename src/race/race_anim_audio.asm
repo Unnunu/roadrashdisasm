@@ -2167,7 +2167,7 @@ sub_14E38:
                 tst.w   (ram_FF1B32).l
                 bne.w   .loc_14FA2
                 move.w  (ram_FF1F2E).l,d0
-                sub.w   (RacePlayerA + RaceActor_PosXHigh).l,d0
+                sub.w   (RacePlayerA + RaceActor_X).l,d0
                 bpl.w   .loc_14F74
                 neg.w   d0
 

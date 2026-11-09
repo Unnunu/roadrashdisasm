@@ -789,7 +789,7 @@ Race_ComputeStandings:
                 clr.l   d3
                 move.w  (RaceTrack_Data1).l,d3
                 swap    d3
-                divu.w  STRUCT_OFFSET_66(a1),d3
+                divu.w  RaceActor_Rating(a1),d3
                 andi.l  #$FFFF,d3
                 ext.w   d1
                 asl.w   #2,d1

@@ -601,7 +601,7 @@ sub_1662C:
 
 sub_16644:
                 move.l  4(a1),d0
-                sub.l   (RacePlayerA + RaceActor_PosXHigh).l,d0
+                sub.l   (RacePlayerA + RaceActor_X).l,d0
                 cmp.l   #$C000,d0
                 bpl.w   .loc_1665C
                 bsr.s   sub_1662C

@@ -1898,7 +1898,7 @@ Race_Update:
                 jsr     (Race_UpdateNearestOpponent).l
                 jsr     (sub_12EA2).l
                 jsr     (sub_13106).l
-                move.w  (RacePlayerA + RaceActor_PosXHigh).l,d0
+                move.w  (RacePlayerA + RaceActor_X).l,d0
                 sub.w   (ram_FF1F2E).l,d0
                 move.w  d0,(Race_ram_PlayerXDifference).l
                 jsr     (Race_UpdateNearestTarget).l
@@ -2762,10 +2762,10 @@ Race_CreateActors:
 ; graphics entry +$A/+$C/+$E -> actor sprite fields +$5E/+$60/+$5C
                 move.w  $A(a5),STRUCT_OFFSET_5E(a1)
                 move.w  $C(a5),STRUCT_OFFSET_60(a1)
-                move.w  $E(a5),STRUCT_OFFSET_5C(a1)
+                move.w  $E(a5),RaceActor_TileBase(a1)
                 cmpa.l  #RacePlayerA,a1
                 bne.w   .loc_CB80
-                move.w  (ram_FF18AA).l,STRUCT_OFFSET_5C(a1)
+                move.w  (ram_FF18AA).l,RaceActor_TileBase(a1)
 .loc_CB80:
 ; bytes 3/4 -> +$73/+$77; byte 5 * 100 -> +$66 (actor rating/skill)
                 move.b  (a2)+,STRUCT_OFFSET_73(a1)
@@ -2773,10 +2773,10 @@ Race_CreateActors:
                 move.b  (a2)+,d1
                 ext.w   d1
                 mulu.w  #100,d1
-                move.w  d1,STRUCT_OFFSET_66(a1)
+                move.w  d1,RaceActor_Rating(a1)
                 move.b  #$FF,STRUCT_OFFSET_6E(a1)
                 clr.l   d1
-                move.w  d1,RaceActor_PosXLow(a1)
+                move.w  d1,RaceActor_XLow(a1)
                 move.w  d1,RaceActor_PosZ(a1)
                 move.w  d1,STRUCT_OFFSET_1C(a1)
                 move.w  d1,STRUCT_OFFSET_32(a1)
@@ -2787,13 +2787,13 @@ Race_CreateActors:
                 move.w  d1,STRUCT_OFFSET_2C(a1)
                 move.w  d1,STRUCT_OFFSET_22(a1)
                 move.w  d1,STRUCT_OFFSET_24(a1)
-                move.l  d1,STRUCT_OFFSET_26(a1)
+                move.l  d1,RaceActor_FrameDistance(a1)
                 move.w  d1,STRUCT_OFFSET_36(a1)
                 move.w  d1,STRUCT_OFFSET_3A(a1)
                 move.w  d1,STRUCT_OFFSET_38(a1)
                 move.w  d1,STRUCT_OFFSET_3C(a1)
                 move.w  d1,RaceActor_Speed(a1)
-                move.w  d1,STRUCT_OFFSET_14(a1)
+                move.w  d1,RaceActor_Acceleration(a1)
                 move.w  d1,RaceActor_Gear(a1)
                 move.b  d1,STRUCT_OFFSET_68(a1)
                 move.b  d1,STRUCT_OFFSET_69(a1)

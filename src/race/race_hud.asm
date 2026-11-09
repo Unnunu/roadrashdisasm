@@ -107,7 +107,7 @@ RaceHud_DrawRPMArrow:
 RaceHud_DrawOdometer:
                 movea.l (Race_ram_CurrentHudBuffer).l,a1
                 adda.w  #$E00,a1
-                move.l  (RacePlayerA + RaceActor_PosXHigh).l,d1
+                move.l  (RacePlayerA + RaceActor_X).l,d1
                 move.l  d1,d0
                 clr.w   d0
                 swap    d0
@@ -295,7 +295,7 @@ RaceHud_DrawStamina:
                 move.l  d0,8(a0)
                 move.l  d0,$C(a0)
                 move.l  d0,$10(a0)
-                move.w  (RacePlayerA + STRUCT_OFFSET_5C).l,d1
+                move.w  (RacePlayerA + RaceActor_TileBase).l,d1
                 lsr.w   #5,d1
                 cmp.w   #$51,d1 ; 'Q'
                 bcs.w   .loc_D502

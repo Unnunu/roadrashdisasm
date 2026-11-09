@@ -75,9 +75,9 @@ marking/animation, and the race outcome. `src/core/top_level.asm` calls `Race_In
 ## RAM / ROM & structures
 
 - Player/bike A/B: `RacePlayerA/B` (`$FF1EAA`/`$FF26AA`), `$80` each; actor struct type.
-  Known offsets: `+$02 PosZ`, `+$04 PosXHigh`, `+$06 PosXLow`, `+$12 Speed`,
-  `+$18 Gear`, `+$30 PosY`, `+$66 Unk66` (word; copied from `+$56`),
-  `+$68` flags (bit1 B, bit2 A, bit7 timer stop), `+$71 Index`.
+  Known offsets: `+$02 PosZ`, `+$04 RaceActor_X`, `+$06 RaceActor_XLow`, `+$12 Speed`,
+  `+$18 Gear`, `+$30 PosY`, `+$66 RaceActor_Rating` (lifecycle value),
+  `+$68` flags (bit1 throttle/B, bit2 brake/A, bit7 timer stop), `+$71 Index`.
 - `$FF2FAA`: a further actor-like instance used by `Race_UpdateStaticActors` (`$68` bit6), not in
   the static list; role/layout TODO (`docs/analysis/race_actors.md`).
 - Spawn lists: `ram_FF1A0C` active actors, `ram_FF1A06` count, `ram_FF1982` opponent

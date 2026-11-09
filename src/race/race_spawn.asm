@@ -258,7 +258,7 @@ Race_CheckTrafficBehind:
 ; *************************************************
 
 Race_GetActorDistance:
-                move.w  STRUCT_OFFSET_66(a1),d0
+                move.w  RaceActor_Rating(a1),d0
                 mulu.w  (Race_ram_ActorDistanceScale).l,d0
                 swap    d0
                 rts
@@ -359,7 +359,7 @@ Race_ApplyActorRating:
                 clr.w   d0
                 move.b  5(a2),d0
                 mulu.w  #$64,d0 ; 'd'
-                move.w  d0,STRUCT_OFFSET_66(a1)
+                move.w  d0,RaceActor_Rating(a1)
                 movem.l (sp)+,d0-d1/a2
                 rts
 ; End of function Race_ApplyActorRating
@@ -421,7 +421,7 @@ Race_RecycleActor:
                 bsr.w   Race_RemoveActiveActor
                 move.l  4(a1),d0
                 divu.w  (Race_ram_ActorDistanceScale).l,d0
-                move.w  d0,STRUCT_OFFSET_66(a1)
+                move.w  d0,RaceActor_Rating(a1)
                 movem.l (sp)+,d0-d1/a2
                 rts
 ; End of function Race_RecycleActor
@@ -469,7 +469,7 @@ Race_InitOpponentActor:
                 move.l  4(a2),d0
                 addi.l  #$200000,d0
                 move.l  d0,4(a1)
-                move.w  STRUCT_OFFSET_66(a1),d0
+                move.w  RaceActor_Rating(a1),d0
                 move.w  d0,$12(a1)
                 bsr.w   Race_SetupActor
                 bsr.w   Race_GetCurveSpeedLimit
@@ -496,11 +496,11 @@ Race_InitOpponentActor:
 Race_InitTrafficActor:
                 move.l  a2,-(sp)
                 lea     (RacePlayerA).l,a2
-                move.l  RaceActor_PosXHigh(a2),d0
+                move.l  RaceActor_X(a2),d0
                 subi.l  #$100000,d0
                 move.l  d0,4(a1)
                 move.l  d0,$1E(a1)
-                move.w  STRUCT_OFFSET_66(a1),d0
+                move.w  RaceActor_Rating(a1),d0
                 move.w  d0,$12(a1)
                 bsr.w   Race_SetupActor
                 bsr.w   Race_GetCurveSpeedLimit
