@@ -46,7 +46,8 @@ copy the chain into the SAT with the x offset/clipping, then the second shape.
 - Sprite state: `Animation_ram_SpriteIndex/TileIndex/BaseTile`, `ram_FFDE5E..70`,
   `Race_ram_CurrentSpriteAttributeTable` (double-buffered `$FF479C`/`$FF4E1C`),
   `Race_ram_CurrentSpriteTileArray`.
-- `Road_ShapeTable` (`$3BF1A`): shape pointer table; shape data lives in the gap (dynamic
+- `Road_ShapeTable` (`$3BF1A`): 564-entry shape pointer table + shape data `$3C7EC-$7DCA7`,
+  now in `road_shapes.asm` (see `docs/analysis/road_shapes.md`); the dynamic
   sample `$05994E`, bytes `10 37 20 36 ...`).
 
 ## Coverage matrix

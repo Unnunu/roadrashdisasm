@@ -402,8 +402,8 @@ Script: `{tilemap, frame_count, frame_ptrs[]}`; frame: `count`, then
 | `$FF1366` | chain end | 2 | Sprite-chain overflow flag. |
 | `$FF136A` | horizon | 2 | Road horizon/limit. |
 
-SAT is double-buffered: `$FF479C`/`$FF4E1C`. Shape table `Road_ShapeTable` (`$3BF1A`) points
-to shape data in the gap. See `docs/analysis/road_render.md`; the exact projection math is TODO.
+SAT is double-buffered: `$FF479C`/`$FF4E1C`. Shape table `Road_ShapeTable` (`$3BF1A`,
+564 entries) and shape data `$3C7EC-$7DCA7` are in `road_shapes.asm`. See `docs/analysis/road_render.md`; the exact projection math is TODO.
 
 ### End level (`endlevel.asm`)
 

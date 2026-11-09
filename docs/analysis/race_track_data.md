@@ -1,6 +1,6 @@
 # Analysis: `race_track_data.asm` (per-track records + streams)
 
-- **ROM range:** `0x025EC0`–`0x03BF19` (`Road_ShapeTable` at `0x3BF1A`)
+- **ROM range:** `0x025EC0`–`0x03BF19` (`Road_ShapeTable`/shape data follows in `road_shapes.asm`)
 - **Status:** records/level tables and stream boundaries analyzed; stream formats TODO
 - **Source:** `race_track_data.asm` (record/level tables from source, streams
   `binclude` from `baserom.md`)
@@ -61,7 +61,7 @@ Level words:
 
 - Formats of `Data2..Data6` (compressed streams, spawn records, graphics).
 - Meaning of the level word and the `*$10/$210` scaling.
-- Exact `Data4`/`Data6` consumers and the `Road_ShapeTable` format that follows.
+- Exact `Data4`/`Data6` consumers and the shape format in `road_shapes.asm`.
 - Dynamic verification of track selection/loading.
 
 ## Rename proposals

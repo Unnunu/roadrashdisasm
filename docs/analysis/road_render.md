@@ -105,10 +105,10 @@ rendering each object and restores them on overflow.
 
 ## Shape table / data
 
-- `Road_ShapeTable` (`0x3BF1A`) is a table of shape-data pointers; `race.asm` uses it at
-  `0x10018`/`0x10352` too.
-- Shape data lives in the not-yet-disassembled gap (e.g. the dynamic call used
-  `0x05994E`, bytes `10 37 20 36 ...`). `Road_ScaleShape` reads `(a2)`, `1(a2)`, `2(a2)` and
+- `Road_ShapeTable` (`0x3BF1A`) is a table of 564 shape-data pointers (`race.asm` uses
+  it at `0x10018`/`0x10352` too); `word_3C7EA` holds the shape count `$234`.
+- Shape data (`$3C7EC-$7DCA7`) is now extracted in `road_shapes.asm` (table/count from
+  source, bytes raw; format TODO). `Road_ScaleShape` reads `(a2)`, `1(a2)`, `2(a2)` and
   scales them by `scale>>2`; `Road_ProjectShapeSpecial`/`Road_ProjectShape` add the object x and the `$C0`/`$200`
   constants, apply the mirror bit (bit15 of `$A(a0)`), and set `ram_FFDE62` when the
   object leaves the range. The exact shape-byte format and projection formulas are

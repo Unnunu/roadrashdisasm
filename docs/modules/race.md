@@ -32,6 +32,8 @@ marking/animation, and the race outcome. `top_level.asm` calls `Race_Init`, inst
 | `race_engine_tables.asm` | `$257D0-$25855` | Physics/engine/audio tables (ROM gap data) | [race_data_tables.md](race_data_tables.md) |
 | `race_actor_extra_tables.asm` | `$259B6-$25EBF` | Actor/AI tables (ROM gap data) | [race_data_tables.md](race_data_tables.md) |
 | `race_track_data.asm` | `$25EC0-$3BF19` | Per-track records/streams (ROM gap data) | [race_track_data.md](race_track_data.md) |
+| `road_shapes.asm` | `$3BF1A-$7DCA7` | Road/object shape table/data (ROM gap) | [road_shapes.md](road_shapes.md) |
+| `race_misc_data.asm` | `$7DCA8-$7E6A1` | HUD/palette/results tables (ROM gap) | [race_misc_data.md](race_misc_data.md) |
 
 `race.asm` includes these in exactly that order; the code is split at the original
 `race_hud`/`road_marking`/`animation` include boundaries.

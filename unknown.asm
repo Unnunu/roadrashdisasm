@@ -23,17 +23,7 @@ AudioFunc18 equ $19FA6
 ; Actor/opponent tables now defined in race_engine_tables.asm/race_actor_tables.asm/
 ; race_actor_extra_tables.asm; track records in race_track_data.asm (see docs/analysis/race_actors.md)
 
-Road_ShapeTable equ $3BF1A
-word_3C7EA equ $3C7EA
 
-unk_7DCA8 equ $7DCA8
-unk_7DEAA equ $7DEAA
-Shop_BikePalettes equ $7E370
-unk_7E470 equ $7E470
-unk_7E670 equ $7E670
-unk_7E684 equ $7E684
-unk_7E68E equ $7E68E
-unk_7E698 equ $7E698
 loc_7E6A2 equ $7E6A2
 unk_7EA66 equ $7EA66
 ImgHighScoreBadge equ $7EB72

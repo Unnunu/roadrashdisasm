@@ -14,9 +14,11 @@ Matching disassembly of **Road Rash** (Sega Genesis, 1991, US region).
   `0x0257D0`–`0x0259B5` (physics/engine and actor tables, `race_engine_tables.asm` +
   `race_actor_tables.asm`), `0x0259B6`–`0x025EBF` (actor/AI tables,
   `race_actor_extra_tables.asm`), `0x025EC0`–`0x03BF19` (per-track records/streams,
-  `race_track_data.asm`) and `0x07E6A2`–`0x07EA65` (top-level flow, `top_level.asm`).
-  The remaining gap is bridged with raw bytes from `baserom.md` in `main.asm`. As the
-  gap is disassembled, shrink the bridge and grow the real source coverage.
+  `race_track_data.asm`), `0x03BF1A`–`0x07DCA7` (road shape table/data, `road_shapes.asm`),
+  `0x07DCA8`–`0x07E6A1` (HUD/palette/results data, `race_misc_data.asm`) and
+  `0x07E6A2`–`0x07EA65` (top-level flow, `top_level.asm`). The remaining raw bridge is
+  only `0x016E70`–`0x019A11` (intro text/images) and `0x019F62`–`0x0257CF`
+  (audio/sound), all in `main.asm`.
 - `baserom.md` is local-only (git-ignored). Ask the user for it if missing.
 - All documentation and source comments in this project are **English**.
 
@@ -52,7 +54,8 @@ The build now covers `0x000000`–`0x07EA65`. The top-level flow at `0x07E6A2` i
 real source (`top_level.asm`); the not-yet-disassembled gap is included from
 `baserom.md` with several `binclude "baserom.md",<start>,<length>` chunks in `main.asm`
 (around the tables assembled by `race_data_tables.asm`, `race_engine_tables.asm`,
-`race_actor_tables.asm`, `race_actor_extra_tables.asm`, `race_track_data.asm`). The check
+`race_actor_tables.asm`, `race_actor_extra_tables.asm`, `race_track_data.asm`, `road_shapes.asm`,
+`race_misc_data.asm`). The check
 compares the built image against the same-length prefix of `baserom.md`. On success the
 temporary `build/roadrash.bin` is removed; on mismatch it is kept and the first
 differing byte is reported. `baserom.md` is the only ROM file and is git-ignored;
@@ -85,6 +88,8 @@ differing byte is reported. `baserom.md` is the only ROM file and is git-ignored
 | `race_engine_tables.asm` | Physics/engine/audio-timing tables from the ROM gap ($257D0-$25855). |
 | `race_actor_extra_tables.asm` | Actor/AI tables from the ROM gap ($259B6-$25EBF). |
 | `race_track_data.asm` | Per-track records and data streams ($25EC0-$3BF19). |
+| `road_shapes.asm` | Road/object shape table and shape bytes ($3BF1A-$7DCA7). |
+| `race_misc_data.asm` | HUD/needle, palette and results tables ($7DCA8-$7E6A1). |
 | `race.asm` | Include list for the split main gameplay (order: race_core, race_hud, race_physics, road_marking, race_ai, animation, race_spawn). |
 | `race_core.asm` | Race top-level/init/results/actor data. |
 | `race_hud.asm` | Race HUD. |

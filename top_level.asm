@@ -7,8 +7,8 @@
 ; Generated with:
 ;   python3 tools/disasm.py 0x7E6A2 0x7EA66 --mode project --symbolize-immediates --entry-name TopLevel_Init
 ;
-; NOTE: the gap $16E70-$7E6A1 is not disassembled yet; main.asm bridges it with
-; raw ROM bytes from baserom.md. Regenerate after changing the ROM coverage.
+; NOTE: the remaining raw ranges are $16E70-$19A11 (intro data) and $19F62-$257CF
+; (audio); main.asm bridges them. Regenerate after changing the ROM coverage.
 ; *************************************************
 TopLevel_Init:
                 clr.w       (ram_FF1B3E).l

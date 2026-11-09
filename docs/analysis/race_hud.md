@@ -54,7 +54,8 @@ table/tile array for the two needles via `UpdateAnimation`).
 ## Data / RAM
 
 - `RaceHud_dRankStrings` (`0xD58E`): `" 1st"`..`"16th"` (4 bytes each).
-- `unk_7DEAA`: speed/RPM needle animation script (gap) — TODO.
+- `unk_7DEAA`: speed/RPM needle animation script (now `race_misc_data.asm`), frames/tilemap
+  still TODO.
 - `ram_FF1A70`: gear curve (divisor source); `ram_FF1AA2`: RPM divisor.
 - `ram_FF352C`: odometer digit font (8 longs/digit).
 - `ram_FF1B40`: place; `ram_FF1908`: nearest actor; `Race_ram_BikeDamage $FF1B26`.
