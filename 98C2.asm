@@ -1,5 +1,19 @@
-; =============== S U B R O U T I N E =======================================
+; *************************************************
+; 98C2.asm - race HUD digit writers, standings and debug readouts
+; ROM range: $98C2-$9B9D
+; Status:    analyzed (no direct callers in the disassembled source)
+; API:       sub_98C2, RaceDebug_ShowDistanceTravelled, sub_995A/997E/999E/99C2,
+;            sub_9A98/9AB4, sub_9AD4/9AF4/9B34
+; *************************************************
 
+; *************************************************
+; Function sub_98C2
+; Draws ram_FF1AE4 (2 digits) and the racer list at ram_FF1AE0; the current row
+; (ram_FF1AE6) uses palette 0, the others palette 2.
+; In:  ram_FF1AE0/1AE4/1AE6
+; Out: Race_ram_NextHudBuffer
+; Clobbers: d0-d4, a0/a1
+; *************************************************
 
 sub_98C2:
                 move.w  (ram_FF1AE4).l,d0
@@ -15,6 +29,7 @@ sub_98C2:
                 move.w  (ram_FF1AE6).l,d3
                 move.w  #1,d4
 .loc_98F4:
+; each list entry points to a pointer to the displayed value
                 movea.l (a1)+,a0
                 movea.l (a0),a0
                 move.w  (a0),d0
@@ -39,8 +54,13 @@ sub_98C2:
 ; End of function sub_98C2
 
 
-; =============== S U B R O U T I N E =======================================
-
+; *************************************************
+; Function RaceDebug_ShowDistanceTravelled
+; Shows the player's POSX_HIGH (formatted by sub_F11C) at HUD cell $1A13.
+; In:  player struct ram_FF1EAA
+; Out: Race_ram_CurrentHudBuffer
+; Clobbers: d0/d1/d2/a0
+; *************************************************
 
 RaceDebug_ShowDistanceTravelled:
                 move.w  (ram_FF1EAA + STRUCT_OFFSET_POSX_HIGH).l,d0
@@ -54,9 +74,14 @@ RaceDebug_ShowDistanceTravelled:
 ; End of function RaceDebug_ShowDistanceTravelled
 
 
-; =============== S U B R O U T I N E =======================================
+; *************************************************
+; Function sub_995A
+; Debug: shows the player POSZ (formatted) at HUD cell $1508.
+; In:  player struct ram_FF1EAA
+; Out: Race_ram_CurrentHudBuffer
+; Clobbers: d0/d1/d2/a0
+; *************************************************
 
-; another coordinate ???
 sub_995A:
                 move.w  (ram_FF1EAA + STRUCT_OFFSET_POSZ).l,d0
                 jsr     (sub_F11C).l
@@ -69,8 +94,14 @@ sub_995A:
 ; End of function sub_995A
 
 
-; =============== S U B R O U T I N E =======================================
-
+; *************************************************
+; Function sub_997E
+; Debug: shows Race_ram_FrameDelay. Quirk: no HUD position is set before sub_9B34,
+; so d1 still holds the formatted value (likely unfinished).
+; In:  Race_ram_FrameDelay
+; Out: Race_ram_CurrentHudBuffer (wrong cell)
+; Clobbers: d0/d1/d2/a0
+; *************************************************
 
 sub_997E:
                 move.w  (Race_ram_FrameDelay).l,d0
@@ -83,8 +114,13 @@ sub_997E:
 ; End of function sub_997E
 
 
-; =============== S U B R O U T I N E =======================================
-
+; *************************************************
+; Function sub_999E
+; Debug: shows ram_FF304C (formatted) at HUD cell $1914.
+; In:  ram_FF304C
+; Out: Race_ram_CurrentHudBuffer
+; Clobbers: d0/d1/d2/a0
+; *************************************************
 
 sub_999E:
                 move.w  (ram_FF304C).l,d0
@@ -98,8 +134,14 @@ sub_999E:
 ; End of function sub_999E
 
 
-; =============== S U B R O U T I N E =======================================
-
+; *************************************************
+; Function sub_99C2
+; Debug panel: shows ram_FF1786, NumSprites, ram_FF1B3E, player +$68, POSY, POSZ,
+; POSX_HIGH and POSX_LOW&$FF00 at fixed HUD cells.
+; In:  player struct ram_FF1EAA, race state
+; Out: Race_ram_CurrentHudBuffer
+; Clobbers: d0/d1/d2/a0
+; *************************************************
 
 sub_99C2:
                 move.w  (ram_FF1786).l,d0
@@ -154,8 +196,13 @@ sub_99C2:
 ; End of function sub_99C2
 
 
-; =============== S U B R O U T I N E =======================================
-
+; *************************************************
+; Function sub_9A98
+; Debug: shows ram_FF3046 at HUD cell $180D.
+; In:  ram_FF3046
+; Out: Race_ram_CurrentHudBuffer
+; Clobbers: d0/d1/d2/a0
+; *************************************************
 
 sub_9A98:
                 move.w  (ram_FF3046).l,d0
@@ -167,8 +214,13 @@ sub_9A98:
 ; End of function sub_9A98
 
 
-; =============== S U B R O U T I N E =======================================
-
+; *************************************************
+; Function sub_9AB4
+; Gear indicator: writes player GEAR + $5C1 at HUD cell $1716.
+; In:  player struct ram_FF1EAA
+; Out: Race_ram_CurrentHudBuffer
+; Clobbers: d0/d1/d2/a0
+; *************************************************
 
 sub_9AB4:
                 move.w  (ram_FF1EAA + STRUCT_OFFSET_GEAR).l,d0
@@ -181,10 +233,16 @@ sub_9AB4:
 ; End of function sub_9AB4
 
 
-; =============== S U B R O U T I N E =======================================
-
+; *************************************************
+; Function sub_9AD4
+; Writes one digit (d0 = final tile word) at packed position d1.
+; In:  d0 - tile, d1 - packed row/column, d2 - palette/priority
+; Out: (a0,d3) HUD word
+; Clobbers: d1/d3
+; *************************************************
 
 sub_9AD4:
+; packed position d1: high byte = row, low byte = column; offset = row*128 + col*2
                 ror.w   #3,d2
                 move.w  d1,d3
                 andi.w  #$FF00,d3
@@ -200,10 +258,16 @@ sub_9AD4:
 ; End of function sub_9AD4
 
 
-; =============== S U B R O U T I N E =======================================
-
+; *************************************************
+; Function sub_9AF4
+; Writes two hex digits of d0 at packed position d1 (tiles $5C0+digit).
+; In:  d0 - value, d1 - packed row/column, d2 - palette/priority, a0 - buffer
+; Out: (a0,d3) two HUD words
+; Clobbers: d1/d3
+; *************************************************
 
 sub_9AF4:
+; packed position d1: high byte = row, low byte = column; offset = row*128 + col*2
                 ror.w   #3,d2
                 move.w  d1,d3
                 andi.w  #$FF00,d3
@@ -229,10 +293,16 @@ sub_9AF4:
 ; End of function sub_9AF4
 
 
-; =============== S U B R O U T I N E =======================================
-
+; *************************************************
+; Function sub_9B34
+; Writes four hex digits of d0 at packed position d1 (tiles $5C0+digit).
+; In:  d0 - value, d1 - packed row/column, d2 - palette/priority, a0 - buffer
+; Out: (a0,d3) four HUD words
+; Clobbers: d1/d3
+; *************************************************
 
 sub_9B34:
+; packed position d1: high byte = row, low byte = column; offset = row*128 + col*2
                 ror.w   #3,d2
                 move.w  d1,d3
                 andi.w  #$FF00,d3
