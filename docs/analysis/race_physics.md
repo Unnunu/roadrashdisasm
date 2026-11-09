@@ -38,6 +38,27 @@ Data: `Race_RoadMarkingDataA/B` (`0xDC84`/`0xDD44`), `Race_ram_RearviewTileRows`
   `Race_ram_CurrentVScrollInfo`/`CurrentHScrollTable` buffers consumed by the HInt
   (src/main.asm `HorizontalInterrupt`).
 
+## `Race_UpdateCamera` (`0xDE9E`)
+
+`[static]` camera/road update:
+
+- If PlayerA `$68` bit4 is clear, `Race_ram_CameraOffset=0`.
+- If it is set and the race is not paused:
+  - `$6E < 2`: `CameraOffset += FrameDistance >> 4` with sign from `$69` bit3,
+    clamped to `-$7000`;
+  - `$6E >= 2`: `CameraOffset -= CameraOffset >> 2` (decay).
+- `ram_FF1E60 = (PosY>>1) + (PosY>>2) + ram_FF1E7A`.
+- `ram_FF1E64 = ($32>>1) + ram_FF1E7E + $5D`, with a `$5D` floor.
+- `Race_ram_PlayerProgress = PlayerA X - ram_FF1E76 - CameraOffset`.
+- The old/new progress difference walks `Track_CurveBuffer` and accumulates
+  `ram_FF1E54/ram_FF1E56` (signed sums of the two curve bytes).
+
+`[dynamic]` Running demo: `PlayerProgress=$00078682` from `X=$00080682`,
+`ram_FF1E76=$8000`, `CameraOffset=0`; `ram_FF1E60=$78` from `PosY=$A0`.
+Forced left turn: `1E50=$0002`, `1E52=$0003`, `1E54=0`, `1E56=2`,
+`1E58=2`, `1E5A=1`. Hard-left/off-road-ish: `1E54=$017A`, `1E56=$20E4`,
+`1E58=$FFFE`, `1E5A=$FFFD`, `1E60=$FFEF`.
+
 ## RAM / fields
 
 - `Race_ram_VdpDmaControl` DMA control; `Race_ram_HIntVScroll`; `Race_ram_NearestBehindDistance`/`Race_ram_NearestAheadDistance` nearest distances.
