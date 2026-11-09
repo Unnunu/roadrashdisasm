@@ -15,13 +15,13 @@
 | `defaults` | `0x028E` | [x] | [x] | [x] | [x] | [x] | - | analyzed |
 | `z80_start`/`z80_end` | `0x02C4` | [x] | [x] | [x] | [x] | [ ] | [ ] | analyzed (stub) |
 | `doStart` | `0x02FA` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
-| `sub_7FF98` (ROM checksum) | `0x7FF98` | [x] | [x] | [x] | [ ] | [x] | [x] | analyzed |
+| `Boot_CheckRomChecksum` (ROM checksum) | `0x7FF98` | [x] | [x] | [x] | [ ] | [x] | [x] | analyzed |
 | `GetInputPlayerA` | `0x10D4` | [x] | [x] | - | [x] | [x] | [x] | analyzed |
 | `GetInputPlayerB` | `0x111C` | [x] | [x] | - | [x] | [x] | [x] | analyzed |
 | `VerticalInterrupt` | `0x1164` | [x] | [x] | [x] | [x] | [x] | [x] | analyzed (dispatcher) |
 | `HorizontalInterrupt` | `0x145A` | [x] | [x] | [x] | [x] | [x] | [x] | analyzed (audio semantics TODO) |
 | Exception handlers | `0x13C0`… | [x] | [x] | [x] | [x] | [x] | - | analyzed (quirk) |
-| `sub_1652` | `0x1652` | [x] | [x] | [x] | - | [x] | [x] | analyzed (field meanings hypothesis) |
+| `Audio_UpdateEngine` | `0x1652` | [x] | [x] | [x] | - | [x] | [x] | analyzed (field meanings hypothesis) |
 
 ## 1. Entry and warm-reset check (`RESET`, `0x0200`)
 
@@ -147,14 +147,14 @@ code intentionally leaves the Z80 in reset (line 163); the sound init releases i
 ```asm
 doStart:
     tst.w   (VdpCtrl).l
-    jsr     (sub_7FF98).l
+    jsr     (Boot_CheckRomChecksum).l
     ...
 ```
 
 `[static]` `tst.w (VdpCtrl)` reads the VDP status; `[hardware]` a control-port read
 resets the VDP command latch (the result is discarded).
 
-`[static]` `sub_7FF98` is a **ROM integrity check**:
+`[static]` `Boot_CheckRomChecksum` is a **ROM integrity check**:
 
 - Sums longwords from `0x000000` to `0x07FF97`, skipping the header checksum field at
   `0x018C`.
@@ -269,7 +269,7 @@ budget.
      × `Race_ram_FrameCounter` + `STRUCT_OFFSET_SPEED`, scaled by `ram_FF1AA2` and
      `$3800`), smooth it into `ram_FF36B8` with a ±`$64` rate limit, derive `d1`
      (`>>5 + 2`, min 0), handle player B's struct `ram_FF26AA` (distance to
-     `ram_FF1E68`), call `AudioFunc8`, `sub_1652` (with `ram_FF1908`) and
+     `ram_FF1E68`), call `AudioFunc8`, `Audio_UpdateEngine` (with `ram_FF1908`) and
      `AudioFunc11`.
 10. Set `ram_FF369E = $FFFF`; if `ram_FF0406 > 0`, set it back to 0 (re-enable the
     effect next time).
@@ -279,7 +279,7 @@ effect was enabled; `ram_FF0406 = $10` and `ram_MusicEnabled = 1` in the observe
 frames. `[static]` The audio calls are sound-driver entry points (`AudioFunc1/8/11`);
 their exact parameters are deferred with the audio deep dive.
 
-## 10. `sub_1652` (`0x1652`)
+## 10. `Audio_UpdateEngine` (`0x1652`)
 
 `[static]` Contract: `a1` = object/struct pointer (`$FFFFFFFF` = invalid). Returns
 `d0` = smoothed value, `d1` = distance parameter.
@@ -345,7 +345,7 @@ exception the game freezes.
 - `[hypothesis]` The 36 NOPs after the VSRAM mid-frame write are a VDP write-recovery
   delay; the count is timing-tuned for the board. Test: vary/observe the effect in the
   emulator (not byte-exact, analysis only).
-- `[hypothesis]` `sub_1652` computes engine-audio parameters for a second object/player.
+- `[hypothesis]` `Audio_UpdateEngine` computes engine-audio parameters for a second object/player.
 - `[design]` The 38-byte Z80 stub is a placeholder/stop stub; the real driver is loaded
   later at `$1D9C2`. Test: break at `$1D9C2`, confirm the copy from `$1DA12`.
 
@@ -353,7 +353,7 @@ exception the game freezes.
 
 | Goal | Setup / breakpoint | Observed | Conclusion |
 |------|--------------------|----------|------------|
-| Verify the ROM checksum | Python reimplementation of `sub_7FF98` | `$FE407B8A` | `[confirmed]` the check passes. |
+| Verify the ROM checksum | Python reimplementation of `Boot_CheckRomChecksum` | `$FE407B8A` | `[confirmed]` the check passes. |
 | Verify Z80 reset polarity | static: boot writes + sound code at `$1D9C2` | `$0000` assert, `$0100` release | `[confirmed]` comments at boot are inverted. |
 | Input + interrupts | GDB remote: break `0x10D4`, `0x111A`, `0x1164`, `0x145A` | ctrl ports `$40`; `d0` low byte; VInt up=`0x366`; HInt `$FF369E` `$FFFF→0` | `[confirmed]` input/IRQ behaviour. |
 
@@ -361,7 +361,7 @@ exception the game freezes.
 
 | Current | Proposed | Evidence | Confidence |
 |---------|----------|----------|------------|
-| `sub_7FF98` | `RomChecksum_Verify` | routine sums the ROM and compares `$FE407B8A` | high |
+| `Boot_CheckRomChecksum` | `RomChecksum_Verify` | routine sums the ROM and compares `$FE407B8A` | high |
 | `start` | `softReset` | warm-reset branch target | medium |
 | `defaults` | `bootDefaults` | packed init table | medium |
 
@@ -371,6 +371,6 @@ exception the game freezes.
 - [ ] Identify what the 38-byte Z80 stub is for (placeholder vs. a real init step).
 - [ ] Where is the VDP V-int flag cleared (handler does not read the status)?
 - [ ] HInt timing: confirm the 36-NOP delay and the HV-counter windows in BlastEm.
-- [ ] Audio semantics of `AudioFunc1/8/11` and `sub_1652` (deferred audio deep dive).
+- [ ] Audio semantics of `AudioFunc1/8/11` and `Audio_UpdateEngine` (deferred audio deep dive).
 - [ ] 6-button pad behaviour (the code only implements the 3-button protocol).
 - [ ] Confirm the VDP VRAM map after boot with `vr` / a VRAM viewer.

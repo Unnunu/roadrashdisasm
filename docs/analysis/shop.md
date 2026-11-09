@@ -17,7 +17,7 @@
 | `Shop_PrepareMessages` | `0x7F62` | [x] | [x] | [x] | - | [x] | [ ] | analyzed |
 | `Shop_DrawBikes` | `0x803C` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
 | `Shop_UpdateScroll` | `0x8178` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
-| `sub_7EA2`/`sub_7F02` | `0x7EA2`/`0x7F02` | [x] | [x] | [x] | - | [x] | [ ] | analyzed |
+| `Shop_ShowAlreadyOwned`/`Shop_ShowCannotAfford` | `0x7EA2`/`0x7F02` | [x] | [x] | [x] | - | [x] | [ ] | analyzed |
 
 ## Role & flow
 
@@ -65,7 +65,7 @@ with the window's transparent cells exposing the scrolling bike band.
 
 - Three base bike images (`Shop_ImageBike1/2/3`, 18x9 maps in RAM) are selected by
   `Shop_BikeImageTable` `[3,3,3,1,1,2,1,2]`; the 8 variants come from the palette table
-  `Shop_dBikePalettes` (`0x7E370`, 8 x 32 bytes).
+  `Shop_BikePalettes` (`0x7E370`, 8 x 32 bytes).
 - `Shop_DrawBikes`: palette line 2 = selected bike palette, line 3 = previous bike
   palette; the source palette copy skips source entry 4 and maps entry 13 to
   destination entry 4; draws the previous/current/next bikes at x=3/29/55/81/107,
@@ -75,9 +75,9 @@ with the window's transparent cells exposing the scrolling bike band.
 
 - Credits = money + half the current bike's price (`Shop_dPrices`).
 - Selected price = `Shop_dPrices[Shop_CurrentBikeId]`.
-- If the selected bike is the player's current bike: `sub_7EA2` -> "You already own a
+- If the selected bike is the player's current bike: `Shop_ShowAlreadyOwned` -> "You already own a
   ..." message (id 59) for 5 s.
-- If credits < selected price: `sub_7F02` -> "You need more credit to buy a ..." (id 59).
+- If credits < selected price: `Shop_ShowCannotAfford` -> "You need more credit to buy a ..." (id 59).
 - Otherwise: `money -= selectedPrice - currentPrice/2`, `BikeId = selected`, redraw the
   credits/price, regenerate the password (`MenuPassword_CreatePassword`).
 - The credits/price text uses palette 2 when the credits are insufficient, otherwise
@@ -92,7 +92,7 @@ with the window's transparent cells exposing the scrolling bike band.
   terminator; cycle 300 frames, reset to 0x1E0.
 - `Shop_PrepareMessages` fills `unk_50AA` + current bike name, `unk_5116` + previous
   name, `unk_516E` + next name.
-- `sub_7EA2`/`sub_7F02` build the dynamic messages in `ram_FF089A` from `unk_51C6` /
+- `Shop_ShowAlreadyOwned`/`Shop_ShowCannotAfford` build the dynamic messages in `ram_FF089A` from `unk_51C6` /
   `unk_520A` + the current bike name (id 59, 5 s).
 
 ## Input
@@ -105,12 +105,12 @@ then shifts the scroll position by `-$D0`/`+$D0`.
 
 ## RAM / ROM
 
-- `Shop_CurrentBikeId` `$FF0950` (0..7); `ram_FF0952` current buttons (unnamed);
+- `Shop_CurrentBikeId` `$FF0950` (0..7); `Shop_ram_CurrentButtons` current buttons (unnamed);
   `Shop_ScrollPos` `$FF0954` (centre `$160`); `Shop_ImageBike1/2/3`
   `$FF0956/$FF0A9A/$FF0BDE` (18x9 maps); `Shop_StrBuyNewBike` `$FF06EA`;
   `ram_FF089A`/`ram_FF07C2`/`ram_FF082E` dynamic messages.
 - ROM: `Shop_BikeDescriptions` `$81D2` (8 pointers), `Shop_dPrices` `$8312` (8 words),
-  `Shop_BikeImageTable` `$8322` (8 pointers), `Shop_dBikePalettes` `$7E370`
+  `Shop_BikeImageTable` `$8322` (8 pointers), `Shop_BikePalettes` `$7E370`
   (8 x 32 bytes, referenced from `unknown.asm`).
 - Player state: `Menu_ram_Player`, `Menu_ram_MoneyPlayerA/B`,
   `Menu_ram_BikeIdPlayerA/B`.
@@ -125,7 +125,7 @@ then shifts the scroll position by `-$D0`/`+$D0`.
   backwards into the temporary string. `[static]`
 - The shop's window/plane transparency and the visual scroll band are not yet captured
   dynamically. `[hypothesis]`
-- `ram_FF0952` is unnamed in `ram_const.asm`; a rename is proposed below.
+- `Shop_ram_CurrentButtons` is unnamed in `ram_const.asm`; a rename is proposed below.
 
 ## Dynamic status
 
@@ -137,11 +137,11 @@ scroll/transparency is pending.
 
 | Current | Proposed | Evidence | Confidence |
 |---------|----------|----------|------------|
-| `sub_7EA2` | `Shop_ShowAlreadyOwned` | builds "You already own a ..." | high |
-| `sub_7F02` | `Shop_ShowCannotAfford` | builds "You need more credit ..." | high |
-| `ram_FF0952` | `Shop_ram_CurrentButtons` | button state in `HandleInput` | high |
-| `Shop_dBikePalettes` | `Shop_BikePalettes` | 8 palettes | high |
-| `unk_9EA1E` | `ImgShopBike1` | bike image 1 | medium |
-| `unk_9FDDE` | `ImgShopBike2` | bike image 2 | medium |
-| `unk_A122A` | `ImgShopBike3` | bike image 3 | medium |
-| `unk_9E784`/`unk_9E874` | `ImgShopArrowLeft/Right` | arrow images | medium |
+| `Shop_ShowAlreadyOwned` | `Shop_ShowAlreadyOwned` | builds "You already own a ..." | high |
+| `Shop_ShowCannotAfford` | `Shop_ShowCannotAfford` | builds "You need more credit ..." | high |
+| `Shop_ram_CurrentButtons` | `Shop_ram_CurrentButtons` | button state in `HandleInput` | high |
+| `Shop_BikePalettes` | `Shop_BikePalettes` | 8 palettes | high |
+| `ImgShopBike1` | `ImgShopBike1` | bike image 1 | medium |
+| `ImgShopBike2` | `ImgShopBike2` | bike image 2 | medium |
+| `ImgShopBike3` | `ImgShopBike3` | bike image 3 | medium |
+| `ImgShopArrowLeft`/`ImgShopArrowRight` | `ImgShopArrowLeft/Right` | arrow images | medium |

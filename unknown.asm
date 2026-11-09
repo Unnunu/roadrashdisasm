@@ -1,11 +1,11 @@
 sub_13D44 equ $13D44
 
-unk_19A12 equ $19A12
-off_19D32 equ $19D32
-unk_19DD2 equ $19DD2
-unk_19E22 equ $19E22
-unk_19EC2 equ $19EC2
-unk_19F12 equ $19F12
+RiderIntro_RecordTable equ $19A12
+RaceResults_LevelTablePos equ $19D32
+RaceResults_LevelTableNeg equ $19DD2
+RaceResults_CopTablePos equ $19E22
+RaceResults_CopTableNeg equ $19EC2
+EndLevel_LevelRiderTable equ $19F12
 
 AudioFunc1 equ $19F62
 AudioFunc2 equ $19F66
@@ -48,12 +48,12 @@ unk_25B50 equ $25B50
 unk_25B70 equ $25B70
 unk_25EC0 equ $25EC0
 
-unk_3BF1A equ $3BF1A
+Road_ShapeTable equ $3BF1A
 word_3C7EA equ $3C7EA
 
 unk_7DCA8 equ $7DCA8
 unk_7DEAA equ $7DEAA
-Shop_dBikePalettes equ $7E370
+Shop_BikePalettes equ $7E370
 unk_7E470 equ $7E470
 unk_7E670 equ $7E670
 unk_7E684 equ $7E684
@@ -66,7 +66,7 @@ unk_7ED66 equ $7ED66
 img_MainMenu_RaceSelectionBackground equ $7F02C
 unk_7F400 equ $7F400
 img_Gamepad equ $7F834
-sub_7FF98 equ $7FF98
+Boot_CheckRomChecksum equ $7FF98
 unk_80000 equ $80000
 unk_8BF12 equ $8BF12
 unk_9B2F0 equ $9B2F0
@@ -79,11 +79,11 @@ unk_9DB68 equ $9DB68
 unk_9DC4C equ $9DC4C
 unk_9DDCC equ $9DDCC
 unk_9E3A2 equ $9E3A2
-unk_9E784 equ $9E784
-unk_9E874 equ $9E874
-unk_9EA1E equ $9EA1E
-unk_9FDDE equ $9FDDE
-unk_A122A equ $A122A
+ImgShopArrowLeft equ $9E784
+ImgShopArrowRight equ $9E874
+ImgShopBike1 equ $9EA1E
+ImgShopBike2 equ $9FDDE
+ImgShopBike3 equ $A122A
 img_mainMenu_PlayerSelection equ $A270C
 img_Intro_Font equ $A27D4
 unk_A2BAA equ $A2BAA

@@ -51,7 +51,7 @@ background palette (at `ImageBuffer+$4E4`) is copied to the global palette.
 - The initial table is built by `intro.asm` from `unk_4C18` (message.asm): Fang,
   Helldog, Lubster, Natasha, Sergio, Player A, Player B with their money.
 - `HighScore_ram_PlayerATableOffset/B` (20*5 / 20*6 initially) point at the player rows;
-  `sub_C598` in `race.asm` and `sub_1A2C` in `intro.asm` update/sort them.
+  `Race_UpdateHighScoreTable` in `race.asm` and `sub_1A2C` in `intro.asm` update/sort them.
 - The screen encodes the table with `EncodeString`; the five top rows use the table font
   at `$800` and draw entries 0..4; the player rows use the regular font at `$0` and draw
   the entries at the player offsets. After sorting, a qualified player can appear both
@@ -101,7 +101,7 @@ C -> `Shop_Init`. The pointer is consumed by the top level.
 - The demo tick and the normal tick both use release edges; the normal A/B/C actions use
   new-press edges. `[static]`
 - The player A/B rows can duplicate an entry that has moved into the top five after
-  sorting (`sub_C598` keeps the offset). `[static]`
+  sorting (`Race_UpdateHighScoreTable` keeps the offset). `[static]`
 - The background palette copy uses `ImageBuffer+$4E4` (the main-menu background palette),
   not the title image's own palette. `[static]`
 

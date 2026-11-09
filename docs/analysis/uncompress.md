@@ -14,8 +14,8 @@
 |----------|---------|----------|-----------|------|----------|-----|---------|--------|
 | `UncompressB` | `0x9B9E` | [x] | [x] | [x] | - | [x] | [x] | analyzed |
 | `UncompressW` | `0x9C26` | [x] | [x] | [x] | - | [x] | [x] | analyzed |
-| `sub_9CC6` | `0x9CC6` | [x] | [x] | [x] | - | [x] | [ ] | analyzed |
-| `sub_9DC2` | `0x9DC2` | [x] | [x] | [x] | - | [x] | [ ] | analyzed |
+| `UncompressStreamStart` | `0x9CC6` | [x] | [x] | [x] | - | [x] | [ ] | analyzed |
+| `UncompressStreamContinue` | `0x9DC2` | [x] | [x] | [x] | - | [x] | [ ] | analyzed |
 | `UncompressToVRAM` | `0x9EF8` | [x] | [x] | [x] | [x] | [x] | [x] | analyzed |
 
 ## LZSS algorithm (all variants)
@@ -54,14 +54,14 @@
 - `a1` = VRAM destination (tile address), `a3` = compressed data.
 - Builds the VDP control word from `a1` (`asl #2/lsr #2/ori #$4000/swap`), then
   decompresses the word format directly to `VdpData`, assembling 4 bytes in
-  `ram_FF13AA` and writing a long every 4 bytes; flushes the trailing partial long.
+  `Uncompress_StateVram` and writing a long every 4 bytes; flushes the trailing partial long.
 - Used by the endlevel animation tiles (`unk_80000` -> `$5C00`).
 
 ## Streaming (interruptible) variants
 
-`sub_9CC6` starts a byte-format decode and `sub_9DC2` resumes it, with a per-call
+`UncompressStreamStart` starts a byte-format decode and `UncompressStreamContinue` resumes it, with a per-call
 output budget in `d1` (in addition to the total remaining size in `d2`). The whole
-decoder state is saved to `ram_FF136C`..`ram_FF13A4` and `ram_FF13A8`:
+decoder state is saved to `Uncompress_StateA0`..`Uncompress_StateD7` and `Uncompress_StateMidMatch`:
 
 | Address | State |
 |---|---|
@@ -73,8 +73,8 @@ decoder state is saved to `ram_FF136C`..`ram_FF13A4` and `ram_FF13A8`:
 | `$FF1388`..`$FF13A4` | d0/d1/d2(remaining)/d3(bit count)/d4/d5(run)/d6(flags)/d7(ring index). |
 | `$FF13A8` | mid-back-reference flag (`$FFFF` while inside a match). |
 
-`sub_9CC6` clears/initializes the ring; `sub_9DC2` restores most of the state but
-**not** `a1`/`d1`: the caller must supply the output pointer (from `ram_FF1370`) and
+`UncompressStreamStart` clears/initializes the ring; `UncompressStreamContinue` restores most of the state but
+**not** `a1`/`d1`: the caller must supply the output pointer (from `Uncompress_StateA1`) and
 the new budget. The ring persists across calls, so a stream can be decoded over several
 frames.
 
@@ -94,7 +94,7 @@ frames.
 
 - The B/W routines clear the 0x1000 ring to spaces and start at `0xFEE`; the match
   length is nibble+3 because `dbf` runs d5+1 times. `[static]`
-- `sub_9DC2` saves but does not restore `a1`/`d1`; the caller owns them. `[static]`
+- `UncompressStreamContinue` saves but does not restore `a1`/`d1`; the caller owns them. `[static]`
 - The streaming state is saved on every chunk end and includes all registers. `[static]`
 - The ring overwrites `Road_ram_XLeftArray`; do not call a decompressor while the road
   array is live. `[static]`
@@ -103,7 +103,7 @@ frames.
 
 | Current | Proposed | Evidence | Confidence |
 |---------|----------|----------|------------|
-| `sub_9CC6` | `UncompressStreamStart` | saves state, starts decode | high |
-| `sub_9DC2` | `UncompressStreamContinue` | restores state, resumes | high |
-| `ram_FF136C`..`$FF13A8` | `Uncompress_State` | decoder state block | high |
+| `UncompressStreamStart` | `UncompressStreamStart` | saves state, starts decode | high |
+| `UncompressStreamContinue` | `UncompressStreamContinue` | restores state, resumes | high |
+| `Uncompress_StateA0`..`$FF13A8` | `Uncompress_State` | decoder state block | high |
 | `Road_ram_XLeftArray` | (keep) | doubles as LZ ring | medium |

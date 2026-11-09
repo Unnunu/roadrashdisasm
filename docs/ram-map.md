@@ -116,7 +116,7 @@ The player state used by the password system: `Menu_ram_Player` `$FF0508`, level
 | `$FF05DC` | `Menu_ram_CurrentTrackId` | 2 | 0,2,4,6,8 (five tracks). |
 | `$FFB62C` | `Menu_ram_FrameBuffer` | `$E00` | 64x28 window buffer DMA'd to `$7000`. |
 
-ROM: `unk_19A12` = `[5 levels][5 tracks][4 variants]` 8-byte records
+ROM: `RiderIntro_RecordTable` = `[5 levels][5 tracks][4 variants]` 8-byte records
 (`quote_ptr,image_ptr`), index `base+variant+(level-1)*$A0+track*$10`. Image assets
 carry an 8-byte interleaved `size/header` prefix; the header gives the name string,
 image/nametable/palette offsets (see `docs/analysis/rider_intro.md`).
@@ -179,7 +179,7 @@ See `docs/analysis/race_results.md`.
 | Address | Name | Size | Meaning |
 |---|---|---|---|
 | `$FF05EA` | `HighScore_ram_Table` | 8+140 | Header `(22,16,7,20)` + 7 x 20-char entries. |
-| `$FF05F2` | table text | 140 | First entry; built by `intro.asm`, sorted by `sub_C598`. |
+| `$FF05F2` | table text | 140 | First entry; built by `intro.asm`, sorted by `Race_UpdateHighScoreTable`. |
 | `$FF052A`/`$FF052C` | `HighScore_ram_PlayerATableOffset/B` | 2 each | Player row offsets (20*5 / 20*6 initially). |
 | `$FF094E` | `HighScore_ram_CurrentButtons` | 2 | Buttons handled by A/B/C. |
 | `$FF3692` | `MainMenu_ram_DemoMode` | 2 | Cleared on a demo release -> menu; 1 -> demo race. |
@@ -193,7 +193,7 @@ The screen draws entries 0..4 (table font `$800`) and the player rows at the off
 | Address | Name | Size | Meaning |
 |---|---|---|---|
 | `$FF0950` | `Shop_CurrentBikeId` | 2 | Selected bike id (0..7). |
-| `$FF0952` | `ram_FF0952` | 2 | Current buttons being handled. |
+| `$FF0952` | `Shop_ram_CurrentButtons` | 2 | Current buttons being handled. |
 | `$FF0954` | `Shop_ScrollPos` | 2 | H-scroll position (centre `$160`). |
 | `$FF0956` | `Shop_ImageBike1` | `$144` | 18x9 bike map. |
 | `$FF0A9A` | `Shop_ImageBike2` | `$144` | 18x9 bike map. |
@@ -202,7 +202,7 @@ The screen draws entries 0..4 (table font `$800`) and the player rows at the off
 | `$FF089A`/`$FF07C2`/`$FF082E` | dynamic messages | TODO | Owned/can't-afford and left/right bike names. |
 
 ROM: `Shop_BikeDescriptions` `$81D2`, `Shop_dPrices` `$8312`, `Shop_BikeImageTable`
-`$8322`, `Shop_dBikePalettes` `$7E370` (8 x 32 bytes). Purchase: credits = money +
+`$8322`, `Shop_BikePalettes` `$7E370` (8 x 32 bytes). Purchase: credits = money +
 current price/2; money -= price - current/2; regenerate the password. See
 `docs/analysis/shop.md`.
 
@@ -224,8 +224,8 @@ alternate HUD. See `docs/analysis/race_hud_debug.md`.
 
 | Address | Name | Size | Meaning |
 |---|---|---|---|
-| `$FF1D50` | `ram_FF1D50` | - | Visible-object index list (`$FFFF`-terminated). |
-| `$FFD37C` | `ram_FFD37C` | 0x14/entry | Object array: x,y,scale,horizon,shape,flags,x offset,second shape. |
+| `$FF1D50` | `Road_VisibleObjectList` | - | Visible-object index list (`$FFFF`-terminated). |
+| `$FFD37C` | `Road_ObjectArray` | 0x14/entry | Object array: x,y,scale,horizon,shape,flags,x offset,second shape. |
 | `$FF0D26`/`$FF0D2A`/`$FF0D2E`/`$FF102E` | road buffers | - | Tile cursor, strip data, left/right strip offsets. |
 | `$FF132E`/`$FF1330`/`$FF1332`/`$FF1336` | road strip state | 2 each | Strip counts/height/x offset. |
 | `$FF133A`/`$FF133C`/`$FF133E` | object flags | 2 each | Shadow, mirror, priority bits. |
@@ -237,7 +237,7 @@ alternate HUD. See `docs/analysis/race_hud_debug.md`.
 | `$FF1366` | chain end | 2 | Sprite-chain overflow flag. |
 | `$FF136A` | horizon | 2 | Road horizon/limit. |
 
-SAT is double-buffered: `$FF479C`/`$FF4E1C`. Shape table `unk_3BF1A` (`$3BF1A`) points
+SAT is double-buffered: `$FF479C`/`$FF4E1C`. Shape table `Road_ShapeTable` (`$3BF1A`) points
 to shape data in the gap. See `docs/analysis/road_render.md`; the exact projection math is TODO.
 
 ### End level (`endlevel.asm`)
@@ -251,7 +251,7 @@ The module reuses the race animation state (`Animation_ram_BaseTile=$2E0`,
 `Race_ram_FrameReady/FrameReady2`, `Race_ram_*SpriteAttributeTable`,
 `Race_ram_*ScrollTable`, `Race_ram_SpriteDestination=$8680`) with `Intro_TitleScrollTable`
 buffers. Level-up rider table `$19F12` (5 levels x 2), frame counts `$8C8C`,
-animation script `$8DC2`, tiles `$80000`, window image `$7F400`. `sub_8946` advances the
+animation script `$8DC2`, tiles `$80000`, window image `$7F400`. `EndLevel_AdvanceLevel` advances the
 level/opponents/password. See `docs/analysis/endlevel.md`.
 
 ### Track data decoder (`track_data.asm`)
@@ -272,7 +272,7 @@ ROM: `off_16AB0` (race.asm) -> per-track tables; tables `$A054/$A08C/$A094/$A0CC
 ### Decompressor (`uncompress.asm`)
 
 The LZSS ring is `Road_ram_XLeftArray` (0x1000 bytes, prefilled `$20`). Streaming
-decoder state (`sub_9CC6`/`sub_9DC2`):
+decoder state (`UncompressStreamStart`/`UncompressStreamContinue`):
 
 | Address | Name | Size | Meaning |
 |---|---|---|---|
@@ -318,7 +318,7 @@ Known so far:
 | `$FF05D6` | `ram_MusicEnabled` | 2 | Music-enabled flag used by the HInt audio block. |
 | `$FF1AA2`/`$FF1AA4` | `ram_FF1AA2/A4` | 2 | Divisors for the engine-speed scaling (`divu`). |
 | `$FF1EAA`/`$FF26AA` | `ram_FF1EAA/26AA` | `$80` | Player A/B (`RacePlayer` candidate; see below). |
-| `$FF1908` | `ram_FF1908` | 4 | Object pointer passed to `sub_1652`. |
+| `$FF1908` | `ram_FF1908` | 4 | Object pointer passed to `Audio_UpdateEngine`. |
 | `$FF36B6`/`$FF36B8` | `ram_FF36B6/B8` | 2 | Target/current smoothed engine value (rate-limited to ±`$64`). |
 | `$FF36BE`/`$FF36C0` | `ram_FF36BE/C0` | 2 | Second object's target/current smoothed value. |
 | `$FF36C4` | `ram_FF36C4` | 2 | Base value added to the speed computation. |
@@ -345,7 +345,7 @@ Rider/bike sprite builder (`rider_sprites.asm`):
 | `$FF1336` | `ram_FF1336` | 2 | Shadow/overlay X offset. |
 | `$FF133A` | `ram_FF133A` | 2 | Shadow/overlay flag. |
 | `$FF1366` | `ram_FF1366` | 2 | Second chain-end flag. |
-| `$5944` | `unk_5944` | `$80` | Per-strip SAT table (16 records x 8 bytes). |
+| `$5944` | `RiderSprites_StripTable` | `$80` | Per-strip SAT table (16 records x 8 bytes). |
 
 Race structures (player/bike state, sprite tables, road arrays, HUD buffers) are **TODO**.
 

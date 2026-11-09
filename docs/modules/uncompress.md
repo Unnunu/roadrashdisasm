@@ -7,7 +7,7 @@
 ## Role / purpose
 
 LZSS decompression for every compressed asset: byte format (`UncompressB`), word format
-(`UncompressW`), an interruptible streaming byte decoder (`sub_9CC6`/`sub_9DC2`) and a
+(`UncompressW`), an interruptible streaming byte decoder (`UncompressStreamStart`/`UncompressStreamContinue`) and a
 direct-to-VRAM word decoder (`UncompressToVRAM`).
 
 ## Entry points & API
@@ -16,8 +16,8 @@ direct-to-VRAM word decoder (`UncompressToVRAM`).
 |--------|---------|-----------|-------------|
 | `UncompressB` | `0x9B9E` | asset loaders | 32-bit size prefix + byte LZSS. |
 | `UncompressW` | `0x9C26` | asset loaders | 8-byte interleaved size + word LZSS. |
-| `sub_9CC6` | `0x9CC6` | streaming users | Start a byte decode with a per-call budget. |
-| `sub_9DC2` | `0x9DC2` | streaming users | Resume the decode. |
+| `UncompressStreamStart` | `0x9CC6` | streaming users | Start a byte decode with a per-call budget. |
+| `UncompressStreamContinue` | `0x9DC2` | streaming users | Resume the decode. |
 | `UncompressToVRAM` | `0x9EF8` | `endlevel.asm` | Word LZSS straight to the VDP. |
 
 All use `a3` = source, `a1` = output (VRAM dest for `UncompressToVRAM`).
@@ -31,19 +31,19 @@ All use `a3` = source, `a1` = output (VRAM dest for `UncompressToVRAM`).
 - B: size = 32-bit long at the source; byte-aligned stream.
 - W: size = odd bytes of an 8-byte interleaved header; stream stored one byte per word
   (high byte skipped).
-- `UncompressToVRAM`: W stream to `VdpData`, 4-byte assembly in `ram_FF13AA`, trailing
+- `UncompressToVRAM`: W stream to `VdpData`, 4-byte assembly in `Uncompress_StateVram`, trailing
   partial flushed.
 
 ## Streaming state
 
-`ram_FF136C`..`ram_FF13A4` (a0-a6/d0-d7) and `ram_FF13A8` (inside-match flag).
-`sub_9CC6` initializes; `sub_9DC2` restores most state but **not** `a1`/`d1` (the caller
+`Uncompress_StateA0`..`Uncompress_StateD7` (a0-a6/d0-d7) and `Uncompress_StateMidMatch` (inside-match flag).
+`UncompressStreamStart` initializes; `UncompressStreamContinue` restores most state but **not** `a1`/`d1` (the caller
 supplies the output pointer and new budget); the ring persists across calls.
 
 ## RAM / ROM & structures
 
 - `Road_ram_XLeftArray`: LZ ring (also road scratch, overwritten).
-- `ram_FF13AA`: 4-byte VRAM assembly buffer.
+- `Uncompress_StateVram`: 4-byte VRAM assembly buffer.
 - Asset header: the decompressed image begins with a `$0808` marker and the tile count
   in the low word (observed `$08080007` panel, `$0808011A` gamepad); `WriteToVRAM`
   (`race.asm`) uses the low word. Exact header semantics/TODO.
@@ -56,8 +56,8 @@ supplies the output pointer and new budget); the ring persists across calls.
 |----------|---------|----------|-----------|------|----------|-----|---------|--------|
 | `UncompressB` | `0x9B9E` | [x] | [x] | [x] | - | [x] | [x] | analyzed |
 | `UncompressW` | `0x9C26` | [x] | [x] | [x] | - | [x] | [x] | analyzed |
-| `sub_9CC6` | `0x9CC6` | [x] | [x] | [x] | - | [x] | [ ] | analyzed |
-| `sub_9DC2` | `0x9DC2` | [x] | [x] | [x] | - | [x] | [ ] | analyzed |
+| `UncompressStreamStart` | `0x9CC6` | [x] | [x] | [x] | - | [x] | [ ] | analyzed |
+| `UncompressStreamContinue` | `0x9DC2` | [x] | [x] | [x] | - | [x] | [ ] | analyzed |
 | `UncompressToVRAM` | `0x9EF8` | [x] | [x] | [x] | [x] | [x] | [x] | analyzed |
 
 Detailed listing: `docs/analysis/uncompress.md`.
@@ -73,7 +73,7 @@ Detailed listing: `docs/analysis/uncompress.md`.
 
 - The ring buffer is the road scratch array; calling a decompressor while the road array
   is live would corrupt it. `[static]`
-- `sub_9DC2` saves but does not restore `a1`/`d1`; the caller owns them. `[static]`
+- `UncompressStreamContinue` saves but does not restore `a1`/`d1`; the caller owns them. `[static]`
 - The match length is nibble+3 (DBF runs d5+1 times). `[static]`
 - The decompressed image's first long is a `$0808` marker + tile-count low word; the
   gamepad count `$011A` exceeds the tiles that fit in 0xC20 bytes, so `WriteToVRAM`
@@ -89,15 +89,15 @@ Detailed listing: `docs/analysis/uncompress.md`.
 
 - `[hypothesis]` The `$0808` high word is a format/“8x8 tile” marker; test: more assets.
 - `[hypothesis]` Streaming is used for race/road data across frames; test: find
-  `sub_9CC6/9DC2` callers in the gap.
+  `UncompressStreamStart/9DC2` callers in the gap.
 
 ## Rename proposals (apply only on request)
 
 | Current | Proposed | Evidence | Confidence |
 |---------|----------|----------|------------|
-| `sub_9CC6` | `UncompressStreamStart` | saves state, starts decode | high |
-| `sub_9DC2` | `UncompressStreamContinue` | restores state, resumes | high |
-| `ram_FF136C`..`$FF13A8` | `Uncompress_State` | decoder state block | high |
+| `UncompressStreamStart` | `UncompressStreamStart` | saves state, starts decode | high |
+| `UncompressStreamContinue` | `UncompressStreamContinue` | restores state, resumes | high |
+| `Uncompress_StateA0`..`$FF13A8` | `Uncompress_State` | decoder state block | high |
 
 ## Experiments performed
 

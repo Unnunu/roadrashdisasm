@@ -2,7 +2,7 @@
 ; uncompress.asm - LZSS decompressors (byte/word/streaming/VRAM)
 ; ROM range: $9B9E-$9FE3
 ; Status:    analyzed (algorithm validated with a Python decoder)
-; API:       UncompressB, UncompressW, sub_9CC6, sub_9DC2, UncompressToVRAM
+; API:       UncompressB, UncompressW, UncompressStreamStart, UncompressStreamContinue, UncompressToVRAM
 ; *************************************************
 
 ; *************************************************
@@ -152,15 +152,15 @@ UncompressW:
 
 
 ; *************************************************
-; Function sub_9CC6
+; Function UncompressStreamStart
 ; Starts an interruptible byte-format LZSS decode: total size from the source,
-; per-call output budget in d1, state saved at ram_FF136C..13A8.
+; per-call output budget in d1, state saved at Uncompress_StateA0..13A8.
 ; In:  a3 - source; a1 - output; d1 - max bytes this call
 ; Out: decoded bytes; state block; rings persist
 ; Clobbers: all (saved/restored)
 ; *************************************************
 
-sub_9CC6:
+UncompressStreamStart:
                 movem.l d0-d7/a0-a6,-(sp)
                 move.l  (a3)+,d2
                 lea     (Road_ram_XLeftArray).l,a2
@@ -182,7 +182,7 @@ sub_9CC6:
                 bcc.w   .loc_9D1C
                 move.b  (a3)+,d0
                 move.b  d0,(a1)+
-                clr.w   (ram_FF13A8).l
+                clr.w   (Uncompress_StateMidMatch).l
                 subq.l  #1,d2
                 beq.w   .loc_9D62
                 subq.l  #1,d1
@@ -206,7 +206,7 @@ sub_9CC6:
                 addq.w  #1,d4
                 andi.w  #$FFF,d4
                 move.b  d0,(a1)+
-                move.w  #$FFFF,(ram_FF13A8).l
+                move.w  #$FFFF,(Uncompress_StateMidMatch).l
                 subq.l  #1,d2
                 beq.w   .loc_9D62
                 subq.l  #1,d1
@@ -218,52 +218,52 @@ sub_9CC6:
                 bra.s   .loc_9CEC
 .loc_9D62:
 ; save the full decoder state for the next chunk
-                move.l  a0,(ram_FF136C).l
-                move.l  a1,(ram_FF1370).l
-                move.l  a2,(ram_FF1374).l
-                move.l  a3,(ram_FF1378).l
-                move.l  a4,(ram_FF137C).l
-                move.l  a5,(ram_FF1380).l
-                move.l  a6,(ram_FF1384).l
-                move.l  d0,(ram_FF1388).l
-                move.l  d1,(ram_FF138C).l
-                move.l  d2,(ram_FF1390).l
-                move.l  d3,(ram_FF1394).l
-                move.l  d4,(ram_FF1398).l
-                move.l  d5,(ram_FF139C).l
-                move.l  d6,(ram_FF13A0).l
-                move.l  d7,(ram_FF13A4).l
+                move.l  a0,(Uncompress_StateA0).l
+                move.l  a1,(Uncompress_StateA1).l
+                move.l  a2,(Uncompress_StateA2).l
+                move.l  a3,(Uncompress_StateA3).l
+                move.l  a4,(Uncompress_StateA4).l
+                move.l  a5,(Uncompress_StateA5).l
+                move.l  a6,(Uncompress_StateA6).l
+                move.l  d0,(Uncompress_StateD0).l
+                move.l  d1,(Uncompress_StateD1).l
+                move.l  d2,(Uncompress_StateD2).l
+                move.l  d3,(Uncompress_StateD3).l
+                move.l  d4,(Uncompress_StateD4).l
+                move.l  d5,(Uncompress_StateD5).l
+                move.l  d6,(Uncompress_StateD6).l
+                move.l  d7,(Uncompress_StateD7).l
                 movem.l (sp)+,d0-d7/a0-a6
                 rts
-; End of function sub_9CC6
+; End of function UncompressStreamStart
 
 
 ; *************************************************
-; Function sub_9DC2
+; Function UncompressStreamContinue
 ; Resumes the interruptible byte decode. Restores the ring/source/decoder state, but
 ; a1 (output) and d1 (new budget) are supplied by the caller.
-; In:  a1 - output; d1 - budget; ram_FF136C..13A8 state
+; In:  a1 - output; d1 - budget; Uncompress_StateA0..13A8 state
 ; Out: decoded bytes; updated state
 ; Clobbers: all (saved/restored)
 ; *************************************************
 
-sub_9DC2:
+UncompressStreamContinue:
                 movem.l d0-d7/a0-a6,-(sp)
-                movea.l (ram_FF136C).l,a0
-                movea.l (ram_FF1374).l,a2
-                movea.l (ram_FF1378).l,a3
-                movea.l (ram_FF137C).l,a4
-                movea.l (ram_FF1380).l,a5
-                movea.l (ram_FF1384).l,a6
-                move.l  (ram_FF1388).l,d0
-                move.l  (ram_FF1390).l,d2
-                move.l  (ram_FF1394).l,d3
-                move.l  (ram_FF1398).l,d4
-                move.l  (ram_FF139C).l,d5
-                move.l  (ram_FF13A0).l,d6
-                move.l  (ram_FF13A4).l,d7
+                movea.l (Uncompress_StateA0).l,a0
+                movea.l (Uncompress_StateA2).l,a2
+                movea.l (Uncompress_StateA3).l,a3
+                movea.l (Uncompress_StateA4).l,a4
+                movea.l (Uncompress_StateA5).l,a5
+                movea.l (Uncompress_StateA6).l,a6
+                move.l  (Uncompress_StateD0).l,d0
+                move.l  (Uncompress_StateD2).l,d2
+                move.l  (Uncompress_StateD3).l,d3
+                move.l  (Uncompress_StateD4).l,d4
+                move.l  (Uncompress_StateD5).l,d5
+                move.l  (Uncompress_StateD6).l,d6
+                move.l  (Uncompress_StateD7).l,d7
 ; resume inside a back-reference if the previous chunk stopped mid-match
-                tst.w   (ram_FF13A8).l
+                tst.w   (Uncompress_StateMidMatch).l
                 beq.w   .loc_9E46
                 bra.w   .loc_9E88
 .loc_9E22:
@@ -275,7 +275,7 @@ sub_9DC2:
                 bcc.w   .loc_9E52
                 move.b  (a3)+,d0
                 move.b  d0,(a1)+
-                clr.w   (ram_FF13A8).l
+                clr.w   (Uncompress_StateMidMatch).l
                 subq.l  #1,d2
                 beq.w   .loc_9E98
                 subq.l  #1,d1
@@ -300,7 +300,7 @@ sub_9DC2:
                 addq.w  #1,d4
                 andi.w  #$FFF,d4
                 move.b  d0,(a1)+
-                move.w  #$FFFF,(ram_FF13A8).l
+                move.w  #$FFFF,(Uncompress_StateMidMatch).l
                 subq.l  #1,d2
                 beq.w   .loc_9E98
                 subq.l  #1,d1
@@ -312,30 +312,30 @@ sub_9DC2:
                 dbf     d5,.loc_9E68
                 bra.s   .loc_9E22
 .loc_9E98:
-                move.l  a0,(ram_FF136C).l
-                move.l  a1,(ram_FF1370).l
-                move.l  a2,(ram_FF1374).l
-                move.l  a3,(ram_FF1378).l
-                move.l  a4,(ram_FF137C).l
-                move.l  a5,(ram_FF1380).l
-                move.l  a6,(ram_FF1384).l
-                move.l  d0,(ram_FF1388).l
-                move.l  d1,(ram_FF138C).l
-                move.l  d2,(ram_FF1390).l
-                move.l  d3,(ram_FF1394).l
-                move.l  d4,(ram_FF1398).l
-                move.l  d5,(ram_FF139C).l
-                move.l  d6,(ram_FF13A0).l
-                move.l  d7,(ram_FF13A4).l
+                move.l  a0,(Uncompress_StateA0).l
+                move.l  a1,(Uncompress_StateA1).l
+                move.l  a2,(Uncompress_StateA2).l
+                move.l  a3,(Uncompress_StateA3).l
+                move.l  a4,(Uncompress_StateA4).l
+                move.l  a5,(Uncompress_StateA5).l
+                move.l  a6,(Uncompress_StateA6).l
+                move.l  d0,(Uncompress_StateD0).l
+                move.l  d1,(Uncompress_StateD1).l
+                move.l  d2,(Uncompress_StateD2).l
+                move.l  d3,(Uncompress_StateD3).l
+                move.l  d4,(Uncompress_StateD4).l
+                move.l  d5,(Uncompress_StateD5).l
+                move.l  d6,(Uncompress_StateD6).l
+                move.l  d7,(Uncompress_StateD7).l
                 movem.l (sp)+,d0-d7/a0-a6
                 rts
-; End of function sub_9DC2
+; End of function UncompressStreamContinue
 
 
 ; *************************************************
 ; Function UncompressToVRAM
 ; Word-format LZSS straight to the VDP: a1 = VRAM tile address; the output is
-; assembled 4 bytes at a time in ram_FF13AA and written to VdpData.
+; assembled 4 bytes at a time in Uncompress_StateVram and written to VdpData.
 ; In:  a3 - compressed data (word format), a1 - VRAM destination
 ; Out: VRAM
 ; Clobbers: all (saved/restored)
@@ -352,7 +352,7 @@ UncompressToVRAM:
                 move.l  d0,(VdpCtrl).l
                 lea     (VdpData).l,a1
 ; 4-byte VRAM assembly buffer
-                lea     (ram_FF13AA).l,a4
+                lea     (Uncompress_StateVram).l,a4
                 move.w  #0,d1
 ; size = bytes 1,3,5,7 of the 8-byte interleaved header
                 addq.w  #1,a3

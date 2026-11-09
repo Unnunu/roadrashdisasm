@@ -23,7 +23,7 @@ from the results/high-score screens; Start returns to the results.
 | `Shop_PrepareMessages` | `0x7F62` | `Init`/`HandleInput` | Bike-name prompts. |
 | `Shop_DrawBikes` | `0x803C` | `Init`/`HandleInput` | Bike lineup + palettes. |
 | `Shop_UpdateScroll` | `0x8178` | `GameTick` | H-scroll animation. |
-| `sub_7EA2`/`sub_7F02` | `0x7EA2`/`0x7F02` | `HandleInput` | Already-owned / can't-afford messages. |
+| `Shop_ShowAlreadyOwned`/`Shop_ShowCannotAfford` | `0x7EA2`/`0x7F02` | `HandleInput` | Already-owned / can't-afford messages. |
 
 ## Control flow / state machine
 
@@ -38,12 +38,12 @@ from the results/high-score screens; Start returns to the results.
 ## RAM / ROM & structures
 
 - `Shop_CurrentBikeId` `$FF0950` (0..7); `Shop_ScrollPos` `$FF0954` (centre `$160`);
-  `Shop_ImageBike1/2/3` `$FF0956/$FF0A9A/$FF0BDE` (18x9 RAM maps); `ram_FF0952`
+  `Shop_ImageBike1/2/3` `$FF0956/$FF0A9A/$FF0BDE` (18x9 RAM maps); `Shop_ram_CurrentButtons`
   current buttons (unnamed); `Shop_StrBuyNewBike` `$FF06EA`; dynamic messages
   `ram_FF089A`/`ram_FF07C2`/`ram_FF082E`.
 - ROM: `Shop_BikeDescriptions` `$81D2` (8 pointers), `Shop_dPrices` `$8312`
   (400/500/700/800/1200/1400/2000/2500), `Shop_BikeImageTable` `$8322`
-  `[3,3,3,1,1,2,1,2]`, `Shop_dBikePalettes` `$7E370` (8 x 32 bytes).
+  `[3,3,3,1,1,2,1,2]`, `Shop_BikePalettes` `$7E370` (8 x 32 bytes).
 - Player state: `Menu_ram_Player`, `Menu_ram_MoneyPlayerA/B`,
   `Menu_ram_BikeIdPlayerA/B`.
 - VDP: cell H-scroll (`$8B02`), H-scroll table `$6400`, auto-increment `$20`;
@@ -68,7 +68,7 @@ Detailed listing/table/purchase logic: `docs/analysis/shop.md`.
 - Callers: `top_level.asm`; results/high-score C; the shop sets `ram_FF0910` to
   HighScore/RaceResults/Shop.
 - Uses `UncompressW/B`, `WriteToVRAM`, `WriteNametable(ToBuffer)`, `EncodeString`,
-  `Menu_ShowMessage`, `DmaWriteVRAM`, `DmaWriteCRAM`, `GetInputPlayerA/B`, `sub_C79A`,
+  `Menu_ShowMessage`, `DmaWriteVRAM`, `DmaWriteCRAM`, `GetInputPlayerA/B`, `Race_FormatNumber`,
   `MenuPassword_CreatePassword`, `AudioFunc1/3/4`.
 
 ## Buying / trade-in
@@ -85,7 +85,7 @@ uses palette 2 when insufficient, otherwise palette 3.
 - Palette copy skips source entry 4 and maps entry 13 to destination entry 4; three
   base bike images are reused for eight bikes. `[static]`
 - "(its yours)" is assembled from three immediate longs written backwards. `[static]`
-- `ram_FF0952` is unnamed in `ram_const.asm`.
+- `Shop_ram_CurrentButtons` is unnamed in `ram_const.asm`.
 
 ## Verified facts
 
@@ -104,12 +104,12 @@ uses palette 2 when insufficient, otherwise palette 3.
 
 | Current | Proposed | Evidence | Confidence |
 |---------|----------|----------|------------|
-| `sub_7EA2` | `Shop_ShowAlreadyOwned` | "You already own a ..." | high |
-| `sub_7F02` | `Shop_ShowCannotAfford` | "You need more credit ..." | high |
-| `ram_FF0952` | `Shop_ram_CurrentButtons` | button state | high |
-| `Shop_dBikePalettes` | `Shop_BikePalettes` | 8 palettes | high |
-| `unk_9EA1E`/`unk_9FDDE`/`unk_A122A` | `ImgShopBike1/2/3` | bike images | medium |
-| `unk_9E784`/`unk_9E874` | `ImgShopArrowLeft/Right` | arrows | medium |
+| `Shop_ShowAlreadyOwned` | `Shop_ShowAlreadyOwned` | "You already own a ..." | high |
+| `Shop_ShowCannotAfford` | `Shop_ShowCannotAfford` | "You need more credit ..." | high |
+| `Shop_ram_CurrentButtons` | `Shop_ram_CurrentButtons` | button state | high |
+| `Shop_BikePalettes` | `Shop_BikePalettes` | 8 palettes | high |
+| `ImgShopBike1`/`ImgShopBike2`/`ImgShopBike3` | `ImgShopBike1/2/3` | bike images | medium |
+| `ImgShopArrowLeft`/`ImgShopArrowRight` | `ImgShopArrowLeft/Right` | arrows | medium |
 
 ## Experiments performed
 

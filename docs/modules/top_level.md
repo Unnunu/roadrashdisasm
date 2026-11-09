@@ -33,14 +33,14 @@ results/shop/end-level dispatcher. It runs the per-frame update function through
 - **Intro (`$7E6A2`).** Clears `ram_FF1B3E`, sets `sr=$2500`, writes VDP `$8174`.
   Waits for `ram_UpdateFunction==0`, runs `Fade_InitFadeOut`, copies the target
   palette to the current palette, installs `Fade_GameTick`, waits.
-  Calls `sub_B770`, `AudioFunc2`, `Intro_Init`, `Fade_InitFadeIn`; installs
+  Calls `Race_InitPhysicsConstants`, `AudioFunc2`, `Intro_Init`, `Fade_InitFadeIn`; installs
   `Fade_GameTick`, waits; installs `Intro_GameTick`, waits; `Fade_InitFadeOut`,
   installs `Fade_GameTick`, waits.
   `Intro_ram_TextTimer >= 0` -> menu; otherwise `MainMenu_ram_DemoMode = -1` and the
   demo high-score path.
 - **Menu (`$7E74C`).** `Menu_Init`, `a0 = MainMenu_GameTick`, `Fade_InitFadeIn`,
   install `FadeWithFunction_GameTick`, wait; fade out with `Fade_GameTick`, wait.
-  Demo mode -> high score; otherwise `Character_Init`, `a0 = Character_GameTick`, same
+  Demo mode -> high score; otherwise `RiderIntro_Init`, `a0 = RiderIntro_GameTick`, same
   fade pair; demo off -> race.
 - **High score (`$7E7CC`).** `HighScore_Init`, `a0 = HighScore_GameTick_Demo`, same
   fade pair; demo off -> menu, otherwise race.
@@ -79,7 +79,7 @@ results/shop/end-level dispatcher. It runs the per-frame update function through
 - Screens: `Intro_*`, `Menu_Init`/`MainMenu_GameTick`, `Character_*`, `HighScore_*`,
   `Race_Init`/`Race_GameTick`/`Race_Update`, `RaceResults_*`, `Shop_*`, `EndLevel_*`.
 - Audio: `AudioFunc2` (`$19F66`).
-- Helpers: `sub_B770`, `sub_16A32`, `sub_EFA4`, `sub_C3F8`.
+- Helpers: `Race_InitPhysicsConstants`, `TrackData_DecodeNextChunk`, `sub_EFA4`, `Race_ComputeResults`.
 
 ## Hacks / bugs / quirks
 
@@ -118,6 +118,6 @@ results/shop/end-level dispatcher. It runs the per-frame update function through
 ## Open questions
 
 - [ ] Meaning of `ram_FF0918`, `$FF3692`, `$FF3696`, `$FF369A`.
-- [ ] What `sub_B770`, `sub_16A32`, `sub_EFA4`, `sub_C3F8` do.
+- [ ] What `Race_InitPhysicsConstants`, `TrackData_DecodeNextChunk`, `sub_EFA4`, `Race_ComputeResults` do.
 - [ ] What `AudioFunc2` (`$19F66`) starts.
 - [ ] Shrink the raw gap bridge as the region below `$7E6A2` is disassembled.

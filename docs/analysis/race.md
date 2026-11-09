@@ -27,7 +27,7 @@
 | `Race_GetInputDemo` | `0xBE2C` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
 | `Race_GetInput` | `0xBE56` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
 | `Race_Update` | `0xC00C` | [x] | [~] | [x] | [x] | [x] | [ ] | partial |
-| `sub_C3F8` (outcome) | `0xC3F8` | [x] | [~] | [x] | - | [x] | [ ] | partial |
+| `Race_ComputeResults` (outcome) | `0xC3F8` | [x] | [~] | [x] | - | [x] | [ ] | partial |
 | Actor/physics/AI | `0xD9DA`+ | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | TODO |
 | `race_hud.asm` | `0xD278` | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | TODO |
 | `road_marking.asm` | `0xE732` | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | TODO |
@@ -44,11 +44,11 @@ loop then alternates `Race_GameTick` (VDP/input) and `Race_Update`
 
 ## `Race_Init` (`0xA4E2`)
 
-1. `Race_InitVariables`, `Race_LoadBikeData`, `Race_ClearFrameBuffers`, `sub_AB78`,
+1. `Race_InitVariables`, `Race_LoadBikeData`, `Race_ClearFrameBuffers`, `Race_ClearHudCorners`,
    `Race_LoadHUD`, `Race_InitTrack`, `Race_LoadFonts`, `Race_LoadMoreTrackGfx`,
-   `Race_LoatTrackGfx`, `sub_A79C`, `Race_LoadRoadImage`, `sub_CA50`,
-   `Race_CreateActors`, `sub_B6C4`, `sub_B72A`, `sub_169B0` (track-data decode).
-2. `Race_InitVdp`, `sub_B8D0` (opponent spawn), `sub_B840` (track params),
+   `Race_LoatTrackGfx`, `Race_DrawTopHud`, `Race_LoadRoadImage`, `Race_LoadBikePalette`,
+   `Race_CreateActors`, `Race_InitActorLists`, `Race_InitActorPositions`, `TrackData_InitLevel` (track-data decode).
+2. `Race_InitVdp`, `Race_SpawnOpponents` (opponent spawn), `Race_LoadTrackParams` (track params),
    `Race_InitAudio`; set the HInt state, frame delay, engine/skid defaults.
 3. Two `Race_Update` warm-ups, then two `Race_GameTick`/frame-ready waits, another
    `Race_Update`; finally `Race_ram_State=0` and return.
@@ -118,9 +118,9 @@ This is the double/quad buffering that avoids tearing.
    `PiecewiseLinearInterpolation` calls for the road arrays (`Road_ram_XLeftArray`,
    `Road_ram_MarkingXArray`, `Road_ram_XRightArray`), `Road_FillProfileTables`,
    `sub_E004`, `sub_FD96`, `sub_FB1E`, `sub_F40C`, the visible-object list
-   (`ram_FF1B50`/`1C50`/`1D50` via `sub_109B6`/`sub_FC0E`/`sub_10D46`),
+   (`ram_FF1B50`/`1C50`/`1D50` via `sub_109B6`/`sub_FC0E`/`Road_BuildVisibleList`),
    `sub_14E38`, `sub_DD84`, `sub_EC90`; reset the sprite chain indices;
-   `RaceHud_Draw`, `sub_942A` (road/object renderer), `RoadMarking_Draw`; store the
+   `RaceHud_Draw`, `Road_DrawObjects` (road/object renderer), `RoadMarking_Draw`; store the
    sprite count/tile count; `sub_D9DA`, `sub_E494`; `Race_FinishFrame`.
 5. The road/actor/physics chain is where the `RacePlayer` and actor structures are
    read/written; it is the next analysis target.
@@ -130,16 +130,16 @@ This is the double/quad buffering that avoids tearing.
 - `Race_InitTrack`: `CurrentTrackId*2` -> `unk_25EC0` -> the track record;
   `RaceTrack_Data1` = per-level word, `Data2/3` = the track-data decoder streams
   (`track_data.asm`), `Data4/5/6` = object/spawn/gfx data; initial time/position/state.
-- `sub_B6C4`/`sub_B72A`: object/actor pointer tables and their initial screen data.
-- `sub_B770`: bike physics/steering/engine constants.
-- `sub_B840`: per-track parameters from `unk_1471A`.
+- `Race_InitActorLists`/`Race_InitActorPositions`: object/actor pointer tables and their initial screen data.
+- `Race_InitPhysicsConstants`: bike physics/steering/engine constants.
+- `Race_LoadTrackParams`: per-track parameters from `unk_1471A`.
 - `Race_LoadBikeData`: bike id -> `unk_25B50` (0x13 words at `ram_FF1A70`) and
   `unk_25AC4` (steering/engine values).
-- `sub_B8D0`: `RaceTrack_Data5` spawn records (4 bytes, `$FFFFFFFF` terminator),
+- `Race_SpawnOpponents`: `RaceTrack_Data5` spawn records (4 bytes, `$FFFFFFFF` terminator),
   split by per-level thresholds `word_B976`/`word_B980` and the `off_B98A` color
   table into `ram_FFD7D4` and `ram_FFDBD8` (object lists).
 - `Race_CreateActors` (`0xCAD0`): builds the actor/object records (the `$14`-byte
-  `ram_FFD37C` array used by `road_render.asm`).
+  `Road_ObjectArray` array used by `road_render.asm`).
 
 ## RAM / structures (initial inventory)
 
@@ -184,12 +184,12 @@ Player/bike structures:
 | Buffering | `Race_SwapFrames` `0xBBFE`, `Race_FinishFrame` `0xBD24` |
 | Input | `Race_GetInput` `0xBE56`, `Race_GetInputDemo` `0xBE2C`, steering/pause |
 | Time | `Race_UpdateTime` `0xBA02`, `Race_ResetFrameTimers` `0xB9AE` |
-| Track/actors | `Race_InitTrack` `0xB016`, `sub_B6C4/B72A/B770/B840/B8D0`, `Race_CreateActors` `0xCAD0` |
+| Track/actors | `Race_InitTrack` `0xB016`, `Race_InitActorLists/B72A/B770/B840/B8D0`, `Race_CreateActors` `0xCAD0` |
 | Physics/AI | `sub_F108`, `sub_16AF6`, `sub_13EA0`..`sub_13106` (TODO) |
-| Road/render | `PiecewiseLinearInterpolation`, `Road_FillProfileTables`, `sub_FD96/FB1E/F40C`, `sub_109B6/FC0E/10D46`, `sub_942A` (`8FB4`), `RoadMarking_Draw` |
+| Road/render | `PiecewiseLinearInterpolation`, `Road_FillProfileTables`, `sub_FD96/FB1E/F40C`, `sub_109B6/FC0E/10D46`, `Road_DrawObjects` (`8FB4`), `RoadMarking_Draw` |
 | HUD | `RaceHud_Draw` (`race_hud.asm`) |
-| Animation | `UpdateAnimation(2)` (`animation.asm`), `sub_5760` |
-| Outcome | `sub_C3F8` (`0xC3F8`), `sub_C378`, `sub_C598`, password/highscore |
+| Animation | `UpdateAnimation(2)` (`animation.asm`), `RiderSprites_Build` |
+| Outcome | `Race_ComputeResults` (`0xC3F8`), `Race_SortResults`, `Race_UpdateHighScoreTable`, password/highscore |
 | Audio | `Race_InitAudio` `0xA674`, engine channels (`AudioFunc6/8/9/11/12/14`) |
 
 ## Open questions / next steps
@@ -199,7 +199,7 @@ Player/bike structures:
 2. Analyze the actor/physics functions (`sub_F108`, `sub_16AF6`, `sub_13xxx`,
    `sub_Dxxx`, `sub_Exxx`) and the object list.
 3. `race_hud.asm`, `road_marking.asm`, `animation.asm` cards + internals.
-4. The race outcome (`sub_C3F8`/`sub_C378`/`sub_C598`) and the standings.
+4. The race outcome (`Race_ComputeResults`/`Race_SortResults`/`Race_UpdateHighScoreTable`) and the standings.
 5. Only after the field layout is confirmed: define the AS `STRUCT`s, convert the
    confirmed uses, build after each batch, remove the flat `STRUCT_OFFSET_*` aliases.
 
@@ -209,4 +209,4 @@ Player/bike structures:
 |---------|----------|----------|------------|
 | `RacePlayer` (candidate) | `RacePlayer` | two `$80` instances at `$FF1EAA`/`$FF26AA` | medium |
 | `$FF2FAA` struct | `RaceActor`/`RacePlayerVisual` | separate `$68` bit6 struct | low |
-| `ram_FFD37C` | `Road_ObjectArray` | 0x14-byte object records | high |
+| `Road_ObjectArray` | `Road_ObjectArray` | 0x14-byte object records | high |

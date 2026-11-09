@@ -17,24 +17,24 @@ is in `race_hud.asm`.
 
 | Symbol | Address | Called by | Description |
 |--------|---------|-----------|-------------|
-| `sub_98C2` | `0x98C2` | — (no direct caller) | Standings/timer display. |
+| `RaceHud_DrawStandings` | `0x98C2` | — (no direct caller) | Standings/timer display. |
 | `RaceDebug_ShowDistanceTravelled` | `0x9936` | — | POSX_HIGH readout. |
-| `sub_995A` | `0x995A` | — | POSZ readout. |
-| `sub_997E` | `0x997E` | — | Frame-delay readout (buggy position). |
+| `RaceDebug_ShowPosZ` | `0x995A` | — | POSZ readout. |
+| `RaceDebug_ShowFrameDelay` | `0x997E` | — | Frame-delay readout (buggy position). |
 | `sub_999E` | `0x999E` | — | `ram_FF304C` readout. |
-| `sub_99C2` | `0x99C2` | — | Multi-value debug panel. |
+| `RaceDebug_ShowState` | `0x99C2` | — | Multi-value debug panel. |
 | `sub_9A98` | `0x9A98` | — | `ram_FF3046` readout. |
-| `sub_9AB4` | `0x9AB4` | — | Gear indicator. |
-| `sub_9AD4`/`sub_9AF4`/`sub_9B34` | `0x9AD4`/`0x9AF4`/`0x9B34` | debug functions | 1/2/4-digit HUD writers. |
+| `RaceHud_DrawGear` | `0x9AB4` | — | Gear indicator. |
+| `RaceHud_WriteDigit1`/`RaceHud_WriteDigit2`/`RaceHud_WriteDigit4` | `0x9AD4`/`0x9AF4`/`0x9B34` | debug functions | 1/2/4-digit HUD writers. |
 
 ## Control flow / state machine
 
 - Digit writers: `d1` = packed row/column, offset `row*128 + column*2`; tile word
   `$5C0 + digit`, bit 15 set, OR `d2` (palette/priority).
-- `sub_98C2`: `ram_FF1AE4` (2 digits) at `$1602`; walk `ram_FF1AE0` list, draw each
+- `RaceHud_DrawStandings`: `ram_FF1AE4` (2 digits) at `$1602`; walk `ram_FF1AE0` list, draw each
   value at `$1606/$160C/...`; current row (`ram_FF1AE6`) palette 0, others palette 2.
 - Debug functions: format the value (`sub_F11C` for distance/POSZ/frame delay/
-  `ram_FF304C`) or write raw hex (`sub_9B34`) at fixed HUD cells; the gear uses the
+  `ram_FF304C`) or write raw hex (`RaceHud_WriteDigit4`) at fixed HUD cells; the gear uses the
   tile base `$5C1+gear`.
 
 ## RAM / ROM & structures
@@ -52,24 +52,24 @@ is in `race_hud.asm`.
 
 | Function | Address | Contract | Algorithm | Data | Hardware | Why | Dynamic | Status |
 |----------|---------|----------|-----------|------|----------|-----|---------|--------|
-| `sub_98C2` | `0x98C2` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
+| `RaceHud_DrawStandings` | `0x98C2` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
 | `RaceDebug_ShowDistanceTravelled` | `0x9936` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
-| `sub_995A` | `0x995A` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
-| `sub_997E` | `0x997E` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
+| `RaceDebug_ShowPosZ` | `0x995A` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
+| `RaceDebug_ShowFrameDelay` | `0x997E` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
 | `sub_999E` | `0x999E` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
-| `sub_99C2` | `0x99C2` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
+| `RaceDebug_ShowState` | `0x99C2` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
 | `sub_9A98` | `0x9A98` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
-| `sub_9AB4` | `0x9AB4` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
-| `sub_9AD4`/`sub_9AF4`/`sub_9B34` | `0x9AD4`/`0x9AF4`/`0x9B34` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
+| `RaceHud_DrawGear` | `0x9AB4` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
+| `RaceHud_WriteDigit1`/`RaceHud_WriteDigit2`/`RaceHud_WriteDigit4` | `0x9AD4`/`0x9AF4`/`0x9B34` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
 
 Detailed listing: `docs/analysis/race_hud_debug.md`.
 
 ## Hacks / bugs / quirks
 
-- `sub_997E` does not set a HUD position after `sub_F11C`; the position is the
+- `RaceDebug_ShowFrameDelay` does not set a HUD position after `sub_F11C`; the position is the
   formatted value. Likely unfinished debug code. `[static]`
 - No direct callers; the normal HUD is `race_hud.asm`. `[static]`
-- HUD buffers are double-buffered; `sub_98C2` uses the next buffer, the debug readouts
+- HUD buffers are double-buffered; `RaceHud_DrawStandings` uses the next buffer, the debug readouts
   the current one. `[static]`
 
 ## Verified facts
@@ -86,8 +86,8 @@ Detailed listing: `docs/analysis/race_hud_debug.md`.
 
 | Current | Proposed | Evidence | Confidence |
 |---------|----------|----------|------------|
-| `sub_98C2` | `RaceHud_DrawStandings` | racer list/current row | medium |
-| `sub_9AD4`/`sub_9AF4`/`sub_9B34` | `RaceHud_WriteDigit1/2/4` | HUD digit writers | high |
-| `sub_995A` | `RaceDebug_ShowPosZ` | POSZ readout | high |
-| `sub_99C2` | `RaceDebug_ShowState` | multi-value debug panel | high |
-| `sub_9AB4` | `RaceHud_DrawGear` | gear indicator | medium |
+| `RaceHud_DrawStandings` | `RaceHud_DrawStandings` | racer list/current row | medium |
+| `RaceHud_WriteDigit1`/`RaceHud_WriteDigit2`/`RaceHud_WriteDigit4` | `RaceHud_WriteDigit1/2/4` | HUD digit writers | high |
+| `RaceDebug_ShowPosZ` | `RaceDebug_ShowPosZ` | POSZ readout | high |
+| `RaceDebug_ShowState` | `RaceDebug_ShowState` | multi-value debug panel | high |
+| `RaceHud_DrawGear` | `RaceHud_DrawGear` | gear indicator | medium |

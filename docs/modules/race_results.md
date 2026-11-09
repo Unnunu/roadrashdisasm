@@ -19,16 +19,16 @@ open the shop (C), or inspect the cash/password (B).
 | `RaceResults_Init` | `0x5F28` | `top_level.asm` `0x7E924` | Build the result screen. |
 | `RaceResults_GameTick` | `0x6A90` | fade wrapper | Per-frame update/input/messages. |
 | `RaceResults_HandleInput` | `0x6BD4` | `GameTick` | A/B/C actions. |
-| `sub_62CE` | `0x62CE` | `Init` | Normal standings layout. |
-| `sub_647E` | `0x647E` | `Init` | Caught-by-cops layout. |
-| `sub_67AC` | `0x67AC` | `Init` | Bike-repair layout. |
+| `RaceResults_DrawStandings` | `0x62CE` | `Init` | Normal standings layout. |
+| `RaceResults_DrawBusted` | `0x647E` | `Init` | Caught-by-cops layout. |
+| `RaceResults_DrawRepair` | `0x67AC` | `Init` | Bike-repair layout. |
 | `DrawString` | `0x6C5E` | — | Unused helper (shop has its own). |
 
 ## Control flow / state machine
 
 1. `Init`: set timers; copy `ram_FF0526/28` -> `ram_FF0918`; choose message group
    21/28/35; VDP setup; background/gamepad/font; choose layout:
-   `sub_62CE` if `ram_FF04C8 != $FFFF`, else cops (`ram_FF1B1A != 0`) or repair.
+   `RaceResults_DrawStandings` if `ram_FF04C8 != $FFFF`, else cops (`ram_FF1B1A != 0`) or repair.
    DMA; fill the cash/password box; patch the congratulations level; audio.
 2. `GameTick`: DMA; Start held exits; A -> high score, C -> shop, B -> show
    cash/password for 25 s; advance the message every 300 frames and loop at the group
@@ -56,9 +56,9 @@ open the shop (C), or inspect the cash/password (B).
 | Function | Address | Contract | Algorithm | Data | Hardware | Why | Dynamic | Status |
 |----------|---------|----------|-----------|------|----------|-----|---------|--------|
 | `RaceResults_Init` | `0x5F28` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
-| `sub_62CE` | `0x62CE` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
-| `sub_647E` | `0x647E` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
-| `sub_67AC` | `0x67AC` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
+| `RaceResults_DrawStandings` | `0x62CE` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
+| `RaceResults_DrawBusted` | `0x647E` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
+| `RaceResults_DrawRepair` | `0x67AC` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
 | `RaceResults_GameTick` | `0x6A90` | [x] | [x] | [x] | [x] | [ ] | [ ] | analyzed |
 | `RaceResults_HandleInput` | `0x6BD4` | [x] | [x] | [x] | - | [x] | [ ] | analyzed |
 | `DrawString` | `0x6C5E` | [x] | [x] | - | - | - | - | unused |
@@ -70,9 +70,9 @@ Detailed listing and table parse: `docs/analysis/race_results.md`.
 - Callers: `top_level.asm` (and `shop.asm`/`highscore.asm` set `ram_FF0910` back to
   `RaceResults_Init`).
 - Uses `UncompressW/B`, `WriteToVRAM`, `WriteNametable(ToBuffer)`, `EncodeString`,
-  `Menu_ShowMessage`, `DmaWriteVRAM`, `GetInputPlayerA/B`, `Rand_GetWord`, `sub_C6C4`,
-  `sub_C79A`, `AudioFunc1/3/4`.
-- Race outcome fields are computed by `sub_C3F8` in `race.asm`.
+  `Menu_ShowMessage`, `DmaWriteVRAM`, `GetInputPlayerA/B`, `Rand_GetWord`, `Race_FormatMoney`,
+  `Race_FormatNumber`, `AudioFunc1/3/4`.
+- Race outcome fields are computed by `Race_ComputeResults` in `race.asm`.
 
 ## Hacks / bugs / quirks
 
@@ -85,13 +85,13 @@ Detailed listing and table parse: `docs/analysis/race_results.md`.
 
 - `[static]` Outcome mapping 0/>4/4 -> message groups 21/28/35; 4 -> EndLevel.
 - `[static]` `ram_FF091A` fine = `PlayerLevel*$14`; repair = 10% of the bike price;
-  deducted from money by `sub_C3F8`.
+  deducted from money by `Race_ComputeResults`.
 - `[static]` The result portrait tables and names were parsed from `baserom.md`.
 - `[static]` Buttons: Start exit, A high score, C shop, B cash/password.
 
 ## Hypotheses
 
-- `[hypothesis]` The result screen's `sub_647E`/`sub_67AC` portrait is the cop/mechanic
+- `[hypothesis]` The result screen's `RaceResults_DrawBusted`/`RaceResults_DrawRepair` portrait is the cop/mechanic
   tied to the bust index/level. Test: finish a non-demo race busted/broken and inspect.
 - `[hypothesis]` The `$19D32`/`$19E22` names are the repair/cop characters; the images
   are shared with the pre-race intro. Test: render the records.
@@ -100,11 +100,11 @@ Detailed listing and table parse: `docs/analysis/race_results.md`.
 
 | Current | Proposed | Evidence | Confidence |
 |---------|----------|----------|------------|
-| `sub_62CE` | `RaceResults_DrawStandings` | title + track + standings | high |
-| `sub_647E` | `RaceResults_DrawBusted` | cop table + "Caught by the cops" | high |
-| `sub_67AC` | `RaceResults_DrawRepair` | level table + repair text | high |
+| `RaceResults_DrawStandings` | `RaceResults_DrawStandings` | title + track + standings | high |
+| `RaceResults_DrawBusted` | `RaceResults_DrawBusted` | cop table + "Caught by the cops" | high |
+| `RaceResults_DrawRepair` | `RaceResults_DrawRepair` | level table + repair text | high |
 | `unk_19D32` | `RaceResults_LevelTable` | level-indexed portraits | high |
-| `unk_19E22` | `RaceResults_CopTable` | cop-indexed portraits | high |
+| `RaceResults_CopTablePos` | `RaceResults_CopTable` | cop-indexed portraits | high |
 | `ram_FF04C8` | `Race_EventBuffer` | 16-long sort/bust buffer | medium |
 | `ram_FF1B1A` | `Race_CopIndex` | busted cop index | medium |
 

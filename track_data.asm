@@ -2,11 +2,11 @@
 ; track_data.asm - track/road data decompressor (two-channel delta/bit-packed)
 ; ROM range: $9FE4-$A4E1
 ; Status:    analyzed (stream start captured dynamically; channel semantics TODO)
-; API:       sub_9FE4 (start), sub_A04A (per-call chunk), sub_A0D4/A2DA (channels)
+; API:       TrackData_StartDecode (start), TrackData_DecodeChunk (per-call chunk), TrackData_DecodeChannel1/A2DA (channels)
 ; *************************************************
 
 ; *************************************************
-; Function sub_9FE4
+; Function TrackData_StartDecode
 ; Initializes two track data streams and the interleaved output, then decodes the
 ; first d1 samples per channel.
 ; In:  a2/a3 - two stream pointers (16-bit control length, controls, bit data)
@@ -15,7 +15,7 @@
 ; Clobbers: all (saved/restored)
 ; *************************************************
 
-sub_9FE4:
+TrackData_StartDecode:
                 movem.l d0-d7/a0-a6,-(sp)
                 clr.w   (ram_FF13E2).l
                 move.w  d1,(ram_FF13B2).l
@@ -37,28 +37,28 @@ sub_9FE4:
                 move.l  a1,(ram_FF1404).l
                 andi.l  #$FFFF,d1
                 movem.l (sp)+,d0-d7/a0-a6
-                jsr     (sub_A04A).l
+                jsr     (TrackData_DecodeChunk).l
                 rts
-; End of function sub_9FE4
+; End of function TrackData_StartDecode
 
 
 ; *************************************************
-; Function sub_A04A
+; Function TrackData_DecodeChunk
 ; Decodes the next per-call chunk on both channels (resumable state).
 ; In:  d1 - samples per channel this call; ram_FF13xx/14xx state
 ; Out: decoded bytes; updated state
 ; Clobbers: all (saved/restored)
 ; *************************************************
 
-sub_A04A:
-                bsr.w   sub_A0D4
-                bsr.w   sub_A2DA
+TrackData_DecodeChunk:
+                bsr.w   TrackData_DecodeChannel1
+                bsr.w   TrackData_DecodeChannel2
                 rts
-; End of function sub_A04A
+; End of function TrackData_DecodeChunk
 
 
 ; bit masks for the current data byte (8 widths x 8 bit positions)
-unk_A054:       dc.b $80
+TrackData_BitMasks:       dc.b $80
                 dc.b $40
                 dc.b $20
                 dc.b $10
@@ -116,7 +116,7 @@ unk_A054:       dc.b $80
                 dc.b   1
 
 ; cross-byte masks (high bits of the next data byte)
-unk_A08C:       dc.b $80
+TrackData_CrossByteMasks:       dc.b $80
                 dc.b $C0
                 dc.b $E0
                 dc.b $F0
@@ -125,7 +125,7 @@ unk_A08C:       dc.b $80
                 dc.b $FE
                 dc.b   0
 ; right-shift counts; $FF entries request the cross-byte path
-unk_A094:       dc.b   7
+TrackData_ShiftCounts:       dc.b   7
                 dc.b   6
                 dc.b   5
                 dc.b   4
@@ -182,7 +182,7 @@ unk_A094:       dc.b   7
                 dc.b $FB
                 dc.b $FA
 ; boundary shift counts 7..0
-unk_A0CC:       dc.b   7
+TrackData_BoundaryShifts:       dc.b   7
                 dc.b   6
                 dc.b   5
                 dc.b   4
@@ -192,7 +192,7 @@ unk_A0CC:       dc.b   7
                 dc.b   0
 
 ; *************************************************
-; Function sub_A0D4
+; Function TrackData_DecodeChannel1
 ; Channel 1 decoder: control byte = run-1 (high nibble), sign (bit3), width-1
 ; (low 3 bits); per sample read a delta from the bit stream, update the accumulator
 ; and write a byte at a1, a1+2, ...
@@ -201,7 +201,7 @@ unk_A0CC:       dc.b   7
 ; Clobbers: all (saved/restored)
 ; *************************************************
 
-sub_A0D4:
+TrackData_DecodeChannel1:
                 movem.l d0-d7/a0-a6,-(sp)
 ; first call: clear the channel state; later calls resume
                 tst.w   (ram_FF13E2).l
@@ -244,12 +244,12 @@ sub_A0D4:
                 asl.b   #3,d1
                 add.w   d1,d0
                 move.w  d0,(ram_FF13CA).l
-                lea     (unk_A054).l,a5
+                lea     (TrackData_BitMasks).l,a5
                 clr.w   d1
                 move.b  (ram_FF13B9).l,d1
                 and.b   (a5,d0.w),d1
                 move.w  d1,(ram_FF13CC).l
-                lea     (unk_A094).l,a5
+                lea     (TrackData_ShiftCounts).l,a5
                 clr.l   d1
                 move.b  (a5,d0.w),d1
                 move.w  (ram_FF13CC).l,d2
@@ -281,10 +281,10 @@ sub_A0D4:
                 subq.w  #1,d0
                 andi.w  #7,d0
                 move.w  d0,(ram_FF13CA).l
-                lea     (unk_A0CC).l,a5
+                lea     (TrackData_BoundaryShifts).l,a5
                 clr.w   d1
                 move.b  (a5,d0.w),d1
-                lea     (unk_A08C).l,a5
+                lea     (TrackData_CrossByteMasks).l,a5
                 clr.w   d2
                 move.b  (ram_FF13B9).l,d2
                 and.b   (a5,d0.w),d2
@@ -325,18 +325,18 @@ sub_A0D4:
                 move.l  a0,(ram_FF13D4).l
                 movem.l (sp)+,d0-d7/a0-a6
                 rts
-; End of function sub_A0D4
+; End of function TrackData_DecodeChannel1
 
 
 ; *************************************************
-; Function sub_A2DA
+; Function TrackData_DecodeChannel2
 ; Channel 2 decoder: same format as channel 1, writing a1+1, a1+3, ...
 ; In:  state at ram_FF13E4..140E; budget d1
 ; Out: output at ram_FF1404; state
 ; Clobbers: all (saved/restored)
 ; *************************************************
 
-sub_A2DA:
+TrackData_DecodeChannel2:
                 movem.l d0-d7/a0-a6,-(sp)
                 tst.w   (ram_FF140E).l
                 bne.w   .loc_A30C
@@ -380,12 +380,12 @@ sub_A2DA:
                 asl.b   #3,d1
                 add.w   d1,d0
                 move.w  d0,(ram_FF13F6).l
-                lea     (unk_A054).l,a5
+                lea     (TrackData_BitMasks).l,a5
                 clr.w   d1
                 move.b  (ram_FF13E5).l,d1
                 and.b   (a5,d0.w),d1
                 move.w  d1,(ram_FF13F8).l
-                lea     (unk_A094).l,a5
+                lea     (TrackData_ShiftCounts).l,a5
                 clr.l   d1
                 move.b  (a5,d0.w),d1
                 move.w  (ram_FF13F8).l,d2
@@ -417,10 +417,10 @@ sub_A2DA:
                 subq.w  #1,d0
                 andi.w  #7,d0
                 move.w  d0,(ram_FF13F6).l
-                lea     (unk_A0CC).l,a5
+                lea     (TrackData_BoundaryShifts).l,a5
                 clr.w   d1
                 move.b  (a5,d0.w),d1
-                lea     (unk_A08C).l,a5
+                lea     (TrackData_CrossByteMasks).l,a5
                 clr.w   d2
                 move.b  (ram_FF13E5).l,d2
                 and.b   (a5,d0.w),d2
@@ -461,4 +461,4 @@ sub_A2DA:
                 move.l  a0,(ram_FF1400).l
                 movem.l (sp)+,d0-d7/a0-a6
                 rts
-; End of function sub_A2DA
+; End of function TrackData_DecodeChannel2

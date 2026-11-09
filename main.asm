@@ -216,7 +216,7 @@ z80_end:
 
 doStart:
     tst.w   (VdpCtrl).l
-    jsr     (sub_7FF98).l
+    jsr     (Boot_CheckRomChecksum).l
     move    #$2700,sr
     tst.l   ($A10008).l
     bne.s   .anyButtonPressed
@@ -605,7 +605,7 @@ HorizontalInterrupt:
 .loc_1616:
                 jsr     (AudioFunc8).l
                 movea.l (ram_FF1908).l,a1
-                bsr.w   sub_1652
+                bsr.w   Audio_UpdateEngine
                 jsr     (AudioFunc11).l
 .loc_162C:
                 jsr     (AudioFunc1).l
@@ -621,7 +621,7 @@ HorizontalInterrupt:
 ; End of function HorizontalInterrupt
 
 ; *************************************************
-; Function sub_1652
+; Function Audio_UpdateEngine
 ; Computes engine-audio parameters for the object in a1.
 ; In:  a1 - object pointer ($FFFFFFFF = invalid)
 ; Out: d0 - smoothed value; d1 - distance parameter (0..$1F)
@@ -629,7 +629,7 @@ HorizontalInterrupt:
 ; Notes: mirrors the player-A math in HorizontalInterrupt.
 ; *************************************************
 
-sub_1652:
+Audio_UpdateEngine:
                 cmpa.l  #$FFFFFFFF,a1 ; invalid object
                 bne.w   .loc_1664
                 moveq   #$1F,d1
@@ -689,7 +689,7 @@ sub_1652:
                 move.w  #$1F,d1
 .return:
                 rts
-; End of function sub_1652
+; End of function Audio_UpdateEngine
 
     include "intro.asm"
     include "menu_password.asm"

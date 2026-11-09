@@ -111,7 +111,7 @@ code (`fade.asm`) uses DMA to upload the 64-word palette to CRAM (`DmaWriteCRAM`
   - writes a longword to `VdpData`, then **36 NOPs** (VDP write-recovery delay), then
     writes the next command word to `VdpCtrl`;
   - when the next `ram_FF0406 == $90`, runs a once-per-frame engine-audio update
-    (`AudioFunc1/8/11`, `sub_1652`).
+    (`AudioFunc1/8/11`, `Audio_UpdateEngine`).
 - **HV counter** (`$C00008`): high byte = vertical counter, low byte = horizontal
   counter. The handler polls both to place writes at a specific raster position.
 - **VDP status** read via `$C00004`; a control-port read resets the command latch. Where

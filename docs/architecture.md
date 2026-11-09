@@ -46,7 +46,7 @@ look up addresses and the exact bytes emitted for each source line.
 | `0x000366` | `logoEA.asm` include. |
 | `0x001164` | `VerticalInterrupt` handler (main.asm, after logoEA include). |
 | `0x00145A` | `HorizontalInterrupt` handler. |
-| `0x001652` | `sub_1652`. |
+| `0x001652` | `Audio_UpdateEngine`. |
 | `0x001180` | `fade.asm` include. |
 | … | Remaining includes, see module index below. |
 | `0x0A4E2` | `race.asm` include (main gameplay). |
@@ -79,7 +79,7 @@ Entry / intro (`$7E6A2`):
   `ram_UpdateFunction == 0`.
 - `Fade_InitFadeOut`, copy target palette -> current palette, install
   `Fade_GameTick`, wait.
-- `sub_B770`, `AudioFunc2`, `Intro_Init`, `Fade_InitFadeIn`, install `Fade_GameTick`,
+- `Race_InitPhysicsConstants`, `AudioFunc2`, `Intro_Init`, `Fade_InitFadeIn`, install `Fade_GameTick`,
   wait; install `Intro_GameTick`, wait; `Fade_InitFadeOut`, install `Fade_GameTick`,
   wait.
 - If `Intro_ram_TextTimer >= 0` -> menu (`$7E74C`); otherwise set
@@ -90,7 +90,7 @@ Menu loop (`$7E74C`):
 - `Menu_Init`, `a0 = MainMenu_GameTick`, `Fade_InitFadeIn`, install
   `FadeWithFunction_GameTick`, wait; fade out with `Fade_GameTick`, wait.
 - If `MainMenu_ram_DemoMode != 0` -> high score (`$7E7CC`).
-- Otherwise `Character_Init`, `a0 = Character_GameTick`, same fade-in/out pair.
+- Otherwise `RiderIntro_Init`, `a0 = RiderIntro_GameTick`, same fade-in/out pair.
 - If `MainMenu_ram_DemoMode == 0` -> race (`$7E80C`); otherwise high score.
 
 High score (`$7E7CC`):

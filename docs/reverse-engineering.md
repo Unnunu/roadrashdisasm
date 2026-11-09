@@ -271,8 +271,8 @@ Static call sites (full ROM, outside current coverage):
   - `$7E74C`: `Menu_Init` (`$3400`), then `Fade_InitFadeIn` with `a0 = $3802`,
     install `FadeWithFunction_GameTick` (`$12F8`), wait, `Fade_InitFadeOut`,
     install `Fade_GameTick` (`$1242`), wait; branches on `$FF3692` to
-    `Character_Init` (`$59C4`) or `HighScore_Init` (`$6DC0`).
-  - `$7E78C`: `Character_Init` (`$59C4`) with `a0 = $5E66`, same fade-in/out pair.
+    `RiderIntro_Init` (`$59C4`) or `HighScore_Init` (`$6DC0`).
+  - `$7E78C`: `RiderIntro_Init` (`$59C4`) with `a0 = $5E66`, same fade-in/out pair.
   - `$7E7CC`: `HighScore_Init` (`$6DC0`) with `a0 = $72BA`, same fade-in/out pair.
   - `$7E80C`: `Race_Init` (`$A4E2`), `Fade_InitFadeIn`, then install
     `Fade_GameTickWithInit` (`$1200`); afterwards `$FF1A62` is set to `$BA76` (race

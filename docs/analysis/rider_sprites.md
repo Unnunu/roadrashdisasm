@@ -10,13 +10,13 @@
 
 | Function | Address | Contract | Algorithm | Data | Hardware | Why | Dynamic | Status |
 |----------|---------|----------|-----------|------|----------|-----|---------|--------|
-| `sub_5760` | `0x5760` | [x] | [x] | [x] | [x] | [x] | [x] | analyzed |
-| `sub_593E` | `0x593E` | [x] | [x] | - | - | [x] | - | analyzed (wrapper) |
-| `unk_5944` | `0x5944` | [x] | [x] | [x] | [x] | [x] | - | analyzed (per-strip table) |
+| `RiderSprites_Build` | `0x5760` | [x] | [x] | [x] | [x] | [x] | [x] | analyzed |
+| `RiderSprites_BuildAlt` | `0x593E` | [x] | [x] | - | - | [x] | - | analyzed (wrapper) |
+| `RiderSprites_StripTable` | `0x5944` | [x] | [x] | [x] | [x] | [x] | - | analyzed (per-strip table) |
 
 ## Role
 
-Called from `road_render.asm` (`bsr.w sub_5760`) to build the next chunk of the rider/bike
+Called from `road_render.asm` (`bsr.w RiderSprites_Build`) to build the next chunk of the rider/bike
 sprite chain in the **sprite attribute table** (`Race_ram_CurrentSpriteAttributeTable`,
 `$FF38AC`). It writes linked SAT entries `Y, size/link, tile/priority, X`, advances the
 animation tile cursor and sprite index, and handles a second ("shadow"/overlay) layer.
@@ -72,7 +72,7 @@ animation tile cursor and sprite index, and handles a second ("shadow"/overlay) 
    sprite index, store `Animation_ram_SpriteIndex`/`TileIndex`; when the first entry was
    written, derive `ram_FFDE68` from the tile cursor.
 
-## `unk_5944` table (`0x5944`, 128 bytes = 16 records x 8 bytes)
+## `RiderSprites_StripTable` table (`0x5944`, 128 bytes = 16 records x 8 bytes)
 
 Per-strip record fields (hypothesis supported by the code):
 
@@ -87,12 +87,12 @@ The record is selected by the direction/column (`ram_FF0906`/`ram_FF0908` values
 loop counters). The exact per-record meanings (sprite size codes, tile steps, shadow
 offsets) are still to be confirmed against the rider/bike graphics.
 
-`sub_593E` is a wrapper: `bsr.w sub_5760; rts` (an alternate entry point; no direct
+`RiderSprites_BuildAlt` is a wrapper: `bsr.w RiderSprites_Build; rts` (an alternate entry point; no direct
 caller in the disassembled source).
 
 ## Dynamic confirmation (BlastEm, GDB remote)
 
-The demo race reached `sub_5760`'s return (`$593C`). Observed state:
+The demo race reached `RiderSprites_Build`'s return (`$593C`). Observed state:
 
 - `Animation_ram_SpriteIndex=6`, `Animation_ram_TileIndex=$27`, `Animation_ram_BaseTile=0`.
 - `ram_FFDE5E..70 = 0000 0027 0000 0006 005C 0200 007C FEAA 0053`.
@@ -110,10 +110,10 @@ the linked rider/bike sprite chain and maintains the animation tile/sprite indic
 
 ## Verified facts
 
-- `[static]` `sub_5760` writes linked 4-word SAT entries and maintains the animation
+- `[static]` `RiderSprites_Build` writes linked 4-word SAT entries and maintains the animation
   tile/sprite cursors.
-- `[static]` The `unk_5944` table supplies per-strip Y/link/tile/X adjustments.
-- `[dynamic]` The demo race calls `sub_5760`; the SAT chain and shadow layer were
+- `[static]` The `RiderSprites_StripTable` table supplies per-strip Y/link/tile/X adjustments.
+- `[dynamic]` The demo race calls `RiderSprites_Build`; the SAT chain and shadow layer were
   observed with sprite index 6, tile index `$27`, shadow offset `$10`.
 
 ## Hypotheses / open questions
@@ -122,5 +122,5 @@ the linked rider/bike sprite chain and maintains the animation tile/sprite indic
   `ram_FF133A` selects the shadow/overlay.
 - `[hypothesis]` The `d0/d1` inputs are the animation direction/size derived by
   `road_render.asm`.
-- `[ ]` Map the `unk_5944` records to sprite sizes/tile steps with the graphics.
+- `[ ]` Map the `RiderSprites_StripTable` records to sprite sizes/tile steps with the graphics.
 - `[ ]` Confirm the caller `road_render.asm` contract (next module).

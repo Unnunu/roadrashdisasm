@@ -21,23 +21,23 @@ Race_Init:
                 jsr     (Race_InitVariables).l
                 jsr     (Race_LoadBikeData).l
                 jsr     (Race_ClearFrameBuffers).l
-                jsr     (sub_AB78).l
+                jsr     (Race_ClearHudCorners).l
                 jsr     (Race_LoadHUD).l
                 jsr     (Race_InitTrack).l
                 jsr     (Race_LoadFonts).l
                 jsr     (Race_LoadMoreTrackGfx).l
                 jsr     (Race_LoatTrackGfx).l
-                jsr     (sub_A79C).l
+                jsr     (Race_DrawTopHud).l
                 jsr     (Race_LoadRoadImage).l
-                jsr     (sub_CA50).l
+                jsr     (Race_LoadBikePalette).l
                 jsr     (Race_CreateActors).l
                 move.w  #0,(ram_FF1EAA + STRUCT_OFFSET_16).l
-                jsr     (sub_B6C4).l
-                jsr     (sub_B72A).l
-                jsr     (sub_169B0).l
+                jsr     (Race_InitActorLists).l
+                jsr     (Race_InitActorPositions).l
+                jsr     (TrackData_InitLevel).l
                 jsr     (Race_InitVdp).l
-                jsr     (sub_B8D0).l
-                jsr     (sub_B840).l
+                jsr     (Race_SpawnOpponents).l
+                jsr     (Race_LoadTrackParams).l
                 move.w  #$FFFF,(ram_FF369E).l
                 move.w  #0,(ram_FF33C8).l
                 move.w  #0,(ram_FF304C).l
@@ -213,14 +213,14 @@ Race_ClearSprites:
 
 
 ; *************************************************
-; Function sub_A79C
+; Function Race_DrawTopHud
 ; Draws the top HUD/border tiles on both planes and palette rows.
 ; In:  -
 ; Out: VRAM $4700/$6700, planes $4000/$6000; palette
 ; Clobbers: d0-d6/a0/a1/a3
 ; *************************************************
 
-sub_A79C:
+Race_DrawTopHud:
                 VDP_VRAM_WRITE $4700,VdpCtrl
                 movea.l #VdpData,a0
                 move.l  #$E1D7E1D7,d1
@@ -313,7 +313,7 @@ sub_A79C:
                 lea     (Intro_ram_ImageBuffer + 4).l,a0
                 jsr     (WriteNametable).w
                 rts
-; End of function sub_A79C
+; End of function Race_DrawTopHud
 
 
 ; *************************************************
@@ -507,9 +507,9 @@ Race_ClearFrameBuffers:
                 dbf     d0,.loc_AB58
 
                 movea.l #Menu_ram_FrameBuffer,a0
-                jsr     (sub_AB9A).l
+                jsr     (Race_FillHudTile).l
                 movea.l #Menu_ram_FrameBuffer2,a0
-                jsr     (sub_AB9A).l
+                jsr     (Race_FillHudTile).l
                 rts
 ; End of function Race_ClearFrameBuffers
 
@@ -517,7 +517,7 @@ Race_ClearFrameBuffers:
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_AB78:
+Race_ClearHudCorners:
                 movea.l #Menu_ram_FrameBuffer + $AE0,a0 ; x = 48, y = 21
                 movea.l #Menu_ram_FrameBuffer2 + $AE0,a1
                 move.w  #7,d0
@@ -526,13 +526,13 @@ sub_AB78:
                 move.l  #0,(a1)+
                 dbf     d0,.loc_AB88
                 rts
-; End of function sub_AB78
+; End of function Race_ClearHudCorners
 
 
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_AB9A:
+Race_FillHudTile:
                 move.l  #$E1D7E1D7,d0 ; high priority, palette line 3, tile address $3AE0
                 move.w  #$12,d2
 .loc_ABA4:
@@ -544,7 +544,7 @@ sub_AB9A:
                 adda.l  #$30,a0
                 dbf     d2,.loc_ABA4
                 rts
-; End of function sub_AB9A
+; End of function Race_FillHudTile
 
 
 ; *************************************************
@@ -862,7 +862,7 @@ Race_LoadFonts:
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_AFC0:
+Race_WriteVRAMTiles:
                 addi.w  #$4000,d0
                 move.w  d0,(VdpCtrl).l
                 addi.w  #0,d1
@@ -876,7 +876,7 @@ sub_AFC0:
                 move.l  (a1)+,(a0)
                 dbf     d0,.loc_AFEA
                 rts
-; End of function sub_AFC0
+; End of function Race_WriteVRAMTiles
 
 ; *************************************************
 ; Function WriteToVRAM
@@ -929,7 +929,7 @@ Race_InitTrack:
                 move.l  (a0)+,(RaceTrack_Data6).l
                 move.l  (RaceTrack_Data4).l,(ram_FFD7C4).l
                 move.w  #0,(ram_FFD7C8).l
-                move.w  #$FFFF,(ram_FFD37C).l
+                move.w  #$FFFF,(Road_ObjectArray).l
                 move.w  #1,(Race_ram_State).l
                 move.w  #0,(Race_ram_TimeMinutes).l
                 move.w  #0,(Race_ram_TimeTicks).l
@@ -1107,7 +1107,7 @@ Race_InitVariables:
                 move.w  #0,(ram_FFD356).l
                 move.w  #0,(ram_FFD358).l
                 move.w  #0,(ram_FFD35A).l
-                move.w  #$FFFF,(ram_FFD37C).l
+                move.w  #$FFFF,(Road_ObjectArray).l
                 move.w  #0,(ram_FFD7C0).l
                 move.w  #0,(ram_FFD7C2).l
                 move.w  #0,(ram_FFD7C8).l
@@ -1142,14 +1142,14 @@ Race_InitVariables:
 
 
 ; *************************************************
-; Function sub_B6C4
+; Function Race_InitActorLists
 ; Builds the actor/object pointer tables and counts from unk_25856/unk_2585E.
 ; In:  -
 ; Out: ram_FF1A08/ram_FF1982 lists; ram_FF1A06; sentinels
 ; Clobbers: d0/a1/a2
 ; *************************************************
 
-sub_B6C4:
+Race_InitActorLists:
                 move.w  #0,(ram_FF1EA6).l
                 move.w  #0,(ram_FF19C4).l
                 move.w  #1,(ram_FF1A06).l
@@ -1174,18 +1174,18 @@ sub_B6C4:
                 move.l  (a1)+,(a2)+
                 dbf     d0,.loc_B71A
                 rts
-; End of function sub_B6C4
+; End of function Race_InitActorLists
 
 
 ; *************************************************
-; Function sub_B72A
+; Function Race_InitActorPositions
 ; Initializes the actor screen positions/scales (0x1A/0x30 fields) in the list.
 ; In:  ram_FF1A08 list
 ; Out: actor structs
 ; Clobbers: d0-d3/a0/a1
 ; *************************************************
 
-sub_B72A:
+Race_InitActorPositions:
                 move.w  #7,d0
                 lea     (ram_FF1A08).l,a0
                 move.w  #$40,d1
@@ -1206,18 +1206,18 @@ sub_B72A:
 .loc_B76A:
                 dbf     d0,.loc_B73E
                 rts
-; End of function sub_B72A
+; End of function Race_InitActorPositions
 
 
 ; *************************************************
-; Function sub_B770
+; Function Race_InitPhysicsConstants
 ; Initializes the bike/engine/steering physics constants and HUD/scroll defaults.
 ; In:  -
 ; Out: ram_FF1AB6/D330/D338, ram_FF1AE8..F4, ram_FF18A8..B6, ram_FF1A9E/A0
 ; Clobbers: d0/a0/a1
 ; *************************************************
 
-sub_B770:
+Race_InitPhysicsConstants:
                 move.w  #$20,(ram_FF1AC8).l
                 move.w  #$20,(ram_FF1ACA).l
                 move.w  #8,d0
@@ -1252,18 +1252,18 @@ sub_B770:
                 move.w  #$48D0,(ram_FF1A9E).l
                 move.w  #$80,(ram_FF1AA0).l
                 rts
-; End of function sub_B770
+; End of function Race_InitPhysicsConstants
 
 
 ; *************************************************
-; Function sub_B840
+; Function Race_LoadTrackParams
 ; Loads per-track parameters from unk_1471A into ram_FF302E..3034.
 ; In:  Menu_ram_CurrentTrackId
 ; Out: ram_FF302E/3030/3032/3034
 ; Clobbers: d0/a0
 ; *************************************************
 
-sub_B840:
+Race_LoadTrackParams:
                 lea     (unk_1471A).l,a0
                 move.w  (Menu_ram_CurrentTrackId).l,d0
                 asl.w   #2,d0
@@ -1273,7 +1273,7 @@ sub_B840:
                 move.w  (a0)+,(ram_FF3032).l
                 move.w  (a0),(ram_FF3034).l
                 rts
-; End of function sub_B840
+; End of function Race_LoadTrackParams
 
 
 ; *************************************************
@@ -1314,7 +1314,7 @@ Race_LoadBikeData:
 
 
 ; *************************************************
-; Function sub_B8D0
+; Function Race_SpawnOpponents
 ; Expands the track spawn records (RaceTrack_Data5) into the object lists, using the
 ; per-level thresholds word_B976/word_B980 and the color table off_B98A.
 ; In:  RaceTrack_Data5, Menu_ram_PlayerLevel
@@ -1322,7 +1322,7 @@ Race_LoadBikeData:
 ; Clobbers: d0-d7/a0-a3
 ; *************************************************
 
-sub_B8D0:
+Race_SpawnOpponents:
                 lea     (ram_FFD7D4).l,a1
                 move.l  a1,(ram_FFD7CC).l
                 lea     (ram_FFDBD8).l,a2
@@ -1373,7 +1373,7 @@ sub_B8D0:
                 move.l  d1,(a1)
                 move.l  d1,(a2)
                 rts
-; End of function sub_B8D0
+; End of function Race_SpawnOpponents
 
 
 word_B976:
@@ -1947,8 +1947,8 @@ Race_Update:
 
                 lea     (ram_FF1B50).l,a0
                 lea     (ram_FF1C50).l,a1
-                lea     (ram_FF1D50).l,a2
-                jsr     (sub_10D46).l
+                lea     (Road_VisibleObjectList).l,a2
+                jsr     (Road_BuildVisibleList).l
 
                 jsr     (sub_14E38).l
                 jsr     (sub_DD84).l
@@ -1958,7 +1958,7 @@ Race_Update:
                 clr.w   (Animation_ram_TileIndex).l
                 jsr     (RaceHud_Draw).l
 
-                jsr     (sub_942A).l
+                jsr     (Road_DrawObjects).l
                 jsr     (RoadMarking_Draw).l
                 move.w  (Animation_ram_SpriteIndex).l,(Race_ram_NumSprites).l
                 move.w  (Animation_ram_TileIndex).l,d0
@@ -2052,7 +2052,7 @@ sub_C350:
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_C378:
+Race_SortResults:
                 move.w  #$F,d0
                 lea     (ram_FF0586).l,a0
 
@@ -2104,7 +2104,7 @@ sub_C378:
                 move.l  d1,(a0)+
                 dbf     d0,.loc_C3DC
                 rts
-; End of function sub_C378
+; End of function Race_SortResults
 
 
 ; =============== S U B R O U T I N E =======================================
@@ -2117,8 +2117,8 @@ sub_C3F6:
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_C3F8:
-                bsr.w   sub_C378
+Race_ComputeResults:
+                bsr.w   Race_SortResults
                 lea     (ram_FF0586).l,a0
                 tst.w   (Menu_ram_Player).l
                 bne.w   .loc_C44E
@@ -2225,17 +2225,17 @@ sub_C3F8:
                 bgt.w   .loc_C58A
                 move.w  #4,(a4)
 .loc_C58A:
-                bsr.w   sub_C868
-                bsr.w   sub_C598
+                bsr.w   Race_BuildStandings
+                bsr.w   Race_UpdateHighScoreTable
                 jsr     (MenuPassword_CreatePassword).w
                 rts
-; End of function sub_C3F8
+; End of function Race_ComputeResults
 
 
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_C598:
+Race_UpdateHighScoreTable:
                 lea     (ram_FF05F2).l,a0
                 lea     (MenuPassword_ram_StrPlayerAName + 8).l,a1
                 lea     (HighScore_ram_PlayerATableOffset).l,a2
@@ -2271,7 +2271,7 @@ sub_C598:
                 move.l  #'    ',$E(a0)
                 movem.l d1/a0,-(sp)
                 adda.w  #$14,a0
-                jsr     (sub_C6C4).l
+                jsr     (Race_FormatMoney).l
                 movem.l (sp)+,d1/a0
                 lea     (HighScore_ram_PlayerATableOffset).l,a0
                 cmpa.l  a2,a0
@@ -2316,13 +2316,13 @@ sub_C598:
                 bra.s   .loc_C64E
 .locret_C6C2:
                 rts
-; End of function sub_C598
+; End of function Race_UpdateHighScoreTable
 
 
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_C6C4:
+Race_FormatMoney:
                 move.l  d0,-(sp)
                 bpl.w   .loc_C6CC
                 neg.l   d0
@@ -2401,13 +2401,13 @@ sub_C6C4:
                 move.b  #$2D,-(a0)
 .locret_C798:
                 rts
-; End of function sub_C6C4
+; End of function Race_FormatMoney
 
 
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_C79A:
+Race_FormatNumber:
                 move.l  d0,-(sp)
                 bpl.w   .loc_C7A2
                 neg.l   d0
@@ -2484,13 +2484,13 @@ sub_C79A:
                 move.b  #$2D,-(a0)
 .locret_C866:
                 rts
-; End of function sub_C79A
+; End of function Race_FormatNumber
 
 
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_C868:
+Race_BuildStandings:
                 move.w (unk_D1C0 + 4).l,d0
                 addq.w  #1,d0
                 move.w (unk_D1C0 + 6).l,d1
@@ -2564,7 +2564,7 @@ sub_C868:
                 subq.w  #1,a0
                 move.l  #'    ',-3(a0)
                 move.l  #'    ',-7(a0)
-                jsr     (sub_C79A).l
+                jsr     (Race_FormatNumber).l
                 movea.l (sp)+,a0
                 clr.l   d0
                 move.w  (a0)+,d0
@@ -2577,7 +2577,7 @@ sub_C868:
 
 
 .loc_C98C:
-                bsr.w   sub_C9D4
+                bsr.w   Race_FormatTime
 
 .loc_C990:
                 tst.w   d1
@@ -2602,13 +2602,13 @@ sub_C868:
                 adda.w  (ram_FF141A).l,a1
                 dbf     d3,.loc_C90E
                 rts
-; End of function sub_C868
+; End of function Race_BuildStandings
 
 
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_C9D4:
+Race_FormatTime:
                 clr.l   d2
                 move.w  d0,d2
                 move.b  #$30,$15(a1) ; '0'
@@ -2646,13 +2646,13 @@ sub_C9D4:
 
 .locret_CA4E:
                 rts
-; End of function sub_C9D4
+; End of function Race_FormatTime
 
 
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_CA50:
+Race_LoadBikePalette:
                 move.w  (Menu_ram_BikeIdPlayerA).l,d0
                 tst.w   (Menu_ram_Player).l
                 beq.w   .loc_CA66
@@ -2662,7 +2662,7 @@ sub_CA50:
                 asl.w   #1,d0
                 move.w  (a0,d0.w),(ram_FF36C4).l
                 asl.w   #4,d0
-                lea     (Shop_dBikePalettes).l,a0
+                lea     (Shop_BikePalettes).l,a0
                 lea     (a0,d0.w),a0
                 movea.l (Global_ram_PalettePtr).l,a1
                 move.w  #7,d0
@@ -2676,13 +2676,13 @@ sub_CA50:
                 move.w  (a4,d0.w),d0
                 move.w  d0,(ram_FF1A96).l
                 rts
-; End of function sub_CA50
+; End of function Race_LoadBikePalette
 
 
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_CAAE:
+Race_LoadActorPalette:
                 asl.w   #5,d0
                 lea     (unk_7E470).l,a0
                 adda.w  d0,a0
@@ -2693,7 +2693,7 @@ sub_CAAE:
                 move.l  (a0)+,(a1)+
                 dbf     d0,.loc_CAC8
                 rts
-; End of function sub_CAAE
+; End of function Race_LoadActorPalette
 
 
 ; =============== S U B R O U T I N E =======================================
@@ -2782,7 +2782,7 @@ Race_CreateActors:
 .break:
                 clr.w   d0
                 move.b  (ram_FF2421).l,d0
-                jsr     (sub_CAAE).l
+                jsr     (Race_LoadActorPalette).l
                 move.w  (ram_FF18B2).l,(ram_FF1EAA + STRUCT_OFFSET_5E).l
                 move.w  (ram_FF18B4).l,(ram_FF1EAA + STRUCT_OFFSET_60).l
                 move.w  #$F060,(ram_FF2EAE).l
@@ -5253,7 +5253,7 @@ sub_F40C:
                 andi.b  #3,(ram_FF1AD9).l
                 addi.b  #1,(ram_FF1ADC).l
                 andi.b  #7,(ram_FF1ADC).l
-                lea     (ram_FFD37C).l,a0
+                lea     (Road_ObjectArray).l,a0
                 move.w  (ram_FFDE72).l,d0
                 mulu.w  #$14,d0
                 adda.w  d0,a0
@@ -5815,7 +5815,7 @@ sub_FA98:
 
 
 sub_FB1E:
-                lea     (ram_FFD37C).l,a0
+                lea     (Road_ObjectArray).l,a0
                 cmpi.w  #$C,(ram_FF1E68).l
                 bpl.w   .loc_FB42
                 move.l  #$C0000,d0
@@ -5893,7 +5893,7 @@ sub_FB1E:
 
 sub_FC0E:
                 move.w  #0,(ram_FFD7CA).l
-                lea     (ram_FFD37C).l,a0
+                lea     (Road_ObjectArray).l,a0
                 move.w  (ram_FFDE72).l,d0
                 mulu.w  #$14,d0
                 adda.w  d0,a0
@@ -6058,7 +6058,7 @@ sub_FD96:
                 move.w  #0,(ram_FF369A).l
                 bra.w   .return
 .loc_FDBE:
-                lea     (ram_FFD37C).l,a0
+                lea     (Road_ObjectArray).l,a0
                 move.w  (ram_FFDE72).l,d1
                 mulu.w  #$14,d1
                 adda.w  d1,a0
@@ -7821,7 +7821,7 @@ sub_109B6:
 
 .loc_10AA6:
                 move.w  2(a1),d6
-                lea     (ram_FFD37C).l,a0
+                lea     (Road_ObjectArray).l,a0
                 move.w  (ram_FFDE72).l,d7
                 mulu.w  #$14,d7
                 adda.w  d7,a0
@@ -8068,7 +8068,7 @@ sub_10C4E:
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_10D46:
+Road_BuildVisibleList:
                 movem.l d0-d7/a0-a7,-(sp)
                 move.l  (a0)+,(a1)
                 move.w  #0,(a2)
@@ -8120,7 +8120,7 @@ sub_10D46:
                 move.l  d4,(a1,d0.w)
                 movem.l (sp)+,d0-d7/a0-a7
                 rts
-; End of function sub_10D46
+; End of function Road_BuildVisibleList
 
 
 ; =============== S U B R O U T I N E =======================================
@@ -10078,7 +10078,7 @@ sub_11CC8:
                 move.l  #$6000,(ram_FF3038).l
                 move.w  #$10,(ram_FF303C).l
                 move.w  #$40,(ram_FF303E).l ; '@'
-                lea     (ram_FFD37C).l,a0
+                lea     (Road_ObjectArray).l,a0
                 move.w  (ram_FF1B48).l,d0
                 mulu.w  #$14,d0
                 adda.w  d0,a0
@@ -10167,7 +10167,7 @@ sub_12070:
                 addi.l  #$6000,d0
                 move.l  $1E(a1),d1
                 addi.l  #$6000,d1
-                lea     (unk_3BF1A).l,a6
+                lea     (Road_ShapeTable).l,a6
                 lea     (unk_14764).l,a5
 
 .loc_120A4:
@@ -10501,7 +10501,7 @@ sub_12414:
                 neg.w   d2
 
 .loc_1243E:
-                lea     (unk_3BF1A).l,a2
+                lea     (Road_ShapeTable).l,a2
                 move.w  8(a0),d0
                 move.w  d0,(ram_FF1B0E).l
                 asl.w   #2,d0
@@ -19772,7 +19772,7 @@ sub_1611A:
                 cmpi.b  #1,$6C(a1)
                 bne.w   .loc_16248
                 move.w  #1,(ram_FF1904).l
-                bsr.w   sub_16520
+                bsr.w   Audio_UpdateEngine0
 
 .loc_16248:
                 cmpi.b  #3,$6C(a1)
@@ -20030,7 +20030,7 @@ locret_1651E:
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_16520:
+Audio_UpdateEngine0:
                 cmpi.b  #1,$6C(a1)
                 bne.w   .locret_16546
                 btst    #1,$6B(a1)
@@ -20041,7 +20041,7 @@ sub_16520:
 
 .locret_16546:
                 rts
-; End of function sub_16520
+; End of function Audio_UpdateEngine0
 
 
 ; =============== S U B R O U T I N E =======================================
@@ -20056,7 +20056,7 @@ sub_16548:
                 cmpi.b  #1,$6C(a1)
                 bne.w   .loc_16578
                 move.w  #1,(ram_FF1906).l
-                bsr.s   sub_16520
+                bsr.s   Audio_UpdateEngine0
 
 .loc_16578:
                 cmpi.b  #3,$6C(a1)
@@ -20370,7 +20370,7 @@ sub_16732:
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_169B0:
+TrackData_InitLevel:
                 movem.l d0/a0,-(sp)
                 move.w  (Menu_ram_CurrentTrackId).l,d0
                 asl.w   #1,d0
@@ -20381,7 +20381,7 @@ sub_169B0:
                 movea.l (RaceTrack_Data3).l,a3
                 lea     (ram_FFDC58).l,a1
                 move.w  #$7F,d1
-                jsr     (sub_9FE4).l
+                jsr     (TrackData_StartDecode).l
                 move.w  (Menu_ram_PlayerLevel).l,d0
                 subq.w  #1,d0
                 asl.w   #1,d0
@@ -20413,13 +20413,13 @@ sub_169B0:
 
 .locret_16A30:
                 rts
-; End of function sub_169B0
+; End of function TrackData_InitLevel
 
 
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_16A32:
+TrackData_DecodeNextChunk:
                 addq.w  #1,d0
                 cmp.w   #3,d0
                 ble.w   .loc_16A44
@@ -20438,7 +20438,7 @@ sub_16A32:
                 movea.l (RaceTrack_Data2).l,a2
                 movea.l (RaceTrack_Data3).l,a3
                 move.w  #$3F,d1 ; '?'
-                jsr     (sub_A04A).l
+                jsr     (TrackData_DecodeChunk).l
                 movea.l (sp)+,a1
                 move.w  (Menu_ram_PlayerLevel).l,d0
                 subq.w  #1,d0
@@ -20470,7 +20470,7 @@ sub_16A32:
 
 .locret_16AAE:
                 rts
-; End of function sub_16A32
+; End of function TrackData_DecodeNextChunk
 
 
 

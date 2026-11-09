@@ -30,7 +30,7 @@ marking/animation, and the race outcome. `top_level.asm` calls `Race_Init`, inst
 | `Race_ResetFrameTimers` | `0xB9AE` | `Race_GameTick` | Frame pacing. |
 | `Race_InitTrack` | `0xB016` | `Race_Init` | Track record/streams/spawn. |
 | `Race_CreateActors` | `0xCAD0` | `Race_Init` | Object/actor records. |
-| `sub_C3F8` | `0xC3F8` | race end | Outcome/places/password/money. |
+| `Race_ComputeResults` | `0xC3F8` | race end | Outcome/places/password/money. |
 
 ## Control flow / state machine
 
@@ -80,7 +80,7 @@ marking/animation, and the race outcome. `top_level.asm` calls `Race_Init`, inst
 | `Race_GetInputDemo` | `0xBE2C` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
 | `Race_GetInput` | `0xBE56` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
 | `Race_Update` | `0xC00C` | [x] | [~] | [x] | [x] | [x] | [ ] | partial |
-| `sub_C3F8` | `0xC3F8` | [x] | [~] | [x] | - | [x] | [ ] | partial |
+| `Race_ComputeResults` | `0xC3F8` | [x] | [~] | [x] | - | [x] | [ ] | partial |
 | Actors/physics/AI | `0xD9DA`+ | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | TODO |
 | `race_hud.asm` | `0xD278` | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | TODO |
 | `road_marking.asm` | `0xE732` | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | TODO |
@@ -93,7 +93,7 @@ Detailed top-level flow, subsystem map and initial struct inventory:
 
 - Callers: `top_level.asm`.
 - Uses `UncompressW/B`, `UncompressToVRAM`, `WriteToVRAM`, `WriteNametable(ToBuffer)`,
-  `DmaWriteVRAM`, `DmaWriteCRAM`, `PiecewiseLinearInterpolation`, `sub_942A`
+  `DmaWriteVRAM`, `DmaWriteCRAM`, `PiecewiseLinearInterpolation`, `Road_DrawObjects`
   (`8FB4`), `RaceHud_Draw`, `RoadMarking_Draw`, `UpdateAnimation(2)`, the audio
   functions, `GetInputPlayerA/B`, `Rand_GetWord`, `9FE4` track decoder.
 
@@ -131,7 +131,7 @@ Detailed top-level flow, subsystem map and initial struct inventory:
 |---------|----------|----------|------------|
 | `$FF1EAA`/`$FF26AA` | `RacePlayerA/B` (base equates) | two `$80` instances | medium |
 | `$FF2FAA` struct | `RaceActor`/`RacePlayerVisual` | separate `$68` bit6 | low |
-| `ram_FFD37C` | `Road_ObjectArray` | 0x14-byte objects | high |
+| `Road_ObjectArray` | `Road_ObjectArray` | 0x14-byte objects | high |
 
 ## Experiments performed
 

@@ -19,31 +19,31 @@ of a level are finished in 1st-4th (`ram_FF0918 == 4`).
 | `EndLevel_Init` | `0x8342` | `top_level.asm` `0x7E9FA` | Build the animation stage. |
 | `EndLevel_GameTick` | `0x8AEE` | fade wrapper | Animation timing/input/swap. |
 | `EndLevel_UpdateAnimation` | `0x8B94` | top-level frame loop | Animation script update. |
-| `EndLevel_InitCharacterScreen` | `0x8682` | `GameTick` end stage | Level-up rider screen. |
-| `EndLevel_GameTickCharacterScreen` | `0x8A1A` | fade wrapper | Rider-screen update/input. |
-| `sub_8946` | `0x8946` | `InitCharacterScreen` | Advance level/opponents/password. |
+| `EndLevel_InitVictoryCharacter` | `0x8682` | `GameTick` end stage | Level-up rider screen. |
+| `EndLevel_GameTickVictoryCharacter` | `0x8A1A` | fade wrapper | Rider-screen update/input. |
+| `EndLevel_AdvanceLevel` | `0x8946` | `InitCharacterScreen` | Advance level/opponents/password. |
 
 ## Control flow / state machine
 
 1. `Init`: VDP (`$3000` window, `$1000` sprites, `$2000` H-scroll, `$4000` planes),
    background `$1280`, animation tiles `$5C00`, window image `$2020`, font; set the
    race-animation state to endlevel buffers.
-2. `GameTick`/`UpdateAnimation`: play the level animation (`unk_8C8C` frame counts,
-   script `unk_8DC2`, x/y `$80`); 5-frame DMA/swap; wait for Start release or 2 s;
+2. `GameTick`/`UpdateAnimation`: play the level animation (`EndLevel_FrameCounts` frame counts,
+   script `EndLevel_AnimationScript`, x/y `$80`); 5-frame DMA/swap; wait for Start release or 2 s;
    `EndLevel_ram_AnimFrame = -1` -> `InitCharacterScreen`.
-3. `InitCharacterScreen`: panel `unk_7EA66`, rider from `unk_19F12` (level-1, two
-   variants), name/quote/palette; `sub_8946`; message group `0x180`.
+3. `InitCharacterScreen`: panel `unk_7EA66`, rider from `EndLevel_LevelRiderTable` (level-1, two
+   variants), name/quote/palette; `EndLevel_AdvanceLevel`; message group `0x180`.
 4. `GameTickCharacterScreen`: DMA window `$3000`; Start held exits; 2 s message cycle.
 
 ## RAM / ROM & structures
 
 - `EndLevel_ram_AnimFrame`; `ram_FF0D24` (5-frame swap delay);
   `Race_ram_*` animation state; `Animation_ram_BaseTile=$2E0`.
-- `unk_19F12` (`0x19F12`): 5 levels x 2 `quote_ptr,image_ptr` records (rival + Natasha);
+- `EndLevel_LevelRiderTable` (`0x19F12`): 5 levels x 2 `quote_ptr,image_ptr` records (rival + Natasha);
   index `(level-1)*$10 + (Rand & 8)`.
-- `unk_8C8C` frame counts (35,54,81,91,123); `unk_8DC2` animation script;
+- `EndLevel_FrameCounts` frame counts (35,54,81,91,123); `EndLevel_AnimationScript` animation script;
   `unk_80000` tiles; `unk_7F400` window image; `unk_8BF12` animation data.
-- `sub_8946`: clear outcome/places, level++, clamp 5, rebuild
+- `EndLevel_AdvanceLevel`: clear outcome/places, level++, clamp 5, rebuild
   `Menu_ram_PlayerA/BOpponents` (`$4B` + 15 words `(level-1)*$F+0..14`), regenerate the
   password.
 
@@ -54,9 +54,9 @@ of a level are finished in 1st-4th (`ram_FF0918 == 4`).
 | `EndLevel_Init` | `0x8342` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
 | `EndLevel_GameTick` | `0x8AEE` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
 | `EndLevel_UpdateAnimation` | `0x8B94` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
-| `EndLevel_InitCharacterScreen` | `0x8682` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
-| `EndLevel_GameTickCharacterScreen` | `0x8A1A` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
-| `sub_8946` | `0x8946` | [x] | [x] | [x] | - | [x] | [ ] | analyzed |
+| `EndLevel_InitVictoryCharacter` | `0x8682` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
+| `EndLevel_GameTickVictoryCharacter` | `0x8A1A` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
+| `EndLevel_AdvanceLevel` | `0x8946` | [x] | [x] | [x] | - | [x] | [ ] | analyzed |
 
 Detailed listing: `docs/analysis/endlevel.md`.
 
@@ -81,12 +81,12 @@ Detailed listing: `docs/analysis/endlevel.md`.
 
 - `[static]` EndLevel runs only for outcome 4; it advances the level and rebuilds the
   opponents/places/password.
-- `[static]` Victory frame counts per level; level-up rider table `unk_19F12`.
+- `[static]` Victory frame counts per level; level-up rider table `EndLevel_LevelRiderTable`.
 - `[static]` Start release ends the animation, Start held ends the character screen.
 
 ## Hypotheses
 
-- `[hypothesis]` The `unk_19F12` variants are the level rival and Natasha's advice; test:
+- `[hypothesis]` The `EndLevel_LevelRiderTable` variants are the level rival and Natasha's advice; test:
   render the records.
 - `[hypothesis]` The 5-frame DMA/swap creates the victory animation at 12 fps; test:
   capture the animation timing.
@@ -95,11 +95,11 @@ Detailed listing: `docs/analysis/endlevel.md`.
 
 | Current | Proposed | Evidence | Confidence |
 |---------|----------|----------|------------|
-| `sub_8946` | `EndLevel_AdvanceLevel` | level/opponents/password update | high |
-| `EndLevel_InitCharacterScreen` | `EndLevel_InitVictoryCharacter` | level-up rider screen | high |
-| `unk_19F12` | `EndLevel_LevelRiderTable` | 5 levels x 2 riders | high |
-| `unk_8C8C` | `EndLevel_FrameCounts` | per-level frame counts | high |
-| `unk_8DC2` | `EndLevel_AnimationScript` | animation data | high |
+| `EndLevel_AdvanceLevel` | `EndLevel_AdvanceLevel` | level/opponents/password update | high |
+| `EndLevel_InitVictoryCharacter` | `EndLevel_InitVictoryCharacter` | level-up rider screen | high |
+| `EndLevel_LevelRiderTable` | `EndLevel_LevelRiderTable` | 5 levels x 2 riders | high |
+| `EndLevel_FrameCounts` | `EndLevel_FrameCounts` | per-level frame counts | high |
+| `EndLevel_AnimationScript` | `EndLevel_AnimationScript` | animation data | high |
 
 ## Experiments performed
 

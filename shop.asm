@@ -148,7 +148,7 @@ Shop_Init:
                 lea     (Intro_ram_ImageBuffer + $B48).l,a0
                 bsr.w   WriteNametable
 ; left/right arrow images on the plane at (0,4)/(36,4), high priority
-                lea     (unk_9E784).l,a3
+                lea     (ImgShopArrowLeft).l,a3
                 lea     (Intro_ram_ImageBuffer).l,a1
                 jsr     (UncompressW).l
 ; write it to VRAM address $B000
@@ -166,7 +166,7 @@ Shop_Init:
                 lea     (Intro_ram_ImageBuffer + $C8).l,a0
                 jsr     (WriteNametable).w
 ; load right arrows image
-                lea     (unk_9E874).l,a3
+                lea     (ImgShopArrowRight).l,a3
                 lea     (Intro_ram_ImageBuffer).l,a1
                 jsr     (UncompressW).l
 ; write it to VRAM address $B100
@@ -203,7 +203,7 @@ Shop_Init:
                 move.l  (a0)+,(a1)+
                 dbf     d0,.copyPal3
 ; three base bike images; their 18x9 maps go into the Shop_ImageBike RAM buffers
-                lea     (unk_9EA1E).l,a3
+                lea     (ImgShopBike1).l,a3
                 lea     (Intro_ram_ImageBuffer).l,a1
                 jsr     (UncompressW).l
 ; write it to VRAM address $C000
@@ -221,7 +221,7 @@ Shop_Init:
                 lea     (Shop_ImageBike1).l,a1 ; destination
                 bsr.w   WriteNametableToBuffer
 ; load bike 2 image
-                lea     (unk_9FDDE).l,a3
+                lea     (ImgShopBike2).l,a3
                 lea     (Intro_ram_ImageBuffer).l,a1
                 jsr     (UncompressW).l
 ; write it to VRAM address $D000
@@ -239,7 +239,7 @@ Shop_Init:
                 lea     (Shop_ImageBike2).l,a1 ; destination
                 bsr.w   WriteNametableToBuffer
 ; load bike 3 image
-                lea     (unk_A122A).l,a3
+                lea     (ImgShopBike3).l,a3
                 lea     (Intro_ram_ImageBuffer).l,a1
                 jsr     (UncompressW).l
 ; write it to VRAM address $E000
@@ -257,11 +257,11 @@ Shop_Init:
                 lea     (Shop_ImageBike3).l,a1
                 bsr.w   WriteNametableToBuffer
 ; draw the bike lineup: centre palette = selected bike, other bikes = previous bike
-                lea     (Shop_dBikePalettes).l,a0
+                lea     (Shop_BikePalettes).l,a0
                 move.w  (Shop_CurrentBikeId).l,d0
                 asl.w   #5,d0
                 adda.w  d0,a0
-                lea     (Shop_dBikePalettes).l,a1 ; current bike palette
+                lea     (Shop_BikePalettes).l,a1 ; current bike palette
                 move.w  (Shop_CurrentBikeId).l,d0
                 subq.w  #1,d0
                 andi.w  #7,d0
@@ -467,23 +467,23 @@ Shop_GameTick:
 ; *************************************************
 
 Shop_HandleInput:
-                move.b  d0,(ram_FF0952).l
-                btst    #6,(ram_FF0952).l
+                move.b  d0,(Shop_ram_CurrentButtons).l
+                btst    #6,(Shop_ram_CurrentButtons).l
                 beq.w   .loc_7B68
                 move.l  #HighScore_Init,(ram_FF0910).l
 .loc_7B68:
-                btst    #4,(ram_FF0952).l
+                btst    #4,(Shop_ram_CurrentButtons).l
                 beq.w   .loc_7B7E
                 move.l  #RaceResults_Init,(ram_FF0910).l
 .loc_7B7E:
-                btst    #5,(ram_FF0952).l
+                btst    #5,(Shop_ram_CurrentButtons).l
                 beq.w   .loc_7C64
                 tst.w   (Menu_ram_Player).l
                 bne.w   .loc_7BF8
                 move.w  (Shop_CurrentBikeId).l,d0
                 cmp.w   (Menu_ram_BikeIdPlayerA).l,d0
                 bne.w   .loc_7BAC
-                bsr.w   sub_7EA2
+                bsr.w   Shop_ShowAlreadyOwned
                 bra.w   .loc_7C64
 .loc_7BAC:
 ; net price = selected price - half the current bike's trade-in value
@@ -499,7 +499,7 @@ Shop_HandleInput:
                 ext.l   d0
                 cmp.l   (Menu_ram_MoneyPlayerA).l,d0
                 ble.w   .loc_7BE4
-                bsr.w   sub_7F02
+                bsr.w   Shop_ShowCannotAfford
                 bra.w   .loc_7C64
 .loc_7BE4:
 ; buy: pay the net price, set the bike id and regenerate the password
@@ -510,7 +510,7 @@ Shop_HandleInput:
                 move.w  (Shop_CurrentBikeId).l,d0
                 cmp.w   (Menu_ram_BikeIdPlayerB).l,d0
                 bne.w   .loc_7C10
-                bsr.w   sub_7EA2
+                bsr.w   Shop_ShowAlreadyOwned
                 bra.w   .loc_7C64
 .loc_7C10:
                 lea     (Shop_dPrices).l,a0
@@ -525,7 +525,7 @@ Shop_HandleInput:
                 ext.l   d0
                 cmp.l   (Menu_ram_MoneyPlayerB).l,d0
                 ble.w   .loc_7C48
-                bsr.w   sub_7F02
+                bsr.w   Shop_ShowCannotAfford
                 bra.w   .loc_7C64
 .loc_7C48:
                 sub.l   d0,(Menu_ram_MoneyPlayerB).l
@@ -536,19 +536,19 @@ Shop_HandleInput:
                 jsr     (MenuPassword_CreatePassword).w
 .loc_7C64:
 ; Right: next bike, only when the scroll animation is at rest ($160)
-                btst    #3,(ram_FF0952).l
+                btst    #3,(Shop_ram_CurrentButtons).l
                 beq.w   .loc_7CE0
                 move.w  (Shop_ScrollPos).l,d0
                 cmp.w   #$160,d0
                 bne.w   .loc_7CE0
-                lea     (Shop_dBikePalettes).l,a1
+                lea     (Shop_BikePalettes).l,a1
                 move.w  (Shop_CurrentBikeId).l,d0
                 asl.w   #5,d0
                 adda.w  d0,a1
                 addq.w  #1,(Shop_CurrentBikeId).l
                 andi.w  #7,(Shop_CurrentBikeId).l
                 move.w  (Shop_CurrentBikeId).l,d0
-                lea     (Shop_dBikePalettes).l,a0
+                lea     (Shop_BikePalettes).l,a0
                 move.w  (Shop_CurrentBikeId).l,d0
                 asl.w   #5,d0
                 adda.w  d0,a0
@@ -563,19 +563,19 @@ Shop_HandleInput:
                 subi.w  #$D0,(Shop_ScrollPos).l
 .loc_7CE0:
 ; Left: previous bike, same rest condition
-                btst    #2,(ram_FF0952).l
+                btst    #2,(Shop_ram_CurrentButtons).l
                 beq.w   .locret_7D5C
                 move.w  (Shop_ScrollPos).l,d0
                 cmp.w   #$160,d0
                 bne.w   .locret_7D5C
-                lea     (Shop_dBikePalettes).l,a1
+                lea     (Shop_BikePalettes).l,a1
                 move.w  (Shop_CurrentBikeId).l,d0
                 asl.w   #5,d0
                 adda.w  d0,a1
                 subq.w  #1,(Shop_CurrentBikeId).l
                 andi.w  #7,(Shop_CurrentBikeId).l
                 move.w  (Shop_CurrentBikeId).l,d0
-                lea     (Shop_dBikePalettes).l,a0
+                lea     (Shop_BikePalettes).l,a0
                 move.w  (Shop_CurrentBikeId).l,d0
                 asl.w   #5,d0
                 adda.w  d0,a0
@@ -636,7 +636,7 @@ Shop_DrawCreditsAndPrice:
 .loc_7DD6:
                 subq.w  #3,a0
                 move.l  d2,d0
-                bsr.w   sub_C79A
+                bsr.w   Race_FormatNumber
                 lea     (Menu_ram_TempString).l,a0
                 bsr.w   Shop_DrawString ; draw money amount (including trade in price)
 ; draw bike price string
@@ -661,7 +661,7 @@ Shop_DrawCreditsAndPrice:
                 andi.l  #$FFFF,d0
                 move.w  (a1,d0.w),d0
                 subq.w  #4,a0
-                bsr.w   sub_C79A
+                bsr.w   Race_FormatNumber
                 bra.w   .loc_7E64
 .alreadyOwned:
                 move.l  #$72732920,-(a0) ; text '(its yours)'
@@ -698,14 +698,14 @@ Shop_DrawString:
 ; End of function Shop_DrawString
 
 ; *************************************************
-; Function sub_7EA2
+; Function Shop_ShowAlreadyOwned
 ; Builds "You already own a ..." (unk_51C6 + bike name) in ram_FF089A (id 59).
 ; In:  Shop_CurrentBikeId
 ; Out: ram_FF089A; message id 59; 5 s timer
 ; Clobbers: d0/d1/a0/a1
 ; *************************************************
 
-sub_7EA2:
+Shop_ShowAlreadyOwned:
                 move.w  #$1D8,(Menu_ram_CurrentMessageId).l
                 move.w  #$1E,(Menu_ram_MessageBlinkTimer).l
                 move.w  #$12C,(Menu_ram_NextMessageTimer).l
@@ -735,17 +735,17 @@ sub_7EA2:
                 move.b  (a0)+,(a1)+
                 dbf     d0,.loc_7EFA
                 rts
-; End of function sub_7EA2
+; End of function Shop_ShowAlreadyOwned
 
 ; *************************************************
-; Function sub_7F02
+; Function Shop_ShowCannotAfford
 ; Builds "You need more credit to buy a ..." (unk_520A + bike name) in ram_FF089A.
 ; In:  Shop_CurrentBikeId
 ; Out: ram_FF089A; message id 59; 5 s timer
 ; Clobbers: d0/d1/a0/a1
 ; *************************************************
 
-sub_7F02:
+Shop_ShowCannotAfford:
                 move.w  #$1D8,(Menu_ram_CurrentMessageId).l
                 move.w  #$1E,(Menu_ram_MessageBlinkTimer).l
                 move.w  #$12C,(Menu_ram_NextMessageTimer).l
@@ -775,7 +775,7 @@ sub_7F02:
                 move.b  (a0)+,(a1)+
                 dbf     d0,.loc_7F5A
                 rts
-; End of function sub_7F02
+; End of function Shop_ShowCannotAfford
 
 ; *************************************************
 ; Function Shop_PrepareMessages

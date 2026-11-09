@@ -1,7 +1,7 @@
 # Module card: `rider_intro.asm`
 
-- **ROM range:** `0x0059C4`–`0x005F27` (`Character_Init` `0x59C4`,
-  `Character_GameTick` `0x5E66`)
+- **ROM range:** `0x0059C4`–`0x005F27` (`RiderIntro_Init` `0x59C4`,
+  `RiderIntro_GameTick` `0x5E66`)
 - **Status:** analyzed (static; rendering not yet dynamically confirmed)
 - **Related:** `docs/architecture.md`, `docs/reverse-engineering.md`,
   `docs/hardware.md`, `docs/ram-map.md`, `docs/analysis/rider_intro.md`
@@ -17,8 +17,8 @@ to the race and records the controller in `Race_ram_ActiveController`.
 
 | Symbol | Address | Called by | Description |
 |--------|---------|-----------|-------------|
-| `Character_Init` | `0x59C4` | `top_level.asm` `0x7E78C` | Build the screen. |
-| `Character_GameTick` | `0x5E66` | `top_level.asm` `0x7E790` (fade wrapper) | Per-frame update/input. |
+| `RiderIntro_Init` | `0x59C4` | `top_level.asm` `0x7E78C` | Build the screen. |
+| `RiderIntro_GameTick` | `0x5E66` | `top_level.asm` `0x7E790` (fade wrapper) | Per-frame update/input. |
 
 `top_level.asm` skips the screen when `MainMenu_ram_DemoMode != 0` (`0x7E782`).
 
@@ -32,7 +32,7 @@ to the race and records the controller in `Race_ram_ActiveController`.
 
 ## RAM / ROM & structures
 
-- Opponent table `unk_19A12` (`0x19A12`): `[5 levels][5 tracks][4 variants]`, 8-byte
+- Opponent table `RiderIntro_RecordTable` (`0x19A12`): `[5 levels][5 tracks][4 variants]`, 8-byte
   records `quote_ptr, image_ptr`; index `base + variant + (level-1)*$A0 + track*$10`;
   variant in `{0,8,$10,$18}`, track in `{0,2,4,6,8}`.
 - Image prefix at `image-8`: even bytes = compressed size, odd bytes = header pointer;
@@ -49,9 +49,9 @@ to the race and records the controller in `Race_ram_ActiveController`.
 
 | Function | Address | Contract | Algorithm | Data | Hardware | Why | Dynamic | Status |
 |----------|---------|----------|-----------|------|----------|-----|---------|--------|
-| `Character_Init` | `0x59C4` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
-| `Character_GameTick` | `0x5E66` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
-| `unk_19A12` | `0x19A12` | [x] | [x] | [x] | - | [x] | - | parsed |
+| `RiderIntro_Init` | `0x59C4` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
+| `RiderIntro_GameTick` | `0x5E66` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
+| `RiderIntro_RecordTable` | `0x19A12` | [x] | [x] | [x] | - | [x] | - | parsed |
 
 Detailed listing, table parse and layout: `docs/analysis/rider_intro.md`.
 
@@ -85,16 +85,16 @@ Detailed listing, table parse and layout: `docs/analysis/rider_intro.md`.
 - `[hypothesis]` `unk_B1506` is Natasha's bike/overlay; `ram_FF0520` is a bike/opponent
   class. Test: render `unk_B1506` and the portrait with the game palette.
 - `[hypothesis]` The `$4000` background write is a leftover/bug (should be `$8000`).
-  Test: enter the screen right after `Character_Init` without the main menu and inspect
+  Test: enter the screen right after `RiderIntro_Init` without the main menu and inspect
   VRAM.
 
 ## Rename proposals (apply only on request)
 
 | Current | Proposed | Evidence | Confidence |
 |---------|----------|----------|------------|
-| `Character_Init` | `RiderIntro_Init` | pre-race opponent intro | high |
-| `Character_GameTick` | `RiderIntro_GameTick` | same | high |
-| `unk_19A12` | `RiderIntro_RecordTable` | [level][track][variant] records | high |
+| `RiderIntro_Init` | `RiderIntro_Init` | pre-race opponent intro | high |
+| `RiderIntro_GameTick` | `RiderIntro_GameTick` | same | high |
+| `RiderIntro_RecordTable` | `RiderIntro_RecordTable` | [level][track][variant] records | high |
 | `unk_AF902` | `RiderIntro_NatashaImage` | parsed name | medium |
 | `unk_B1506` | `RiderIntro_NatashaBike` | conditional overlay | low |
 

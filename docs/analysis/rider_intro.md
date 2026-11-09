@@ -1,7 +1,7 @@
 # Analysis: `rider_intro.asm` (pre-race rider/opponent intro)
 
 - **Module:** rider/opponent introduction screen shown between the main menu and the race
-- **ROM range:** `0x0059C4`–`0x005F27` (`Character_Init` `0x59C4`, `Character_GameTick` `0x5E66`)
+- **ROM range:** `0x0059C4`–`0x005F27` (`RiderIntro_Init` `0x59C4`, `RiderIntro_GameTick` `0x5E66`)
 - **Status:** analyzed statically; rendering not yet confirmed dynamically (demo skips it)
 - **Source:** `rider_intro.asm`
 - **Related:** `docs/architecture.md`, `docs/hardware.md`, `docs/ram-map.md`
@@ -10,20 +10,20 @@
 
 | Function | Address | Contract | Algorithm | Data | Hardware | Why | Dynamic | Status |
 |----------|---------|----------|-----------|------|----------|-----|---------|--------|
-| `Character_Init` | `0x59C4` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
-| `Character_GameTick` | `0x5E66` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
-| `unk_19A12` table | `0x19A12` | [x] | [x] | [x] | - | [x] | - | parsed |
+| `RiderIntro_Init` | `0x59C4` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
+| `RiderIntro_GameTick` | `0x5E66` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
+| `RiderIntro_RecordTable` table | `0x19A12` | [x] | [x] | [x] | - | [x] | - | parsed |
 | image asset header | - | [x] | [x] | [x] | - | [x] | - | parsed (100 records) |
 
 ## Role & flow
 
-`top_level.asm` calls `Character_Init`/`Character_GameTick` at `0x7E78C`/`0x7E790` after
+`top_level.asm` calls `RiderIntro_Init`/`RiderIntro_GameTick` at `0x7E78C`/`0x7E790` after
 the main-menu fade, **only when `MainMenu_ram_DemoMode == 0`** (`0x7E782`); the demo
 branch (`0x7E7CC`) goes to the high-score demo instead. The screen shows the rider you
 will race next: portrait, name, a taunt/quote, and an optional extra overlay, then
 returns to the race when the held button is released (or after the message timer expires).
 
-## Opponent table (`unk_19A12`, `0x19A12`)
+## Opponent table (`RiderIntro_RecordTable`, `0x19A12`)
 
 - 8-byte records: `dc.l quote_pointer, image_pointer`.
 - Index: `base + variant + (level-1)*$A0 + trackId*$10`,
@@ -50,7 +50,7 @@ two 32-bit values in its even and odd bytes (big-endian byte positions):
 | even (`b0,b2,b4,b6`) | compressed size, e.g. `$07FE` |
 | odd (`b1,b3,b5,b7`) | pointer to a 10-byte header, e.g. `$07FEDA` |
 
-`Character_Init` rebuilds the header pointer from `-7,-5,-3,-1(a3)` (the odd bytes).
+`RiderIntro_Init` rebuilds the header pointer from `-7,-5,-3,-1(a3)` (the odd bytes).
 Header fields (relative to the pointer `p`):
 
 | Offset | Field | Use |
@@ -85,7 +85,7 @@ ROM text, not a transcription bug.
 The VDP setup is the same as the main menu: planes A/B `$4000`, window `$7000`
 (64x28), sprite/HScroll `$6000`, 128x32, display on, H-int off, V-int on.
 
-## `Character_Init` (`0x59C4`)
+## `RiderIntro_Init` (`0x59C4`)
 
 1. Clear pad state/changed buttons; message blink timer `$FFFF`, button period `$3F`,
    next message timer 300, message id `8*18`.
@@ -105,7 +105,7 @@ The VDP setup is the same as the main menu: planes A/B `$4000`, window `$7000`
 6. Load the font at VRAM `$0`; `Menu_ShowMessage`; DMA the 64x28 frame buffer to
    `$7000`.
 
-## `Character_GameTick` (`0x5E66`)
+## `RiderIntro_GameTick` (`0x5E66`)
 
 Per frame: DMA the frame buffer to `$7000`; read pad A, then pad B; on a **release
 edge** (`~input & previous raw buttons`; `GetInput` returns 1 = pressed) set
@@ -121,7 +121,7 @@ the blinking Start icon, index 20 = terminator. The screen therefore auto-exits 
 ## Quirks
 
 - **Background reuse:** `Menu_Init` writes the main-menu background tiles to VRAM
-  `$8000`; `Character_Init` writes the same image to `$4000` (which the following
+  `$8000`; `RiderIntro_Init` writes the same image to `$4000` (which the following
   `WriteNametable` overwrites) while the tile map still references base tile `$400`
   (`$8000`). The visible background relies on the tiles left by the main menu; entering
   this screen directly (debug) would show a wrong background. `[static]`
@@ -136,7 +136,7 @@ the blinking Start icon, index 20 = terminator. The screen therefore auto-exits 
 ## Dynamic status
 
 The demo path skips this screen (`top_level.asm` `0x7E782`), and the GDB forced-path
-experiment (patched `0x7E788` branch) did not reach `Character_Init` within the test
+experiment (patched `0x7E788` branch) did not reach `RiderIntro_Init` within the test
 budget. To confirm visually: press Start on the main menu in the native console (non-demo
 path), then inspect VRAM `$7000`/the portrait palette. Rendering/positions above are
 `[static]`; table contents are parsed deterministically from `baserom.md`.
@@ -145,9 +145,9 @@ path), then inspect VRAM `$7000`/the portrait palette. Rendering/positions above
 
 | Current | Proposed | Evidence | Confidence |
 |---------|----------|----------|------------|
-| `Character_Init` | `RiderIntro_Init` | pre-race opponent intro | high |
-| `Character_GameTick` | `RiderIntro_GameTick` | same | high |
-| `unk_19A12` | `RiderIntro_RecordTable` | [level][track][variant] records | high |
+| `RiderIntro_Init` | `RiderIntro_Init` | pre-race opponent intro | high |
+| `RiderIntro_GameTick` | `RiderIntro_GameTick` | same | high |
+| `RiderIntro_RecordTable` | `RiderIntro_RecordTable` | [level][track][variant] records | high |
 | `unk_AF902` | `RiderIntro_NatashaImage` | name parsed from header | medium |
 | `unk_B1506` | `RiderIntro_NatashaBike` | overlay when extra != 0 | low |
 | `ram_FF0520` | `Menu_ram_PlayerExtra` | password "extra" field | medium |

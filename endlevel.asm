@@ -3,7 +3,7 @@
 ; ROM range: $8342-$8FB3
 ; Status:    analyzed (static; non-demo only)
 ; API:       EndLevel_Init, EndLevel_GameTick, EndLevel_UpdateAnimation,
-;            EndLevel_InitCharacterScreen, EndLevel_GameTickCharacterScreen
+;            EndLevel_InitVictoryCharacter, EndLevel_GameTickVictoryCharacter
 ; *************************************************
 
 ; *************************************************
@@ -175,7 +175,7 @@ EndLevel_Init:
                 move.w  #$3000,d1
                 move.w  #$700,d2
                 bsr.w   DmaWriteVRAM
-; animation data decompressed; the per-frame script is unk_8DC2
+; animation data decompressed; the per-frame script is EndLevel_AnimationScript
                 lea     (unk_8BF12).l,a3
                 lea     (Intro_ram_ImageBuffer).l,a1
                 jsr     (UncompressW).l
@@ -190,15 +190,15 @@ EndLevel_Init:
 ; End of function EndLevel_Init
 
 ; *************************************************
-; Function EndLevel_InitCharacterScreen
-; Level-up screen: panel, level-up rider from unk_19F12 (level-1, two variants),
-; name/quote/palette, then sub_8946 advances the level and rebuilds the opponents.
+; Function EndLevel_InitVictoryCharacter
+; Level-up screen: panel, level-up rider from EndLevel_LevelRiderTable (level-1, two variants),
+; name/quote/palette, then EndLevel_AdvanceLevel advances the level and rebuilds the opponents.
 ; In:  Menu_ram_PlayerLevel (before increment), Menu_ram_Player
 ; Out: Menu_ram_FrameBuffer -> VRAM $3000; VRAM $9000/$C000; CRAM; password
 ; Clobbers: d0-d7, a0-a3
 ; *************************************************
 
-EndLevel_InitCharacterScreen:
+EndLevel_InitVictoryCharacter:
                 move.l  #$50000000,(VdpCtrl).l
                 move.l  #0,(VdpData).l
                 move.l  #0,(VdpData).l
@@ -246,7 +246,7 @@ EndLevel_InitCharacterScreen:
                 lea     (Menu_ram_FrameBuffer).l,a1
                 jsr     (WriteNametableToBuffer).w
 ; level-up rider table: 5 levels x 2 variants (rival + Natasha)
-                lea     (unk_19F12).l,a0
+                lea     (EndLevel_LevelRiderTable).l,a0
                 jsr     (Rand_GetWord).l
                 andi.w  #8,d0
                 adda.w  d0,a0
@@ -378,12 +378,12 @@ EndLevel_InitCharacterScreen:
                 lea     (Menu_ram_FrameBuffer).l,a1
                 bsr.w   WriteNametableToBuffer
 ; advance the level only after the portrait/quote are selected
-                jsr     (sub_8946).l
+                jsr     (EndLevel_AdvanceLevel).l
                 rts
-; End of function EndLevel_InitCharacterScreen
+; End of function EndLevel_InitVictoryCharacter
 
 ; *************************************************
-; Function sub_8946
+; Function EndLevel_AdvanceLevel
 ; Advances the selected player's level (clamp 5): clears the outcome and the five
 ; places, rebuilds the 15-word opponent list, regenerates the password.
 ; In:  Menu_ram_Player, PlayerA/BLevel
@@ -391,7 +391,7 @@ EndLevel_InitCharacterScreen:
 ; Clobbers: d0/d1/a0
 ; *************************************************
 
-sub_8946:
+EndLevel_AdvanceLevel:
                 tst.w   (Menu_ram_Player).l
                 bne.w   .loc_89B4
                 clr.w   (ram_FF0526).l
@@ -443,10 +443,10 @@ sub_8946:
 .loc_8A14:
                 jsr     (MenuPassword_CreatePassword).w
                 rts
-; End of function sub_8946
+; End of function EndLevel_AdvanceLevel
 
 ; *************************************************
-; Function EndLevel_GameTickCharacterScreen
+; Function EndLevel_GameTickVictoryCharacter
 ; Level-up rider screen: DMA to $3000, Start held exits, 2 s message cycle (group
 ; 0x180).
 ; In:  pad input; message timers
@@ -454,7 +454,7 @@ sub_8946:
 ; Clobbers: d0/d1/a0
 ; *************************************************
 
-EndLevel_GameTickCharacterScreen:
+EndLevel_GameTickVictoryCharacter:
                 move.l  #Menu_ram_FrameBuffer,d0
                 move.w  #$3000,d1
                 move.w  #$700,d2
@@ -497,7 +497,7 @@ EndLevel_GameTickCharacterScreen:
                 jsr     (AudioFunc4).l
                 move.l  #0,(ram_UpdateFunction).l
                 bra.s   .loc_8AD4
-; End of function EndLevel_GameTickCharacterScreen
+; End of function EndLevel_GameTickVictoryCharacter
 
 ; *************************************************
 ; Function EndLevel_GameTick
@@ -546,14 +546,14 @@ EndLevel_GameTick:
                 rts
 .endStage:
 ; animation done: show the level-up rider screen and keep updating it
-                jsr     (EndLevel_InitCharacterScreen).l
-                move.l  #EndLevel_GameTickCharacterScreen,(ram_UpdateFunction).l
+                jsr     (EndLevel_InitVictoryCharacter).l
+                move.l  #EndLevel_GameTickVictoryCharacter,(ram_UpdateFunction).l
                 bra.s   .end
 ; End of function EndLevel_GameTick
 
 ; *************************************************
 ; Function EndLevel_UpdateAnimation
-; Plays the per-level victory animation: frame limit unk_8C8C, script unk_8DC2 via
+; Plays the per-level victory animation: frame limit EndLevel_FrameCounts, script EndLevel_AnimationScript via
 ; UpdateAnimation2 at x/y $80; at the end waits for a Start release or 2 s.
 ; In:  EndLevel_ram_AnimFrame, Menu_ram_PlayerLevel, pad state
 ; Out: endlevel sprite table; EndLevel_ram_AnimFrame; NextMessageTimer
@@ -565,7 +565,7 @@ EndLevel_UpdateAnimation:
                 bmi.w   .return
 
 ; per-level frame counts (35,54,81,91,123)
-                lea     (unk_8C8C).l,a0
+                lea     (EndLevel_FrameCounts).l,a0
                 move.w  (Menu_ram_PlayerLevel).l,d0
                 subq.w  #1,d0
                 adda.w  d0,a0
@@ -582,7 +582,7 @@ EndLevel_UpdateAnimation:
                 move.w  (EndLevel_ram_AnimFrame).l,d0 ; frame index
                 movea.l (Race_ram_CurrentSpriteAttributeTable).l,a0 ; destination
                 movea.l (Race_ram_CurrentSpriteTileArray).l,a1 ; tile array, not used
-                lea     (unk_8DC2).l,a4 ; animation script
+                lea     (EndLevel_AnimationScript).l,a4 ; animation script
                 move.w  #$80,d1 ; x
                 move.w  #$80,d2 ; y
                 jsr     (UpdateAnimation2).l
@@ -623,7 +623,7 @@ EndLevel_UpdateAnimation:
 ; End of function EndLevel_UpdateAnimation
 
 ; per-level victory animation frame counts
-unk_8C8C:
+EndLevel_FrameCounts:
     dc.w 35,54,81,91,123
 
 ; unreferenced level-up text (duplicates the race_results.asm tail); kept as data
@@ -656,7 +656,7 @@ unk_8D8A:
     dc.b " will be level 0"
 
 ; victory animation script consumed by UpdateAnimation2 (see race.asm)
-unk_8DC2:       dc.b   0
+EndLevel_AnimationScript:       dc.b   0
                 dc.b   8
                 dc.b   0
                 dc.b   0

@@ -11,9 +11,9 @@
 | Function | Address | Contract | Algorithm | Data | Hardware | Why | Dynamic | Status |
 |----------|---------|----------|-----------|------|----------|-----|---------|--------|
 | `RaceResults_Init` | `0x5F28` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
-| `sub_62CE` (normal results) | `0x62CE` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
-| `sub_647E` (cops) | `0x647E` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
-| `sub_67AC` (repair) | `0x67AC` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
+| `RaceResults_DrawStandings` (normal results) | `0x62CE` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
+| `RaceResults_DrawBusted` (cops) | `0x647E` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
+| `RaceResults_DrawRepair` (repair) | `0x67AC` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
 | `RaceResults_GameTick` | `0x6A90` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
 | `RaceResults_HandleInput` | `0x6BD4` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
 | `DrawString` | `0x6C5E` | [x] | [x] | - | - | - | - | unused helper |
@@ -21,7 +21,7 @@
 ## Role & flow
 
 After a race the top-level flow (`top_level.asm` `0x7E8F4`) runs `sub_EFA4` and
-`sub_C3F8` (race outcome/fines), then loops through
+`Race_ComputeResults` (race outcome/fines), then loops through
 `RaceResults_Init`/`RaceResults_GameTick`. The screen shows one of:
 
 - **Normal results** (`ram_FF04C8 != $FFFF`): "race results" title, the track image,
@@ -34,7 +34,7 @@ After a race the top-level flow (`top_level.asm` `0x7E8F4`) runs `sub_EFA4` and
 Start exits (top-level: outcome 4 -> EndLevel screen, otherwise back to the menu);
 A opens the high-score table; C opens the bike shop; B shows the cash/password box.
 
-## Outcome flags (computed by `sub_C3F8` in `race.asm`)
+## Outcome flags (computed by `Race_ComputeResults` in `race.asm`)
 
 | Address | Meaning |
 |---|---|
@@ -50,7 +50,7 @@ Message group by outcome: 0 -> index 21 (`unk_5276`: complete every course); >4 
 index 28 (`unk_52CE`: complete every course in 4th place or better); 4 -> index 35
 (`ram_FF089A` = `unk_533A` congratulations with the level digit).
 
-## Normal results (`sub_62CE`)
+## Normal results (`RaceResults_DrawStandings`)
 
 - Title `unk_AF26C` -> VRAM `$9000`, 27x2 at (7,1), base tile `$480`.
 - Track image `unk_7E670[track]` -> `$B000`, 36x11 at (2,5), base `$580`;
@@ -62,24 +62,24 @@ index 28 (`unk_52CE`: complete every course in 4th place or better); 4 -> index 
 - The player's row is the only visually distinct row; the top 4 finishers come from the
   race's standings string.
 
-## Caught by cops (`sub_647E`)
+## Caught by cops (`RaceResults_DrawBusted`)
 
 - Title `unk_7ED66` -> `$9000`, 0x15x2 at (0xA,1), base `$480`.
 - Panel `unk_7EA66` -> `$B000`, 12x14 at (2,5), base `$580`.
-- Select the cop portrait from `unk_19E22` (money >= 0, 5x4 variants) or `unk_19EC2`
+- Select the cop portrait from `RaceResults_CopTablePos` (money >= 0, 5x4 variants) or `RaceResults_CopTableNeg`
   (money < 0, 5x2), index `ram_FF1B1A-1`, random variant (`&$18` / `&8`).
 - Same asset format as `rider_intro.asm`: 8-byte interleaved size/header prefix; header
   gives name string, image/nametable/palette offsets. Draw 10x12 at (3,6), name at
   (3,19), quote at (16,y/2) with stride 128.
 - Message: `unk_56AC` "Caught by the cops / Your fine -" with `ram_FF091A` formatted by
-  `sub_C79A`, or `unk_56D8` "Can't afford bail / GAME OVER"; drawn at (16,18), stride 64.
+  `Race_FormatNumber`, or `unk_56D8` "Can't afford bail / GAME OVER"; drawn at (16,18), stride 64.
 - Cop names in the table: O'Leary, O'Rourke, Flynn, O'Shea, O'Connor.
 
-## Bike repair (`sub_67AC`)
+## Bike repair (`RaceResults_DrawRepair`)
 
 - Panel `unk_7EA66` -> `$B000`, 12x14 at (2,5).
-- Select the portrait from `off_19D32` (money >= 0, 5 levels x4 variants) or
-  `unk_19DD2` (money < 0, 5x2), index `Menu_ram_PlayerLevel-1`, random variant.
+- Select the portrait from `RaceResults_LevelTablePos` (money >= 0, 5 levels x4 variants) or
+  `RaceResults_LevelTableNeg` (money < 0, 5x2), index `Menu_ram_PlayerLevel-1`, random variant.
 - Message: `unk_5704` "Your bike needs repairs -" with `ram_FF091A` formatted, or
   `unk_5730` "No money for repairs / GAME OVER".
 - Level-table names: Biff, Slater, Ikira, Sergio, Helldog.
@@ -87,7 +87,7 @@ index 28 (`unk_52CE`: complete every course in 4th place or better); 4 -> index 
 ## Status box, congratulations, audio
 
 `RaceResults_Init` repurposes `MenuPassword_StrPasswordStatus` as a 12x5 box at
-(14,22): player name (10 chars), "cash" + money (`sub_C6C4`; negative money adjusts
+(14,22): player name (10 chars), "cash" + money (`Race_FormatMoney`; negative money adjusts
 `ram_FF0682`), and the 24-char password. It copies `unk_533A` ("Congratulations! ... on
 level 1") to `ram_FF089A` and patches the level digit. If not busted: `AudioFunc4`,
 song 9, `AudioFunc3`; the bust path plays `AudioFunc3(10)`.
@@ -130,7 +130,7 @@ Result portrait tables (8-byte records `quote_ptr, image_ptr`):
 
 ## Quirks / unused data
 
-- `ram_FF0914` is set to the active draw routine (`sub_62CE`/`sub_647E`/`sub_67AC`) but
+- `ram_FF0914` is set to the active draw routine (`RaceResults_DrawStandings`/`RaceResults_DrawBusted`/`RaceResults_DrawRepair`) but
   is never read in the disassembled source. `[static]` (purpose TODO)
 - `DrawString` (`0x6C5E`) is not called by this module (the shop has its own
   `Shop_DrawString`); the source itself notes "not sure this function belongs to this
@@ -153,10 +153,10 @@ standings/police/repair screens.
 
 | Current | Proposed | Evidence | Confidence |
 |---------|----------|----------|------------|
-| `sub_62CE` | `RaceResults_DrawStandings` | title + track + standings | high |
-| `sub_647E` | `RaceResults_DrawBusted` | cop table + "Caught by the cops" | high |
-| `sub_67AC` | `RaceResults_DrawRepair` | level table + "bike needs repairs" | high |
+| `RaceResults_DrawStandings` | `RaceResults_DrawStandings` | title + track + standings | high |
+| `RaceResults_DrawBusted` | `RaceResults_DrawBusted` | cop table + "Caught by the cops" | high |
+| `RaceResults_DrawRepair` | `RaceResults_DrawRepair` | level table + "bike needs repairs" | high |
 | `unk_19D32` | `RaceResults_LevelTable` | level-indexed portraits | high |
-| `unk_19E22` | `RaceResults_CopTable` | cop-indexed portraits | high |
+| `RaceResults_CopTablePos` | `RaceResults_CopTable` | cop-indexed portraits | high |
 | `ram_FF04C8` | `Race_EventBuffer` | 16-long sort/bust buffer | medium |
 | `ram_FF1B1A` | `Race_CopIndex` | busted cop index | medium |

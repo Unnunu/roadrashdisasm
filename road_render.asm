@@ -2,18 +2,18 @@
 ; road_render.asm - race road/object renderer
 ; ROM range: $8FB4-$98C1
 ; Status:    partially analyzed (object list/records confirmed; shape math TODO)
-; API:       sub_942A (called from race.asm), sub_9484, sub_8FB4, helpers
+; API:       Road_DrawObjects (called from race.asm), Road_DrawObject, Road_DrawStrip, helpers
 ; *************************************************
 
 ; *************************************************
-; Function sub_8FB4
+; Function Road_DrawStrip
 ; Builds the road strip/tile columns for the object and the rider/vehicle sprite chain.
 ; In:  d0, d1 - road-edge geometry; a0 - shape data
-; Out: road tiles in Race_ram_CurrentSpriteTileArray; SAT chain via sub_5760
+; Out: road tiles in Race_ram_CurrentSpriteTileArray; SAT chain via RiderSprites_Build
 ; Clobbers: d0-d7, a0-a4
 ; *************************************************
 
-sub_8FB4:
+Road_DrawStrip:
                 cmp.l   #0,d0
                 bne.w   .loc_8FCC
                 cmp.l   #0,d1
@@ -28,7 +28,7 @@ sub_8FB4:
                 clr.w   (ram_FF1330).l
                 lea     (ram_FF0D2E).l,a2
                 move.l  d0,d3
-                bsr.w   sub_9142
+                bsr.w   Road_InterpolateLeftEdge
                 tst.w   d6
                 bpl.w   .loc_900A
                 move.w  #1,(ram_FFDE62).l
@@ -37,7 +37,7 @@ sub_8FB4:
                 move.w  d6,(ram_FF132E).l
                 lea     (ram_FF102E).l,a2
                 move.l  d1,d3
-                bsr.w   sub_91F0
+                bsr.w   Road_InterpolateRightEdge
                 subq.w  #1,d6
                 bgt.w   .loc_902E
                 move.w  #1,(ram_FFDE62).l
@@ -94,10 +94,10 @@ sub_8FB4:
                 move.w  (ram_FF132E).l,d0
                 addq.w  #1,d0
                 asl.w   #3,d0
-                bsr.w   sub_5760
+                bsr.w   RiderSprites_Build
                 cmpi.w  #$FFFF,(ram_FFDE62).l
                 beq.w   .locret_9140
-                bsr.w   sub_9306
+                bsr.w   Road_WriteTileColumns
                 move.w  (ram_FF1330).l,d2
                 addq.w  #1,d2
                 andi.w  #7,d2
@@ -106,20 +106,20 @@ sub_8FB4:
                 move.w  d3,(ram_FF0D28).l
                 cmpi.w  #7,(ram_FF0D28).l
                 beq.w   .locret_9140
-                bsr.w   sub_93D2
+                bsr.w   Road_ClearEdgeTiles
 .locret_9140:
                 rts
-; End of function sub_8FB4
+; End of function Road_DrawStrip
 
 ; *************************************************
-; Function sub_9142
+; Function Road_InterpolateLeftEdge
 ; Interpolates the left road edge into the ram_FF0D2E strip array.
 ; In:  a0 - shape data; d3 - scale; ram_FF135E edge offset
 ; Out: ram_FF0D2E strips, ram_FF1332/1336; d6 - strip count
 ; Clobbers: d0/d2/d4-d7, a2
 ; *************************************************
 
-sub_9142:
+Road_InterpolateLeftEdge:
                 clr.w   d2
                 clr.l   d4
                 clr.w   d5
@@ -189,19 +189,19 @@ sub_9142:
                 lsr.w   #2,d6
                 subq.w  #1,d6
                 rts
-; End of function sub_9142
+; End of function Road_InterpolateLeftEdge
 
 
 
 ; *************************************************
-; Function sub_91F0
+; Function Road_InterpolateRightEdge
 ; Interpolates the right road edge into the ram_FF102E strip array.
 ; In:  a0 - shape data; d3 - scale; ram_FF1332/1340
 ; Out: ram_FF102E strips, ram_FF0D28; d6 - strip count
 ; Clobbers: d0-d7, a2
 ; *************************************************
 
-sub_91F0:
+Road_InterpolateRightEdge:
                 move.l  #$10000,d0
                 clr.w   d2
                 clr.l   d4
@@ -249,17 +249,17 @@ sub_91F0:
                 sub.w   d2,d3
                 move.w  d3,(ram_FF0D28).l
                 rts
-; End of function sub_91F0
+; End of function Road_InterpolateRightEdge
 
 ; *************************************************
-; Function sub_9272
+; Function Road_InterpolateRightEdgeAlt
 ; Alternate right-edge interpolation with fixed $10000 scaling; no direct caller.
 ; In:  a0 - shape data; d3 - scale
 ; Out: ram_FF102E strips, ram_FF0D28
 ; Clobbers: d1/d2/d4-d6, a2
 ; *************************************************
 
-sub_9272:
+Road_InterpolateRightEdgeAlt:
                 clr.w   d2
                 clr.l   d4
                 move.w  (ram_FF1340).l,d1
@@ -305,19 +305,19 @@ sub_9272:
                 sub.w   d2,d3
                 move.w  d3,(ram_FF0D28).l
                 rts
-; End of function sub_9272
+; End of function Road_InterpolateRightEdgeAlt
 
 
 
 ; *************************************************
-; Function sub_9306
+; Function Road_WriteTileColumns
 ; Writes the road tile columns (0x1F wide) into the sprite tile array.
 ; In:  ram_FF0D2A/0D2E/102E strip data, ram_FF132E/1330, ram_FFDE68/6A/66
 ; Out: Race_ram_CurrentSpriteTileArray + ram_FF0D26
 ; Clobbers: d1-d5, a0-a4
 ; *************************************************
 
-sub_9306:
+Road_WriteTileColumns:
                 movea.l (ram_FF0D2A).l,a0
                 movea.l (Race_ram_CurrentSpriteTileArray).l,a4
                 adda.w  (ram_FF0D26).l,a4
@@ -394,19 +394,19 @@ sub_9306:
                 adda.w  (a3)+,a0
                 dbf     d1,.loc_9338
                 rts
-; End of function sub_9306
+; End of function Road_WriteTileColumns
 
 
 
 ; *************************************************
-; Function sub_93D2
+; Function Road_ClearEdgeTiles
 ; Clears the remaining road edge tiles (writes 0) for ram_FF0D28 strips.
 ; In:  ram_FF0D28, ram_FFDE66
 ; Out: sprite tile array (zeroed edge rows)
 ; Clobbers: d0-d3, a1/a4
 ; *************************************************
 
-sub_93D2:
+Road_ClearEdgeTiles:
                 clr.w   d0
                 move.w  (ram_FF0D28).l,d1
                 move.w  (ram_FFDE66).l,d3
@@ -443,21 +443,21 @@ sub_93D2:
                 addq.w  #4,a4
                 dbf     d1,.loc_93E0
                 rts
-; End of function sub_93D2
+; End of function Road_ClearEdgeTiles
 
 ; *************************************************
-; Function sub_942A
+; Function Road_DrawObjects
 ; Public entry (race.asm 0x1809): walks the visible-object list and renders each
-; object record via sub_9484. Saves/restores the animation tile/sprite indices.
-; In:  ram_FF1D50 visible list, ram_FFD37C records
+; object record via Road_DrawObject. Saves/restores the animation tile/sprite indices.
+; In:  Road_VisibleObjectList visible list, Road_ObjectArray records
 ; Out: SAT/tile arrays; Animation_ram_SpriteIndex/TileIndex
 ; Clobbers: d0/a0/a1
 ; *************************************************
 
-sub_942A:
+Road_DrawObjects:
                 movea.l (Race_ram_CurrentSpriteAttributeTable).l,a0
-                lea     (ram_FFD37C).l,a0
-                lea     (ram_FF1D50).l,a1
+                lea     (Road_ObjectArray).l,a0
+                lea     (Road_VisibleObjectList).l,a1
                 move.w  #0,(ram_FFDE62).l
 .loop:
                 move.w  (a1)+,d0
@@ -465,23 +465,23 @@ sub_942A:
                 beq.w   .return
 
                 mulu.w  #$14,d0
-                lea     (ram_FFD37C).l,a0
+                lea     (Road_ObjectArray).l,a0
                 adda.w  d0,a0
                 movem.l a0-a1,-(sp)
                 move.w  (Animation_ram_TileIndex).l,(ram_FF1362).l
                 move.w  (Animation_ram_SpriteIndex).l,(ram_FF1364).l
-                bsr.w   sub_9484
+                bsr.w   Road_DrawObject
                 movem.l (sp)+,a0-a1
                 adda.l  #$14,a0
                 bra.s   .loop
 .return:
                 rts
-; End of function sub_942A
+; End of function Road_DrawObjects
 
 
 
 ; *************************************************
-; Function sub_9484
+; Function Road_DrawObject
 ; Renders one 0x14-byte object record: projection/shape(s), road strip, sprite chain
 ; copy into the SAT with clipping. Record fields: +0 x, +2 y, +4 scale, +6 horizon,
 ; +8 shape, +$A flags, +$C x offset, +$12 second shape.
@@ -490,7 +490,7 @@ sub_942A:
 ; Clobbers: d0-d7, a0-a2
 ; *************************************************
 
-sub_9484:
+Road_DrawObject:
                 move.w  #0,(ram_FFDE62).l
                 move.w  #0,(ram_FF133A).l
                 clr.l   d0
@@ -515,7 +515,7 @@ sub_9484:
                 move.w  $12(a0),d3
                 move.l  a0,-(sp)
 ; shape pointer table (shared with race.asm)
-                lea     (unk_3BF1A).l,a1
+                lea     (Road_ShapeTable).l,a1
                 asl.w   #2,d2
                 movea.l (a1,d2.w),a2
                 move.l  a2,(ram_FF1348).l
@@ -525,11 +525,11 @@ sub_9484:
 .loc_9520:
                 move.w  #0,(ram_FF135E).l
                 move.w  #1,(ram_FF1354).l
-                bsr.w   sub_978C
+                bsr.w   Road_ScaleShape
                 addq.l  #2,(ram_FF1348).l
                 move.w  d6,(ram_FF1358).l
                 move.w  d3,-(sp)
-                bsr.w   sub_97BC
+                bsr.w   Road_ProjectShapeSpecial
                 move.w  d5,(ram_FF1356).l
                 move.w  d1,(ram_FF135E).l
                 move.w  (sp)+,d3
@@ -553,12 +553,12 @@ sub_9484:
                 asl.w   #2,d3
                 movea.l (a1,d3.w),a2
                 move.l  a2,(ram_FF134C).l
-                bsr.w   sub_978C
+                bsr.w   Road_ScaleShape
                 addq.l  #2,(ram_FF134C).l
                 movea.l (ram_FF134C).l,a2
                 subq.w  #1,d6
                 move.w  d6,(ram_FF135C).l
-                bsr.w   sub_97BC
+                bsr.w   Road_ProjectShapeSpecial
                 move.w  d5,(ram_FF135A).l
                 move.w  d1,(ram_FF1360).l
                 tst.w   (ram_FFDE62).l
@@ -587,7 +587,7 @@ sub_9484:
                 sub.w   d5,(ram_FF1358).l
                 bra.w   .loc_9652
 .loc_962C:
-                bsr.w   sub_9836
+                bsr.w   Road_ProjectShape
                 tst.w   (ram_FFDE62).l
                 beq.w   .loc_9640
                 addq.w  #4,sp
@@ -601,7 +601,7 @@ sub_9484:
                 move.w  (Animation_ram_SpriteIndex).l,-(sp)
 .loc_9660:
                 move.w  #0,(ram_FF1366).l
-                bsr.w   sub_8FB4
+                bsr.w   Road_DrawStrip
                 tst.w   (ram_FF1366).l
                 beq.w   .loc_9690
                 move.w  (ram_FF1362).l,(Animation_ram_TileIndex).l
@@ -677,19 +677,19 @@ sub_9484:
                 move.b  #0,-5(a2)
 .locret_978A:
                 rts
-; End of function sub_9484
+; End of function Road_DrawObject
 
 
 
 ; *************************************************
-; Function sub_978C
+; Function Road_ScaleShape
 ; Reads three shape bytes at (a2) and scales them by scale>>2.
 ; In:  a0 - object; a2 - shape; d0 - scale
 ; Out: d5/d6 - scaled shape values
 ; Clobbers: d2/d5/d6/d7
 ; *************************************************
 
-sub_978C:
+Road_ScaleShape:
                 move.b  (a2),d5
                 ext.w   d5
                 move.b  1(a2),d6
@@ -710,12 +710,12 @@ sub_978C:
                 asl.l   #2,d6
                 swap    d6
                 rts
-; End of function sub_978C
+; End of function Road_ScaleShape
 
 
 
 ; *************************************************
-; Function sub_97BC
+; Function Road_ProjectShapeSpecial
 ; Projects the shape edge: adds the object x, applies the mirror bit and the
 ; $C0/$200 constants; sets ram_FFDE62 when out of range.
 ; In:  a0 - object; a2 - shape; d0 - scale; d5 - edge
@@ -723,7 +723,7 @@ sub_978C:
 ; Clobbers: d1-d3/d5
 ; *************************************************
 
-sub_97BC:
+Road_ProjectShapeSpecial:
                 move.b  (a2),d1
                 ext.w   d1
                 move.l  d0,d3
@@ -771,19 +771,19 @@ sub_97BC:
 .loc_982C:
                 move.w  #1,(ram_FFDE62).l
                 rts
-; End of function sub_97BC
+; End of function Road_ProjectShapeSpecial
 
 
 
 ; *************************************************
-; Function sub_9836
-; Like sub_97BC for the non-special path; stores the clip in ram_FF135E.
+; Function Road_ProjectShape
+; Like Road_ProjectShapeSpecial for the non-special path; stores the clip in ram_FF135E.
 ; In:  a0 - object; a2 - shape; d0 - scale
 ; Out: ram_FF135E; ram_FFDE62 on overflow
 ; Clobbers: d1-d3
 ; *************************************************
 
-sub_9836:
+Road_ProjectShape:
                 move.b  (a2),d1
                 ext.w   d1
                 move.l  d0,d2
@@ -836,4 +836,4 @@ sub_9836:
 .loc_98B8:
                 move.w  #1,(ram_FFDE62).l
                 rts
-; End of function sub_9836
+; End of function Road_ProjectShape

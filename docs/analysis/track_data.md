@@ -12,33 +12,33 @@
 
 | Function | Address | Contract | Algorithm | Data | Hardware | Why | Dynamic | Status |
 |----------|---------|----------|-----------|------|----------|-----|---------|--------|
-| `sub_9FE4` | `0x9FE4` | [x] | [x] | [x] | - | [x] | [x] | analyzed |
-| `sub_A04A` | `0xA04A` | [x] | [x] | [x] | - | [x] | [x] | analyzed |
-| `sub_A0D4` (channel 1) | `0xA0D4` | [x] | [x] | [x] | - | [x] | [ ] | analyzed |
-| `sub_A2DA` (channel 2) | `0xA2DA` | [x] | [x] | [x] | - | [x] | [ ] | analyzed |
+| `TrackData_StartDecode` | `0x9FE4` | [x] | [x] | [x] | - | [x] | [x] | analyzed |
+| `TrackData_DecodeChunk` | `0xA04A` | [x] | [x] | [x] | - | [x] | [x] | analyzed |
+| `TrackData_DecodeChannel1` (channel 1) | `0xA0D4` | [x] | [x] | [x] | - | [x] | [ ] | analyzed |
+| `TrackData_DecodeChannel2` (channel 2) | `0xA2DA` | [x] | [x] | [x] | - | [x] | [ ] | analyzed |
 
 ## Role & callers
 
-`race.asm` `sub_169B0` (level start) and `sub_16A32` (as the race progresses) call this
+`race.asm` `TrackData_InitLevel` (level start) and `TrackData_DecodeNextChunk` (as the race progresses) call this
 decoder to expand the level's track data into `ram_FFDC58` and scale it by the track/
 level factor.
 
-- `sub_169B0`:
+- `TrackData_InitLevel`:
   - `Menu_ram_CurrentTrackId*2` -> `off_16AB0` -> `ram_FF1A6C` (per-track factor table
     pointer).
   - `a2 = RaceTrack_Data2`, `a3 = RaceTrack_Data3`, `a1 = ram_FFDC58`, `d1 = $7F`
-    (128 values) -> `sub_9FE4`.
+    (128 values) -> `TrackData_StartDecode`.
   - Then scale the first channel: factor `d2 = ram_FF1A6C[PlayerLevel-1]`; each signed
     byte `ram_FFDC58[2*i] * d2 / $10000` (mulu/swap with sign), 128 entries.
-- `sub_16A32` (called from `top_level.asm` when the race progress crosses a chunk):
+- `TrackData_DecodeNextChunk` (called from `top_level.asm` when the race progress crosses a chunk):
   chunk `(d0+1)&3`, destination `ram_FFDC58 + chunk*$80`, `d1=$3F` (64 values) ->
-  `sub_A04A`; scale the 64 first-channel entries the same way.
+  `TrackData_DecodeChunk`; scale the 64 first-channel entries the same way.
 
 ## Stream format
 
 Each of the two input streams (`a2`, `a3`) starts with a 16-bit **control length**;
 the control bytes follow, then a bit-packed data stream (the data pointer is
-`stream + 2 + control_length`). `sub_9FE4` sets the state, then `sub_A04A` runs both
+`stream + 2 + control_length`). `TrackData_StartDecode` sets the state, then `TrackData_DecodeChunk` runs both
 channels; the output is interleaved: channel 1 at `a1, a1+2, ...`, channel 2 at
 `a1+1, a1+3, ...` (2 bytes per entry).
 
@@ -52,13 +52,13 @@ Control byte:
 
 Per sample the decoder extracts the next `width` bits (MSB-first) from the data
 stream, adds/subtracts the delta to the running accumulator, and writes the byte.
-The bit reader uses `unk_A054` (current-byte masks), `unk_A094` (shift counts; `$FF`
-entries cross into the next byte), `unk_A08C`/`unk_A0CC` (cross-byte masks). The tables
+The bit reader uses `TrackData_BitMasks` (current-byte masks), `TrackData_ShiftCounts` (shift counts; `$FF`
+entries cross into the next byte), `TrackData_CrossByteMasks`/`TrackData_BoundaryShifts` (cross-byte masks). The tables
 are the 8x8 mask/shift sets (values such as `$80,$C0,$E0,...` and `7,6,5,...,0`).
 
 ## State
 
-Channel 1 (`sub_A0D4`):
+Channel 1 (`TrackData_DecodeChannel1`):
 
 - `ram_FF13B8` accumulator, `ram_FF13B9` current data byte, `ram_FF13BA` decoded delta.
 - `ram_FF13BC` control index, `ram_FF13C2` sign, `ram_FF13C4` run remaining,
@@ -68,16 +68,16 @@ Channel 1 (`sub_A0D4`):
   `ram_FF13DC` control length, `ram_FF13DE` control pointer, `ram_FF13E2` caught-up
   flag, `ram_FF13B2` remaining budget.
 
-Channel 2 (`sub_A2DA`) is the same with `ram_FF13E4`..`ram_FF140E` and the output
+Channel 2 (`TrackData_DecodeChannel2`) is the same with `ram_FF13E4`..`ram_FF140E` and the output
 pointer `ram_FF1404`.
 
-`sub_9FE4` initializes both channels, the output pointers, and the budget; `sub_A04A`
+`TrackData_StartDecode` initializes both channels, the output pointers, and the budget; `TrackData_DecodeChunk`
 can be re-called for the next chunk (the state is fully resumable). The budget `d1` is
 the number of samples per channel per call.
 
 ## Dynamic sample (demo race)
 
-`sub_9FE4` at the level start: `a1=$00FFDC58`, `a2=$00025EF6`, `a3=$000269F8`,
+`TrackData_StartDecode` at the level start: `a1=$00FFDC58`, `a2=$00025EF6`, `a3=$000269F8`,
 `d1=$007F`; stream lengths `$0771` (a2) and `$0A62` (a3); the control bytes follow the
 lengths; the data streams are bit-packed in the ROM gap.
 
@@ -93,7 +93,7 @@ derivative/flag) is **TODO**; the first channel is the signed value scaled per l
 
 - The tables contain `$FF` shift entries for the cross-byte extraction; the negative
   branch in the decoder handles those. `[static]`
-- The second channel is decoded but not scaled by `sub_169B0`/`sub_16A32`. `[static]`
+- The second channel is decoded but not scaled by `TrackData_InitLevel`/`TrackData_DecodeNextChunk`. `[static]`
 - The decoder writes with a 2-byte stride; the output is a 16-bit interleaved array.
   `[static]`
 - The track data streams are in the not-yet-disassembled gap; the dynamic start
@@ -103,9 +103,9 @@ derivative/flag) is **TODO**; the first channel is the signed value scaled per l
 
 | Current | Proposed | Evidence | Confidence |
 |---------|----------|----------|------------|
-| `sub_9FE4` | `TrackData_StartDecode` | initializes streams/output | high |
-| `sub_A04A` | `TrackData_DecodeChunk` | per-call budget, both channels | high |
-| `sub_A0D4`/`sub_A2DA` | `TrackData_DecodeChannel1/2` | two interleaved outputs | high |
-| `unk_A054`/`A08C`/`A094`/`A0CC` | `TrackData_BitMasks/ShiftTables` | bit extraction | high |
+| `TrackData_StartDecode` | `TrackData_StartDecode` | initializes streams/output | high |
+| `TrackData_DecodeChunk` | `TrackData_DecodeChunk` | per-call budget, both channels | high |
+| `TrackData_DecodeChannel1`/`TrackData_DecodeChannel2` | `TrackData_DecodeChannel1/2` | two interleaved outputs | high |
+| `TrackData_BitMasks`/`A08C`/`A094`/`A0CC` | `TrackData_BitMasks/ShiftTables` | bit extraction | high |
 | `ram_FFDC58` | `Track_CurveBuffer` | decoded/scaled track data | medium |
 | `RaceTrack_Data2/3` | `Track_DataStream1/2` | decoder sources | medium |

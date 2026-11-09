@@ -16,10 +16,10 @@ track/level factor.
 
 | Symbol | Address | Called by | Description |
 |--------|---------|-----------|-------------|
-| `sub_9FE4` | `0x9FE4` | `race.asm` `sub_169B0` | Initialize the streams/output and decode the first chunk. |
-| `sub_A04A` | `0xA04A` | `sub_9FE4`, `race.asm` `sub_16A32` | Decode the next per-call chunk. |
-| `sub_A0D4` | `0xA0D4` | `sub_A04A` | Channel 1 decoder. |
-| `sub_A2DA` | `0xA2DA` | `sub_A04A` | Channel 2 decoder. |
+| `TrackData_StartDecode` | `0x9FE4` | `race.asm` `TrackData_InitLevel` | Initialize the streams/output and decode the first chunk. |
+| `TrackData_DecodeChunk` | `0xA04A` | `TrackData_StartDecode`, `race.asm` `TrackData_DecodeNextChunk` | Decode the next per-call chunk. |
+| `TrackData_DecodeChannel1` | `0xA0D4` | `TrackData_DecodeChunk` | Channel 1 decoder. |
+| `TrackData_DecodeChannel2` | `0xA2DA` | `TrackData_DecodeChunk` | Channel 2 decoder. |
 
 ## Frame/stream format
 
@@ -29,8 +29,8 @@ track/level factor.
 - Per sample: extract the next `width` bits MSB-first, add/subtract the delta to the
   running accumulator, write the byte; 2-byte stride (channel 1 at `a1`, channel 2 at
   `a1+1`).
-- Tables: `unk_A054` (masks), `unk_A094` (shift counts incl. `$FF` cross-byte),
-  `unk_A08C`/`unk_A0CC` (cross-byte masks).
+- Tables: `TrackData_BitMasks` (masks), `TrackData_ShiftCounts` (shift counts incl. `$FF` cross-byte),
+  `TrackData_CrossByteMasks`/`TrackData_BoundaryShifts` (cross-byte masks).
 - Budget `d1` samples per channel per call; the state is resumable.
 
 ## RAM / ROM & structures
@@ -40,24 +40,24 @@ track/level factor.
 - Channel 1 state `ram_FF13B2/13B8..13E2`; channel 2 `ram_FF13E4..140E`.
 - Scale: `Menu_ram_CurrentTrackId` -> `off_16AB0` -> `ram_FF1A6C` (per-track table);
   factor `[PlayerLevel-1]`; signed byte * factor / `$10000`.
-- Race callers: `sub_169B0` (128 samples at level start), `sub_16A32` (64-sample chunks
+- Race callers: `TrackData_InitLevel` (128 samples at level start), `TrackData_DecodeNextChunk` (64-sample chunks
   as the race progresses).
 
 ## Coverage matrix
 
 | Function | Address | Contract | Algorithm | Data | Hardware | Why | Dynamic | Status |
 |----------|---------|----------|-----------|------|----------|-----|---------|--------|
-| `sub_9FE4` | `0x9FE4` | [x] | [x] | [x] | - | [x] | [x] | analyzed |
-| `sub_A04A` | `0xA04A` | [x] | [x] | [x] | - | [x] | [x] | analyzed |
-| `sub_A0D4` | `0xA0D4` | [x] | [x] | [x] | - | [x] | [ ] | analyzed |
-| `sub_A2DA` | `0xA2DA` | [x] | [x] | [x] | - | [x] | [ ] | analyzed |
+| `TrackData_StartDecode` | `0x9FE4` | [x] | [x] | [x] | - | [x] | [x] | analyzed |
+| `TrackData_DecodeChunk` | `0xA04A` | [x] | [x] | [x] | - | [x] | [x] | analyzed |
+| `TrackData_DecodeChannel1` | `0xA0D4` | [x] | [x] | [x] | - | [x] | [ ] | analyzed |
+| `TrackData_DecodeChannel2` | `0xA2DA` | [x] | [x] | [x] | - | [x] | [ ] | analyzed |
 
 Detailed listing: `docs/analysis/track_data.md`.
 
 ## External calls / dependencies
 
-- `race.asm` `sub_169B0`/`sub_16A32` (start and per-progress chunks).
-- `top_level.asm` calls `sub_16A32` when the race progress crosses a chunk.
+- `race.asm` `TrackData_InitLevel`/`TrackData_DecodeNextChunk` (start and per-progress chunks).
+- `top_level.asm` calls `TrackData_DecodeNextChunk` when the race progress crosses a chunk.
 
 ## Hacks / bugs / quirks
 
@@ -82,9 +82,9 @@ Detailed listing: `docs/analysis/track_data.md`.
 
 | Current | Proposed | Evidence | Confidence |
 |---------|----------|----------|------------|
-| `sub_9FE4` | `TrackData_StartDecode` | initializes streams/output | high |
-| `sub_A04A` | `TrackData_DecodeChunk` | per-call budget | high |
-| `sub_A0D4`/`sub_A2DA` | `TrackData_DecodeChannel1/2` | interleaved outputs | high |
+| `TrackData_StartDecode` | `TrackData_StartDecode` | initializes streams/output | high |
+| `TrackData_DecodeChunk` | `TrackData_DecodeChunk` | per-call budget | high |
+| `TrackData_DecodeChannel1`/`TrackData_DecodeChannel2` | `TrackData_DecodeChannel1/2` | interleaved outputs | high |
 | `ram_FFDC58` | `Track_CurveBuffer` | decoded/scaled track data | medium |
 
 ## Experiments performed

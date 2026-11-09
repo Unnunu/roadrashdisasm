@@ -35,7 +35,7 @@ play A/B/C select high score/results/shop and a release returns to the results.
 
 - `HighScore_ram_Table` (`$FF05EA`): header `(22,16,7,20)` + 7 x 20-char entries; text
   starts at `$FF05F2`; built by `intro.asm` from `unk_4C18`, updated/sorted by
-  `sub_C598` (race.asm) and `sub_1A2C` (intro.asm).
+  `Race_UpdateHighScoreTable` (race.asm) and `sub_1A2C` (intro.asm).
 - `HighScore_ram_PlayerATableOffset/B` (`$FF052A/$FF052C`): player row offsets (20*5,
   20*6 initially; can move after sorting).
 - `HighScore_ram_CurrentButtons` (`$FF094E`); `MainMenu_ram_DemoMode` (`$FF3692`);
@@ -66,7 +66,7 @@ Detailed listing/table: `docs/analysis/highscore.md`.
 
 - Top five rows use the table font at `$800`; player rows use the regular font `$0`;
   the `$1000` font is loaded but not visibly used. `[static]`
-- Player rows can duplicate a top-five entry after sorting (`sub_C598` keeps the offset).
+- Player rows can duplicate a top-five entry after sorting (`Race_UpdateHighScoreTable` keeps the offset).
 - The demo and normal ticks both end on a release edge; A/B/C are new-press edges.
 - Background palette is copied from `ImageBuffer+$4E4` (the background palette).
 

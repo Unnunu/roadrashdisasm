@@ -28,7 +28,7 @@ loc_7E6D0:
 loc_7E6E0:
                 tst.l       (ram_UpdateFunction).l
                 bne.s       loc_7E6E0
-                jsr         (sub_B770).l
+                jsr         (Race_InitPhysicsConstants).l
                 jsr         (AudioFunc2).l
                 jsr         (Intro_Init).w
                 jsr         (Fade_InitFadeIn).w
@@ -64,8 +64,8 @@ loc_7E77A:
                 bne.s       loc_7E77A
                 tst.w       (MainMenu_ram_DemoMode).l
                 bne.w       loc_7E7CC
-                jsr         (Character_Init).w
-                movea.l     #Character_GameTick,a0
+                jsr         (RiderIntro_Init).w
+                movea.l     #RiderIntro_GameTick,a0
                 jsr         (Fade_InitFadeIn).w
                 move.l      #FadeWithFunction_GameTick,(ram_UpdateFunction).l
 loc_7E7A4:
@@ -130,7 +130,7 @@ loc_7E87A:
                 lsr.w       #$6,d0
                 cmp.w       d1,d0
                 beq.w       loc_7E8B4
-                jsr         (sub_16A32).l
+                jsr         (TrackData_DecodeNextChunk).l
 loc_7E8B4:
                 move.w      (Race_ram_GameEnded).l,(Race_ram_DemoGameEnded).l
                 beq.w       loc_7E836
@@ -148,7 +148,7 @@ loc_7E8F4:
                 jsr         (Fade_InitFadeOut).w
                 move.l      #Fade_GameTickWithInit,(ram_UpdateFunction).l
                 jsr         (sub_EFA4).l
-                jsr         (sub_C3F8).l
+                jsr         (Race_ComputeResults).l
 loc_7E90E:
                 tst.l       (ram_UpdateFunction).l
                 bne.s       loc_7E90E

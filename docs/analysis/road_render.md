@@ -12,45 +12,45 @@
 
 | Function | Address | Contract | Algorithm | Data | Hardware | Why | Dynamic | Status |
 |----------|---------|----------|-----------|------|----------|-----|---------|--------|
-| `sub_942A` | `0x942A` | [x] | [x] | [x] | [x] | [x] | [x] | analyzed |
-| `sub_9484` | `0x9484` | [x] | [~] | [x] | [x] | [x] | [x] | partial |
-| `sub_8FB4` | `0x8FB4` | [x] | [~] | [x] | [x] | [x] | [x] | partial |
-| `sub_9142` | `0x9142` | [x] | [~] | [x] | [x] | [x] | - | partial |
-| `sub_91F0` | `0x91F0` | [x] | [~] | [x] | [x] | [x] | - | partial |
-| `sub_9272` | `0x9272` | [?] | [?] | [x] | - | - | - | unused/alternate? |
-| `sub_9306` | `0x9306` | [x] | [~] | [x] | [x] | [x] | - | partial |
-| `sub_93D2` | `0x93D2` | [x] | [x] | [x] | [x] | [x] | - | analyzed |
-| `sub_978C` | `0x978C` | [x] | [~] | [x] | - | [x] | - | partial |
-| `sub_97BC` | `0x97BC` | [x] | [~] | [x] | - | [x] | - | partial |
-| `sub_9836` | `0x9836` | [x] | [~] | [x] | - | [x] | - | partial |
+| `Road_DrawObjects` | `0x942A` | [x] | [x] | [x] | [x] | [x] | [x] | analyzed |
+| `Road_DrawObject` | `0x9484` | [x] | [~] | [x] | [x] | [x] | [x] | partial |
+| `Road_DrawStrip` | `0x8FB4` | [x] | [~] | [x] | [x] | [x] | [x] | partial |
+| `Road_InterpolateLeftEdge` | `0x9142` | [x] | [~] | [x] | [x] | [x] | - | partial |
+| `Road_InterpolateRightEdge` | `0x91F0` | [x] | [~] | [x] | [x] | [x] | - | partial |
+| `Road_InterpolateRightEdgeAlt` | `0x9272` | [?] | [?] | [x] | - | - | - | unused/alternate? |
+| `Road_WriteTileColumns` | `0x9306` | [x] | [~] | [x] | [x] | [x] | - | partial |
+| `Road_ClearEdgeTiles` | `0x93D2` | [x] | [x] | [x] | [x] | [x] | - | analyzed |
+| `Road_ScaleShape` | `0x978C` | [x] | [~] | [x] | - | [x] | - | partial |
+| `Road_ProjectShapeSpecial` | `0x97BC` | [x] | [~] | [x] | - | [x] | - | partial |
+| `Road_ProjectShape` | `0x9836` | [x] | [~] | [x] | - | [x] | - | partial |
 
 ## Role & call graph
 
-`race.asm` calls `sub_942A` (`0x1809`) after the HUD/road updates. The renderer walks the
+`race.asm` calls `Road_DrawObjects` (`0x1809`) after the HUD/road updates. The renderer walks the
 visible-object list and, for each object, draws the road strip/tile and copies the
 object's rider/vehicle sprite chain into the SAT:
 
 ```
 race.asm (0x1809)
-  sub_942A             ; walk ram_FF1D50 visible list
-    sub_9484           ; render one object (ram_FFD37C record)
-      sub_8FB4         ; road strip/tile + sprite chain for the object
-        sub_9142       ; left/road edge scanline interpolation
-        sub_91F0       ; right/road edge interpolation
-        sub_9306       ; write road tile columns
-        sub_93D2       ; clear remaining edge tiles
-        sub_5760       ; rider/bike SAT chain builder (docs/analysis/rider_sprites.md)
-      sub_978C/97BC/9836 ; shape/edge projection helpers
+  Road_DrawObjects             ; walk Road_VisibleObjectList visible list
+    Road_DrawObject           ; render one object (Road_ObjectArray record)
+      Road_DrawStrip         ; road strip/tile + sprite chain for the object
+        Road_InterpolateLeftEdge       ; left/road edge scanline interpolation
+        Road_InterpolateRightEdge       ; right/road edge interpolation
+        Road_WriteTileColumns       ; write road tile columns
+        Road_ClearEdgeTiles       ; clear remaining edge tiles
+        RiderSprites_Build       ; rider/bike SAT chain builder (docs/analysis/rider_sprites.md)
+      Road_ScaleShape/97BC/9836 ; shape/edge projection helpers
 ```
 
-`sub_9272` is a near-duplicate of `sub_91F0` with fixed `$10000` scaling and no direct
+`Road_InterpolateRightEdgeAlt` is a near-duplicate of `Road_InterpolateRightEdge` with fixed `$10000` scaling and no direct
 caller in the disassembled source; likely an unused/alternate strip generator.
 
 ## Object list and records
 
-- Visible list `ram_FF1D50` (`$FF1D50`): CPU object indices, `$FFFF`-terminated. Built
-  by `race.asm` (`sub_10D46` from `ram_FF1B50`/`ram_FF1C50`).
-- Object array `ram_FFD37C` (`$FFD37C`), 0x14 bytes per record. Fields used by this
+- Visible list `Road_VisibleObjectList` (`$FF1D50`): CPU object indices, `$FFFF`-terminated. Built
+  by `race.asm` (`Road_BuildVisibleList` from `ram_FF1B50`/`ram_FF1C50`).
+- Object array `Road_ObjectArray` (`$FFD37C`), 0x14 bytes per record. Fields used by this
   module:
 
 | Offset | Use |
@@ -59,64 +59,64 @@ caller in the disassembled source; likely an unused/alternate strip generator.
 | `+2` | y / vertical position. |
 | `+4` | scale (`<<2` -> `ram_FF1350`, movement per frame). |
 | `+6` | horizon/limit (`ram_FF136A`). |
-| `+8` | shape index into `unk_3BF1A` -> `ram_FF1348`. |
+| `+8` | shape index into `Road_ShapeTable` -> `ram_FF1348`. |
 | `+$A` | flags: bit15 = shadow/overlay (`ram_FF133A`); bits 12-13 -> `ram_FF133E` (`<<1`); bit7 of `$B` = special/two-part path; low 3 bits = sprite rows to copy. |
 | `+$C` | sprite x offset. |
 | `+$E`,`+$10` | not read by this module (race-side data). |
 | `+$12` | second shape index (two-part object). |
 
-`sub_942A` saves `Animation_ram_TileIndex/SpriteIndex` in `ram_FF1362/1364` before
+`Road_DrawObjects` saves `Animation_ram_TileIndex/SpriteIndex` in `ram_FF1362/1364` before
 rendering each object and restores them on overflow.
 
-## `sub_9484` (object renderer)
+## `Road_DrawObject` (object renderer)
 
 1. Reset `ram_FFDE62`, `ram_FF133A`; copy the record x/y to `ram_FFDE6E/70` and the
    adjusted copies to `ram_FF1342/44`; `ram_FF1350 = scale<<2`; `ram_FF136A = +6`.
 2. Shadow: if `+$A` bit15 is set, `ram_FF133A=1`.
 3. Priority bits: `(flags & $3000)<<1` -> `ram_FF133E`.
-4. Shape: `unk_3BF1A[+8]` -> `ram_FF1348`; second shape `unk_3BF1A[+$12]` ->
+4. Shape: `Road_ShapeTable[+8]` -> `ram_FF1348`; second shape `Road_ShapeTable[+$12]` ->
    `ram_FF134C`.
-5. Special path (bit7 of `+$B`): call `sub_978C`/`sub_97BC` to get the edge values,
-   store `ram_FF1356/1358`, then continue with the second shape; otherwise `sub_9836`
+5. Special path (bit7 of `+$B`): call `Road_ScaleShape`/`Road_ProjectShapeSpecial` to get the edge values,
+   store `ram_FF1356/1358`, then continue with the second shape; otherwise `Road_ProjectShape`
    computes the edge clip and `ram_FF135E`.
-6. Call `sub_8FB4` to build the road strip and sprite chain; if the chain end flag
+6. Call `Road_DrawStrip` to build the road strip and sprite chain; if the chain end flag
    `ram_FF1366` is set, restore the saved animation indices and abort.
-7. If the second shape is active, reposition and repeat `sub_8FB4`.
+7. If the second shape is active, reposition and repeat `Road_DrawStrip`.
 8. Copy the new sprite chain from the SAT into the free slots (`Animation_ram_SpriteIndex`),
    applying the `+$C` x offset and the `$FFC0/$FE20/$50` clipping; update the chain
    links and `Animation_ram_SpriteIndex`; when a sprite goes above the road, back up.
 
-## `sub_8FB4` (road strip)
+## `Road_DrawStrip` (road strip)
 
 - Inputs: `d0`/`d1` road-edge geometry (the dynamic race used `$10000` for both),
   `a0` shape data.
 - Initializes `ram_FF0D26` (tile index*32), the strip accumulators
   `ram_FF132E/1330/1336`, and two strip arrays `ram_FF0D2E`/`ram_FF102E`.
-- `sub_9142` (d0) and `sub_91F0` (d1) interpolate the left/right edge into the strip
+- `Road_InterpolateLeftEdge` (d0) and `Road_InterpolateRightEdge` (d1) interpolate the left/right edge into the strip
   arrays (`d6` = strip count; `$7FFF` horizon limit; the `ram_FF133C` mirror flag; the
   `ram_FF135E` edge offset; the `ram_FF1340` acceleration).
-- `sub_9306` writes the road tile columns (0x1F wide) into the sprite tile array
-  (`Race_ram_CurrentSpriteTileArray + ram_FF0D26`); `sub_93D2` clears the remaining
+- `Road_WriteTileColumns` writes the road tile columns (0x1F wide) into the sprite tile array
+  (`Race_ram_CurrentSpriteTileArray + ram_FF0D26`); `Road_ClearEdgeTiles` clears the remaining
   edge tiles.
 - The special road section (`ram_FF1354/56/58`) handles the elevated/overpass edge
   offset.
-- `sub_5760` builds the rider/bike chain; the object x/y/scale/shape are fed from the
+- `RiderSprites_Build` builds the rider/bike chain; the object x/y/scale/shape are fed from the
   `ram_FFDE*` fields.
 
 ## Shape table / data
 
-- `unk_3BF1A` (`0x3BF1A`) is a table of shape-data pointers; `race.asm` uses it at
+- `Road_ShapeTable` (`0x3BF1A`) is a table of shape-data pointers; `race.asm` uses it at
   `0x10018`/`0x10352` too.
 - Shape data lives in the not-yet-disassembled gap (e.g. the dynamic call used
-  `0x05994E`, bytes `10 37 20 36 ...`). `sub_978C` reads `(a2)`, `1(a2)`, `2(a2)` and
-  scales them by `scale>>2`; `sub_97BC`/`sub_9836` add the object x and the `$C0`/`$200`
+  `0x05994E`, bytes `10 37 20 36 ...`). `Road_ScaleShape` reads `(a2)`, `1(a2)`, `2(a2)` and
+  scales them by `scale>>2`; `Road_ProjectShapeSpecial`/`Road_ProjectShape` add the object x and the `$C0`/`$200`
   constants, apply the mirror bit (bit15 of `$A(a0)`), and set `ram_FFDE62` when the
   object leaves the range. The exact shape-byte format and projection formulas are
   **TODO** (needs the shape data + race-side record writers).
 
 ## RAM summary
 
-- Object list/array: `ram_FF1D50`, `ram_FFD37C` (0x14 records).
+- Object list/array: `Road_VisibleObjectList`, `Road_ObjectArray` (0x14 records).
 - Road: `ram_FF0D26/0D28/0D2A/0D2E/102E`, `ram_FF132E/1330/1332/1336`,
   `ram_FF136A` (horizon), `ram_FF1366` (chain end).
 - Object/projection: `ram_FF133A` (shadow), `ram_FF133C` (mirror), `ram_FF133E`
@@ -127,23 +127,23 @@ rendering each object and restores them on overflow.
 
 ## Dynamic evidence (demo race)
 
-- `sub_942A` visible list at `$FF1D50`:
+- `Road_DrawObjects` visible list at `$FF1D50`:
   `1,2,3,4,9,0,A,B,5,6,C,D,E,7,8,F` (16 objects); the SAT alternates
   `$FF479C`/`$FF4E1C` (double buffer).
-- `sub_9484` records (x,y,scale,horizon,shape,flags,...):
+- `Road_DrawObject` records (x,y,scale,horizon,shape,flags,...):
   - `$FFD390`: `FEBA 008A 4000 008A 0056 8081 ...` (shadow flag set).
   - `$FFD3A4`: `FE66 008A 4000 008A 0057 2081 ...`.
   - `$FFD430`: `FF30 0060 5174 0060 01C3 1184 FF56 0380 00AC 01C4`.
-- First `sub_8FB4`: `d0=d1=$10000`, shape data `$05994E` (`10 37 20 36 ...`),
+- First `Road_DrawStrip`: `d0=d1=$10000`, shape data `$05994E` (`10 37 20 36 ...`),
   `Animation_ram_TileIndex=4`, `Animation_ram_SpriteIndex=2`.
-- The object record layout and the list/SAT double-buffer are confirmed. The earlier `sub_9484` breakpoint spam was a GDB `disable $bpnum` artifact, not a
+- The object record layout and the list/SAT double-buffer are confirmed. The earlier `Road_DrawObject` breakpoint spam was a GDB `disable $bpnum` artifact, not a
   code issue.
 
 ## Quirks / open questions
 
-- `sub_9272` has no direct caller; likely alternate/dead. `[static]`
-- `sub_8FB4` uses `Animation_ram_TileIndex` as a road/sprite tile cursor, sharing the
-  animation state with `sub_5760`/`animation.asm`. `[static]`
+- `Road_InterpolateRightEdgeAlt` has no direct caller; likely alternate/dead. `[static]`
+- `Road_DrawStrip` uses `Animation_ram_TileIndex` as a road/sprite tile cursor, sharing the
+  animation state with `RiderSprites_Build`/`animation.asm`. `[static]`
 - The object `+$E`/`+$10` words are not read here; they belong to the race-side object
   logic. `[static]`
 - TODO: exact shape-byte format, the `$C0/$200` constants and the interpolation;
@@ -153,11 +153,11 @@ rendering each object and restores them on overflow.
 
 | Current | Proposed | Evidence | Confidence |
 |---------|----------|----------|------------|
-| `sub_942A` | `Road_DrawObjects` | visible-list renderer from race.asm | high |
-| `sub_9484` | `Road_DrawObject` | one 0x14-byte object record | high |
-| `sub_8FB4` | `Road_DrawStrip` | road strip/tile + sprite chain | high |
-| `sub_9306` | `Road_WriteTiles` | tile columns | high |
-| `sub_93D2` | `Road_ClearEdgeTiles` | clears edge tiles | high |
-| `ram_FF1D50` | `Road_VisibleObjectList` | object index list | medium |
-| `ram_FFD37C` | `Road_ObjectArray` | 0x14-byte records | medium |
-| `unk_3BF1A` | `Road_ShapeTable` | shape pointer table | medium |
+| `Road_DrawObjects` | `Road_DrawObjects` | visible-list renderer from race.asm | high |
+| `Road_DrawObject` | `Road_DrawObject` | one 0x14-byte object record | high |
+| `Road_DrawStrip` | `Road_DrawStrip` | road strip/tile + sprite chain | high |
+| `Road_WriteTileColumns` | `Road_WriteTiles` | tile columns | high |
+| `Road_ClearEdgeTiles` | `Road_ClearEdgeTiles` | clears edge tiles | high |
+| `Road_VisibleObjectList` | `Road_VisibleObjectList` | object index list | medium |
+| `Road_ObjectArray` | `Road_ObjectArray` | 0x14-byte records | medium |
+| `Road_ShapeTable` | `Road_ShapeTable` | shape pointer table | medium |

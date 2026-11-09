@@ -75,7 +75,7 @@ palette has finished changing.
   the top-level flow (`top_level.asm`, `$7E6A2`–`$7EA65`).
 - `[static]` The top-level flow pairs a fade-in (with `FadeWithFunction_GameTick`
   installed and a callback in `a0`) with a fade-out (with `Fade_GameTick` installed)
-  around `Menu_Init` (`$3400`), `Character_Init` (`$59C4`), `HighScore_Init` (`$6DC0`),
+  around `Menu_Init` (`$3400`), `RiderIntro_Init` (`$59C4`), `HighScore_Init` (`$6DC0`),
   and `Race_Init` (`$A4E2`). See `docs/reverse-engineering.md` section 9.
 - `[dynamic]` BlastEm native console: a breakpoint at `$1180` hit with the caller
   `$7E8D6` (`jsr $1180.w`, race-exit path), `pc = $1180`, `a0 = $00FF411C`,
@@ -92,7 +92,7 @@ palette has finished changing.
 - `[dynamic]` `$FF0302` (`Fade_ram_UpdateFunction`) = `$FFFFC078` during the first fade
   cycle, then `$00FF0586` after `Fade_InitFadeIn` (`$11C0`) runs.
 - `[static]` In the menu/character/results/shop/endlevel paths, `Fade_InitFadeIn` runs
-  with `a0` = the next update function (`MainMenu_GameTick`, `Character_GameTick`,
+  with `a0` = the next update function (`MainMenu_GameTick`, `RiderIntro_GameTick`,
   `HighScore_GameTick_Demo`, `RaceResults_GameTick`, `HighScore_GameTick`,
   `Shop_GameTick`, `EndLevel_GameTick`) and `FadeWithFunction_GameTick` is installed.
   When the fade settles, that callback replaces `ram_UpdateFunction`.
@@ -121,7 +121,7 @@ palette has finished changing.
 
 - [ ] Meaning of `$FF3692`, `$FF3696`, `$FF369A` in the top-level flow.
 - [ ] Meaning of the `FadeWithFunction_GameTick` callbacks' per-frame behavior
-  (`MainMenu_GameTick`, `Character_GameTick`, ...): follow up in their own cards.
+  (`MainMenu_GameTick`, `RiderIntro_GameTick`, ...): follow up in their own cards.
 - [ ] Confirm that `$00FF0586` is really just leftover `a0` from `Intro_Init` (static
   reading; dynamic trace of `Intro_Init` would settle it).
 - [ ] Verify the `±2` / `±$20` palette step constants with a CRAM/palette check.

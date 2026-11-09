@@ -2,21 +2,21 @@
 ; rider_sprites.asm - rider/bike sprite chain builder
 ; ROM range: $5760-$59C3
 ; Status:    analyzed (static + demo dynamic)
-; API:       sub_5760 (called by road_render.asm), sub_593E wrapper
+; API:       RiderSprites_Build (called by road_render.asm), RiderSprites_BuildAlt wrapper
 ; *************************************************
 
 ; *************************************************
-; Function sub_5760
+; Function RiderSprites_Build
 ; Builds a linked chunk of rider/bike SAT entries and advances the animation cursors.
 ; In:  d0, d1 - strip/direction geometry from the caller (road_render.asm)
 ; Out: SAT entries at Race_ram_CurrentSpriteAttributeTable;
 ;      Animation_ram_SpriteIndex / Animation_ram_TileIndex
 ; Clobbers: d0-d7, a0, a1
-; Notes: unk_5944 supplies per-strip Y/link/tile/X offsets. A shadow/overlay layer is
+; Notes: RiderSprites_StripTable supplies per-strip Y/link/tile/X offsets. A shadow/overlay layer is
 ;        emitted when ram_FF133A != 0. Chain ends at tile index $150 or index $50.
 ; *************************************************
 
-sub_5760:
+RiderSprites_Build:
 ; mark first chunk (sentinel replaced by the computed tile offset below)
                 move.w  #$8000,(ram_FFDE68).l
                 movea.l (Race_ram_CurrentSpriteAttributeTable).l,a0
@@ -95,7 +95,7 @@ sub_5760:
                 move.w  (ram_FF0908).l,d0
 
 .loc_585C:
-; select the unk_5944 strip record from the direction/column bases
+; select the RiderSprites_StripTable strip record from the direction/column bases
                 movea.w #$18,a1
                 cmp.w   #0,d2
                 bne.w   .loc_586E
@@ -148,7 +148,7 @@ sub_5760:
 
 .loc_58F8:
                 dbf     d2,.loc_585C
-                add.w   unk_5944(a1),d4
+                add.w   RiderSprites_StripTable(a1),d4
                 move.w  (ram_FF090A).l,d2
                 cmpi.w  #$8000,(ram_FFDE68).l
                 bne.w   .loc_5924
@@ -168,25 +168,25 @@ sub_5760:
 
 .locret_593C:
                 rts
-; End of function sub_5760
+; End of function RiderSprites_Build
 
 ; *************************************************
-; Function sub_593E
-; Alternate entry point: builds a sprite chunk via sub_5760.
-; In/Out/Clobbers: same as sub_5760.
+; Function RiderSprites_BuildAlt
+; Alternate entry point: builds a sprite chunk via RiderSprites_Build.
+; In/Out/Clobbers: same as RiderSprites_Build.
 ; *************************************************
 
-sub_593E:
-                bsr.w   sub_5760
+RiderSprites_BuildAlt:
+                bsr.w   RiderSprites_Build
                 rts
-; End of function sub_593E
+; End of function RiderSprites_BuildAlt
 
 ; *************************************************
-; unk_5944 - per-strip SAT layout table (16 records x 8 bytes)
+; RiderSprites_StripTable - per-strip SAT layout table (16 records x 8 bytes)
 ; +0: Y advance, +2: size/link bits, +4: tile step, +6: shadow X adjust.
 ; *************************************************
 
-unk_5944:
+RiderSprites_StripTable:
                 dc.b   0
                 dc.b   8
                 dc.b   0

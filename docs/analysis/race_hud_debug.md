@@ -12,23 +12,23 @@
 
 | Function | Address | Contract | Algorithm | Data | Hardware | Why | Dynamic | Status |
 |----------|---------|----------|-----------|------|----------|-----|---------|--------|
-| `sub_98C2` | `0x98C2` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
+| `RaceHud_DrawStandings` | `0x98C2` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
 | `RaceDebug_ShowDistanceTravelled` | `0x9936` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
-| `sub_995A` | `0x995A` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
-| `sub_997E` | `0x997E` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed (bug) |
+| `RaceDebug_ShowPosZ` | `0x995A` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
+| `RaceDebug_ShowFrameDelay` | `0x997E` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed (bug) |
 | `sub_999E` | `0x999E` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
-| `sub_99C2` | `0x99C2` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
+| `RaceDebug_ShowState` | `0x99C2` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
 | `sub_9A98` | `0x9A98` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
-| `sub_9AB4` | `0x9AB4` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
-| `sub_9AD4`/`sub_9AF4`/`sub_9B34` | `0x9AD4`/`0x9AF4`/`0x9B34` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
+| `RaceHud_DrawGear` | `0x9AB4` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
+| `RaceHud_WriteDigit1`/`RaceHud_WriteDigit2`/`RaceHud_WriteDigit4` | `0x9AD4`/`0x9AF4`/`0x9B34` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
 
 ## Role
 
 The module writes digit tiles into the race HUD buffers (`Race_ram_CurrentHudBuffer`,
 `Race_ram_NextHudBuffer`). It contains:
 
-- three digit writers (`sub_9AD4` one digit, `sub_9AF4` two, `sub_9B34` four hex digits);
-- `sub_98C2`, which draws a race value plus a racer/standings list with the current
+- three digit writers (`RaceHud_WriteDigit1` one digit, `RaceHud_WriteDigit2` two, `RaceHud_WriteDigit4` four hex digits);
+- `RaceHud_DrawStandings`, which draws a race value plus a racer/standings list with the current
   row highlighted;
 - several debug readouts (`RaceDebug_ShowDistanceTravelled`, POSZ, frame delay,
   `ram_FF304C`, `ram_FF3046`, the gear, and a multi-value debug panel).
@@ -46,11 +46,11 @@ offset is `((d1 & $FF00) >> 1) + ((d1 & $FF) << 1)` = `row*128 + column*2`
 
 | Function | Digits | Notes |
 |---|---|---|
-| `sub_9AD4` | 1 | caller supplies the final tile (gear uses `$5C1+gear`). |
-| `sub_9AF4` | 2 | hex nibbles of `d0` (`>>4`, `&$F`). |
-| `sub_9B34` | 4 | hex nibbles (`>>12`, `>>8`, `>>4`, `&$F`). |
+| `RaceHud_WriteDigit1` | 1 | caller supplies the final tile (gear uses `$5C1+gear`). |
+| `RaceHud_WriteDigit2` | 2 | hex nibbles of `d0` (`>>4`, `&$F`). |
+| `RaceHud_WriteDigit4` | 4 | hex nibbles (`>>12`, `>>8`, `>>4`, `&$F`). |
 
-## `sub_98C2` (standings/timer)
+## `RaceHud_DrawStandings` (standings/timer)
 
 - Draws `ram_FF1AE4` (2 digits) at `$1602` into `Race_ram_NextHudBuffer`.
 - Walks the pointer list at `ram_FF1AE0` (`(a1)+` = count): for each entry, follows the
@@ -63,12 +63,12 @@ offset is `((d1 & $FF00) >> 1) + ((d1 & $FF) << 1)` = `row*128 + column*2`
 | Function | Value | HUD position |
 |---|---|---|
 | `RaceDebug_ShowDistanceTravelled` | player `POSX_HIGH` (formatted by `sub_F11C`) | `$1A13` |
-| `sub_995A` | player `POSZ` (formatted) | `$1508` |
-| `sub_997E` | `Race_ram_FrameDelay` | none (bug, see below) |
+| `RaceDebug_ShowPosZ` | player `POSZ` (formatted) | `$1508` |
+| `RaceDebug_ShowFrameDelay` | `Race_ram_FrameDelay` | none (bug, see below) |
 | `sub_999E` | `ram_FF304C` (formatted) | `$1914` |
-| `sub_99C2` | `ram_FF1786`, `NumSprites`, `ram_FF1B3E`, struct `+$68`, `POSY`, `POSZ`, `POSX_HIGH`, `POSX_LOW & $FF00` | `$1420/$140D/$150D/$1418/$1A08/$1A10/$1A17/$1A1C` |
+| `RaceDebug_ShowState` | `ram_FF1786`, `NumSprites`, `ram_FF1B3E`, struct `+$68`, `POSY`, `POSZ`, `POSX_HIGH`, `POSX_LOW & $FF00` | `$1420/$140D/$150D/$1418/$1A08/$1A10/$1A17/$1A1C` |
 | `sub_9A98` | `ram_FF3046` | `$180D` |
-| `sub_9AB4` | player `GEAR` + `$5C1` | `$1716` |
+| `RaceHud_DrawGear` | player `GEAR` + `$5C1` | `$1716` |
 
 `sub_F11C` (`race.asm` `0xF11C`) converts the value for the distance readouts. These
 are internal race variables shown at fixed HUD cells, characteristic of a debug
@@ -76,21 +76,21 @@ overlay.
 
 ## Quirks / notes
 
-- `sub_997E` calls `sub_F11C`, moves the returned `d1` to `d0`, but never sets a HUD
-  position before `sub_9B34`; `d1` still holds the formatted value, so the digit
+- `RaceDebug_ShowFrameDelay` calls `sub_F11C`, moves the returned `d1` to `d0`, but never sets a HUD
+  position before `RaceHud_WriteDigit4`; `d1` still holds the formatted value, so the digit
   position is wrong. Likely unfinished debug code. `[static]`
 - No direct callers in the disassembled source; the normal race HUD lives in
   `race_hud.asm`. `[static]`
-- HUD buffers are double-buffered (`CurrentHudBuffer`/`NextHudBuffer`); `sub_98C2`
+- HUD buffers are double-buffered (`CurrentHudBuffer`/`NextHudBuffer`); `RaceHud_DrawStandings`
   writes to the next buffer while the debug readouts use the current one. `[static]`
 
 ## Rename proposals (apply only on request)
 
 | Current | Proposed | Evidence | Confidence |
 |---------|----------|----------|------------|
-| `sub_98C2` | `RaceHud_DrawStandings` | racer list/current row | medium |
-| `sub_9AD4`/`sub_9AF4`/`sub_9B34` | `RaceHud_WriteDigit1/2/4` | HUD digit writers | high |
+| `RaceHud_DrawStandings` | `RaceHud_DrawStandings` | racer list/current row | medium |
+| `RaceHud_WriteDigit1`/`RaceHud_WriteDigit2`/`RaceHud_WriteDigit4` | `RaceHud_WriteDigit1/2/4` | HUD digit writers | high |
 | `sub_9936` | `RaceDebug_ShowPosX` | POSX_HIGH readout (already named) | medium |
-| `sub_995A` | `RaceDebug_ShowPosZ` | POSZ readout | high |
-| `sub_99C2` | `RaceDebug_ShowState` | multi-value debug panel | high |
-| `sub_9AB4` | `RaceHud_DrawGear` | gear indicator | medium |
+| `RaceDebug_ShowPosZ` | `RaceDebug_ShowPosZ` | POSZ readout | high |
+| `RaceDebug_ShowState` | `RaceDebug_ShowState` | multi-value debug panel | high |
+| `RaceHud_DrawGear` | `RaceHud_DrawGear` | gear indicator | medium |

@@ -135,7 +135,7 @@ RaceResults_Init:
 ; $FFFF in the event buffer means busted/bike destroyed; otherwise normal standings
                 cmpi.w  #$FFFF,(ram_FF04C8).l
                 beq.w   .loc_616E
-                bsr.w   sub_62CE
+                bsr.w   RaceResults_DrawStandings
                 bra.w   .loc_6190
 .loc_616E:
                 move.l  #10,d0
@@ -143,10 +143,10 @@ RaceResults_Init:
 ; cop index != 0 -> caught by the cops; 0 -> bike destroyed/repair
                 tst.w   (ram_FF1B1A).l
                 beq.w   .loc_618C
-                bsr.w   sub_647E
+                bsr.w   RaceResults_DrawBusted
                 bra.w   .loc_6190
 .loc_618C:
-                bsr.w   sub_67AC
+                bsr.w   RaceResults_DrawRepair
 .loc_6190:
 ; write window nametable
                 move.l  #Menu_ram_FrameBuffer,d0
@@ -191,7 +191,7 @@ RaceResults_Init:
                 subq.w  #2,(ram_FF0682).l
 .loc_6244:
 ; format the money (negative money adjusts the field width)
-                jsr     (sub_C6C4).l
+                jsr     (Race_FormatMoney).l
                 movea.l (sp)+,a0
                 move.l  #'    ',(a0)
                 move.l  #'    ',4(a0)
@@ -230,15 +230,15 @@ RaceResults_Init:
 ; End of function RaceResults_Init
 
 ; *************************************************
-; Function sub_62CE
+; Function RaceResults_DrawStandings
 ; Normal race results: title, track image/palette, top finishers, player row highlight.
 ; In:  ram_FF1414/18/1A standings, Menu_ram_PlayerAPlaces/BPlaces, CurrentTrackId
 ; Out: Menu_ram_FrameBuffer standings, VRAM $9000/$B000, global palette
 ; Clobbers: d0-d6, a0-a3
 ; *************************************************
 
-sub_62CE:
-                move.l  #sub_62CE,(ram_FF0914).l
+RaceResults_DrawStandings:
+                move.l  #RaceResults_DrawStandings,(ram_FF0914).l
 ; load the "race results" title image
                 lea     (unk_AF26C).l,a3
                 lea     (Intro_ram_ImageBuffer).l,a1
@@ -356,18 +356,18 @@ sub_62CE:
                 lea     (Menu_ram_FrameBuffer).l,a1 ; destination
                 bsr.w   WriteNametableToBuffer
                 rts
-; End of function sub_62CE
+; End of function RaceResults_DrawStandings
 
 ; *************************************************
-; Function sub_647E
+; Function RaceResults_DrawBusted
 ; Caught-by-cops layout: title, panel, cop portrait/quote by ram_FF1B1A, fine or GAME OVER.
 ; In:  ram_FF1B1A (cop index), Menu_ram_MoneyPlayerA/B, ram_FF091A (fine)
 ; Out: Menu_ram_FrameBuffer portrait/name/quote/message; VRAM $9000/$B000/$C000
 ; Clobbers: d0-d7, a0-a3
 ; *************************************************
 
-sub_647E:
-                move.l  #sub_647E,(ram_FF0914).l
+RaceResults_DrawBusted:
+                move.l  #RaceResults_DrawBusted,(ram_FF0914).l
                 lea     (unk_7ED66).l,a3
                 lea     (Intro_ram_ImageBuffer).l,a1
                 jsr     (UncompressB).l
@@ -407,7 +407,7 @@ sub_647E:
                 tst.l   d1
                 bpl.w   .loc_6560
 ; cop portraits: money<0 table (5x2), else money>=0 table (5x4)
-                lea     (unk_19EC2).l,a0
+                lea     (RaceResults_CopTableNeg).l,a0
                 move.l  a0,-(sp)
                 jsr     (Rand_GetWord).l
                 and.w   ($8).w,d0
@@ -418,7 +418,7 @@ sub_647E:
                 adda.w  d0,a0
                 bra.w   .loc_6582
 .loc_6560:
-                lea     (unk_19E22).l,a0
+                lea     (RaceResults_CopTablePos).l,a0
                 move.l  a0,-(sp)
                 jsr     (Rand_GetWord).l
                 andi.w  #$18,d0
@@ -550,7 +550,7 @@ sub_647E:
 ; message: fine text or "Can't afford bail / GAME OVER"
                 lea     (unk_56D8).w,a0
                 movea.l (sp)+,a1
-                cmpa.l  #unk_19EC2,a1
+                cmpa.l  #RaceResults_CopTableNeg,a1
                 beq.w   .loc_6776
                 lea     (unk_56AC).w,a0
                 lea     (Menu_ram_TempString).l,a1
@@ -567,7 +567,7 @@ sub_647E:
                 clr.l   d0
                 move.w  (ram_FF091A).l,d0
                 lea     -2(a1),a0
-                jsr     (sub_C79A).l
+                jsr     (Race_FormatNumber).l
                 lea     (Menu_ram_TempString).l,a0
 .loc_6776:
                 move.l  a0,-(sp)
@@ -584,18 +584,18 @@ sub_647E:
                 lea     (Menu_ram_FrameBuffer).l,a1
                 bsr.w   WriteNametableToBuffer
                 rts
-; End of function sub_647E
+; End of function RaceResults_DrawBusted
 
 ; *************************************************
-; Function sub_67AC
+; Function RaceResults_DrawRepair
 ; Bike-repair layout: panel, portrait/quote by player level, repair cost or GAME OVER.
 ; In:  Menu_ram_PlayerLevel, Menu_ram_MoneyPlayerA/B, ram_FF091A (repair cost)
 ; Out: Menu_ram_FrameBuffer portrait/name/quote/message; VRAM $B000/$C000
 ; Clobbers: d0-d7, a0-a3
 ; *************************************************
 
-sub_67AC:
-                move.l  #sub_67AC,(ram_FF0914).l
+RaceResults_DrawRepair:
+                move.l  #RaceResults_DrawRepair,(ram_FF0914).l
                 lea     (unk_7EA66).l,a3
                 lea     (Intro_ram_ImageBuffer).l,a1
                 jsr     (UncompressB).l
@@ -620,7 +620,7 @@ sub_67AC:
                 tst.l   d1
                 bpl.w   .loc_6844
 ; level portraits: money<0 table (5x2), else money>=0 table (5x4)
-                lea     (unk_19DD2).l,a0
+                lea     (RaceResults_LevelTableNeg).l,a0
                 move.l  a0,-(sp)
                 jsr     (Rand_GetWord).l
                 and.w   ($8).w,d0
@@ -631,7 +631,7 @@ sub_67AC:
                 adda.w  d0,a0
                 bra.w   .loc_6866
 .loc_6844:
-                lea     (off_19D32).l,a0
+                lea     (RaceResults_LevelTablePos).l,a0
                 move.l  a0,-(sp)
                 jsr     (Rand_GetWord).l
                 andi.w  #$18,d0
@@ -763,7 +763,7 @@ sub_67AC:
 ; message: repair text or "No money for repairs / GAME OVER"
                 lea     (unk_5730).w,a0
                 movea.l (sp)+,a1
-                cmpa.l  #unk_19DD2,a1
+                cmpa.l  #RaceResults_LevelTableNeg,a1
                 beq.w   .loc_6A5A
                 lea     (unk_5704).w,a0
                 lea     (Menu_ram_TempString).l,a1
@@ -780,7 +780,7 @@ sub_67AC:
                 clr.l   d0
                 move.w  (ram_FF091A).l,d0
                 lea     -2(a1),a0
-                jsr     (sub_C79A).l
+                jsr     (Race_FormatNumber).l
                 lea     (Menu_ram_TempString).l,a0
 .loc_6A5A:
                 move.l  a0,-(sp)
@@ -797,7 +797,7 @@ sub_67AC:
                 lea     (Menu_ram_FrameBuffer).l,a1
                 bsr.w   WriteNametableToBuffer
                 rts
-; End of function sub_67AC
+; End of function RaceResults_DrawRepair
 
 ; *************************************************
 ; Function RaceResults_GameTick

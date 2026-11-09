@@ -1,7 +1,7 @@
 # Module card: `rider_sprites.asm`
 
 - **ROM range:** `0x005760`–`0x0059C3` (routines) + `0x005944`–`0x0059C3` (table
-  `unk_5944`); `rider_intro.asm` starts at `0x59C4`
+  `RiderSprites_StripTable`); `rider_intro.asm` starts at `0x59C4`
 - **Status:** analyzed (static + dynamic)
 - **Related:** `docs/architecture.md`, `docs/reverse-engineering.md`,
   `docs/hardware.md`, `docs/ram-map.md`, `docs/analysis/rider_sprites.md`
@@ -9,7 +9,7 @@
 ## Role / purpose
 
 Builds a linked **rider/bike sprite chain** in the race sprite attribute table (SAT).
-It is called by `road_render.asm` (`bsr.w sub_5760`) each time the animation needs a new chunk
+It is called by `road_render.asm` (`bsr.w RiderSprites_Build`) each time the animation needs a new chunk
 of sprites, writes `Y, size/link, tile/priority, X` entries, advances the animation tile
 cursor / sprite index, and additionally emits a shadow/overlay layer.
 
@@ -17,8 +17,8 @@ cursor / sprite index, and additionally emits a shadow/overlay layer.
 
 | Symbol | Address | Called by | Description |
 |--------|---------|-----------|-------------|
-| `sub_5760` | `0x5760` | `road_render.asm:82` | Build sprite chain chunk. |
-| `sub_593E` | `0x593E` | — (no direct caller in source) | Wrapper `bsr.w sub_5760; rts`. |
+| `RiderSprites_Build` | `0x5760` | `road_render.asm:82` | Build sprite chain chunk. |
+| `RiderSprites_BuildAlt` | `0x593E` | — (no direct caller in source) | Wrapper `bsr.w RiderSprites_Build; rts`. |
 
 ## Control flow / state machine
 
@@ -26,7 +26,7 @@ cursor / sprite index, and additionally emits a shadow/overlay layer.
    `>= $50` set the end flags and return.
 2. Derive strip counts (`ram_FF090A/C`) and base offsets (`ram_FF0906/08`) from `d0/d1`.
 3. Loop rows x columns: build each sprite from the base coordinates
-   (`ram_FFDE6E/70 + $80`), adjust with the `unk_5944` record (Y step, size/link bits,
+   (`ram_FFDE6E/70 + $80`), adjust with the `RiderSprites_StripTable` record (Y step, size/link bits,
    tile step, shadow X), add `Animation_ram_BaseTile`/`ram_FFDE5E` and priority bits,
    write the entry, advance the tile cursor.
 4. If the tile cursor reaches `$150`, flag the chain end and clear the previous link.
@@ -40,16 +40,16 @@ cursor / sprite index, and additionally emits a shadow/overlay layer.
 - Base fields `ram_FFDE5E..70`; scratch `ram_FF0906..0E`; shadow/overlay
   `ram_FF1336/133A`; end flags `ram_FF1366`, `ram_FFDE62`.
 - SAT entry: `Y, size/link, tile/priority, X` (4 words; link = low byte of word 2).
-- ROM table `unk_5944` (`0x5944`, 128 bytes = 16 records x 8 bytes): `+0` Y step,
+- ROM table `RiderSprites_StripTable` (`0x5944`, 128 bytes = 16 records x 8 bytes): `+0` Y step,
   `+2` size/link bits, `+4` tile step, `+6` shadow X adjustment.
 
 ## Coverage matrix
 
 | Function | Address | Contract | Algorithm | Data | Hardware | Why | Dynamic | Status |
 |----------|---------|----------|-----------|------|----------|-----|---------|--------|
-| `sub_5760` | `0x5760` | [x] | [x] | [x] | [x] | [x] | [x] | analyzed |
-| `sub_593E` | `0x593E` | [x] | [x] | - | - | [x] | - | analyzed |
-| `unk_5944` | `0x5944` | [x] | [x] | [x] | [x] | [x] | - | analyzed |
+| `RiderSprites_Build` | `0x5760` | [x] | [x] | [x] | [x] | [x] | [x] | analyzed |
+| `RiderSprites_BuildAlt` | `0x593E` | [x] | [x] | - | - | [x] | - | analyzed |
+| `RiderSprites_StripTable` | `0x5944` | [x] | [x] | [x] | [x] | [x] | - | analyzed |
 
 Detailed listing and field hypotheses: `docs/analysis/rider_sprites.md`.
 
@@ -69,8 +69,8 @@ Detailed listing and field hypotheses: `docs/analysis/rider_sprites.md`.
 ## Verified facts
 
 - `[static]` Writes linked SAT entries and maintains the animation cursors.
-- `[static]` `unk_5944` supplies per-strip Y/link/tile/X adjustments.
-- `[dynamic]` Demo race hits `sub_5760`; SAT chain observed at `$FF479C` with sprite
+- `[static]` `RiderSprites_StripTable` supplies per-strip Y/link/tile/X adjustments.
+- `[dynamic]` Demo race hits `RiderSprites_Build`; SAT chain observed at `$FF479C` with sprite
   index 6, tile index `$27`, shadow offset `$10` (`ram_FF133A=1`).
 
 ## Hypotheses
@@ -84,9 +84,9 @@ Detailed listing and field hypotheses: `docs/analysis/rider_sprites.md`.
 
 | Current | Proposed | Evidence | Confidence |
 |---------|----------|----------|------------|
-| `sub_5760` | `Animation_BuildRiderSprites` | writes SAT chain, called by `8FB4` | medium |
-| `sub_593E` | `Animation_BuildRiderSprites_Alt` | wrapper around `sub_5760` | low |
-| `unk_5944` | `RiderSpriteStripTable` | per-strip SAT adjustments | medium |
+| `RiderSprites_Build` | `Animation_BuildRiderSprites` | writes SAT chain, called by `8FB4` | medium |
+| `RiderSprites_BuildAlt` | `Animation_BuildRiderSprites_Alt` | wrapper around `RiderSprites_Build` | low |
+| `RiderSprites_StripTable` | `RiderSpriteStripTable` | per-strip SAT adjustments | medium |
 
 ## Experiments performed
 

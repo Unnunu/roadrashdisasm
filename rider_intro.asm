@@ -2,20 +2,20 @@
 ; rider_intro.asm - pre-race rider/opponent introduction
 ; ROM range: $59C4-$5F27
 ; Status:    analyzed (static; rendering dynamically TODO)
-; API:       Character_Init, Character_GameTick
+; API:       RiderIntro_Init, RiderIntro_GameTick
 ; *************************************************
 
 ; *************************************************
-; Function Character_Init
+; Function RiderIntro_Init
 ; Builds the rider/opponent intro: VDP setup, background/gamepad/portrait, opponent
-; record (unk_19A12), name/quote/palette, optional bike overlay, font, message, DMA.
+; record (RiderIntro_RecordTable), name/quote/palette, optional bike overlay, font, message, DMA.
 ; In:  Menu_ram_Player, PlayerA/BLevel, CurrentTrackId, ram_FF0520 (extra field)
 ; Out: Menu_ram_FrameBuffer -> VRAM $7000; VRAM $A000-$D000 assets; palette
 ; Clobbers: d0-d7, a0-a3
 ; Notes: only reached on the non-demo path (top_level.asm $7E782).
 ; *************************************************
 
-Character_Init:
+RiderIntro_Init:
                 move.w  #0,(MainMenu_ram_ButtonsPlayerA).l
                 move.w  #0,(MainMenu_ram_ChangedButtonsPlayerA).l
                 move.w  #0,(MainMenu_ram_ButtonsPlayerB).l
@@ -148,8 +148,8 @@ Character_Init:
                 ble.w   .loc_5BEC
                 move.w  #$18,d0
 .loc_5BEC:
-; unk_19A12 = [level][track][variant] records of (quote_ptr, image_ptr)
-                lea     (unk_19A12).l,a0
+; RiderIntro_RecordTable = [level][track][variant] records of (quote_ptr, image_ptr)
+                lea     (RiderIntro_RecordTable).l,a0
                 adda.w  d0,a0
                 move.w  (Menu_ram_PlayerALevel).l,d0
                 tst.w   (Menu_ram_Player).l
@@ -348,10 +348,10 @@ Character_Init:
                 move.w  #$700,d2
                 jsr     (DmaWriteVRAM).l
                 rts
-; End of function Character_Init
+; End of function RiderIntro_Init
 
 ; *************************************************
-; Function Character_GameTick
+; Function RiderIntro_GameTick
 ; Per-frame update: push the frame buffer, edge-detect pad A/B, advance the timed
 ; message, and exit to the race on a newly pressed button or the message terminator.
 ; In:  pad input; Menu_ram_CurrentMessageId/NextMessageTimer
@@ -359,7 +359,7 @@ Character_Init:
 ; Clobbers: d0-d2/a0
 ; *************************************************
 
-Character_GameTick:
+RiderIntro_GameTick:
 ; push the window buffer every frame
                 move.l  #Menu_ram_FrameBuffer,d0
                 move.w  #$7000,d1
@@ -410,4 +410,4 @@ Character_GameTick:
                 jsr     (AudioFunc4).l
                 move.l  #0,(ram_UpdateFunction).l
                 bra.s   .loc_5F0E
-; End of function Character_GameTick
+; End of function RiderIntro_GameTick
