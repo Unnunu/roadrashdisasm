@@ -724,7 +724,10 @@ Audio_UpdateEngine:
     include "race_actor_extra_tables.asm"
 
     org     $025EC0
-    binclude "baserom.md",$025EC0,($7E6A2-$025EC0)
+    include "race_track_data.asm"
+
+    org     $03BF1A
+    binclude "baserom.md",$03BF1A,($7E6A2-$03BF1A)
 
     org     $7E6A2
     include "top_level.asm"

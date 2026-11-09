@@ -21,8 +21,7 @@ AudioFunc17 equ $19FA2
 AudioFunc18 equ $19FA6
 
 ; Actor/opponent tables now defined in race_engine_tables.asm/race_actor_tables.asm/
-; race_actor_extra_tables.asm (see docs/analysis/race_actors.md)
-unk_25EC0 equ $25EC0
+; race_actor_extra_tables.asm; track records in race_track_data.asm (see docs/analysis/race_actors.md)
 
 Road_ShapeTable equ $3BF1A
 word_3C7EA equ $3C7EA

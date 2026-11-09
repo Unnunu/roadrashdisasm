@@ -38,8 +38,9 @@ row to the table below.
 | `race_data_tables.asm` | `0x019A12` | Intro/results/level tables (ROM gap) | [race_data_tables.md](race_data_tables.md) |
 | `race_engine_tables.asm` | `0x0257D0` | Physics/engine/audio tables (ROM gap) | [race_data_tables.md](race_data_tables.md) |
 | `race_actor_extra_tables.asm` | `0x0259B6` | Actor/AI tables (ROM gap) | [race_data_tables.md](race_data_tables.md) |
+| `race_track_data.asm` | `0x025EC0` | Per-track records/streams (ROM gap) | [race_track_data.md](race_track_data.md) |
 | `top_level.asm` | `0x07E6A2` | Top-level screen flow (intro/menu/race/results) | [top_level.md](top_level.md) |
 
 Helper/data files without code: `hw_const.asm`, `unknown.asm`, `ram_const.asm`,
 `race_actor_tables.asm`, `race_data_tables.asm`, `race_engine_tables.asm`,
-`race_actor_extra_tables.asm`.
+`race_actor_extra_tables.asm`, `race_track_data.asm`.

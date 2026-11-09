@@ -26,7 +26,7 @@ Related:
 | Header title | Road Rash |
 | Region | US (`U  ` in header) |
 | Entry | `RESET` at `0x000200` |
-| Disassembly coverage | `0x000000`–`0x016E6F`, `0x019A12`–`0x019F61`, `0x0257D0`–`0x025EBF`, `0x07E6A2`–`0x07EA65`; the rest is a raw ROM bridge |
+| Disassembly coverage | `0x000000`–`0x016E6F`, `0x019A12`–`0x019F61`, `0x0257D0`–`0x03BF19`, `0x07E6A2`–`0x07EA65`; the rest is a raw ROM bridge |
 
 `./build.sh` compares the built image against the same-length **prefix** of
 `baserom.md`; it grows as more of the ROM is disassembled.
@@ -72,8 +72,8 @@ update pointer and `Fade_*` for transitions. The source is `top_level.asm`, gene
 `python3 tools/disasm.py 0x7E6A2 0x7EA66 --mode project --symbolize-immediates --entry-name TopLevel_Init`.
 The not-yet-disassembled gap is bridged with raw ROM bytes in `main.asm`, split around
 the data tables assembled by `race_data_tables.asm`, `race_engine_tables.asm`,
-`race_actor_tables.asm` and `race_actor_extra_tables.asm`; shrink those bridges as the
-gap is disassembled.
+`race_actor_tables.asm`, `race_actor_extra_tables.asm` and `race_track_data.asm`; shrink
+those bridges as the gap is disassembled.
 
 Entry / intro (`$7E6A2`):
 
@@ -167,12 +167,13 @@ tentative until the module card is filled in.
 | `0x019A12` | `race_data_tables.asm` | Intro/results/level tables (ROM gap) | [race_data_tables.md](modules/race_data_tables.md) |
 | `0x0257D0` | `race_engine_tables.asm` | Physics/engine/audio tables (ROM gap) | [race_data_tables.md](modules/race_data_tables.md) |
 | `0x0259B6` | `race_actor_extra_tables.asm` | Actor/AI tables (ROM gap) | [race_data_tables.md](modules/race_data_tables.md) |
+| `0x025EC0` | `race_track_data.asm` | Per-track records/streams (ROM gap) | [race_track_data.md](modules/race_track_data.md) |
 | `0x07E6A2` | `top_level.asm` | Top-level screen flow (intro/menu/race/results) | [top_level.md](modules/top_level.md) |
 
 Helpers/data without code in the image: `hw_const.asm` (constants/macros),
 `unknown.asm` (address equates), `ram_const.asm` (RAM equates),
 `race_actor_tables.asm`, `race_data_tables.asm`, `race_engine_tables.asm`,
-`race_actor_extra_tables.asm`.
+`race_actor_extra_tables.asm`, `race_track_data.asm`.
 
 ## RAM overview
 

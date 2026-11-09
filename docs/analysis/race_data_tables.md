@@ -53,8 +53,8 @@ bridge.
 | `unk_25B70` | `$25B70` | `$350` | 424 words (race_core). |
 
 `unk_25A10` is dereferenced as `movea.l (a3,d0.w),a3` (13 pointers). The other tables are
-read as words/bytes; exact field meanings are TODO. `unk_25EC0` (menu tooltip track
-table) still starts the raw bridge.
+read as words/bytes; exact field meanings are TODO. `unk_25EC0` and the per-track
+records/streams are now in `race_track_data.asm` (see `docs/analysis/race_track_data.md`).
 
 ## Open questions
 
