@@ -1713,7 +1713,7 @@ sub_11B7A:
 .loc_11C2A:
                 bclr    #7,$6A(a1)
                 move.w  $12(a1),d0
-                jsr     (sub_1434A).l
+                jsr     (Race_ScaleImpactDamage).l
                 lsr.w   #2,d0
                 add.w   d0,(Race_ram_BikeDamage).l
 

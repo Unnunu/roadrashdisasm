@@ -21,14 +21,14 @@ nearest-target selection and collision state now live in
 | `Race_UpdatePlayerAnimation` | `0x160E2` | race | Player tile base `$5C`. |
 | `Rand_Init` | `0x15FE8` | boot/race | PRNG init. |
 | `Rand_GetWord` | `0x16034` | many | PRNG word. |
-| `sub_1434A`/`sub_14486`/`sub_14CEC` | `0x1434A`+ | combat/physics | Impact/damage helpers (shared with `race_combat`). |
+| `Race_ScaleImpactDamage`/`sub_14486`/`sub_14CEC` | `0x1434A`+ | combat/physics | Impact/damage helpers (shared with `race_combat`). |
 
 ## Key functions
 
 - `Race_UpdateLeanCurve` `0x1406A`: lean/curve `$3E/$40`.
 - `Race_UpdatePlayerAnimation` `0x160E2`: player tile base `$5C`.
 - `Rand_Init` `0x15FE8` / `Rand_GetWord` `0x16034`: 32-word sum PRNG.
-- Impact/damage helpers `sub_1434A`/`sub_14486`/`sub_14CEC` remain here; attack
+- Impact/damage helpers `Race_ScaleImpactDamage`/`sub_14486`/`sub_14CEC` remain here; attack
   state and action dispatch are in `race_combat`.
 
 ## Coverage matrix

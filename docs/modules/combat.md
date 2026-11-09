@@ -21,11 +21,11 @@ placeholder pending weapon identification).
 | Function | Address | Contract | Algorithm | Data | Hardware | Why | Dynamic | Status |
 |---|---|---|---|---|---|---|---|---|
 | `Race_UpdateNearestTarget` | `0x1611A` | [x] | [~] | [x] | [x] | [x] | [ ] | static |
-| `sub_162B0` attack input | `0x162B0` | [x] | [~] | [x] | [x] | [x] | [~] | dynamic (input/height) |
+| `Race_UpdatePlayerAttack` attack input | `0x162B0` | [x] | [~] | [x] | [x] | [x] | [~] | dynamic (input/height) |
 | `sub_1634E` AI input | `0x1634E` | [~] | [~] | [~] | [x] | [~] | [ ] | unreferenced |
 | `Race_DispatchActorAction` dispatcher | `0x16458` | [x] | [~] | [x] | [x] | [x] | [~] | static + forced dispatch |
 | `Audio_UpdateEngine0/State` | `0x16520`/`0x16548` | [x] | [~] | [x] | [x] | [~] | [ ] | name TBD |
 | action handlers | `0x165D0`–`0x166F0` | [~] | [~] | [x] | [x] | [~] | [ ] | static |
-| `Race_UpdateCollision` | `0x16732` | [x] | [~] | [x] | [x] | [x] | [~] | static + forced proximity |
+| `Race_UpdateCollision` | `0x16732` | [x] | [~] | [x] | [x] | [x] | [~] | static + forced proximity/armed |
 
 Detailed analysis: `docs/analysis/combat.md`.

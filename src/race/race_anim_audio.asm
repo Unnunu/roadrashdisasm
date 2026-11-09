@@ -721,7 +721,7 @@ sub_142D8:
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_1434A:
+Race_ScaleImpactDamage:
                 tst.w   (ram_FF1768).l
                 beq.w   .loc_1435A
                 clr.w   d0
@@ -740,7 +740,7 @@ sub_1434A:
 
 .locret_1436C:
                 rts
-; End of function sub_1434A
+; End of function Race_ScaleImpactDamage
 
 
                 dc.b $49 ; I
@@ -958,7 +958,7 @@ sub_14486:
                 move.w  d0,(ram_FF18A6).l
                 cmpa.l  #RacePlayerA,a1
                 bne.w   .loc_144D4
-                jsr     (sub_1434A).l
+                jsr     (Race_ScaleImpactDamage).l
                 add.w   d0,(Race_ram_BikeDamage).l
                 lsr.w   #1,d0
                 cmp.w   #2,d0
@@ -1918,7 +1918,7 @@ sub_14CEC:
                 cmpa.l  #RacePlayerA,a1
                 bne.w   .loc_14D34
                 move.w  d0,-(sp)
-                jsr     (sub_1434A).l
+                jsr     (Race_ScaleImpactDamage).l
                 add.w   d0,(Race_ram_BikeDamage).l
                 move.w  (sp)+,d0
 

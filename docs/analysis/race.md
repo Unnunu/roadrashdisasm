@@ -238,7 +238,7 @@ Actors/player structures:
 | Spawn/traffic | `Race_SpawnTick` `0x16AF6`, `Race_SpawnOpponent/Traffic`, active/free lists, `Race_UpdateSpeedDisplay`/`Race_FormatDecimal` |
 | AI/physics | `sub_10E00`..`Race_GetCurveSpeedLimit`, `Race_HandleInputOnFoot` `0x110AE`/`Another` `0x111FA` (`src/race/race_ai.asm`) |
 | Animations/audio | `Race_UpdateLeanCurve`, `Race_UpdatePlayerAnimation`, `Rand_Init` `0x15FE8`/`Rand_GetWord` `0x16034` (`src/race/race_anim_audio.asm`) |
-| Combat | `Race_UpdateNearestTarget` `0x1611A`, `sub_162B0`, action handlers, `Race_UpdateCollision` `0x16732` (`src/race/race_combat.asm`) |
+| Combat | `Race_UpdateNearestTarget` `0x1611A`, `Race_UpdatePlayerAttack`, action handlers, `Race_UpdateCollision` `0x16732` (`src/race/race_combat.asm`) |
 | Camera/scroll/rearview | `Race_UpdateCamera`, `Race_BuildVScrollInfo`/`HScrollTable`, `Race_DrawRearviewMirror`, `Race_DrawRoadMarkingHud`, `Race_UpdateNearestOpponent` (`src/race/race_physics.asm`) |
 | Physics/AI | `Race_UpdateSpeedDisplay`, `Race_SpawnTick`, `Race_UpdateBikeLean`..`Race_UpdateStaticActions` (TODO) |
 | Road/render | `PiecewiseLinearInterpolation`, `Road_FillProfileTables`, `sub_FD96/FB1E/F40C`, `sub_109B6/FC0E`, `Road_BuildVisibleList`, `Road_DrawObjects` (`road_render`), `RoadMarking_Draw` |

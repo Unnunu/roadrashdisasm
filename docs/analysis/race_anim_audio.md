@@ -20,9 +20,9 @@
 | `Rand_Init` | `0x15FE8` | Seed the 32-word PRNG state. |
 | `Rand_GetWord` | `0x16034` | Sum-of-two-words PRNG word. |
 | `sub_141...`..`sub_155...` | `0x1406A`+ | Animation/track/impact helpers (TODO). |
-| `sub_1434A`/`sub_14486`/`sub_14CEC` | `0x1434A`+ | Impact/damage helpers shared with combat. |
+| `Race_ScaleImpactDamage`/`sub_14486`/`sub_14CEC` | `0x1434A`+ | Impact/damage helpers shared with combat. |
 
-Combat/target/collision functions (`Race_UpdateNearestTarget`, `sub_162B0`,
+Combat/target/collision functions (`Race_UpdateNearestTarget`, `Race_UpdatePlayerAttack`,
 `sub_1634E`, `Race_DispatchActorAction`, `Audio_UpdateEngine*`, action handlers,
 `Race_UpdateCollision`) are now in `src/race/race_combat.asm`; see
 `docs/analysis/combat.md`.
@@ -38,7 +38,7 @@ and sets the two indexes (`ram_FF18FE`/`ram_FF1900`, 0..31). `Rand_GetWord` retu
 - `Race_UpdateLeanCurve` computes the lean/curve from `$3E`/d0 into `$40`/`ram_FF3042`.
 - `Race_UpdatePlayerAnimation` advances the player tile base `$5C` up to `ram_FF18AA`
   by `Race_ram_FrameDelay` (on-foot/`$6E` gated).
-- `sub_1434A`/`sub_14486`/`sub_14CEC` handle impact/damage side effects; their
+- `Race_ScaleImpactDamage`/`sub_14486`/`sub_14CEC` handle impact/damage side effects; their
   callers and exact collision rules remain TODO.
 
 ## Data / RAM

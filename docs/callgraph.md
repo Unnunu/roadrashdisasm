@@ -301,7 +301,7 @@ flowchart LR
 | `sub_1180C` | `0x1180C` | `Race_UpdateActorAI` | `sub_116E2`, `sub_11940`, `sub_13BD8` |
 | `sub_11906` | `0x11906` | `sub_11B7A`, `sub_11CC8`, `sub_1218C`, `sub_12BD2`, `sub_14C3C` | - |
 | `sub_11940` | `0x11940` | `Race_HandleInputOnFoot`, `Race_UpdateActorAI`, `Race_UpdateStaticActors`, `sub_1180C` | `sub_115C6` |
-| `sub_11B7A` | `0x11B7A` | `Race_UpdateActorAI` | `sub_11906`, `sub_1434A`, `sub_15538` |
+| `sub_11B7A` | `0x11B7A` | `Race_UpdateActorAI` | `Race_ScaleImpactDamage`, `sub_11906`, `sub_15538` |
 | `sub_11C44` | `0x11C44` | `Race_Update` | - |
 | `sub_11CC8` | `0x11CC8` | `Race_Update` | `sub_11906`, `sub_12070`, `sub_12414`, `sub_124E2`, `sub_12A9C`, `sub_1438E`, `sub_14486`, `sub_1487C` |
 | `sub_12070` | `0x12070` | `sub_11CC8`, `sub_1218C` | - |
@@ -356,9 +356,9 @@ flowchart LR
 | `Race_GetCurveSpeedLimit` | `0x13FE6` | `Race_InitOpponentActor`, `Race_InitTrafficActor`, `sub_1300E`, `sub_131BE`, `sub_13292`, `sub_13CFE`, `sub_13E94` | - |
 | `Race_UpdateLeanCurve` | `0x1406A` | `sub_113A4`, `sub_113CA` | - |
 | `sub_142D8` | `0x142D8` | `sub_14486` | - |
-| `sub_1434A` | `0x1434A` | `sub_11B7A`, `sub_14486`, `sub_14CEC` | - |
+| `Race_ScaleImpactDamage` | `0x1434A` | `sub_11B7A`, `sub_14486`, `sub_14CEC` | - |
 | `sub_1438E` | `0x1438E` | `sub_11CC8`, `sub_1218C` | - |
-| `sub_14486` | `0x14486` | `sub_11CC8`, `sub_1218C` | `sub_142D8`, `sub_1434A`, `sub_145EC`, `sub_14688` |
+| `sub_14486` | `0x14486` | `sub_11CC8`, `sub_1218C` | `Race_ScaleImpactDamage`, `sub_142D8`, `sub_145EC`, `sub_14688` |
 | `sub_145EC` | `0x145EC` | `sub_14486`, `sub_14CEC` | `sub_15538`, `sub_1555C` |
 | `sub_14688` | `0x14688` | `sub_14486` | - |
 | `sub_146AC` | `0x146AC` | `sub_115C6` | - |
@@ -367,7 +367,7 @@ flowchart LR
 | `sub_149C4` | `0x149C4` | `sub_1487C` | - |
 | `sub_14B04` | `0x14B04` | `sub_1487C` | - |
 | `sub_14C3C` | `0x14C3C` | `sub_1487C` | `sub_11906` |
-| `sub_14CEC` | `0x14CEC` | `sub_1487C` | `sub_1434A`, `sub_145EC`, `sub_14D84` |
+| `sub_14CEC` | `0x14CEC` | `sub_1487C` | `Race_ScaleImpactDamage`, `sub_145EC`, `sub_14D84` |
 | `sub_14D84` | `0x14D84` | `sub_1487C`, `sub_14CEC` | - |
 | `sub_14E38` | `0x14E38` | `Race_Update` | `AudioFunc15`, `AudioFunc16`, `AudioFunc17`, `Audio_Engine1Stop`, `Audio_Engine2Stop`, `Audio_Engine3Stop`, `Audio_PlaySfx` |
 | `sub_14FB4` | `0x14FB4` | `Race_UpdateNearestTarget` | - |
@@ -386,8 +386,8 @@ flowchart LR
 | `sub_160B0` | `0x160B0` | `MainMenu_GameTick` | - |
 | `sub_160CC` | `0x160CC` | `MainMenu_GameTick` | - |
 | `Race_UpdatePlayerAnimation` | `0x160E2` | `Race_Update` | - |
-| `Race_UpdateNearestTarget` | `0x1611A` | `Race_Update` | `Audio_UpdateEngine0`, `sub_14FB4`, `sub_162B0` |
-| `sub_162B0` | `0x162B0` | `Race_UpdateNearestTarget` | - |
+| `Race_UpdateNearestTarget` | `0x1611A` | `Race_Update` | `Audio_UpdateEngine0`, `Race_UpdatePlayerAttack`, `sub_14FB4` |
+| `Race_UpdatePlayerAttack` | `0x162B0` | `Race_UpdateNearestTarget` | - |
 | `sub_1634E` | `0x1634E` | - | `sub_13A92` |
 | `Race_DispatchActorAction` | `0x16458` | - | `Audio_UpdateEngineState`, `sub_135F6`, `sub_13D44` |
 | `Audio_UpdateEngine0` | `0x16520` | `Audio_UpdateEngineState`, `Race_UpdateNearestTarget` | - |

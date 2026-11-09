@@ -13,7 +13,7 @@
 ## Player input / fist
 
 `Race_GetInput` stores the pad state in `Race_ram_CurrentButtons` (`SACBRLDU`).
-`sub_162B0` (`0x162B0`, temporary name) handles the attack input:
+`Race_UpdatePlayerAttack` (`0x162B0`) handles the attack input:
 
 - `btst #5` (C) starts an attack.
 - Up (`#0`) sets `$6B` bit0 (high attack).
@@ -97,6 +97,9 @@ bike damage.
 but **no callers or writer were found** in the current source; it may be dead or
 an unreferenced debug/alternate AI path. This needs dynamic confirmation.
 
+Applied in R3a: `Race_UpdatePlayerAttack` (`sub_162B0`) and
+`Race_ScaleImpactDamage` (`sub_1434A`).
+
 ## Actor profiles / weapons
 
 `Race_ActorDefinitionTable` (76 x 16 bytes):
@@ -114,14 +117,14 @@ and attack timing tables (`ram_FF1AC2`, `ram_FF1ABC`, `unk_257E2/E8/EE`).
 
 ## Damage
 
-`sub_1434A` is the impact scale: if `ram_FF1768` is non-zero it returns 0;
+`Race_ScaleImpactDamage` is the impact scale: if `ram_FF1768` is non-zero it returns 0;
 otherwise `abs(d0) >> 11` and stores it in `ram_FF1B28`.
 
 | Source | Added to `Race_ram_BikeDamage` | Notes |
 |---|---|---|
-| `sub_11B7A` | `sub_1434A(Speed) >> 2` | player/actor crash/impact path; sets `$68` bit4 and recovery animation |
-| `sub_14486` | `sub_1434A(result)` | impact/avoid path, also copies `$69` bit3 from the other actor |
-| `sub_14CEC` | `sub_1434A(result)` | speed-exchange collision path |
+| `sub_11B7A` | `Race_ScaleImpactDamage(Speed) >> 2` | player/actor crash/impact path; sets `$68` bit4 and recovery animation |
+| `sub_14486` | `Race_ScaleImpactDamage(result)` | impact/avoid path, also copies `$69` bit3 from the other actor |
+| `sub_14CEC` | `Race_ScaleImpactDamage(result)` | speed-exchange collision path |
 
 `Race_UpdateCollision` starts the attack state but does not add damage itself.
 Whether a player punch changes the opponent’s bike-damage/knockdown only through
@@ -132,14 +135,14 @@ Attack SFX: `Audio_UpdateEngine0` sets `ram_FF1AD7=$0E` at attack phase 1;
 
 ## Dynamic test 1 (player attack, native console)
 
-With C near an opponent, breakpoint `0x16320` (`sub_162B0` after state setup):
+With C near an opponent, breakpoint `0x16320` (`Race_UpdatePlayerAttack` after state setup):
 
 - `ram_FF1B22 = 1`
 - player `$69 = $12` (bit4 attack active; bit1 also set)
 - player `$6B = $01` (high flag)
 - player `$6C = 0`, `$6D = 1`, `$5A = 0`
 - nearest actor = `$FF232A`
-- backtrace: `Race_Update` -> `Race_UpdateNearestTarget` -> `sub_162B0`
+- backtrace: `Race_Update` -> `Race_UpdateNearestTarget` -> `Race_UpdatePlayerAttack`
 
 Follow-up trace: `a1 = $FF1EAA` (player A), `Race_ram_CurrentButtons = $30`
 (B+C); at `0x16338` the player Y was below the target Y, so the branch was not
@@ -185,8 +188,22 @@ five `Race_UpdateNearestTarget` (`0x1611A`) hits. After 90 frames:
 - `Race_ram_BikeDamage=0`, nearest `$FF23AA`.
 
 This confirms the attack-state/phase fields under forced proximity, but did not
-produce bike damage in this snapshot. The armed/knockback/damage transition still
-needs a longer or more natural collision test.
+produce bike damage in this snapshot.
+
+## Dynamic test 4 (armed collision, headless)
+
+For the active opponent `$FF232A`, X/Y were forced to the player position and
+`$6B` bit1 (armed) was set before `Race_UpdateCollision`. Result at the function
+exit:
+
+- `$69 = $50` (attack active + low), `$6B = $02` (armed);
+- `$5A = $B4` (cooldown from `ram_FF1A68 + 8`);
+- `$6C = 0`, `$6D = $0A` (low-attack timing from `ram_FF1ABC`);
+- `$30 = $A0`.
+
+The low-attack branch returns before the armed `$6D=$3C` override; that override
+only appears in the high-attack branch. This confirms the armed bit and cooldown
+but still does not show direct `BikeDamage` from a punch.
 
 ## Open questions / next experiments
 

@@ -140,7 +140,7 @@ Race_UpdateNearestTarget:
 
 
 .loc_162AA:
-                bsr.w   sub_162B0
+                bsr.w   Race_UpdatePlayerAttack
 
 .locret_162AE:
                 rts
@@ -151,7 +151,7 @@ Race_UpdateNearestTarget:
 
 
  ; *************************************************
-; Function sub_162B0 (temporary name)
+; Function Race_UpdatePlayerAttack
 ; Player attack input: C button starts an attack; Up/Down selects high/low;
 ; the nearest actor's Y selects the attack side.
 ; In:  a1 - actor; Race_ram_CurrentButtons; Race_ram_NearestActor
@@ -160,7 +160,7 @@ Race_UpdateNearestTarget:
 ; Notes: weapon/armed flag $6B bit1 comes from the actor definition byte2 bit7.
 ; *************************************************
 
-sub_162B0:
+Race_UpdatePlayerAttack:
                 move.b  (Race_ram_CurrentButtons).l,d0
                 btst    #5,d0
                 beq.w   .locret_1634C
@@ -203,7 +203,7 @@ sub_162B0:
 
 .locret_1634C:
                 rts
-; End of function sub_162B0
+; End of function Race_UpdatePlayerAttack
 
 
  ; *************************************************
