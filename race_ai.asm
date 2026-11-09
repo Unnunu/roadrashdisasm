@@ -693,7 +693,7 @@ sub_113A4:
                 asr.l   #8,d0
                 btst    #5,$68(a1)
                 beq.w   .loc_113C0
-                bsr.w   sub_1406A
+                bsr.w   Race_UpdateLeanCurve
 
 .loc_113C0:
                 move.w  d0,$22(a1)
@@ -737,7 +737,7 @@ sub_113CA:
                 asr.l   #8,d0
                 btst    #5,$68(a1)
                 beq.w   .loc_11424
-                bsr.w   sub_1406A
+                bsr.w   Race_UpdateLeanCurve
 
 .loc_11424:
                 tst.w   d0

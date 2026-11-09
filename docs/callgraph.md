@@ -210,7 +210,7 @@ flowchart LR
 | `Race_FinishFrame` | `0x0BD24` | `EndLevel_UpdateAnimation`, `Race_Update` | - |
 | `Race_GetInputDemo` | `0x0BE2C` | `Race_GameTick` | `GetInputPlayerA`, `GetInputPlayerB` |
 | `Race_GetInput` | `0x0BE56` | `Race_GameTick` | `AudioFunc18`, `AudioFunc4`, `GetInputPlayerA`, `GetInputPlayerB` |
-| `Race_Update` | `0x0C00C` | `Race_Init`, `TopLevel_Init` | `PiecewiseLinearInterpolation`, `RaceHud_Draw`, `Race_BuildHScrollTable`, `Race_BuildVScrollInfo`, `Race_DrawRearviewMirror`, `Race_DrawRoadEdges`, `Race_DrawRoadMarkingHud`, `Race_FinishFrame`, `Race_IntegrateTrackCurve`, `Race_SpawnTick`, `Race_UpdateActorAI`, `Race_UpdateBikeLean`, `Race_UpdateCamera`, `Race_UpdateNearestOpponent`, `Race_UpdateSpeedDisplay`, `Race_UpdateStaticActors`, `RoadMarking_Draw`, `Road_BuildVisibleList`, `Road_DrawObjects`, `Road_FillProfileTables`, `sub_109B6`, `sub_10DBE`, `sub_10DDA`, `sub_11C44`, `sub_11CC8`, `sub_1218C`, `sub_123A8`, `sub_1281E`, `sub_128E0`, `sub_12974`, `sub_12EA2`, `sub_13106`, `sub_1383E`, `sub_138CE`, `sub_13A92`, `sub_13BF4`, `sub_13E94`, `sub_14E38`, `sub_160E2`, `sub_1611A`, `sub_F40C`, `sub_FB1E`, `sub_FC0E`, `sub_FD96` |
+| `Race_Update` | `0x0C00C` | `Race_Init`, `TopLevel_Init` | `PiecewiseLinearInterpolation`, `RaceHud_Draw`, `Race_BuildHScrollTable`, `Race_BuildVScrollInfo`, `Race_DrawRearviewMirror`, `Race_DrawRoadEdges`, `Race_DrawRoadMarkingHud`, `Race_FinishFrame`, `Race_IntegrateTrackCurve`, `Race_SpawnTick`, `Race_UpdateActorAI`, `Race_UpdateBikeLean`, `Race_UpdateCamera`, `Race_UpdateNearestOpponent`, `Race_UpdateNearestTarget`, `Race_UpdatePlayerAnimation`, `Race_UpdateSpeedDisplay`, `Race_UpdateStaticActors`, `RoadMarking_Draw`, `Road_BuildVisibleList`, `Road_DrawObjects`, `Road_FillProfileTables`, `sub_109B6`, `sub_10DBE`, `sub_10DDA`, `sub_11C44`, `sub_11CC8`, `sub_1218C`, `sub_123A8`, `sub_1281E`, `sub_128E0`, `sub_12974`, `sub_12EA2`, `sub_13106`, `sub_1383E`, `sub_138CE`, `sub_13A92`, `sub_13BF4`, `sub_13E94`, `sub_14E38`, `sub_F40C`, `sub_FB1E`, `sub_FC0E`, `sub_FD96` |
 | `Race_SortResults` | `0x0C378` | `Race_ComputeResults` | - |
 | `Race_ComputeResults` | `0x0C3F8` | `TopLevel_Init` | `MenuPassword_CreatePassword`, `Race_BuildStandings`, `Race_SortResults`, `Race_UpdateHighScoreTable` |
 | `Race_UpdateHighScoreTable` | `0x0C598` | `Race_ComputeResults` | `Race_FormatMoney` |
@@ -293,8 +293,8 @@ flowchart LR
 | `Race_AnotherInputOnFoot` | `0x111FA` | `Race_HandleInputOnFoot` | `sub_11268` |
 | `sub_11268` | `0x11268` | `Race_AnotherInputOnFoot`, `Race_HandleInputOnFoot` | `sub_112C8` |
 | `sub_112C8` | `0x112C8` | `sub_11268` | - |
-| `sub_113A4` | `0x113A4` | `Race_UpdateActorAI`, `Race_UpdateStaticActors` | `sub_1406A` |
-| `sub_113CA` | `0x113CA` | `Race_UpdateActorAI` | `sub_1406A` |
+| `sub_113A4` | `0x113A4` | `Race_UpdateActorAI`, `Race_UpdateStaticActors` | `Race_UpdateLeanCurve` |
+| `sub_113CA` | `0x113CA` | `Race_UpdateActorAI` | `Race_UpdateLeanCurve` |
 | `sub_11448` | `0x11448` | `Race_HandleInputOnFoot`, `Race_UpdateActorAI` | `sub_115C6` |
 | `sub_115C6` | `0x115C6` | `sub_11448`, `sub_116E2`, `sub_11940` | `sub_146AC` |
 | `sub_116E2` | `0x116E2` | `Race_HandleInputOnFoot`, `Race_UpdateActorAI`, `Race_UpdateStaticActors`, `sub_1180C` | `sub_115C6` |
@@ -349,7 +349,7 @@ flowchart LR
 | `Race_UpdateBikeLean` | `0x13EA0` | `Race_Update` | - |
 | `Race_UpdateBikeCurve` | `0x13EFA` | `Race_UpdateActorAI` | - |
 | `Race_GetCurveSpeedLimit` | `0x13FE6` | `Race_InitOpponentActor`, `Race_InitTrafficActor`, `sub_131BE`, `sub_13292`, `sub_13CFE`, `sub_13E94` | - |
-| `sub_1406A` | `0x1406A` | `sub_113A4`, `sub_113CA` | - |
+| `Race_UpdateLeanCurve` | `0x1406A` | `sub_113A4`, `sub_113CA` | - |
 | `sub_142D8` | `0x142D8` | `sub_14486` | - |
 | `sub_1434A` | `0x1434A` | `sub_11B7A`, `sub_14486`, `sub_14CEC` | - |
 | `sub_1438E` | `0x1438E` | `sub_11CC8`, `sub_1218C` | - |
@@ -365,7 +365,7 @@ flowchart LR
 | `sub_14CEC` | `0x14CEC` | `sub_1487C` | `sub_1434A`, `sub_145EC`, `sub_14D84` |
 | `sub_14D84` | `0x14D84` | `sub_1487C`, `sub_14CEC` | - |
 | `sub_14E38` | `0x14E38` | `Race_Update` | `AudioFunc10`, `AudioFunc13`, `AudioFunc15`, `AudioFunc16`, `AudioFunc17`, `AudioFunc5`, `AudioFunc7` |
-| `sub_14FB4` | `0x14FB4` | `sub_1611A` | - |
+| `sub_14FB4` | `0x14FB4` | `Race_UpdateNearestTarget` | - |
 | `sub_15014` | `0x15014` | `sub_F40C` | `sub_151F0`, `sub_1533E`, `sub_15446`, `sub_154D2` |
 | `sub_151F0` | `0x151F0` | `sub_15014` | - |
 | `sub_1533E` | `0x1533E` | `sub_15014` | - |
@@ -380,24 +380,24 @@ flowchart LR
 | `sub_16088` | `0x16088` | `Intro_Init` | - |
 | `sub_160B0` | `0x160B0` | `MainMenu_GameTick` | - |
 | `sub_160CC` | `0x160CC` | `MainMenu_GameTick` | - |
-| `sub_160E2` | `0x160E2` | `Race_Update` | - |
-| `sub_1611A` | `0x1611A` | `Race_Update` | `Audio_UpdateEngine0`, `sub_14FB4`, `sub_162B0` |
-| `sub_162B0` | `0x162B0` | `sub_1611A` | - |
+| `Race_UpdatePlayerAnimation` | `0x160E2` | `Race_Update` | - |
+| `Race_UpdateNearestTarget` | `0x1611A` | `Race_Update` | `Audio_UpdateEngine0`, `sub_14FB4`, `sub_162B0` |
+| `sub_162B0` | `0x162B0` | `Race_UpdateNearestTarget` | - |
 | `sub_1634E` | `0x1634E` | - | `sub_13A92` |
-| `sub_16458` | `0x16458` | - | `sub_135F6`, `sub_13D44`, `sub_16548` |
-| `Audio_UpdateEngine0` | `0x16520` | `sub_1611A`, `sub_16548` | - |
-| `sub_16548` | `0x16548` | `sub_16458` | `Audio_UpdateEngine0` |
+| `sub_16458` | `0x16458` | - | `Audio_UpdateEngineState`, `sub_135F6`, `sub_13D44` |
+| `Audio_UpdateEngine0` | `0x16520` | `Audio_UpdateEngineState`, `Race_UpdateNearestTarget` | - |
+| `Audio_UpdateEngineState` | `0x16548` | `sub_16458` | `Audio_UpdateEngine0` |
 | `sub_165D0` | `0x165D0` | - | `sub_131BE`, `sub_1384C` |
 | `sub_165E0` | `0x165E0` | `sub_16624` | `sub_1384C`, `sub_13A92` |
-| `sub_16612` | `0x16612` | `sub_1662C`, `sub_166B0` | `sub_131BE`, `sub_1333C`, `sub_16732` |
-| `sub_16624` | `0x16624` | - | `sub_165E0`, `sub_16732` |
+| `sub_16612` | `0x16612` | `sub_1662C`, `sub_166B0` | `Race_UpdateCollision`, `sub_131BE`, `sub_1333C` |
+| `sub_16624` | `0x16624` | - | `Race_UpdateCollision`, `sub_165E0` |
 | `sub_1662C` | `0x1662C` | `sub_16644` | `Rand_GetWord`, `sub_16612`, `sub_1666A` |
 | `sub_16644` | `0x16644` | - | `sub_131BE`, `sub_1333C`, `sub_1662C` |
 | `sub_1666A` | `0x1666A` | `sub_1662C` | `sub_131BE`, `sub_1333C`, `sub_1384C` |
 | `sub_166B0` | `0x166B0` | - | `sub_131BE`, `sub_1333C`, `sub_16612` |
 | `sub_166DC` | `0x166DC` | - | `sub_13292`, `sub_1333C` |
-| `sub_166F0` | `0x166F0` | - | `sub_131BE`, `sub_1333C`, `sub_13422`, `sub_135F6`, `sub_16732` |
-| `sub_16732` | `0x16732` | `sub_16612`, `sub_16624`, `sub_166F0` | - |
+| `sub_166F0` | `0x166F0` | - | `Race_UpdateCollision`, `sub_131BE`, `sub_1333C`, `sub_13422`, `sub_135F6` |
+| `Race_UpdateCollision` | `0x16732` | `sub_16612`, `sub_16624`, `sub_166F0` | - |
 | `UpdateAnimation` | `0x16860` | `RaceHud_DrawRPMArrow`, `RaceHud_DrawSpeedArrow` | - |
 | `UpdateAnimation2` | `0x16926` | `EndLevel_UpdateAnimation` | - |
 | `TrackData_InitLevel` | `0x169B0` | `Race_Init` | `TrackData_StartDecode` |

@@ -27,7 +27,15 @@ unk_14056:      dc.b   1
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_1406A:
+ ; *************************************************
+; Function Race_UpdateLeanCurve
+; Computes the lean/curve ($3E/$40) and ram_FF3042 from the current lean/speed.
+; In:  d0 - value; a1 - actor ($3E)
+; Out: actor $40; ram_FF3042
+; Clobbers: d0-d2
+; *************************************************
+
+Race_UpdateLeanCurve:
                 move.w  d0,d1
                 move.w  $3E(a1),d3
                 beq.w   .locret_140BA
@@ -68,7 +76,7 @@ sub_1406A:
 
 .locret_140BA:
                 rts
-; End of function sub_1406A
+; End of function Race_UpdateLeanCurve
 
 
                 dc.b $42 ; B
@@ -5395,6 +5403,14 @@ byte_15FA8:     dc.b $3D
 ; =============== S U B R O U T I N E =======================================
 
 
+ ; *************************************************
+; Function Rand_Init
+; Seeds/copies the 32-word sum PRNG state and sets the indexes.
+; In:  d0 - seed
+; Out: ram_FF18BE (32 words), ram_FF18FE/ram_FF1900
+; Clobbers: d0/d1/a0/a1
+; *************************************************
+
 Rand_Init:
                 movem.l d0-d1/a0-a1,-(sp)
                 move.w  d0,d1
@@ -5427,6 +5443,14 @@ Rand_Init:
 
 ; =============== S U B R O U T I N E =======================================
 
+
+ ; *************************************************
+; Function Rand_GetWord
+; Returns state[i1]+state[i2] and advances both indexes (lagged sum PRNG).
+; In:  ram_FF18BE/18FE/1900
+; Out: d0 - word
+; Clobbers: d0-d2/a0
+; *************************************************
 
 Rand_GetWord:
                 movem.l d1-d2/a0,-(sp)
@@ -5519,7 +5543,15 @@ sub_160CC:
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_160E2:
+ ; *************************************************
+; Function Race_UpdatePlayerAnimation
+; Advances the player tile base $5C toward ram_FF18AA by the frame delay.
+; In:  RacePlayerA $5C/$6E/$68; Race_ram_FrameDelay
+; Out: player $5C
+; Clobbers: d0
+; *************************************************
+
+Race_UpdatePlayerAnimation:
                 lea     (RacePlayerA).l,a1
                 btst    #4,$68(a1)
                 beq.w   .loc_160FA
@@ -5538,13 +5570,21 @@ sub_160E2:
 
 .locret_16118:
                 rts
-; End of function sub_160E2
+; End of function Race_UpdatePlayerAnimation
 
 
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_1611A:
+ ; *************************************************
+; Function Race_UpdateNearestTarget
+; Finds the nearest actor by squared X/Y distance and stores the target state.
+; In:  ram_FF1A08 actor list; player A
+; Out: ram_FF1904/1908/1AA4/1786
+; Clobbers: d0-d5/a0-a3
+; *************************************************
+
+Race_UpdateNearestTarget:
                 move.w  #0,(ram_FF1904).l
                 lea     (ram_FF1A08).l,a0
                 movea.l (a0)+,a1
@@ -5677,7 +5717,7 @@ sub_1611A:
 
 .locret_162AE:
                 rts
-; End of function sub_1611A
+; End of function Race_UpdateNearestTarget
 
 
 ; =============== S U B R O U T I N E =======================================
@@ -5835,7 +5875,7 @@ sub_16458:
 loc_1646E:
                 btst    #4,$69(a1)
                 beq.w   loc_1647C
-                bsr.w   sub_16548
+                bsr.w   Audio_UpdateEngineState
 
 loc_1647C:
                 bclr    #2,$69(a1)
@@ -5897,6 +5937,14 @@ locret_1651E:
 ; =============== S U B R O U T I N E =======================================
 
 
+ ; *************************************************
+; Function Audio_UpdateEngine0
+; Flags an active engine for the audio driver.
+; In:  a1 - actor $6C/$6B/$69
+; Out: ram_FF1AD7=$0E
+; Clobbers: d0
+; *************************************************
+
 Audio_UpdateEngine0:
                 cmpi.b  #1,$6C(a1)
                 bne.w   .locret_16546
@@ -5914,7 +5962,15 @@ Audio_UpdateEngine0:
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_16548:
+ ; *************************************************
+; Function Audio_UpdateEngineState
+; Advances the engine/gear state and timer using the engine timing tables.
+; In:  a1 - actor $6B/$69/$6C/$6D; Race_ram_FrameDelay
+; Out: actor $6C/$6D; ram_FF1906; ram_FF1AD7
+; Clobbers: d0/a4
+; *************************************************
+
+Audio_UpdateEngineState:
                 move.w  #0,(ram_FF1906).l
                 move.w  (Race_ram_FrameDelay).l,d0
                 sub.b   d0,$6D(a1)
@@ -5955,7 +6011,7 @@ sub_16548:
 
 .locret_165CE:
                 rts
-; End of function sub_16548
+; End of function Audio_UpdateEngineState
 
 
 ; =============== S U B R O U T I N E =======================================
@@ -5994,7 +6050,7 @@ sub_165E0:
 
 
 sub_16612:
-                bsr.w   sub_16732
+                bsr.w   Race_UpdateCollision
                 move.w  d1,-(sp)
                 bsr.w   sub_131BE
                 move.w  (sp)+,d1
@@ -6008,7 +6064,7 @@ sub_16612:
 
 sub_16624:
                 bsr.s   sub_165E0
-                bsr.w   sub_16732
+                bsr.w   Race_UpdateCollision
                 rts
 ; End of function sub_16624
 
@@ -6134,7 +6190,7 @@ sub_166F0:
 
 
 .loc_16720:
-                bsr.w   sub_16732
+                bsr.w   Race_UpdateCollision
                 move.w  d1,-(sp)
                 bsr.w   sub_131BE
                 move.w  (sp)+,d1
@@ -6148,7 +6204,15 @@ sub_166F0:
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_16732:
+ ; *************************************************
+; Function Race_UpdateCollision
+; Player/actor proximity/impact: sets collision/engine/gear flags from $4A/$30.
+; In:  a1 - actor; RacePlayerA; ram_FF1A68; ram_FF1AB6/1ABC
+; Out: actor $5A/$69/$6B/$6C/$6D
+; Clobbers: d0-d3/a2/a4
+; *************************************************
+
+Race_UpdateCollision:
                 btst    #4,$69(a1)
                 bne.w   .locret_1685E
                 lea     (RacePlayerA).l,a2
@@ -6230,5 +6294,5 @@ sub_16732:
 
 .locret_1685E:
                 rts
-; End of function sub_16732
+; End of function Race_UpdateCollision
 

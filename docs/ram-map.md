@@ -188,6 +188,26 @@ Buffers: `Intro_TitleScrollTable`/`Intro_TitleScrollSpeed` (+$400 SAT),
 (`x-$100000`), with active/free lists and distance checks; `Race_UpdateSpeedDisplay`
 + `Race_FormatDecimal` produce `ram_FF3046`. See `docs/analysis/race_spawn.md`.
 
+### PRNG/audio/animation (`race_anim_audio.asm`)
+
+| Address | Name | Size | Meaning |
+|---|---|---|---|
+| `$FF18BE` | PRNG state | 64 | 32-word sum PRNG table. |
+| `$FF18FE`/`$FF1900` | PRNG indexes | 2 each | Two 0..31 indexes. |
+| `byte_15FA8` | PRNG seed | 64 | Seed table for `Rand_Init`. |
+| `$FF1AD7` | engine-audio flag | 1 | Set to `$0E` for an active engine. |
+| `$FF1904`/`$FF1906`/`$FF1908` | target/collision state | 2-4 | Nearest-target/collision helpers. |
+| `$FF1AA4`/`$FF1786` | nearest-target distances | 2/4 | Nearest actor speed/distance. |
+| `unk_257E2`/`unk_257E8`/`unk_257EE` | engine timings | - | Engine/gear timing tables. |
+| `unk_14056` | curve limit | - | `Race_GetCurveSpeedLimit` data. |
+| `unk_1471A` | track params | - | `Race_LoadTrackParams` data. |
+| `word_14742` | curve speed | 2 | `Race_UpdateBikeCurve` speed. |
+
+Actor fields: `$3E/$40/$42` lean, `$4A/$5A` collision/range, `$5C` tile base,
+`$68/$69/$6B/$6C/$6D/$6E` engine/collision/animation flags. `Rand_Init` seeds the
+32-word sum PRNG; `Rand_GetWord` returns `state[i1]+state[i2]`. See
+`docs/analysis/race_anim_audio.md`.
+
 ### Actors/AI (`race_ai.asm`)
 
 | Address | Name | Size | Meaning |

@@ -1862,7 +1862,7 @@ Race_Update:
                 tst.w   (ram_FF1B20).l
                 beq.w   .loc_C15A
 ; race started ??
-                jsr     (sub_160E2).l
+                jsr     (Race_UpdatePlayerAnimation).l
                 lea     (RacePlayerA).l,a1
                 jsr     (Race_UpdateBikeLean).l
                 jsr     (sub_1383E).l
@@ -1901,7 +1901,7 @@ Race_Update:
                 move.w  (RacePlayerA + STRUCT_OFFSET_POSX_HIGH).l,d0
                 sub.w   (ram_FF1F2E).l,d0
                 move.w  d0,(ram_FF3036).l
-                jsr     (sub_1611A).l
+                jsr     (Race_UpdateNearestTarget).l
 .loc_C15A:
                 jsr     (Race_UpdateCamera).l
                 movea.l (Race_ram_CurrentFrameReady).l,a0

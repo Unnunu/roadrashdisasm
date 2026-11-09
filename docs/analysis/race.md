@@ -112,11 +112,11 @@ This is the double/quad buffering that avoids tearing.
    `ram_FF1B18=480`), eventually `Race_ram_GameEnded`.
 2. Clear the per-frame player flags `ram_FF1AD6/D7/DD`.
 3. `Race_UpdateSpeedDisplay` with the player Speed; `Race_SpawnTick`; if the race has started
-   (`ram_FF1B20`): the player/opponent update chain (`sub_160E2`, `Race_UpdateBikeLean`,
+   (`ram_FF1B20`): the player/opponent update chain (`Race_UpdatePlayerAnimation`, `Race_UpdateBikeLean`,
    `sub_1383E`, `sub_13A92`, `Race_UpdateActorAI`, `sub_13E94`, `sub_10DBE`, `sub_10DDA`,
    `sub_13BF4`, `Race_UpdateStaticActors`, `sub_128E0`, `sub_12974`, `sub_138CE`, `sub_1281E`,
    `sub_11C44`, `sub_11CC8`, `sub_1218C`, `sub_123A8`, `Race_UpdateNearestOpponent`, `sub_12EA2`,
-   `sub_13106`), the player/opponent x difference `ram_FF3036`, `sub_1611A`.
+   `sub_13106`), the player/opponent x difference `ram_FF3036`, `Race_UpdateNearestTarget`.
 4. Render prep: `Race_UpdateCamera`; if the frame is not ready: `Race_IntegrateTrackCurve`, the
    `PiecewiseLinearInterpolation` calls for the road arrays (`Road_ram_XLeftArray`,
    `Road_ram_MarkingXArray`, `Road_ram_XRightArray`), `Road_FillProfileTables`,
@@ -202,7 +202,7 @@ Actors/player structures:
 | Track/actors | `Race_InitTrack` `0xB016`, `Race_InitActorLists/Positions/PhysicsConstants/LoadTrackParams/SpawnOpponents`, `Race_CreateActors` `0xCAD0`; `Race_ActorList/DefinitionTable/GraphicsTable/StaticActorList` |
 | Spawn/traffic | `Race_SpawnTick` `0x16AF6`, `Race_SpawnOpponent/Traffic`, active/free lists, `Race_UpdateSpeedDisplay`/`Race_FormatDecimal` |
 | AI/physics | `sub_10E00`..`Race_GetCurveSpeedLimit`, `Race_HandleInputOnFoot` `0x110AE`/`Another` `0x111FA` (`race_ai.asm`) |
-| Animations/audio | `sub_1406A`..`sub_16732`, `Rand_Init` `0x15FE8`/`Rand_GetWord` `0x16034`, `Audio_UpdateEngine0` `0x16520` (`race_anim_audio.asm`) |
+| Animations/audio | `Race_UpdateLeanCurve`..`Race_UpdateCollision`, `Rand_Init` `0x15FE8`/`Rand_GetWord` `0x16034`, `Audio_UpdateEngine0` `0x16520` (`race_anim_audio.asm`) |
 | Camera/scroll/rearview | `Race_UpdateCamera`, `Race_BuildVScrollInfo`/`HScrollTable`, `Race_DrawRearviewMirror`, `Race_DrawRoadMarkingHud`, `Race_UpdateNearestOpponent` (`race_physics.asm`) |
 | Physics/AI | `Race_UpdateSpeedDisplay`, `Race_SpawnTick`, `Race_UpdateBikeLean`..`sub_13106` (TODO) |
 | Road/render | `PiecewiseLinearInterpolation`, `Road_FillProfileTables`, `sub_FD96/FB1E/F40C`, `sub_109B6/FC0E`, `Road_BuildVisibleList`, `Road_DrawObjects` (`road_render`), `RoadMarking_Draw` |
