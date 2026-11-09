@@ -38,7 +38,8 @@ There is a **single ROM file**: `baserom.md` (the full 786432-byte ROM).
 ./build.sh
 ```
 
-`build.sh` runs:
+`build.sh` runs `tools/assets.py split` to regenerate the git-ignored asset slices,
+then:
 
 ```sh
 mkdir -p build
@@ -103,7 +104,10 @@ differing byte is reported. `baserom.md` is the only ROM file and is git-ignored
 | `tools/disasm.py` | Capstone-based ROM range -> project AS source generator. |
 | `tools/roundtrip.py` | Round-trip verifier for `disasm.py` (ROM -> AS -> assemble -> compare). |
 | `tools/callgraph.py` | Best-effort function index / call graph generator. |
-| `tools/extract.py` | Asset extraction helper (Python 3 + Pillow). |
+| `tools/extract.py` | Legacy one-off asset extraction helper (Python 3 + Pillow). |
+| `tools/assets.py` | Split/render/check ROM assets; generates `assets/`. |
+| `tools/asset_specs.json` | Asset manifest (labels, addresses, sizes, palettes). |
+| `assets/` | Generated split assets/previews (git-ignored; do not commit). |
 | `docs/architecture.md` | ROM map, boot/interrupt flow, module index. |
 | `docs/hardware.md` | VDP/DMA/controller/Z80 reference + game configurations. |
 | `docs/ram-map.md` | Phase-aware work-RAM map (structures, overlays). |
@@ -276,7 +280,8 @@ The build must report `0 errors`. The only accepted warning class is the one abo
 ## Do not touch
 
 - `baserom.md` (the single reference ROM; git-ignored).
-- `build/` (generated artifacts) and `analysis/` (local RE working data).
+- `build/` (generated artifacts), `assets/` (generated asset slices/previews) and
+  `analysis/` (local RE working data).
 - `tools/asl`, `tools/p2bin` (prebuilt toolchain).
 - `LogoEA_Image_ElectronicArts.bin` (asset used by `binclude`).
 

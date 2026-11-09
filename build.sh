@@ -13,6 +13,9 @@ fi
 
 mkdir -p "$BUILD"
 
+# regenerate split asset .bin files from baserom.md (assets/ is git-ignored)
+python3 tools/assets.py split --quiet
+
 # assemble
 if ! "$AS" -cpu 68000 -L -olist "$BUILD/roadrash.lst" -o "$BUILD/roadrash.p" main.asm; then
     echo "Build FAILED"
@@ -22,9 +25,8 @@ fi
 # convert to binary
 "$P2BIN" "$BUILD/roadrash.p" "$OUT"
 
-# The sources currently cover only the beginning of the full ROM, so compare the
-# built prefix against baserom.md. As more of the ROM is disassembled the built
-# image grows; it must always stay byte-identical to the ROM prefix.
+# Compare the built image against baserom.md. The built image must always stay
+# byte-identical to the full reference ROM.
 built=$(wc -c < "$OUT" | awk '{print $1}')
 ref=$(wc -c < baserom.md | awk '{print $1}')
 if [ "$built" -gt "$ref" ]; then

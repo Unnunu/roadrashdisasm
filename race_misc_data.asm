@@ -84,11 +84,11 @@ RaceHud_NeedleData:
 
 ; Shop_BikePalettes: 8 bike palettes x 32 bytes.
 Shop_BikePalettes:
-    binclude "baserom.md",$7E370,$0100
+    binclude "assets/palettes/shop_bike_palettes/data.bin"
 
 ; unk_7E470: actor palettes, 16 x 32 bytes (Race_LoadActorPalette).
 unk_7E470:
-    binclude "baserom.md",$7E470,$0200
+    binclude "assets/palettes/actor_palettes/data.bin"
 
 ; unk_7E670: 5 track-image pointers used by race_results.
 unk_7E670:
