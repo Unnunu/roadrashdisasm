@@ -49,11 +49,19 @@ speed/curve (`Race_ram_TrackParam0`/`Race_ram_TrackParam2`/`Race_ram_TrackParam3
 
 - `unk_12D0A` is a 6-word offset table (`FF60,FFA0,FFE0,0020,0060,00A0` = -$A0..$A0).
 - `unk_12D16` is a 99-entry dword table of actor action code pointers. `unk_259C0`
-  has 20 pointers indexed by `$74` (definition byte1); each points to a 4-pointer
-  action row. `sub_12EA2` calls `(a4)`; if the actor is the current/nearest target it
-  advances `a4 += 4` first, so the row is `normal -> dispatcher -> two alternatives`.
+  has 20 pointers indexed by `$74` (definition byte1); each points to a starting
+  action slot. `sub_12EA2` calls `(a4)`; if the actor is the current/nearest target it
+  advances `a4 += 4` first.
 - `sub_16458` is the dispatcher: it uses `4(a4)`/`8(a4)`/`C(a4)` to select the
-  action-2/action-3/action-4 handler based on target distance and `$5A` cooldown.
+  action-2/action-3/action-4 handler:
+  - target is not `-1` and not PlayerA -> `4(a4)` (action2);
+  - no target -> `sub_13D44`, fallback target = PlayerA;
+  - target == PlayerA and `a1` is the first opponent or `$69` bit4 set ->
+    `C(a4)` (action4);
+  - otherwise compare `|4(target)-4(a1)|` with
+    `(ram_FF1A68)[0] << 16`; distance >= threshold -> `8(a4)` (action3);
+  - below threshold: if `a1 == Race_ram_NearestActor` and `$5A > 0` ->
+    action3, else `C(a4)` (action4).
 
 Profile map from the ROM (slot -> actions at `+0/+4/+8/+C`):
 
@@ -94,6 +102,9 @@ Action 4 (`a4+$10`, used by `sub_16458`'s final fallback) by profile:
   `0x1651C` saw targets `PlayerA`, `$5A=0`, profiles 6/8/9, and reached the
   `sub_16458` handler selection (slot `$12D8E/$12DB6`); the exact action2/action3
   outcome still needs a distance/cooldown-controlled test.
+- `sub_16458` is entered only after `sub_12EA2` selects slot+4. In normal demo
+  profiles `6/8/9` stay on `sub_1300E`; forcing PlayerA Speed to `$3000` makes the
+  dispatcher reachable.
 - Handler roles: `sub_1300E` normal target/curve update; `sub_1307C` variant;
   `sub_130D2` recovery timer; `sub_12FE4` state/collision + `sub_13A92`;
   `sub_13004` movement/`sub_131BE`; `sub_16458` dispatcher; `sub_165D0/165E0`
