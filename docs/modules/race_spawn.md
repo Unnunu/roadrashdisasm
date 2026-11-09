@@ -19,7 +19,7 @@ actor lists; the final part of the race module.
 | `TrackData_DecodeNextChunk` | `0x16A32` | `top_level.asm` | Next 64-sample chunk. |
 | `Race_SpawnTick` | `0x16AF6` | `Race_Update` | Opponent/traffic spawn. |
 | `Race_SpawnOpponent`/`Traffic` | `0x16BD6`/`0x16C1A` | spawn tick | Ahead/behind paths. |
-| `Race_UpdateSpeedDisplay`/`Race_FormatDecimal` | `0xF108`/`0xF11C` | HUD/debug | Speed/decimal (`race_ai.asm`). |
+| `Race_UpdateSpeedDisplay`/`Race_FormatDecimal` | `0xF108`/`0xF11C` | HUD/debug | Speed/decimal (`race_ai_road.asm`). |
 
 ## Coverage matrix
 

@@ -4,8 +4,8 @@
   actors/physics/AI, road/HUD/animation pipeline, race outcome
 - **ROM range:** `0x00A4E2`–`0x016E6F`; split modules: `race_core.asm`
   (`0xA4E2`-`0xD277`), `race_hud.asm` (`0xD278`-`0xD8F9`), `race_physics.asm`
-  (`0xD8FA`-`0xE731`), `road_marking.asm` (`0xE732`-`0xEB33`), `race_ai.asm`
-  (`0xEB34`-`0x1685F`), `animation.asm` (`0x16860`-`0x169AF`), `race_spawn.asm`
+  (`0xD8FA`-`0xE731`), `road_marking.asm` (`0xE732`-`0xEB33`), `race_ai_road.asm` (`0xEB34`-`0x10DFF`), `race_ai.asm`
+  (`0x10E00`-`0x14055`), `race_anim_audio.asm` (`0x14056`-`0x1685F`), `animation.asm` (`0x16860`-`0x169AF`), `race_spawn.asm`
   (`0x169B0`-`0x16E6F`); `race.asm` is the include list.
 - **Status:** partially analyzed (top-level flow, init/assets, input/loop, buffer
   rotation, initial struct inventory; actor/physics/AI and sub-module internals TODO)
@@ -201,6 +201,8 @@ Actors/player structures:
 | Time | `Race_UpdateTime` `0xBA02`, `Race_ResetFrameTimers` `0xB9AE` |
 | Track/actors | `Race_InitTrack` `0xB016`, `Race_InitActorLists/Positions/PhysicsConstants/LoadTrackParams/SpawnOpponents`, `Race_CreateActors` `0xCAD0`; `Race_ActorList/DefinitionTable/GraphicsTable/StaticActorList` |
 | Spawn/traffic | `Race_SpawnTick` `0x16AF6`, `Race_SpawnOpponent/Traffic`, active/free lists, `Race_UpdateSpeedDisplay`/`Race_FormatDecimal` |
+| AI/physics | `sub_10E00`..`sub_13FE6`, `Race_HandleInputOnFoot` `0x110AE`/`Another` `0x111FA` (`race_ai.asm`) |
+| Animations/audio | `sub_1406A`..`sub_16732`, `Rand_Init` `0x15FE8`/`Rand_GetWord` `0x16034`, `Audio_UpdateEngine0` `0x16520` (`race_anim_audio.asm`) |
 | Camera/scroll/rearview | `Race_UpdateCamera`, `Race_BuildVScrollInfo`/`HScrollTable`, `Race_DrawRearviewMirror`, `Race_DrawRoadMarkingHud`, `Race_UpdateNearestOpponent` (`race_physics.asm`) |
 | Physics/AI | `Race_UpdateSpeedDisplay`, `Race_SpawnTick`, `sub_13EA0`..`sub_13106` (TODO) |
 | Road/render | `PiecewiseLinearInterpolation`, `Road_FillProfileTables`, `sub_FD96/FB1E/F40C`, `sub_109B6/FC0E`, `Road_BuildVisibleList`, `Road_DrawObjects` (`road_render`), `RoadMarking_Draw` |

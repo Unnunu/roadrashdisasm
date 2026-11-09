@@ -81,7 +81,9 @@ differing byte is reported. `baserom.md` is the only ROM file and is git-ignored
 | `race_hud.asm` | Race HUD. |
 | `race_physics.asm` | DmaWriteVRAM + actor/physics/AI functions. |
 | `road_marking.asm` | Road marking / sprite placement. |
-| `race_ai.asm` | Main gameplay/AI/physics. |
+| `race_ai_road.asm` | Road profile/objects/standings/speed. |
+| `race_ai.asm` | Actor/input/AI/physics. |
+| `race_anim_audio.asm` | Animations, random, engine audio. |
 | `animation.asm` | Sprite animation. |
 | `race_spawn.asm` | Track data + dynamic spawn. |
 | `top_level.asm` | Top-level screen flow at `0x07E6A2` (intro/menu/race/results); generated with `tools/disasm.py`. |

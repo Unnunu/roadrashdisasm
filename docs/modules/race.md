@@ -22,7 +22,9 @@ marking/animation, and the race outcome. `top_level.asm` calls `Race_Init`, inst
 | `race_hud.asm` | `$D278-$D8F9` | Race HUD | [race_hud.md](race_hud.md) |
 | `race_physics.asm` | `$D8FA-$E731` | DMA, camera, HInt scroll, rearview/marking, nearest opponent | [race_physics.md](race_physics.md) |
 | `road_marking.asm` | `$E732-$EB33` | Road marking / sprite placement | [road_marking.md](road_marking.md) |
-| `race_ai.asm` | `$EB34-$1685F` | Main gameplay/AI/physics | [race_ai.md](race_ai.md) |
+| `race_ai_road.asm` | `$EB34-$10DFF` | Road profile/objects/standings/speed | [race_ai_road.md](race_ai_road.md) |
+| `race_ai.asm` | `$10E00-$14055` | Actor/input/AI/physics | [race_ai.md](race_ai.md) |
+| `race_anim_audio.asm` | `$14056-$1685F` | Animations, random, engine audio | [race_anim_audio.md](race_anim_audio.md) |
 | `animation.asm` | `$16860-$169AF` | Sprite animation | [animation.md](animation.md) |
 | `race_spawn.asm` | `$169B0-$16E6F` | Track data + dynamic spawn | [race_spawn.md](race_spawn.md) |
 | `race_actor_tables.asm` | `$25856-$259B5` | Actor pointer/graphics tables (ROM gap data) | - |

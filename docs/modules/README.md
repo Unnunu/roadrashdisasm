@@ -30,7 +30,9 @@ row to the table below.
 | `race_hud.asm` | `0x00D278` | Race HUD | [race_hud.md](race_hud.md) |
 | `race_physics.asm` | `0x00D8FA` | DmaWriteVRAM + actor/physics/AI | [race_physics.md](race_physics.md) |
 | `road_marking.asm` | `0x00E732` | Road marking / sprite placement | [road_marking.md](road_marking.md) |
-| `race_ai.asm` | `0x00EB34` | Main gameplay/AI/physics | [race_ai.md](race_ai.md) |
+| `race_ai_road.asm` | `0x00EB34` | Road profile/objects/standings/speed | [race_ai_road.md](race_ai_road.md) |
+| `race_ai.asm` | `0x010E00` | Actor/input/AI/physics | [race_ai.md](race_ai.md) |
+| `race_anim_audio.asm` | `0x014056` | Animations, random, engine audio | [race_anim_audio.md](race_anim_audio.md) |
 | `animation.asm` | `0x016860` | Sprite animation | [animation.md](animation.md) |
 | `race_spawn.asm` | `0x0169B0` | Track data + dynamic spawn | [race_spawn.md](race_spawn.md) |
 | `top_level.asm` | `0x07E6A2` | Top-level screen flow (intro/menu/race/results) | [top_level.md](top_level.md) |

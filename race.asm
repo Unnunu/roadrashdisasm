@@ -9,6 +9,8 @@
     include "race_hud.asm"
     include "race_physics.asm"
     include "road_marking.asm"
+    include "race_ai_road.asm"
     include "race_ai.asm"
+    include "race_anim_audio.asm"
     include "animation.asm"
     include "race_spawn.asm"

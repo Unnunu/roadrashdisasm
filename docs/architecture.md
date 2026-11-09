@@ -157,7 +157,9 @@ tentative until the module card is filled in.
 | `0x00D278` | `race_hud.asm` | Race HUD | [race_hud.md](modules/race_hud.md) |
 | `0x00D8FA` | `race_physics.asm` | DmaWriteVRAM + actor/physics/AI | [race_physics.md](modules/race_physics.md) |
 | `0x00E732` | `road_marking.asm` | Road marking / sprite placement | [road_marking.md](modules/road_marking.md) |
-| `0x00EB34` | `race_ai.asm` | Main gameplay/AI/physics | [race_ai.md](modules/race_ai.md) |
+| `0x00EB34` | `race_ai_road.asm` | Road profile/objects/standings/speed | [race_ai_road.md](modules/race_ai_road.md) |
+| `0x010E00` | `race_ai.asm` | Actor/input/AI/physics | [race_ai.md](modules/race_ai.md) |
+| `0x014056` | `race_anim_audio.asm` | Animations, random, engine audio | [race_anim_audio.md](modules/race_anim_audio.md) |
 | `0x016860` | `animation.asm` | Sprite animation | [animation.md](modules/animation.md) |
 | `0x0169B0` | `race_spawn.asm` | Track data + dynamic spawn | [race_spawn.md](modules/race_spawn.md) |
 | `0x07E6A2` | `top_level.asm` | Top-level screen flow (intro/menu/race/results) | [top_level.md](modules/top_level.md) |

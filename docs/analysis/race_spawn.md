@@ -2,7 +2,7 @@
 
 - **Module:** dynamic opponent/traffic spawning, actor active/free lists, speed display
 - **Source:** `race_spawn.asm` (`Race_SpawnTick` `0x16AF6`-area,
-  `Race_SpawnOpponent/Traffic`, list helpers); speed helpers in `race_ai.asm`
+  `Race_SpawnOpponent/Traffic`, list helpers); speed helpers in `race_ai_road.asm`
   (`Race_UpdateSpeedDisplay` `0xF108`, `Race_FormatDecimal` `0xF11C`); actor tables in
   `race_core.asm`.
 - **Status:** analyzed statically; exact initial list counts/overlap and some fields
