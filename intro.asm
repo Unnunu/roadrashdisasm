@@ -8,7 +8,7 @@ Intro_Init:
                 move.w  #180,(Intro_ram_TextTimer).l ; 3 seconds
                 move.w  #0,(Intro_ram_CurrentStringOffset).l
                 lea     (VdpCtrl).l,a0
-                move.w  #$8004,(a0) ; H-ints disabled, Pal Select 1, HVC latch disabled, Display gen enabled
+                move.w  #$8004,(a0) ; H-ints off, left column unblanked, HV counter normal (display enabled by $8174 below)
                 move.w  #$8174,(a0) ; Display enabled, V-ints enabled, Height: 28, Mode 5, 64K VRAM
                 move.w  #$8210,(a0) ; Scroll A Name Table:    $4000
                 move.w  #$8401,(a0) ; Scroll B Name Table:    $2000
@@ -70,7 +70,7 @@ Intro_Init:
                 move.w  #$80,d6 ; plane width = 128
                 lea     (Intro_ram_ImageBuffer + $11A8).l,a0
                 jsr     (WriteNametable).l
-; draw title once again, but why?
+; fill the off-screen right part of the 128-cell plane (needed by the per-line H-scroll)
                 move.w  #88,d0 ; width
                 move.w  #6,d1 ; height
                 move.w  #40,d2 ; x
