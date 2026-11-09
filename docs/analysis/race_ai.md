@@ -40,10 +40,34 @@ walked from `Race_StaticActorList` by `Race_UpdateStaticActors`
 (`unk_25A10`, `sub_113A4`/`sub_116E2`/`sub_11940`, `sub_137E4`/`sub_12C9A`/
 `sub_13DE0`).
 
-`Race_UpdateBikeLean` computes `$42` from Speed/Steering (`ram_FF1AA6/AAA/B4`,
-`RaceBike_ram_CurrentSteering`). `Race_UpdateBikeCurve` derives `$3E/$40` from the
-speed/curve (`Race_ram_TrackParam0`/`Race_ram_TrackParam2`/`Race_ram_TrackParam3`, `word_14742`). `Race_GetCurveSpeedLimit` reads
-`Track_CurveBuffer` and the `unk_14056` table to clamp the actor speed
+## Bike lean / curve
+
+`Race_UpdateBikeLean` (`0x13EA0`) computes the signed `$42` lean:
+
+- returns immediately unless `$6E` is negative (`$FF` on a normal bike);
+- `d2 = Speed * ram_FF1AB4 >> 8`; `d1 = ram_FF1AA6 >> 3`;
+- `d0 = |RaceBike_ram_CurrentSteering|`; divide by `d1`; if non-zero,
+  `d0 = (d0 / d2) * ram_FF1AAA` with the sign of steering;
+- `$42 = d0`, otherwise `$42 = 0`.
+
+`Race_UpdateBikeCurve` (`0x13EFA`) derives `$3E/$40` and `$68` bit5:
+
+- returns if `$68` bit0 is set;
+- `d1 = Speed * ram_FF1AB2 >> 8`; `d0 = |8(a1)|`;
+- for demo/non-player, `d0 = d0*$200 >>8`; then `d0 = d1*d0 >>3`;
+- select a curve limit from `$78` timer or track params (`$68` bits5/3):
+  `word_14742`, `Race_ram_TrackParam0/2/3`;
+- if `d0 >= limit`, `$3E = (limit<<8)/d0`, set `$68` bit5; else clear bit5 and
+  zero `$3E/$40`.
+
+`Race_GetCurveSpeedLimit` (`0x13FE6`) picks `TrackParam2` when `$68` bit3 is set,
+otherwise `TrackParam0`, shifts left 3, indexes `Track_CurveBuffer` from the actor
+X low byte (`(byte+6)&$FF`, word entries), takes abs, scales by
+`unk_14056[$75] >>8`, then divides; zero/overflow returns `$7FFF` (no limit).
+
+`[dynamic]` Forced steering (`RaceBike_ram_CurrentSteering=±$600`) gave
+`RaceActor_Lean=$FFB7`/`$0049` (signed); `$3E/$40` stayed zero in that snapshot,
+so the curve-limit branch was not entered at that speed/curve.
 
 ## Actor action dispatch (`0x12D0A-0x131BE`)
 

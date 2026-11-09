@@ -40,5 +40,7 @@ random and audio live in `src/race/race_anim_audio.asm`; attack/action handlers 
 |----------|---------|----------|-----------|------|----------|-----|---------|--------|
 | actor/input/AI chain | `0x10E00`+ | [~] | [~] | [~] | [ ] | [~] | [~] | partial; `10E66` snapshot |
 | actor action dispatch | `0x12D0A`-`0x131BE` | [x] | [x] | [x] | [x] | [x] | [~] | static table + demo trace |
+| bike lean/curve | `0x13EA0`/`0x13EFA` | [x] | [~] | [x] | [x] | [~] | [~] | static + steering snapshots |
+| curve speed limit | `0x13FE6` | [x] | [~] | [x] | [x] | [~] | [ ] | static |
 
 Detailed flow: `docs/analysis/race.md`; spawn: `docs/analysis/race_spawn.md`.
