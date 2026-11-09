@@ -34,12 +34,6 @@ unk_25802 equ $25802
 unk_2580A equ $2580A
 unk_25812 equ $25812
 ; Actor/opponent tables (see docs/analysis/race_actors.md)
-Race_ActorList equ $25856 ; player A + 15 opponent actor pointers, FFFFFFFF-terminated
-Race_ActorListMid equ $2585E ; sub-list used by Race_InitActorLists
-Race_StaticActorList equ $2589A ; static actor pointers (type $10)
-unk_258A6 equ $258A6
-unk_258AE equ $258AE
-Race_ActorGraphicsTable equ $258EE ; graphics entries indexed by actor definition byte2
 unk_259B6 equ $259B6
 unk_259C0 equ $259C0
 unk_25A10 equ $25A10

@@ -35,4 +35,5 @@ row to the table below.
 | `race_spawn.asm` | `0x0169B0` | Track data + dynamic spawn | [race_spawn.md](race_spawn.md) |
 | `top_level.asm` | `0x07E6A2` | Top-level screen flow (intro/menu/race/results) | [top_level.md](top_level.md) |
 
-Helper files without code in the image: `hw_const.asm`, `unknown.asm`, `ram_const.asm`.
+Helper/data files without code: `hw_const.asm`, `unknown.asm`, `ram_const.asm`,
+`race_actor_tables.asm`.

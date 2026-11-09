@@ -9,10 +9,10 @@ Matching disassembly of **Road Rash** (Sega Genesis, 1991, US region).
 - Goal: the assembly sources must assemble **byte-for-byte** into the original ROM.
 - Reference ROM: `baserom.md`, the **full ROM**, **786432 bytes** (`0xC0000`),
   md5 `543b64ccb26c18edc6c98c12b1302dc0`.
-- Current coverage: `0x000000`–`0x016E6F` (fully disassembled) and
-  `0x07E6A2`–`0x07EA65` (top-level flow, `top_level.asm`). The gap
-  `0x016E70`–`0x07E6A1` is **not disassembled yet** and is bridged with raw bytes from
-  `baserom.md` in `main.asm`. As the gap is disassembled, shrink the bridge and grow
+- Current coverage: `0x000000`–`0x016E6F` (fully disassembled),
+  `0x025856`–`0x0259B5` (actor pointer/graphics tables, `race_actor_tables.asm`) and
+  `0x07E6A2`–`0x07EA65` (top-level flow, `top_level.asm`). The remaining gap is
+  bridged with raw bytes from `baserom.md` in `main.asm`. As the gap is disassembled, shrink the bridge and grow
   the real source coverage.
 - `baserom.md` is local-only (git-ignored). Ask the user for it if missing.
 - All documentation and source comments in this project are **English**.
@@ -75,6 +75,7 @@ differing byte is reported. `baserom.md` is the only ROM file and is git-ignored
 | `endlevel.asm` | End-of-level menu. |
 | `road_render.asm`, `race_hud_debug.asm`, `track_data.asm` | Road/object renderer; HUD digits/debug; track data decompressor. |
 | `uncompress.asm` | Decompression routines. |
+| `race_actor_tables.asm` | Actor pointer/graphics tables from the ROM gap ($25856-$259B5). |
 | `race.asm` | Include list for the split main gameplay (order: race_core, race_hud, race_physics, road_marking, race_ai, animation, race_spawn). |
 | `race_core.asm` | Race top-level/init/results/actor data. |
 | `race_hud.asm` | Race HUD. |

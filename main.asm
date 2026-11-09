@@ -707,12 +707,16 @@ Audio_UpdateEngine:
     include "track_data.asm"
     include "race.asm"
 ; *****************************************************************
-; Raw bridge for the not-yet-disassembled gap.
-; The top-level flow at $7E6A2 is assembled from top_level.asm; the bytes between
-; the current coverage ($16E70) and that entry are copied from the reference ROM.
+; Raw bridge for the not-yet-disassembled gap, with the actor tables assembled
+; from race_actor_tables.asm at $25856-$259B5. All other gap bytes are copied from
+; the reference ROM; the top-level flow at $7E6A2 is top_level.asm.
 ; *****************************************************************
     org     $016E70
-    binclude "baserom.md",$016E70,($7E6A2-$016E70)
+    binclude "baserom.md",$016E70,($25856-$016E70)
+    include "race_actor_tables.asm"
+
+    org     $0259B6
+    binclude "baserom.md",$0259B6,($7E6A2-$0259B6)
 
     org     $7E6A2
     include "top_level.asm"

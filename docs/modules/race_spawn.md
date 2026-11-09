@@ -3,6 +3,7 @@
 - **ROM range:** `0x0169B0`–`0x016E6F` (after `animation.asm`)
 - **Status:** analyzed (track data init/next chunk + dynamic spawn)
 - **Related:** `docs/analysis/race_spawn.md`, `docs/analysis/race_actors.md`,
+  `race_actor_tables.asm`,
   `docs/ram-map.md`, `docs/modules/race.md`
 
 ## Role / purpose

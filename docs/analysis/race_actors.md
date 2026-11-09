@@ -2,8 +2,8 @@
 
 - **Module:** actor/rider initialization for the race
 - **Source:** `race_core.asm` (`Race_CreateActors` `0xCAD0`, `Race_InitActorLists`
-  `0xB6C4`-area, `Race_InitActorPositions`, actor tables) + `race_spawn.asm`
-  (dynamic spawn).
+  `0xB6C4`-area, `Race_InitActorPositions`), `race_actor_tables.asm`
+  (pointer/graphics tables from the ROM gap), `race_spawn.asm` (dynamic spawn).
 - **Status:** analyzed statically (tables parsed from `baserom.md`); field semantics
   partly TODO
 - **Related:** `docs/analysis/race.md`, `docs/ram-map.md`, `docs/modules/race.md`
@@ -12,7 +12,7 @@
 
 | Label | Address | Contents |
 |---|---|---|
-| `Race_ActorList` | `0x25856` | 16 long pointers + `$FFFFFFFF`: player A `$FF1EAA`, opponents `$FF1F2A`..`$FF262A` (0x80 apart). |
+| `Race_ActorList` | `0x25856` | 16 long pointers + `$FFFFFFFF`: player A `$FF1EAA`, opponents `$FF1F2A`..`$FF262A` (0x80 apart); now assembled from `race_actor_tables.asm`. |
 | `Race_ActorListMid` | `0x2585E` | Sub-list used by `Race_InitActorLists`; exact split TODO. |
 | `Race_StaticActorList` | `0x2589A` | `$FF2EAA`, `$FF2F2A`, sentinel: static actors (type `$10`, indices `$10/$11`). |
 

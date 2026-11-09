@@ -3,6 +3,7 @@
 - **ROM range:** `0x00A4E2`–`0x00D277` (`race_hud.asm` follows at `0xD278`)
 - **Status:** partially analyzed (top-level/init/results/actor tables; physics/AI TODO)
 - **Related:** `docs/analysis/race.md`, `docs/analysis/race_actors.md`,
+  `race_actor_tables.asm` (actor tables),
   `docs/analysis/race_spawn.md`, `docs/ram-map.md`, `docs/modules/race.md`
 
 ## Role / purpose

@@ -25,6 +25,7 @@ marking/animation, and the race outcome. `top_level.asm` calls `Race_Init`, inst
 | `race_ai.asm` | `$EB34-$1685F` | Main gameplay/AI/physics | [race_ai.md](race_ai.md) |
 | `animation.asm` | `$16860-$169AF` | Sprite animation | [animation.md](animation.md) |
 | `race_spawn.asm` | `$169B0-$16E6F` | Track data + dynamic spawn | [race_spawn.md](race_spawn.md) |
+| `race_actor_tables.asm` | `$25856-$259B5` | Actor pointer/graphics tables (ROM gap data) | - |
 
 `race.asm` includes these in exactly that order; the code is split at the original
 `race_hud`/`road_marking`/`animation` include boundaries.
