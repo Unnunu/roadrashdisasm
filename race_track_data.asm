@@ -15,20 +15,20 @@
 ; *************************************************
 
 unk_25EC0:
-    dc.l    $00025ED4 ; track 0 record
-    dc.l    $0002A770 ; track 1 record
-    dc.l    $0002E6F0 ; track 2 record
-    dc.l    $000325DC ; track 3 record
-    dc.l    $00036732 ; track 4 record
+    dc.l    Track_Record0 ; track 0 record
+    dc.l    Track_Record1 ; track 1 record
+    dc.l    Track_Record2 ; track 2 record
+    dc.l    Track_Record3 ; track 3 record
+    dc.l    Track_Record4 ; track 4 record
 
 ; track 0: record @$025ED4, level words @$025EEC
 Track_Record0:
-    dc.l    $00025EEC
-    dc.l    $00025EF6
-    dc.l    $000269F8
-    dc.l    $00027984
-    dc.l    $0002A594
-    dc.l    $00028A3E
+    dc.l    Track_LevelWords0
+    dc.l    Track_Data2_0
+    dc.l    Track_Data3_0
+    dc.l    Track_Data4_0
+    dc.l    Track_Data5_0
+    dc.l    Track_Data6_0
 Track_LevelWords0:
     dc.w    $073F,$0A0A,$0D5C,$104A,$13F6
 Track_Data2_0: ; $025EF6-$0269F8 (2818 bytes)
@@ -44,12 +44,12 @@ Track_Data5_0: ; $02A594-$02A770 (476 bytes)
 
 ; track 1: record @$02A770, level words @$02A788
 Track_Record1:
-    dc.l    $0002A788
-    dc.l    $0002A792
-    dc.l    $0002B06E
-    dc.l    $0002C002
-    dc.l    $0002E4D4
-    dc.l    $0002CC8C
+    dc.l    Track_LevelWords1
+    dc.l    Track_Data2_1
+    dc.l    Track_Data3_1
+    dc.l    Track_Data4_1
+    dc.l    Track_Data5_1
+    dc.l    Track_Data6_1
 Track_LevelWords1:
     dc.w    $06F4,$0A1E,$0D48,$12AC,$13C4
 Track_Data2_1: ; $02A792-$02B06E (2268 bytes)
@@ -65,12 +65,12 @@ Track_Data5_1: ; $02E4D4-$02E6F0 (540 bytes)
 
 ; track 2: record @$02E6F0, level words @$02E708
 Track_Record2:
-    dc.l    $0002E708
-    dc.l    $0002E712
-    dc.l    $0002F0F8
-    dc.l    $0003005A
-    dc.l    $00032384
-    dc.l    $000311B8
+    dc.l    Track_LevelWords2
+    dc.l    Track_Data2_2
+    dc.l    Track_Data3_2
+    dc.l    Track_Data4_2
+    dc.l    Track_Data5_2
+    dc.l    Track_Data6_2
 Track_LevelWords2:
     dc.w    $0712,$0A32,$0D52,$1090,$136A
 Track_Data2_2: ; $02E712-$02F0F8 (2534 bytes)
@@ -86,12 +86,12 @@ Track_Data5_2: ; $032384-$0325DC (600 bytes)
 
 ; track 3: record @$0325DC, level words @$0325F4
 Track_Record3:
-    dc.l    $000325F4
-    dc.l    $000325FE
-    dc.l    $00033190
-    dc.l    $00034072
-    dc.l    $00036426
-    dc.l    $00035174
+    dc.l    Track_LevelWords3
+    dc.l    Track_Data2_3
+    dc.l    Track_Data3_3
+    dc.l    Track_Data4_3
+    dc.l    Track_Data5_3
+    dc.l    Track_Data6_3
 Track_LevelWords3:
     dc.w    $076C,$0A0A,$0D34,$104A,$1342
 Track_Data2_3: ; $0325FE-$033190 (2962 bytes)
@@ -107,12 +107,12 @@ Track_Data5_3: ; $036426-$036732 (780 bytes)
 
 ; track 4: record @$036732, level words @$03674A
 Track_Record4:
-    dc.l    $0003674A
-    dc.l    $00036754
-    dc.l    $0003706A
-    dc.l    $00038056
-    dc.l    $0003BD4A
-    dc.l    $0003A2E0
+    dc.l    Track_LevelWords4
+    dc.l    Track_Data2_4
+    dc.l    Track_Data3_4
+    dc.l    Track_Data4_4
+    dc.l    Track_Data5_4
+    dc.l    Track_Data6_4
 Track_LevelWords4:
     dc.w    $06B3,$0A1E,$0D48,$107C,$1360
 Track_Data2_4: ; $036754-$03706A (2326 bytes)

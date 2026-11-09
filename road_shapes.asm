@@ -9,147 +9,147 @@
 ; *************************************************
 
 Road_ShapeTable:
-    dc.l    $000505EE,$000509A4,$00050D1A,$00051030
-    dc.l    $00050D1A,$000509A4,$000505EE,$00000000
-    dc.l    $00051356,$0005177C,$00051B72,$00051EFE
-    dc.l    $00051B72,$0005177C,$00051356,$00000000
-    dc.l    $00052274,$000525C2,$000528C6,$00052BAC
-    dc.l    $00052ED2,$00053238,$000535AE,$00000000
-    dc.l    $000538E8,$000538E8,$00053C30,$00053F86
-    dc.l    $000542FC,$000546F2,$00054AE8,$00000000
-    dc.l    $00054EE2,$00055258,$00055258,$000555B6
-    dc.l    $00055972,$00055972,$00055D56,$00000000
-    dc.l    $0005612C,$0005612C,$0005612C,$000564D6
-    dc.l    $000568F2,$000568F2,$00056D90,$00000000
-    dc.l    $00057220,$00057686,$00057686,$00057AF2
-    dc.l    $00057FA8,$00057FA8,$0005846E,$00000000
-    dc.l    $00057220,$00057686,$00057686,$00057AF2
-    dc.l    $00057FA8,$00057FA8,$0005846E,$00000000
-    dc.l    $000588A6,$000588A6,$000588A6,$000588A6
-    dc.l    $000588A6,$000588A6,$000588A6,$00000000
-    dc.l    $000588A6,$000588A6,$000588A6,$000588A6
-    dc.l    $000588A6,$000588A6,$000588A6,$00000000
-    dc.l    $00051EFE,$00053F86,$000564D6,$00058D72
-    dc.l    $00059152,$000594F8,$0005994C,$00059CE8
-    dc.l    $0005A0CC,$0005A784,$0005A4D4,$0005AB94
-    dc.l    $0005A922,$0005AFEE,$0005AD5C,$0006BEBA
-    dc.l    $0006BEBA,$0006C314,$00000000,$0006C7C8
-    dc.l    $0006C7C8,$0006CC6C,$00000000,$0006D170
-    dc.l    $0006D170,$0006D6CE,$00000000,$0006FA2A
-    dc.l    $0006FA2A,$0006FA2A,$00000000,$0006F576
-    dc.l    $0006F11C,$0006F11C,$00000000,$0006EC40
-    dc.l    $0006E79C,$0006E79C,$00000000,$0006E1F8
-    dc.l    $0006DC9A,$0006DC9A,$00000000,$00070BA2
-    dc.l    $00070BA2,$00070BA2,$00000000,$0003C7EC
-    dc.l    $0003CC4C,$0003D0BE,$0003D55C,$0003DA0E
-    dc.l    $0003DF28,$0003E496,$0003EAA8,$00070300
-    dc.l    $0005E3AE,$0005E5D4,$0005E7F8,$0005EB4A
-    dc.l    $0005EE2A,$0005F00A,$0005F2FE,$0005F60E
-    dc.l    $0005F8B2,$0005FB96,$0005FF06,$0006025C
-    dc.l    $00060520,$00060798,$00060A7C,$00060D20
-    dc.l    $00060EEC,$00061148,$000612EE,$000614C6
-    dc.l    $0006175E,$00061A22,$00061C88,$00061F34
-    dc.l    $00062230,$0005F00A,$000675BC,$0006787A
-    dc.l    $00067AD0,$0005F60E,$0005FF06,$0006025C
-    dc.l    $00060520,$0005E3AE,$0005E5D4,$0005EE2A
-    dc.l    $000624F2,$000626AC,$00062816,$00062984
-    dc.l    $00062B56,$00062E6A,$00063198,$0006343C
-    dc.l    $000636EC,$0006394E,$00063CB2,$00063FE0
-    dc.l    $000642F0,$0006463C,$000648FE,$00064B54
-    dc.l    $00064EC8,$000651F6,$0006555A,$00065898
-    dc.l    $00065CC4,$00066082,$000665CC,$0006699C
-    dc.l    $00066CF0,$00067254,$000675BC,$0006787A
-    dc.l    $00067AD0,$00067D78,$0005B1D0,$0005B452
-    dc.l    $0005B7F2,$0005BAA6,$0005BAA6,$0005BE84
-    dc.l    $0005C2C8,$0005C58C,$0005C9B4,$0005CD18
-    dc.l    $0005D30C,$0005D790,$0005DB30,$0005DFE8
-    dc.l    $0003F786,$0003F9CC,$0003FB32,$0003FCB8
-    dc.l    $0003FE74,$0003FFCA,$00040100,$00040390
-    dc.l    $00040550,$000406EE,$0004091C,$00040AB2
-    dc.l    $00040C38,$00040E4E,$00041004,$00041164
-    dc.l    $0004130C,$00041472,$000415C2,$00041766
-    dc.l    $000418A8,$000419EE,$00041B80,$00041CD6
-    dc.l    $00041EEA,$00042102,$000422D0,$00042466
-    dc.l    $0004267C,$00042832,$000429C8,$00042BDE
-    dc.l    $00042D6A,$00042EF0,$000430A0,$0004323E
-    dc.l    $000434B6,$0004364C,$000437D2,$00043952
-    dc.l    $00043B26,$00043CCC,$00043E94,$0004418E
-    dc.l    $00044334,$0004457E,$00044810,$00044A2A
-    dc.l    $00044C70,$00044F56,$0004514A,$000453A8
-    dc.l    $0004560E,$0004584E,$00045A7C,$00045DBE
-    dc.l    $00045F84,$000461C4,$000464A0,$00046686
-    dc.l    $000468A8,$00046B10,$00046D50,$00046F7C
-    dc.l    $00047170,$000473D6,$0004770A,$00047A36
-    dc.l    $00047C0C,$00047E3A,$000480A0,$0004827A
-    dc.l    $00048490,$000486D0,$000488C4,$00048AF2
-    dc.l    $00048CE6,$00048FAC,$000492B4,$00049564
-    dc.l    $000497D6,$00049AB2,$00049CFC,$00049F5A
-    dc.l    $0004A1B8,$0004A64C,$0004A9A2,$0004AEA4
-    dc.l    $0004B23A,$0004B69A,$0004B9F0,$0004BE26
-    dc.l    $0004C16C,$0004C684,$0004CA3A,$0004CED8
-    dc.l    $0004D26E,$0004D754,$0004DB4A,$0004E090
-    dc.l    $0004E4D2,$0004E7B2,$0004E9EE,$0004EDC0
-    dc.l    $0004F0B2,$0004F3C8,$0004F6B8,$0004FAE0
-    dc.l    $0004FE72,$0004FE72,$000501DA,$000501DA
-    dc.l    $0004E668,$0004E8D8,$0004EC02,$0004EF42
-    dc.l    $0004F25A,$0004F55E,$0004F8CC,$0004FCD4
-    dc.l    $00050044,$00050044,$000503F0,$000503F0
-    dc.l    $0007D6D8,$0007D794,$0007D850,$0007D91A
-    dc.l    $0007D91A,$0007D9E4,$0007DAA8,$0007DAA8
-    dc.l    $0007DBA8,$0007DBA8,$00069924,$00069D0C
-    dc.l    $0006A0A6,$0006A48E,$0006AA4C,$0006AF1C
-    dc.l    $0006B41C,$0006B91C,$00069012,$0006907E
-    dc.l    $000690E2,$0006913A,$0006918C,$00069262
-    dc.l    $00069356,$00069480,$00068148,$00068480
-    dc.l    $000687F6,$00068B14,$000695B0,$00069480
-    dc.l    $00069480,$00077574,$0003F0D4,$0007D4A4
-    dc.l    $0007D5EC,$00070BA2,$00070BA2,$00076794
-    dc.l    $00074EFA,$00074356,$000745A6,$0007470A
-    dc.l    $00074A34,$00074C26,$00074EFA,$00077574
-    dc.l    $0007663E,$000766A8,$00000000,$00071546
-    dc.l    $00071546,$00071546,$00071546,$000714CA
-    dc.l    $000714CA,$000714CA,$0007182A,$0007199A
-    dc.l    $00071C76,$00071DE2,$000721FA,$000726C6
-    dc.l    $00072CD6,$000737AC,$00074212,$000762D4
-    dc.l    $000735E0,$00073C90,$00074EFA,$00073D4A
-    dc.l    $000737AC,$00074212,$00076602,$00074356
-    dc.l    $000745A6,$0007470A,$00074EFA,$00074EFA
-    dc.l    $00074F5E,$00074F5E,$00074F5E,$00075192
-    dc.l    $000757FC,$00075538,$00075538,$000757FC
-    dc.l    $00075CF8,$00075CF8,$00076004,$0007636E
-    dc.l    $00076794,$00076794,$00076602,$00076602
-    dc.l    $00075CF8,$00076602,$0007663E,$000766A8
-    dc.l    $000766A8,$00076794,$00076794,$00077650
-    dc.l    $000776D4,$00077650,$000776D4,$00077950
-    dc.l    $00077AB4,$0007819E,$0007822C,$00078B0E
-    dc.l    $00078CD4,$00078EA8,$0007907A,$00079844
-    dc.l    $00079872,$00079238,$0007928C,$00079844
-    dc.l    $00079872,$00079844,$00079872,$00079844
-    dc.l    $00079872,$0007AB24,$0007AC10,$0007A13C
-    dc.l    $0007A228,$0007AB24,$0007AC10,$0007AE36
-    dc.l    $0007AF14,$0007B29E,$0007B46C,$0007B96A
-    dc.l    $0007B9D0,$0007C3EE,$0007C538,$0007C634
-    dc.l    $0007C7B2,$0007C99C,$0007C9E2,$0007C99C
-    dc.l    $0007CB46,$0007C99C,$0007CB46,$0007C99C
-    dc.l    $0007CEC6,$0007C99C,$0007CCAA,$0007C99C
-    dc.l    $0007CCAA,$0007C99C,$0007CCAA,$0007C99C
-    dc.l    $0007CCAA,$0007C99C,$0007CDB8,$0007C99C
-    dc.l    $0007CDB8,$0007C99C,$0007D02A,$0007C99C
-    dc.l    $0007D0D2,$0007C99C,$0007D17A,$0007C99C
-    dc.l    $0007D222,$0007C99C,$0007D2CA,$0007C99C
-    dc.l    $0007D372,$00000000,$00000000,$00000000
-    dc.l    $00000000,$00000000,$00000000,$00000000
-    dc.l    $00000000,$00000000,$00000000,$00000000
-    dc.l    $00000000,$00000000,$00000000,$00000000
-    dc.l    $00000000,$00000000,$00000000,$00000000
-    dc.l    $00000000,$00000000,$00000000,$00000000
-    dc.l    $00000000,$00000000,$00000000,$00000000
-    dc.l    $00000000,$00000000,$00000000,$00000000
-    dc.l    $00000000,$00000000,$00000000,$00000000
-    dc.l    $00000000,$00000000,$00000000,$00000000
-    dc.l    $00000000,$00000000,$00000000,$00000000
-    dc.l    $00000000,$00000000,$00076806,$00076D7A
-    dc.l    $000770C0,$00076806,$00076D7A,$000770C0
+    dc.l    Road_ShapeData+$13E02, Road_ShapeData+$141B8, Road_ShapeData+$1452E, Road_ShapeData+$14844
+    dc.l    Road_ShapeData+$1452E, Road_ShapeData+$141B8, Road_ShapeData+$13E02, 0
+    dc.l    Road_ShapeData+$14B6A, Road_ShapeData+$14F90, Road_ShapeData+$15386, Road_ShapeData+$15712
+    dc.l    Road_ShapeData+$15386, Road_ShapeData+$14F90, Road_ShapeData+$14B6A, 0
+    dc.l    Road_ShapeData+$15A88, Road_ShapeData+$15DD6, Road_ShapeData+$160DA, Road_ShapeData+$163C0
+    dc.l    Road_ShapeData+$166E6, Road_ShapeData+$16A4C, Road_ShapeData+$16DC2, 0
+    dc.l    Road_ShapeData+$170FC, Road_ShapeData+$170FC, Road_ShapeData+$17444, Road_ShapeData+$1779A
+    dc.l    Road_ShapeData+$17B10, Road_ShapeData+$17F06, Road_ShapeData+$182FC, 0
+    dc.l    Road_ShapeData+$186F6, Road_ShapeData+$18A6C, Road_ShapeData+$18A6C, Road_ShapeData+$18DCA
+    dc.l    Road_ShapeData+$19186, Road_ShapeData+$19186, Road_ShapeData+$1956A, 0
+    dc.l    Road_ShapeData+$19940, Road_ShapeData+$19940, Road_ShapeData+$19940, Road_ShapeData+$19CEA
+    dc.l    Road_ShapeData+$1A106, Road_ShapeData+$1A106, Road_ShapeData+$1A5A4, 0
+    dc.l    Road_ShapeData+$1AA34, Road_ShapeData+$1AE9A, Road_ShapeData+$1AE9A, Road_ShapeData+$1B306
+    dc.l    Road_ShapeData+$1B7BC, Road_ShapeData+$1B7BC, Road_ShapeData+$1BC82, 0
+    dc.l    Road_ShapeData+$1AA34, Road_ShapeData+$1AE9A, Road_ShapeData+$1AE9A, Road_ShapeData+$1B306
+    dc.l    Road_ShapeData+$1B7BC, Road_ShapeData+$1B7BC, Road_ShapeData+$1BC82, 0
+    dc.l    Road_ShapeData+$1C0BA, Road_ShapeData+$1C0BA, Road_ShapeData+$1C0BA, Road_ShapeData+$1C0BA
+    dc.l    Road_ShapeData+$1C0BA, Road_ShapeData+$1C0BA, Road_ShapeData+$1C0BA, 0
+    dc.l    Road_ShapeData+$1C0BA, Road_ShapeData+$1C0BA, Road_ShapeData+$1C0BA, Road_ShapeData+$1C0BA
+    dc.l    Road_ShapeData+$1C0BA, Road_ShapeData+$1C0BA, Road_ShapeData+$1C0BA, 0
+    dc.l    Road_ShapeData+$15712, Road_ShapeData+$1779A, Road_ShapeData+$19CEA, Road_ShapeData+$1C586
+    dc.l    Road_ShapeData+$1C966, Road_ShapeData+$1CD0C, Road_ShapeData+$1D160, Road_ShapeData+$1D4FC
+    dc.l    Road_ShapeData+$1D8E0, Road_ShapeData+$1DF98, Road_ShapeData+$1DCE8, Road_ShapeData+$1E3A8
+    dc.l    Road_ShapeData+$1E136, Road_ShapeData+$1E802, Road_ShapeData+$1E570, Road_ShapeData+$2F6CE
+    dc.l    Road_ShapeData+$2F6CE, Road_ShapeData+$2FB28, 0, Road_ShapeData+$2FFDC
+    dc.l    Road_ShapeData+$2FFDC, Road_ShapeData+$30480, 0, Road_ShapeData+$30984
+    dc.l    Road_ShapeData+$30984, Road_ShapeData+$30EE2, 0, Road_ShapeData+$3323E
+    dc.l    Road_ShapeData+$3323E, Road_ShapeData+$3323E, 0, Road_ShapeData+$32D8A
+    dc.l    Road_ShapeData+$32930, Road_ShapeData+$32930, 0, Road_ShapeData+$32454
+    dc.l    Road_ShapeData+$31FB0, Road_ShapeData+$31FB0, 0, Road_ShapeData+$31A0C
+    dc.l    Road_ShapeData+$314AE, Road_ShapeData+$314AE, 0, Road_ShapeData+$343B6
+    dc.l    Road_ShapeData+$343B6, Road_ShapeData+$343B6, 0, Road_ShapeData
+    dc.l    Road_ShapeData+$460, Road_ShapeData+$8D2, Road_ShapeData+$D70, Road_ShapeData+$1222
+    dc.l    Road_ShapeData+$173C, Road_ShapeData+$1CAA, Road_ShapeData+$22BC, Road_ShapeData+$33B14
+    dc.l    Road_ShapeData+$21BC2, Road_ShapeData+$21DE8, Road_ShapeData+$2200C, Road_ShapeData+$2235E
+    dc.l    Road_ShapeData+$2263E, Road_ShapeData+$2281E, Road_ShapeData+$22B12, Road_ShapeData+$22E22
+    dc.l    Road_ShapeData+$230C6, Road_ShapeData+$233AA, Road_ShapeData+$2371A, Road_ShapeData+$23A70
+    dc.l    Road_ShapeData+$23D34, Road_ShapeData+$23FAC, Road_ShapeData+$24290, Road_ShapeData+$24534
+    dc.l    Road_ShapeData+$24700, Road_ShapeData+$2495C, Road_ShapeData+$24B02, Road_ShapeData+$24CDA
+    dc.l    Road_ShapeData+$24F72, Road_ShapeData+$25236, Road_ShapeData+$2549C, Road_ShapeData+$25748
+    dc.l    Road_ShapeData+$25A44, Road_ShapeData+$2281E, Road_ShapeData+$2ADD0, Road_ShapeData+$2B08E
+    dc.l    Road_ShapeData+$2B2E4, Road_ShapeData+$22E22, Road_ShapeData+$2371A, Road_ShapeData+$23A70
+    dc.l    Road_ShapeData+$23D34, Road_ShapeData+$21BC2, Road_ShapeData+$21DE8, Road_ShapeData+$2263E
+    dc.l    Road_ShapeData+$25D06, Road_ShapeData+$25EC0, Road_ShapeData+$2602A, Road_ShapeData+$26198
+    dc.l    Road_ShapeData+$2636A, Road_ShapeData+$2667E, Road_ShapeData+$269AC, Road_ShapeData+$26C50
+    dc.l    Road_ShapeData+$26F00, Road_ShapeData+$27162, Road_ShapeData+$274C6, Road_ShapeData+$277F4
+    dc.l    Road_ShapeData+$27B04, Road_ShapeData+$27E50, Road_ShapeData+$28112, Road_ShapeData+$28368
+    dc.l    Road_ShapeData+$286DC, Road_ShapeData+$28A0A, Road_ShapeData+$28D6E, Road_ShapeData+$290AC
+    dc.l    Road_ShapeData+$294D8, Road_ShapeData+$29896, Road_ShapeData+$29DE0, Road_ShapeData+$2A1B0
+    dc.l    Road_ShapeData+$2A504, Road_ShapeData+$2AA68, Road_ShapeData+$2ADD0, Road_ShapeData+$2B08E
+    dc.l    Road_ShapeData+$2B2E4, Road_ShapeData+$2B58C, Road_ShapeData+$1E9E4, Road_ShapeData+$1EC66
+    dc.l    Road_ShapeData+$1F006, Road_ShapeData+$1F2BA, Road_ShapeData+$1F2BA, Road_ShapeData+$1F698
+    dc.l    Road_ShapeData+$1FADC, Road_ShapeData+$1FDA0, Road_ShapeData+$201C8, Road_ShapeData+$2052C
+    dc.l    Road_ShapeData+$20B20, Road_ShapeData+$20FA4, Road_ShapeData+$21344, Road_ShapeData+$217FC
+    dc.l    Road_ShapeData+$2F9A, Road_ShapeData+$31E0, Road_ShapeData+$3346, Road_ShapeData+$34CC
+    dc.l    Road_ShapeData+$3688, Road_ShapeData+$37DE, Road_ShapeData+$3914, Road_ShapeData+$3BA4
+    dc.l    Road_ShapeData+$3D64, Road_ShapeData+$3F02, Road_ShapeData+$4130, Road_ShapeData+$42C6
+    dc.l    Road_ShapeData+$444C, Road_ShapeData+$4662, Road_ShapeData+$4818, Road_ShapeData+$4978
+    dc.l    Road_ShapeData+$4B20, Road_ShapeData+$4C86, Road_ShapeData+$4DD6, Road_ShapeData+$4F7A
+    dc.l    Road_ShapeData+$50BC, Road_ShapeData+$5202, Road_ShapeData+$5394, Road_ShapeData+$54EA
+    dc.l    Road_ShapeData+$56FE, Road_ShapeData+$5916, Road_ShapeData+$5AE4, Road_ShapeData+$5C7A
+    dc.l    Road_ShapeData+$5E90, Road_ShapeData+$6046, Road_ShapeData+$61DC, Road_ShapeData+$63F2
+    dc.l    Road_ShapeData+$657E, Road_ShapeData+$6704, Road_ShapeData+$68B4, Road_ShapeData+$6A52
+    dc.l    Road_ShapeData+$6CCA, Road_ShapeData+$6E60, Road_ShapeData+$6FE6, Road_ShapeData+$7166
+    dc.l    Road_ShapeData+$733A, Road_ShapeData+$74E0, Road_ShapeData+$76A8, Road_ShapeData+$79A2
+    dc.l    Road_ShapeData+$7B48, Road_ShapeData+$7D92, Road_ShapeData+$8024, Road_ShapeData+$823E
+    dc.l    Road_ShapeData+$8484, Road_ShapeData+$876A, Road_ShapeData+$895E, Road_ShapeData+$8BBC
+    dc.l    Road_ShapeData+$8E22, Road_ShapeData+$9062, Road_ShapeData+$9290, Road_ShapeData+$95D2
+    dc.l    Road_ShapeData+$9798, Road_ShapeData+$99D8, Road_ShapeData+$9CB4, Road_ShapeData+$9E9A
+    dc.l    Road_ShapeData+$A0BC, Road_ShapeData+$A324, Road_ShapeData+$A564, Road_ShapeData+$A790
+    dc.l    Road_ShapeData+$A984, Road_ShapeData+$ABEA, Road_ShapeData+$AF1E, Road_ShapeData+$B24A
+    dc.l    Road_ShapeData+$B420, Road_ShapeData+$B64E, Road_ShapeData+$B8B4, Road_ShapeData+$BA8E
+    dc.l    Road_ShapeData+$BCA4, Road_ShapeData+$BEE4, Road_ShapeData+$C0D8, Road_ShapeData+$C306
+    dc.l    Road_ShapeData+$C4FA, Road_ShapeData+$C7C0, Road_ShapeData+$CAC8, Road_ShapeData+$CD78
+    dc.l    Road_ShapeData+$CFEA, Road_ShapeData+$D2C6, Road_ShapeData+$D510, Road_ShapeData+$D76E
+    dc.l    Road_ShapeData+$D9CC, Road_ShapeData+$DE60, Road_ShapeData+$E1B6, Road_ShapeData+$E6B8
+    dc.l    Road_ShapeData+$EA4E, Road_ShapeData+$EEAE, Road_ShapeData+$F204, Road_ShapeData+$F63A
+    dc.l    Road_ShapeData+$F980, Road_ShapeData+$FE98, Road_ShapeData+$1024E, Road_ShapeData+$106EC
+    dc.l    Road_ShapeData+$10A82, Road_ShapeData+$10F68, Road_ShapeData+$1135E, Road_ShapeData+$118A4
+    dc.l    Road_ShapeData+$11CE6, Road_ShapeData+$11FC6, Road_ShapeData+$12202, Road_ShapeData+$125D4
+    dc.l    Road_ShapeData+$128C6, Road_ShapeData+$12BDC, Road_ShapeData+$12ECC, Road_ShapeData+$132F4
+    dc.l    Road_ShapeData+$13686, Road_ShapeData+$13686, Road_ShapeData+$139EE, Road_ShapeData+$139EE
+    dc.l    Road_ShapeData+$11E7C, Road_ShapeData+$120EC, Road_ShapeData+$12416, Road_ShapeData+$12756
+    dc.l    Road_ShapeData+$12A6E, Road_ShapeData+$12D72, Road_ShapeData+$130E0, Road_ShapeData+$134E8
+    dc.l    Road_ShapeData+$13858, Road_ShapeData+$13858, Road_ShapeData+$13C04, Road_ShapeData+$13C04
+    dc.l    Road_ShapeData+$40EEC, Road_ShapeData+$40FA8, Road_ShapeData+$41064, Road_ShapeData+$4112E
+    dc.l    Road_ShapeData+$4112E, Road_ShapeData+$411F8, Road_ShapeData+$412BC, Road_ShapeData+$412BC
+    dc.l    Road_ShapeData+$413BC, Road_ShapeData+$413BC, Road_ShapeData+$2D138, Road_ShapeData+$2D520
+    dc.l    Road_ShapeData+$2D8BA, Road_ShapeData+$2DCA2, Road_ShapeData+$2E260, Road_ShapeData+$2E730
+    dc.l    Road_ShapeData+$2EC30, Road_ShapeData+$2F130, Road_ShapeData+$2C826, Road_ShapeData+$2C892
+    dc.l    Road_ShapeData+$2C8F6, Road_ShapeData+$2C94E, Road_ShapeData+$2C9A0, Road_ShapeData+$2CA76
+    dc.l    Road_ShapeData+$2CB6A, Road_ShapeData+$2CC94, Road_ShapeData+$2B95C, Road_ShapeData+$2BC94
+    dc.l    Road_ShapeData+$2C00A, Road_ShapeData+$2C328, Road_ShapeData+$2CDC4, Road_ShapeData+$2CC94
+    dc.l    Road_ShapeData+$2CC94, Road_ShapeData+$3AD88, Road_ShapeData+$28E8, Road_ShapeData+$40CB8
+    dc.l    Road_ShapeData+$40E00, Road_ShapeData+$343B6, Road_ShapeData+$343B6, Road_ShapeData+$39FA8
+    dc.l    Road_ShapeData+$3870E, Road_ShapeData+$37B6A, Road_ShapeData+$37DBA, Road_ShapeData+$37F1E
+    dc.l    Road_ShapeData+$38248, Road_ShapeData+$3843A, Road_ShapeData+$3870E, Road_ShapeData+$3AD88
+    dc.l    Road_ShapeData+$39E52, Road_ShapeData+$39EBC, 0, Road_ShapeData+$34D5A
+    dc.l    Road_ShapeData+$34D5A, Road_ShapeData+$34D5A, Road_ShapeData+$34D5A, Road_ShapeData+$34CDE
+    dc.l    Road_ShapeData+$34CDE, Road_ShapeData+$34CDE, Road_ShapeData+$3503E, Road_ShapeData+$351AE
+    dc.l    Road_ShapeData+$3548A, Road_ShapeData+$355F6, Road_ShapeData+$35A0E, Road_ShapeData+$35EDA
+    dc.l    Road_ShapeData+$364EA, Road_ShapeData+$36FC0, Road_ShapeData+$37A26, Road_ShapeData+$39AE8
+    dc.l    Road_ShapeData+$36DF4, Road_ShapeData+$374A4, Road_ShapeData+$3870E, Road_ShapeData+$3755E
+    dc.l    Road_ShapeData+$36FC0, Road_ShapeData+$37A26, Road_ShapeData+$39E16, Road_ShapeData+$37B6A
+    dc.l    Road_ShapeData+$37DBA, Road_ShapeData+$37F1E, Road_ShapeData+$3870E, Road_ShapeData+$3870E
+    dc.l    Road_ShapeData+$38772, Road_ShapeData+$38772, Road_ShapeData+$38772, Road_ShapeData+$389A6
+    dc.l    Road_ShapeData+$39010, Road_ShapeData+$38D4C, Road_ShapeData+$38D4C, Road_ShapeData+$39010
+    dc.l    Road_ShapeData+$3950C, Road_ShapeData+$3950C, Road_ShapeData+$39818, Road_ShapeData+$39B82
+    dc.l    Road_ShapeData+$39FA8, Road_ShapeData+$39FA8, Road_ShapeData+$39E16, Road_ShapeData+$39E16
+    dc.l    Road_ShapeData+$3950C, Road_ShapeData+$39E16, Road_ShapeData+$39E52, Road_ShapeData+$39EBC
+    dc.l    Road_ShapeData+$39EBC, Road_ShapeData+$39FA8, Road_ShapeData+$39FA8, Road_ShapeData+$3AE64
+    dc.l    Road_ShapeData+$3AEE8, Road_ShapeData+$3AE64, Road_ShapeData+$3AEE8, Road_ShapeData+$3B164
+    dc.l    Road_ShapeData+$3B2C8, Road_ShapeData+$3B9B2, Road_ShapeData+$3BA40, Road_ShapeData+$3C322
+    dc.l    Road_ShapeData+$3C4E8, Road_ShapeData+$3C6BC, Road_ShapeData+$3C88E, Road_ShapeData+$3D058
+    dc.l    Road_ShapeData+$3D086, Road_ShapeData+$3CA4C, Road_ShapeData+$3CAA0, Road_ShapeData+$3D058
+    dc.l    Road_ShapeData+$3D086, Road_ShapeData+$3D058, Road_ShapeData+$3D086, Road_ShapeData+$3D058
+    dc.l    Road_ShapeData+$3D086, Road_ShapeData+$3E338, Road_ShapeData+$3E424, Road_ShapeData+$3D950
+    dc.l    Road_ShapeData+$3DA3C, Road_ShapeData+$3E338, Road_ShapeData+$3E424, Road_ShapeData+$3E64A
+    dc.l    Road_ShapeData+$3E728, Road_ShapeData+$3EAB2, Road_ShapeData+$3EC80, Road_ShapeData+$3F17E
+    dc.l    Road_ShapeData+$3F1E4, Road_ShapeData+$3FC02, Road_ShapeData+$3FD4C, Road_ShapeData+$3FE48
+    dc.l    Road_ShapeData+$3FFC6, Road_ShapeData+$401B0, Road_ShapeData+$401F6, Road_ShapeData+$401B0
+    dc.l    Road_ShapeData+$4035A, Road_ShapeData+$401B0, Road_ShapeData+$4035A, Road_ShapeData+$401B0
+    dc.l    Road_ShapeData+$406DA, Road_ShapeData+$401B0, Road_ShapeData+$404BE, Road_ShapeData+$401B0
+    dc.l    Road_ShapeData+$404BE, Road_ShapeData+$401B0, Road_ShapeData+$404BE, Road_ShapeData+$401B0
+    dc.l    Road_ShapeData+$404BE, Road_ShapeData+$401B0, Road_ShapeData+$405CC, Road_ShapeData+$401B0
+    dc.l    Road_ShapeData+$405CC, Road_ShapeData+$401B0, Road_ShapeData+$4083E, Road_ShapeData+$401B0
+    dc.l    Road_ShapeData+$408E6, Road_ShapeData+$401B0, Road_ShapeData+$4098E, Road_ShapeData+$401B0
+    dc.l    Road_ShapeData+$40A36, Road_ShapeData+$401B0, Road_ShapeData+$40ADE, Road_ShapeData+$401B0
+    dc.l    Road_ShapeData+$40B86, 0, 0, 0
+    dc.l    0, 0, 0, 0
+    dc.l    0, 0, 0, 0
+    dc.l    0, 0, 0, 0
+    dc.l    0, 0, 0, 0
+    dc.l    0, 0, 0, 0
+    dc.l    0, 0, 0, 0
+    dc.l    0, 0, 0, 0
+    dc.l    0, 0, 0, 0
+    dc.l    0, 0, 0, 0
+    dc.l    0, 0, 0, 0
+    dc.l    0, 0, Road_ShapeData+$3A01A, Road_ShapeData+$3A58E
+    dc.l    Road_ShapeData+$3A8D4, Road_ShapeData+$3A01A, Road_ShapeData+$3A58E, Road_ShapeData+$3A8D4
 
 ; shape count = $234 (564); used as the shape-index limit in race_anim_audio
 word_3C7EA:

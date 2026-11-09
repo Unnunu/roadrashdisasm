@@ -5,29 +5,29 @@
 
 ; Race_ActorList: player A + 15 opponents (actor structs $80 each)
 Race_ActorList:
-    dc.l    $00FF1EAA
-    dc.l    $00FF1F2A
+    dc.l    RacePlayerA
+    dc.l    ram_FF1F2A
 Race_ActorListMid: ; $2585E (sub-list used by Race_InitActorLists)
-    dc.l    $00FF1FAA
-    dc.l    $00FF202A
-    dc.l    $00FF20AA
-    dc.l    $00FF212A
-    dc.l    $00FF21AA
-    dc.l    $00FF222A
-    dc.l    $00FF22AA
-    dc.l    $00FF232A
-    dc.l    $00FF23AA
-    dc.l    $00FF242A
-    dc.l    $00FF24AA
-    dc.l    $00FF252A
-    dc.l    $00FF25AA
-    dc.l    $00FF262A
+    dc.l    Race_ActorStruct_2
+    dc.l    Race_ActorStruct_3
+    dc.l    Race_ActorStruct_4
+    dc.l    Race_ActorStruct_5
+    dc.l    Race_ActorStruct_6
+    dc.l    Race_ActorStruct_7
+    dc.l    Race_ActorStruct_8
+    dc.l    Race_ActorStruct_9
+    dc.l    Race_ActorStruct_10
+    dc.l    Race_ActorStruct_11
+    dc.l    Race_ActorStruct_12
+    dc.l    Race_ActorStruct_13
+    dc.l    Race_ActorStruct_14
+    dc.l    Race_ActorStruct_15
     dc.l    $FFFFFFFF
 
 ; Race_StaticActorList: $FF2EAA/$FF2F2A (type $10)
 Race_StaticActorList:
-    dc.l    $00FF2EAA
-    dc.l    $00FF2F2A
+    dc.l    Race_StaticActor_0
+    dc.l    Race_StaticActor_1
     dc.l    $FFFFFFFF
 
 ; unknown gap data between the static list and the graphics table
@@ -41,16 +41,16 @@ unk_258AE:
 
 ; Race_ActorGraphicsTable: 10 pointers to the 16-byte graphics records
 Race_ActorGraphicsTable:
-    dc.l    $00025916
-    dc.l    $00025926
-    dc.l    $00025936
-    dc.l    $00025946
-    dc.l    $00025956
-    dc.l    $00025966
-    dc.l    $00025976
-    dc.l    $00025986
-    dc.l    $00025996
-    dc.l    $000259A6
+    dc.l    Race_ActorGraphics_0
+    dc.l    Race_ActorGraphics_1
+    dc.l    Race_ActorGraphics_2
+    dc.l    Race_ActorGraphics_3
+    dc.l    Race_ActorGraphics_4
+    dc.l    Race_ActorGraphics_5
+    dc.l    Race_ActorGraphics_6
+    dc.l    Race_ActorGraphics_7
+    dc.l    Race_ActorGraphics_8
+    dc.l    Race_ActorGraphics_9
 
 ; graphics records (16 bytes each; +$A/+$C/+$E are copied into the actor)
 Race_ActorGraphics_0:

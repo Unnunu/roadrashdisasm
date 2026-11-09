@@ -416,6 +416,26 @@ STRUCT_OFFSET_77 equ $77
 STRUCT_OFFSET_78 equ $78
 
 ram_FF1F2A equ $FF1F2A
+
+; Opponent actor structs (0x80 each) referenced by Race_ActorListMid.
+Race_ActorStruct_2 equ $FF1FAA
+Race_ActorStruct_3 equ $FF202A
+Race_ActorStruct_4 equ $FF20AA
+Race_ActorStruct_5 equ $FF212A
+Race_ActorStruct_6 equ $FF21AA
+Race_ActorStruct_7 equ $FF222A
+Race_ActorStruct_8 equ $FF22AA
+Race_ActorStruct_9 equ $FF232A
+Race_ActorStruct_10 equ $FF23AA
+Race_ActorStruct_11 equ $FF242A
+Race_ActorStruct_12 equ $FF24AA
+Race_ActorStruct_13 equ $FF252A
+Race_ActorStruct_14 equ $FF25AA
+Race_ActorStruct_15 equ $FF262A
+
+; Static actor structs referenced by Race_StaticActorList.
+Race_StaticActor_0 equ $FF2EAA
+Race_StaticActor_1 equ $FF2F2A
 ram_FF1F2E equ $FF1F2E
 ram_FF2421 equ $FF2421
 
