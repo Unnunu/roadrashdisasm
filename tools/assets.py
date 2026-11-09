@@ -333,9 +333,10 @@ def save_rgb_indexed(img_rgb, img_idx, palette, base, transparent0):
         img_rgb.save(base)
 
 
-def render_map(out, layout, palette, path, transparent0):
+def render_map(out, layout, palette, path, transparent0, tiles=None):
     from PIL import Image
-    tiles = blob_tiles(out, layout["tiles_offset"], layout["tiles"])
+    if tiles is None:
+        tiles = blob_tiles(out, layout["tiles_offset"], layout["tiles"])
     w = layout["width"]
     h = layout["height"]
     map_off = layout["map_offset"] + 4
@@ -422,6 +423,36 @@ def screen_palette(spec, group, cache):
     return pal
 
 
+def race_palette(spec, rom, track_index, cache):
+    key = ("race", track_index)
+    if key in cache:
+        return cache[key]
+    by_id = {a["id"]: a for a in spec["assets"]}
+    hud = by_id["race_hud"]
+    out = load_asset_data(hud)
+    layout = parse_layout(out, hud["category"])
+    if layout is None or layout.get("palette_offset") is None:
+        raise RuntimeError("race HUD palette not found")
+    pal = palette_bytes_to_rgb(
+        out[layout["palette_offset"]:layout["palette_offset"] + 128], 64)
+    if track_index is not None:
+        entry = spec["race_palettes"][track_index]
+        addr = int(entry["data6"], 16)
+        dec = decompress(rom[addr:], False)
+        if dec is None:
+            raise RuntimeError(f"cannot decompress {entry['name']}")
+        po = u16(rom, addr - 2)
+        src = dec[po + 0x22:po + 0x22 + 0x22]
+        pal = list(pal)
+        pal[0x22:0x22 + len(src)] = palette_bytes_to_rgb(src, len(src) // 2)
+        # preserve the first line-1 entry from the HUD palette, matching the
+        # game's copy at Global_ram_Palette+$22.
+        hud_line1 = pal[0x20]
+        pal[0x20] = hud_line1
+    cache[key] = pal
+    return pal
+
+
 def palette_asset(spec, pid):
     for pal in spec["palettes"]:
         if pal["id"] == pid:
@@ -464,6 +495,20 @@ def render(args):
                    [{"index": i, "rgb": list(c)} for i, c in enumerate(pal)])
         write_palette_png(d / "palette.png", pal)
 
+    rom = load_rom()
+    # race palettes: HUD base + per-track line-1 override from RaceTrack_Data6
+    for i, entry in enumerate(spec.get("race_palettes", [])):
+        pal = race_palette(spec, rom, i, cache)
+        d = ASSETS_ROOT / "palettes" / f"race_{entry['name']}"
+        write_json(d / "palette.json",
+                   [{"index": j, "rgb": list(c)} for j, c in enumerate(pal)])
+        write_palette_png(d / "palette.png", pal)
+    pal = race_palette(spec, rom, None, cache)
+    d = ASSETS_ROOT / "palettes" / "race_hud"
+    write_json(d / "palette.json",
+               [{"index": j, "rgb": list(c)} for j, c in enumerate(pal)])
+    write_palette_png(d / "palette.png", pal)
+
     rendered = 0
     for asset in spec["assets"]:
         if not asset.get("preview"):
@@ -490,6 +535,46 @@ def render(args):
             meta["palette"] = {"kind": "embedded",
                                "offset": f"0x{layout['palette_offset']:X}",
                                "colors": 64}
+            rendered += 1
+
+        elif layout["kind"] == "image_external" and asset.get("palette_group") == "race":
+            tracks = asset.get("race_tracks") or []
+            entries = list(range(tracks)) if tracks else [None]
+            meta_palettes = []
+            for ti in entries:
+                pal = race_palette(spec, rom, ti, cache)
+                suffix = f"_track{ti}" if ti is not None else ""
+                pstem = f"palette_track{ti}" if ti is not None else "palette"
+                write_json(d / f"{pstem}.json",
+                           [{"index": j, "rgb": list(c)} for j, c in enumerate(pal)])
+                write_palette_png(d / f"{pstem}.png", pal)
+                render_map(out, layout, pal, d / f"preview{suffix}.png",
+                           asset["transparent0"])
+                meta_palettes.append({"kind": "race",
+                                      "track": ti,
+                                      "colors": len(pal)})
+            meta["palette"] = meta_palettes[0] if len(meta_palettes) == 1 else meta_palettes
+            rendered += 1
+
+        elif layout["kind"] == "tileset" and asset.get("palette_group") == "race":
+            tracks = asset.get("race_tracks") or []
+            entries = list(range(tracks)) if tracks else [None]
+            meta_palettes = []
+            lines = asset.get("atlas_lines") or [0]
+            for ti in entries:
+                pal = race_palette(spec, rom, ti, cache)
+                suffix = f"_track{ti}" if ti is not None else ""
+                pstem = f"palette_track{ti}" if ti is not None else "palette"
+                write_json(d / f"{pstem}.json",
+                           [{"index": j, "rgb": list(c)} for j, c in enumerate(pal)])
+                write_palette_png(d / f"{pstem}.png", pal)
+                for line in lines:
+                    render_atlas(out, layout, pal,
+                                 d / f"atlas{suffix}_line{line}.png", line,
+                                 asset["transparent0"])
+                meta_palettes.append({"kind": "race", "track": ti,
+                                      "colors": len(pal)})
+            meta["palette"] = meta_palettes[0] if len(meta_palettes) == 1 else meta_palettes
             rendered += 1
 
         elif layout["kind"] == "image_external":
@@ -571,9 +656,44 @@ def render(args):
             rendered += 1
 
         elif layout["kind"] == "map":
-            # Map preview needs a tileset; deferred for race maps.
-            meta["palette"] = {"kind": "deferred"}
-            print(f"skip {asset['id']}: map preview deferred (needs tileset/palette)")
+            ts_id = asset.get("tileset_asset")
+            if not ts_id:
+                meta["palette"] = {"kind": "deferred"}
+                print(f"skip {asset['id']}: map preview deferred (needs tileset)")
+                write_json(d / "meta.json", meta)
+                continue
+            ts = by_id[ts_id]
+            ts_out = load_asset_data(ts)
+            ts_layout = parse_layout(ts_out, ts["category"])
+            if ts_layout is None:
+                print(f"skip {asset['id']}: tileset layout unknown")
+                write_json(d / "meta.json", meta)
+                continue
+            tiles = blob_tiles(ts_out, ts_layout.get("tiles_offset", 0),
+                               ts_layout.get("tiles", len(ts_out) // 32))
+            if asset.get("palette_group") == "race":
+                tracks = asset.get("race_tracks") or []
+                entries = list(range(tracks)) if tracks else [None]
+                meta_palettes = []
+                for ti in entries:
+                    pal = race_palette(spec, rom, ti, cache)
+                    suffix = f"_track{ti}" if ti is not None else ""
+                    pstem = f"palette_track{ti}" if ti is not None else "palette"
+                    write_json(d / f"{pstem}.json",
+                               [{"index": j, "rgb": list(c)}
+                                for j, c in enumerate(pal)])
+                    write_palette_png(d / f"{pstem}.png", pal)
+                    render_map(out, layout, pal, d / f"preview{suffix}.png",
+                               asset["transparent0"], tiles=tiles)
+                    meta_palettes.append({"kind": "race", "track": ti,
+                                          "colors": len(pal)})
+                meta["palette"] = meta_palettes[0] if len(meta_palettes) == 1 else meta_palettes
+            else:
+                meta["palette"] = {"kind": "deferred"}
+                print(f"skip {asset['id']}: map palette unknown")
+                write_json(d / "meta.json", meta)
+                continue
+            rendered += 1
         write_json(d / "meta.json", meta)
 
     print(f"rendered previews: {rendered}")

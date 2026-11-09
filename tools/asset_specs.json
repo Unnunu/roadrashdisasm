@@ -45,7 +45,9 @@
       "atlas_lines": null,
       "transparent0": false,
       "compression": "b",
-      "palette_groups": null
+      "palette_groups": null,
+      "race_tracks": null,
+      "tileset_asset": null
     },
     {
       "id": "menu_race_selection_background",
@@ -210,12 +212,14 @@
       "size": "0x1A4",
       "category": "maps",
       "preview": false,
-      "palette_group": null,
+      "palette_group": "race",
       "variants": null,
       "atlas_lines": null,
-      "transparent0": false,
+      "transparent0": true,
       "compression": "w",
-      "palette_groups": null
+      "palette_groups": null,
+      "race_tracks": 5,
+      "tileset_asset": null
     },
     {
       "id": "race_tiles_0",
@@ -224,13 +228,15 @@
       "address": "0x9B494",
       "size": "0x312",
       "category": "tilesets",
-      "preview": false,
-      "palette_group": null,
+      "preview": true,
+      "palette_group": "race",
       "variants": null,
       "atlas_lines": null,
-      "transparent0": false,
+      "transparent0": true,
       "compression": "w",
-      "palette_groups": null
+      "palette_groups": null,
+      "race_tracks": null,
+      "tileset_asset": null
     },
     {
       "id": "race_map_1",
@@ -239,13 +245,15 @@
       "address": "0x9B7A6",
       "size": "0xF8",
       "category": "maps",
-      "preview": false,
-      "palette_group": null,
+      "preview": true,
+      "palette_group": "race",
       "variants": null,
       "atlas_lines": null,
-      "transparent0": false,
+      "transparent0": true,
       "compression": "w",
-      "palette_groups": null
+      "palette_groups": null,
+      "race_tracks": null,
+      "tileset_asset": "race_tiles_0"
     },
     {
       "id": "race_image_0",
@@ -254,13 +262,15 @@
       "address": "0x9B89E",
       "size": "0xF8C",
       "category": "images",
-      "preview": false,
+      "preview": true,
       "palette_group": "race",
       "variants": null,
       "atlas_lines": null,
       "transparent0": true,
       "compression": "w",
-      "palette_groups": null
+      "palette_groups": null,
+      "race_tracks": null,
+      "tileset_asset": null
     },
     {
       "id": "race_hud",
@@ -284,13 +294,18 @@
       "address": "0x9DA6A",
       "size": "0xFE",
       "category": "tilesets",
-      "preview": false,
-      "palette_group": null,
+      "preview": true,
+      "palette_group": "race",
       "variants": null,
-      "atlas_lines": null,
-      "transparent0": false,
+      "atlas_lines": [
+        0,
+        3
+      ],
+      "transparent0": true,
       "compression": "w",
-      "palette_groups": null
+      "palette_groups": null,
+      "race_tracks": null,
+      "tileset_asset": null
     },
     {
       "id": "race_tiles_2",
@@ -299,13 +314,18 @@
       "address": "0x9DB68",
       "size": "0xE4",
       "category": "tilesets",
-      "preview": false,
-      "palette_group": null,
+      "preview": true,
+      "palette_group": "race",
       "variants": null,
-      "atlas_lines": null,
-      "transparent0": false,
+      "atlas_lines": [
+        0,
+        3
+      ],
+      "transparent0": true,
       "compression": "w",
-      "palette_groups": null
+      "palette_groups": null,
+      "race_tracks": null,
+      "tileset_asset": null
     },
     {
       "id": "race_tiles_3",
@@ -314,13 +334,18 @@
       "address": "0x9DC4C",
       "size": "0x180",
       "category": "tilesets",
-      "preview": false,
-      "palette_group": null,
+      "preview": true,
+      "palette_group": "race",
       "variants": null,
-      "atlas_lines": null,
-      "transparent0": false,
+      "atlas_lines": [
+        0,
+        3
+      ],
+      "transparent0": true,
       "compression": "w",
-      "palette_groups": null
+      "palette_groups": null,
+      "race_tracks": null,
+      "tileset_asset": null
     },
     {
       "id": "race_road",
@@ -335,7 +360,9 @@
       "atlas_lines": null,
       "transparent0": false,
       "compression": "w",
-      "palette_groups": null
+      "palette_groups": null,
+      "race_tracks": null,
+      "tileset_asset": null
     },
     {
       "id": "race_tiles_4",
@@ -344,13 +371,18 @@
       "address": "0x9E3A2",
       "size": "0x3E2",
       "category": "tilesets",
-      "preview": false,
-      "palette_group": null,
+      "preview": true,
+      "palette_group": "race",
       "variants": null,
-      "atlas_lines": null,
-      "transparent0": false,
+      "atlas_lines": [
+        0,
+        3
+      ],
+      "transparent0": true,
       "compression": "w",
-      "palette_groups": null
+      "palette_groups": null,
+      "race_tracks": null,
+      "tileset_asset": null
     },
     {
       "id": "shop_arrow_left",
@@ -648,7 +680,9 @@
       "atlas_lines": null,
       "transparent0": false,
       "compression": "w",
-      "palette_groups": null
+      "palette_groups": null,
+      "race_tracks": null,
+      "tileset_asset": null
     },
     {
       "id": "portrait_0",
@@ -879,5 +913,27 @@
       "offset": "0x2E4",
       "colors": 64
     }
-  }
+  },
+  "race_palettes": [
+    {
+      "name": "track0",
+      "data6": "0x28A3E"
+    },
+    {
+      "name": "track1",
+      "data6": "0x2CC8C"
+    },
+    {
+      "name": "track2",
+      "data6": "0x311B8"
+    },
+    {
+      "name": "track3",
+      "data6": "0x35174"
+    },
+    {
+      "name": "track4",
+      "data6": "0x3A2E0"
+    }
+  ]
 }

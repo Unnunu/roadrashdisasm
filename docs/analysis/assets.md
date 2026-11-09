@@ -1,7 +1,7 @@
 # Analysis: asset splitting and preview pipeline
 
-- **Status:** Phase A implemented for the ROM tail images/palettes; race
-  tiles/maps and audio deferred
+- **Status:** Phase A (tail images/palettes) + confirmed race HUD/track palettes;
+  `race_map_0` tileset and audio remain deferred
 - **Tool:** `tools/assets.py` + `tools/asset_specs.json`
 - **Generated:** `assets/` (git-ignored; never committed because the extracted
   artwork is copyrighted)
@@ -37,6 +37,22 @@ endlevel palettes, so they get `preview_menu.png` and `preview_endlevel.png`.
 Shop bike images use the shop palette plus `Shop_BikePalettes[0..7]` overrides
 on lines 2/3 (`preview_bike0.png`..`preview_bike7.png`).
 
+Race palettes were confirmed statically:
+
+- `Race_LoatTrackGfx` decompresses `RaceTrack_Data6` (LZSS B) and copies 17 words
+  from the track palette (`-2(Data6)` offset) to `Global_ram_Palette + $22`
+  (palette line 1); the background map entries use line 1.
+- `Race_LoadHUD` copies the line-3 colors from the `unk_9C82A` HUD image palette
+  to `Global_ram_Palette + $62`; maps using line 3 (`race_map_1`,
+  `race_tiles_0`, `race_image_0`) are rendered with that HUD base.
+- Per-track race palettes are written to `assets/palettes/race_track0..4`.
+
+Enabled race previews: `race_tiles_0` (3×17 edge strip), `race_map_1` (3×17),
+`race_image_0` (128×14 scenery strip), and HUD-palette atlases for
+`race_tiles_1..4`. `race_map_0` is **not** rendered: its map uses a tile base at
+VRAM `$3000` whose source tileset has not been identified; the data is still
+split.
+
 ## Layout and build
 
 ```
@@ -70,9 +86,10 @@ python3 tools/assets.py all
 
 ## Deferred
 
-- Race tiles/maps (`unk_9B2F0`, `unk_9B494`, `unk_9B7A6`, `unk_9B89E`,
-  `unk_9DA6A`/`9DB68`/`9DC4C`/`9DDCC`/`9E3A2`): palette associations need
-  confirmation; previews are disabled.
+- `race_map_0` (`unk_9B2F0`, 40×17): base tile `$4180` points at VRAM `$3000`;
+  the tile source/layout is still unknown, so the preview is disabled.
+- `race_road` (`unk_9DDCC`): the `(8,24)` block at `+$724` is a road-tile table,
+  not a normal nametable; preview deferred.
 - `results_busted`, `results_image_extra`: palette TODO.
 - `EndLevel_AnimationData`, road/sprite/object streams, audio: raw `.bin` with
   metadata; previews later.
