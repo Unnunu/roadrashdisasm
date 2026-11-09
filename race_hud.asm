@@ -1,6 +1,14 @@
 ; =============== S U B R O U T I N E =======================================
 
 
+ ; *************************************************
+; Function RaceHud_Draw
+; Draws the whole race HUD (time/place/stamina/HP/names/speed/RPM/odometer).
+; In:  race RAM
+; Out: Race_ram_CurrentHudBuffer
+; Clobbers: see callees
+; *************************************************
+
 RaceHud_Draw:
                 bsr.w   RaceHud_DrawTime
                 bsr.w   RaceHud_DrawPlace
@@ -17,6 +25,14 @@ RaceHud_Draw:
 
 ; =============== S U B R O U T I N E =======================================
 
+
+ ; *************************************************
+; Function RaceHud_DrawSpeedArrow
+; Draws the speed needle; speed/453 -> animation frame (clamped to 31).
+; In:  RacePlayerA speed; unk_7DEAA script
+; Out: sprite table/tile array (UpdateAnimation)
+; Clobbers: d0-d2/a0/a1/a4
+; *************************************************
 
 RaceHud_DrawSpeedArrow:
                 move.w  (RacePlayerA + STRUCT_OFFSET_SPEED).l,d0
@@ -40,6 +56,14 @@ RaceHud_DrawSpeedArrow:
 
 ; =============== S U B R O U T I N E =======================================
 
+
+ ; *************************************************
+; Function RaceHud_DrawRPMArrow
+; Draws the RPM needle from the gear curve (ram_FF1A70) and speed.
+; In:  RacePlayerA speed/gear; ram_FF1A70; unk_7DEAA
+; Out: ram_FF1AA2; sprite table/tile array
+; Clobbers: d0-d2/a0/a1/a4
+; *************************************************
 
 RaceHud_DrawRPMArrow:
                 lea     (ram_FF1A70).l,a0
@@ -71,6 +95,14 @@ RaceHud_DrawRPMArrow:
 
 ; =============== S U B R O U T I N E =======================================
 
+
+ ; *************************************************
+; Function RaceHud_DrawOdometer
+; Draws the distance odometer digits using the ram_FF352C digit font.
+; In:  RacePlayerA POSX_HIGH
+; Out: Race_ram_CurrentHudBuffer+$E00
+; Clobbers: d0-d2/a0/a1
+; *************************************************
 
 RaceHud_DrawOdometer:
                 movea.l (Race_ram_CurrentHudBuffer).l,a1
@@ -156,6 +188,14 @@ RaceHud_DrawOdometer:
 ; =============== S U B R O U T I N E =======================================
 
 
+ ; *************************************************
+; Function RaceHud_DrawPlace
+; Draws the player place (ram_FF1B40) at x=27,y=24.
+; In:  ram_FF1B40; Race_ram_CurrentHudBuffer
+; Out: buffer
+; Clobbers: d0-d2/a0
+; *************************************************
+
 RaceHud_DrawPlace:
                 move.w  (ram_FF1B40).l,d0
                 move.w  #$181B,d1 ; x = 27, y = 24
@@ -168,6 +208,14 @@ RaceHud_DrawPlace:
 
 ; =============== S U B R O U T I N E =======================================
 
+
+ ; *************************************************
+; Function RaceHud_DrawTime
+; Draws minutes + ':' + seconds at y=26.
+; In:  Race_ram_TimeMinutes/TimeSeconds
+; Out: buffer
+; Clobbers: d0-d2/a0
+; *************************************************
 
 RaceHud_DrawTime:
 ; draw minutes
@@ -194,6 +242,14 @@ RaceHud_DrawTime:
 
 ; =============== S U B R O U T I N E =======================================
 
+
+ ; *************************************************
+; Function RaceHud_DrawStamina
+; Draws opponent (ram_FF1908) and player stamina bars (green/yellow/red).
+; In:  ram_FF1908/$5C; RacePlayerA $5C
+; Out: buffer at +$9B8/+$984
+; Clobbers: d0-d1/a0/a1
+; *************************************************
 
 RaceHud_DrawStamina:
                 movea.l (Race_ram_CurrentHudBuffer).l,a0
@@ -270,6 +326,14 @@ RaceHud_DrawStamina:
 ; =============== S U B R O U T I N E =======================================
 
 
+ ; *************************************************
+; Function Race_DrawBikeHPBar
+; Draws the bike HP bar from Race_ram_BikeDamage (inverse, clamped).
+; In:  Race_ram_BikeDamage
+; Out: buffer at +$99C
+; Clobbers: d0-d1/a0
+; *************************************************
+
 Race_DrawBikeHPBar:
                 movea.l (Race_ram_CurrentHudBuffer).l,a0
                 adda.w  #$99C,a0 ; x = 14, y = 19
@@ -303,7 +367,7 @@ Race_DrawBikeHPBar:
 ; End of function Race_DrawBikeHPBar
 
 
-unk_D58E:
+RaceHud_dRankStrings:
     dc.b ' 1st'
     dc.b ' 2nd'
     dc.b ' 3rd'
@@ -323,6 +387,14 @@ unk_D58E:
 
 ; =============== S U B R O U T I N E =======================================
 
+
+ ; *************************************************
+; Function Race_DrawPlayerNameOrPlace
+; Alternates the player name and "Nth PLACE" text with a timed timer.
+; In:  ram_FF14B8/BA/BC; Menu_ram_Player; names; RaceHud_dRankStrings
+; Out: buffer via EncodeString/WriteNametableToBuffer
+; Clobbers: d0-d3/a0/a1
+; *************************************************
 
 Race_DrawPlayerNameOrPlace:
                 cmpi.w  #$30,(ram_FF14B8).l
@@ -381,7 +453,7 @@ Race_DrawPlayerNameOrPlace:
                 btst    #1,(ram_FF14B9).l
                 beq.w   .loc_D6CE
                 subq.w  #1,(ram_FF14B8).l
-                lea     (unk_D58E).l,a1
+                lea     (RaceHud_dRankStrings).l,a1
                 asl.w   #2,d0
                 adda.w  d0,a1
                 move.b  (a1)+,8(a0)
@@ -422,6 +494,14 @@ Race_DrawPlayerNameOrPlace:
 
 ; =============== S U B R O U T I N E =======================================
 
+
+ ; *************************************************
+; Function Race_DrawOpponentName
+; Draws the nearest opponent's name (or the level rider name at the finish).
+; In:  ram_FF1908; Menu_ram_PlayerA/B_Opponents; Race_ActorDefinitionTable
+; Out: buffer via EncodeString/WriteNametableToBuffer
+; Clobbers: d0-d1/a0-a4
+; *************************************************
 
 Race_DrawOpponentName:
                 lea     (Menu_ram_PlayerAOpponents).l,a0
@@ -485,11 +565,11 @@ Race_DrawOpponentName:
 ; End of function Race_DrawOpponentName
 
 ; *************************************************
-; Function sub_D8530
-; d0 - tile index
-; d1 - position
-; d2 - palette line
-; a0 - frame buffer
+; Function RaceHud_DrawSymbol
+; Writes one HUD tile entry (tile+palette) into the frame buffer.
+; In:  d0 - tile index; d1 - position (x<<8|y); d2 - palette line; a0 - buffer
+; Out: buffer entry
+; Clobbers: d1-d3
 ; *************************************************
 
 RaceHud_DrawSymbol:
@@ -509,10 +589,10 @@ RaceHud_DrawSymbol:
 
 ; *************************************************
 ; Function RaceHud_DrawNumber2Digits
-; d0 - 
-; d1 - 
-; d2 - 
-; a0 - frame buffer
+; Draws two BCD digits (tiles $1F4+digit) into the frame buffer.
+; In:  d0 - 2-digit value; d1 - position (x<<8|y); d2 - palette; a0 - buffer
+; Out: buffer entries
+; Clobbers: d1-d3
 ; *************************************************
 
 RaceHud_DrawNumber2Digits:
@@ -544,6 +624,14 @@ RaceHud_DrawNumber2Digits:
 
 ; =============== S U B R O U T I N E =======================================
 
+
+ ; *************************************************
+; Function RaceHud_DrawNumber4Digits
+; Draws four BCD digits (tiles $1F4+digit) into the frame buffer.
+; In:  d0 - 4-digit value; d1 - position (x<<8|y); d2 - palette; a0 - buffer
+; Out: buffer entries
+; Clobbers: d1-d3
+; *************************************************
 
 RaceHud_DrawNumber4Digits:
                 ror.w   #3,d2

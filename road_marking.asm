@@ -15,6 +15,14 @@ RoadMarking_dPatterns:
 ; Function RoadMarking_Draw
 ; *************************************************
 
+ ; *************************************************
+; Function RoadMarking_Draw
+; Scans unprocessed road lines and emits one marking sprite per group.
+; In:  RoadMarking_ram_XArray/WidthArray; Animation_ram_TileIndex
+; Out: sprite attribute table/tile array; Animation_ram_SpriteIndex/TileIndex
+; Clobbers: d0-d2/a0-a1
+; *************************************************
+
 RoadMarking_Draw:
 ; clear 16 words in RoadMarking_ram_WidthArray
                 lea     (RoadMarking_ram_WidthArray).l,a0
@@ -52,6 +60,14 @@ RoadMarking_Draw:
 ; a1 - (out) pointer in width array
 ; *************************************************
 
+ ; *************************************************
+; Function RoadMarking_FindUnprocessedLine
+; Finds the highest line index with a nonzero width.
+; In:  RoadMarking_ram_WidthArray ($98 cells)
+; Out: d0 - PosY (or -1); a0 - XArray ptr; a1 - width ptr
+; Clobbers: d0-d1/a0-a1
+; *************************************************
+
 RoadMarking_FindUnprocessedLine:
                 lea     (RoadMarking_ram_XArray).l,a0
                 lea     (RoadMarking_ram_WidthArray + $98 * 2).l,a1
@@ -77,6 +93,14 @@ RoadMarking_FindUnprocessedLine:
 ; d0 - PosY of the bottom edge of the road
 ; a0 - end of x array
 ; a1 - end of width array
+; *************************************************
+
+ ; *************************************************
+; Function RoadMarking_GetMarkingsSizes
+; Computes X/width bands for up to four 8-line cells.
+; In:  d0 - bottom PosY; a0/a1 - ends of X/width arrays
+; Out: RoadMarking_ram_X1..X4, Width1..4
+; Clobbers: d0-d4/a0-a1
 ; *************************************************
 
 RoadMarking_GetMarkingsSizes:
@@ -205,6 +229,14 @@ RoadMarking_GetMarkingsSizes:
 ; Function RoadMarking_SetSpriteGeometry
 ; *************************************************
 
+ ; *************************************************
+; Function RoadMarking_SetSpriteGeometry
+; Chooses sprite posX/size (1 or 2 tiles high) from the two bands.
+; In:  RoadMarking_ram_X1/Width1/X2/Width2
+; Out: RoadMarking_SpritePosX/VerticalSize/HorizontalSize
+; Clobbers: d0-d7
+; *************************************************
+
 RoadMarking_SetSpriteGeometry:
                 move.w  #1,(RoadMarking_SpriteVerticalSize).l
 
@@ -267,6 +299,14 @@ RoadMarking_SetSpriteGeometry:
 ; *************************************************
 ; Function RoadMarking_ClearSpriteTiles
 ; *************************************************
+ ; *************************************************
+; Function RoadMarking_ClearSpriteTiles
+; Clears the tile slots used by the current marking sprite.
+; In:  RoadMarking_Sprite{Horizontal,Vertical}Size; TileOffset
+; Out: Race_ram_CurrentSpriteTileArray
+; Clobbers: d0-d1/a0
+; *************************************************
+
 RoadMarking_ClearSpriteTiles:
                 movea.l (Race_ram_CurrentSpriteTileArray).l,a0
                 adda.w  (RoadMarking_TileOffset).l,a0
@@ -286,6 +326,14 @@ RoadMarking_ClearSpriteTiles:
 ; d0 - PosY of the bottom edge of the sprite
 ; a0 - x array, pointing to the last value
 ; a1 - width array, pointing to the last value
+; *************************************************
+
+ ; *************************************************
+; Function RoadMarking_CreateSprite
+; Builds the sprite entry and fills its tiles from RoadMarking_dPatterns.
+; In:  d0 - bottom PosY; a0/a1 - ends of X/width arrays
+; Out: sprite attribute/tile array; Animation_ram_SpriteIndex/TileIndex
+; Clobbers: d0-d4/d7/a0-a3
 ; *************************************************
 
 RoadMarking_CreateSprite:

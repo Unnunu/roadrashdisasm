@@ -333,6 +333,58 @@ priority, `d2` palette/priority. Buffers `Race_ram_CurrentHudBuffer`/`NextHudBuf
 `Race_FormatDecimal` (`race.asm`) formats distance/POSZ values. No direct callers; likely debug/
 alternate HUD. See `docs/analysis/race_hud_debug.md`.
 
+### Race HUD (`race_hud.asm`)
+
+| Address | Name | Size | Meaning |
+|---|---|---|---|
+| `$FF38C8` | `Race_ram_CurrentHudBuffer` | 4 | HUD nametable buffer. |
+| `$FF38CC` | `Race_ram_NextHudBuffer` | 4 | Next HUD buffer/DMA source. |
+| `$FF1EA4`/`$FF1EA5` | `Race_ram_TimeMinutes/TimeSeconds` | 1 each | BCD time. |
+| `$FF1B26` | `Race_ram_BikeDamage` | 2 | Bike damage (HP bar = `$20-damage`). |
+| `$FF1B40` | `ram_FF1B40` | 2 | Player place. |
+| `$FF14B8`/`$FF14BA`/`$FF14BC` | name/place state | 2 each | Timer / last place / rank. |
+| `$FF14BE` | `ram_FF14BE` | - | Text descriptor for `WriteNametableToBuffer`. |
+| `$FF352C` | odometer font | - | 4x2 digit tiles (8 longs each). |
+| `$FF1A70` | gear curve | - | RPM-arrow divisor source. |
+| `$FF1AA2` | RPM divisor | 2 | `speed/divisor/682`. |
+| `$D58E` | `RaceHud_dRankStrings` | 64 | `" 1st"`..`"16th"`, 4 bytes each. |
+| `$7DEAA` | `unk_7DEAA` | - | Speed/RPM needle animation script (gap). |
+
+`RaceHud_Draw` -> time/place/stamina/HP/names/speed/RPM/odometer. HUD entry offset is
+`2*(y*64+x)`; tile entries set bit 15 + palette. See `docs/analysis/race_hud.md`.
+
+### Road marking (`road_marking.asm`)
+
+| Address | Name | Size | Meaning |
+|---|---|---|---|
+| `$FF14E8` | `RoadMarking_ram_XArray` | `$98*2` | X_left per road line. |
+| `$FF1618` | `RoadMarking_ram_WidthArray` | `$98*2` | Width per line (0 = done). |
+| `$FF1748`..`$FF1756` | `RoadMarking_ram_X1..X4`, `Width1..4` | 2 each | Band min-X/width. |
+| `$FF1758` | `RoadMarking_SpriteHorizontalSize` | 2 | Tiles wide. |
+| `$FF175A` | `RoadMarking_SpriteVerticalSize` | 2 | 1 or 2 tiles high. |
+| `$FF175C` | `RoadMarking_SpritePosX` | 2 | Sprite left edge. |
+| `$FF175E` | `RoadMarking_ColumnSizeBytes` | 2 | Column stride. |
+| `$FF1760` | `RoadMarking_TileOffset` | 2 | Tile byte offset. |
+| `$E732` | `RoadMarking_dPatterns` | 44 | Width -> 32-bit pixel mask. |
+
+`RoadMarking_Draw` groups up to four 8-line bands into one sprite, fills tiles from the
+X/width arrays, and stops at `Animation_ram_SpriteIndex >= 80`. See
+`docs/analysis/road_marking.md`.
+
+### Animation (`animation.asm`)
+
+| Address | Name | Size | Meaning |
+|---|---|---|---|
+| `$FF190C`/`$FF190E` | `Animation_ram_PosX/PosY` | 2 each | Base sprite position. |
+| `$FFDE60` | `Animation_ram_TileIndex` | 2 | Tile cursor. |
+| `$FFDE64` | `Animation_ram_SpriteIndex` | 2 | SAT chain index. |
+| `$FFD34A` | `Animation_ram_BaseTile` | 2 | Base tile added to entries. |
+| `$169A0` | `Animation_dTileCountMinus1` | 16 | `(VS+1)*(HS+1)-1` by size code. |
+
+Script: `{tilemap, frame_count, frame_ptrs[]}`; frame: `count`, then
+`(dy,size,palette/flip/tile,dx)` per sprite. `UpdateAnimation` copies tiles;
+`UpdateAnimation2` assumes them in VRAM. See `docs/analysis/animation.md`.
+
 ### Road/object renderer (`road_render.asm`)
 
 | Address | Name | Size | Meaning |

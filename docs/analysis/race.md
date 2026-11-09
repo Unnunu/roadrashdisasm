@@ -32,9 +32,9 @@
 | `Race_Update` | `0xC00C` | [x] | [~] | [x] | [x] | [x] | [ ] | partial |
 | `Race_ComputeResults` (outcome) | `0xC3F8` | [x] | [~] | [x] | - | [x] | [ ] | partial |
 | Actor/physics/AI | `0xD9DA`+ | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | TODO |
-| `race_hud.asm` | `0xD278` | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | TODO |
-| `road_marking.asm` | `0xE732` | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | TODO |
-| `animation.asm` | `0x16860` | [~] | [~] | [x] | [x] | [x] | [ ] | partial |
+| `race_hud.asm` | `0xD278` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
+| `road_marking.asm` | `0xE732` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
+| `animation.asm` | `0x16860` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
 
 ## Role & entry points
 
@@ -217,7 +217,7 @@ Actors/player structures:
    (see `docs/analysis/race_actors.md`; `RacePlayer`/`RaceActor`, `$FF2FAA`).
 2. Analyze the actor/physics functions (`Race_UpdateSpeedDisplay`, `Race_SpawnTick`, `sub_13xxx`,
    `sub_Dxxx`, `sub_Exxx`) and the object list.
-3. `race_hud.asm`, `road_marking.asm`, `animation.asm` cards + internals.
+3. `race_hud.asm`, `road_marking.asm`, `animation.asm` data tables/scripts + dynamic checks.
 4. The race outcome (`Race_ComputeResults`/`Race_SortResults`/`Race_UpdateHighScoreTable`) and the standings.
 5. Only after the field layout is confirmed: define the AS `STRUCT`s, convert the
    confirmed uses, build after each batch, remove the flat `STRUCT_OFFSET_*` aliases.

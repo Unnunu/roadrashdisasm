@@ -1,11 +1,13 @@
 ; *************************************************
 ; Function UpdateAnimation
-; d0 - animation frame index
-; d1 - X
-; d2 - Y
-; a0 - destination sprite attribute table
-; a1 - destination tile buffer (we copy only tiles needed for current frame, we don`t need all tiles used in animation)
-; a4 - animation script
+; Builds sprites for one animation frame and copies the needed tiles.
+; In:  d0 - frame index; d1 - X; d2 - Y;
+;      a0 - dest sprite attribute table; a1 - dest tile buffer; a4 - script
+; Out: a0/a1 advanced; Animation_ram_PosX/PosY/TileIndex/SpriteIndex
+; Clobbers: d0-d7/a0-a2/a4/a5
+; Notes: script = {tilemap, frame count, frame ptrs[]}; each frame =
+;        count, then per sprite (dy,size,palette/flip/tile,dx). The
+;        Animation_dTileCountMinus1 table maps (VS,HS) to tile count-1.
 ; *************************************************
 
 UpdateAnimation:
@@ -45,7 +47,7 @@ UpdateAnimation:
                 or.w    d4,d2
                 move.w  d2,(a0)+ ; size and link
 
-                lea     (unk_169A0).l,a5
+                lea     (Animation_dTileCountMinus1).l,a5
                 lsr.w   #8,d4 ; get sprite size in tiles
                 move.b  (a5,d4.w),d2 ; get number of tiles to copy - 1
                 ext.w   d2
@@ -89,13 +91,11 @@ UpdateAnimation:
 
 ; *************************************************
 ; Function UpdateAnimation2
-; tiles must be already loaded to VRAM
-; d0 - animation frame index
-; d1 - X
-; d2 - Y
-; a0 - destination sprite table
-; a1 - destination address of tiles, not used
-; a4 - animation script
+; Same as UpdateAnimation, but tiles are already in VRAM (no tile copy).
+; In:  d0 - frame index; d1 - X; d2 - Y; a0 - dest sprite table;
+;      a1 - unused; a4 - script
+; Out: sprite table; Animation_ram_PosX/PosY/SpriteIndex
+; Clobbers: d0-d7/a0-a2/a4
 ; *************************************************
 
 UpdateAnimation2:
@@ -145,7 +145,7 @@ UpdateAnimation2:
 ; End of function UpdateAnimation2
 
 
-unk_169A0:
+Animation_dTileCountMinus1:
     dc.b   0,  1,  2,  3
     dc.b   1,  3,  5,  7
     dc.b   2,  5,  8, 11

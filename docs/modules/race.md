@@ -115,9 +115,9 @@ marking/animation, and the race outcome. `top_level.asm` calls `Race_Init`, inst
 | `Race_CreateActors` | `0xCAD0` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
 | `Race_SpawnTick` + spawn | `0x16AF6`+ | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
 | Actors/physics/AI | `0xD9DA`+ | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | TODO |
-| `race_hud.asm` | `0xD278` | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | TODO |
-| `road_marking.asm` | `0xE732` | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | TODO |
-| `animation.asm` | `0x16860` | [~] | [~] | [x] | [x] | [x] | [ ] | partial |
+| `race_hud.asm` | `0xD278` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
+| `road_marking.asm` | `0xE732` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
+| `animation.asm` | `0x16860` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
 
 Detailed top-level flow: `docs/analysis/race.md`; actors: `docs/analysis/race_actors.md`; spawn: `docs/analysis/race_spawn.md`; split cards above.
 
@@ -166,7 +166,7 @@ Detailed top-level flow: `docs/analysis/race.md`; actors: `docs/analysis/race_ac
 - TODO: initial active/free list counts and `ram_FF1A08`/`ram_FF1A0C` overlap. Test:
   break at `Race_SpawnTick` in a race and dump the lists.
 - TODO: trace the `a1` bases and map the player/actor structures field by field.
-- TODO: actor/physics/AI functions; `race_hud`/`road_marking`/`animation` cards.
+- TODO: actor/physics/AI functions; `race_hud`/`road_marking`/`animation` data/scripts and dynamic checks.
 - Only after the field layout is confirmed: AS `STRUCT`s, convert confirmed uses,
   build after each batch, remove the flat `STRUCT_OFFSET_*` aliases.
 
