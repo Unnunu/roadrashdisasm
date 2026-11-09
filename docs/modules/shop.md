@@ -1,0 +1,118 @@
+# Module card: `shop.asm`
+
+- **ROM range:** `0x0074AA`–`0x008341` (`endlevel.asm` starts at `0x8342`)
+- **Status:** analyzed (static; shop is non-demo, rendering dynamic TODO)
+- **Related:** `docs/architecture.md`, `docs/reverse-engineering.md`,
+  `docs/hardware.md`, `docs/ram-map.md`, `docs/analysis/shop.md`
+
+## Role / purpose
+
+Bike shop: browse eight bikes, read stats/descriptions, buy/trade in. It shows credits
+(including the trade-in value), the selected price, the bike name/power/weight, a 10 s
+description, the selection prompts and a horizontally scrolling bike band. Entered
+from the results/high-score screens; Start returns to the results.
+
+## Entry points & API
+
+| Symbol | Address | Called by | Description |
+|--------|---------|-----------|-------------|
+| `Shop_Init` | `0x74AA` | `top_level.asm` `0x7E9B2` | Build the shop. |
+| `Shop_GameTick` | `0x79F8` | fade wrapper | Per-frame update/input. |
+| `Shop_HandleInput` | `0x7B4C` | `GameTick` | A/B/C/D-pad actions. |
+| `Shop_DrawCreditsAndPrice` | `0x7D5E` | `Init`/`HandleInput` | Credits + price. |
+| `Shop_PrepareMessages` | `0x7F62` | `Init`/`HandleInput` | Bike-name prompts. |
+| `Shop_DrawBikes` | `0x803C` | `Init`/`HandleInput` | Bike lineup + palettes. |
+| `Shop_UpdateScroll` | `0x8178` | `GameTick` | H-scroll animation. |
+| `sub_7EA2`/`sub_7F02` | `0x7EA2`/`0x7F02` | `HandleInput` | Already-owned / can't-afford messages. |
+
+## Control flow / state machine
+
+- `Init`: read the player's bike id; VDP/scroll tables; background/selection/gamepad/
+  arrows; bike images/palettes; fonts; CREDITS/PRICE; name; description; prompts;
+  credits/price; DMA; audio.
+- `GameTick`: DMA; scroll animation; Start held -> results; A/B/C/D-pad edges.
+- `HandleInput`: A high score, B results, C buy/trade-in, Right/Left select (only at
+  `ScrollPos == $160`), then redraw name/description/prompts/credits.
+- Bytes: `ram_FF0910` selects the next screen; `ram_UpdateFunction=0` ends the stage.
+
+## RAM / ROM & structures
+
+- `Shop_CurrentBikeId` `$FF0950` (0..7); `Shop_ScrollPos` `$FF0954` (centre `$160`);
+  `Shop_ImageBike1/2/3` `$FF0956/$FF0A9A/$FF0BDE` (18x9 RAM maps); `ram_FF0952`
+  current buttons (unnamed); `Shop_StrBuyNewBike` `$FF06EA`; dynamic messages
+  `ram_FF089A`/`ram_FF07C2`/`ram_FF082E`.
+- ROM: `Shop_BikeDescriptions` `$81D2` (8 pointers), `Shop_dPrices` `$8312`
+  (400/500/700/800/1200/1400/2000/2500), `Shop_BikeImageTable` `$8322`
+  `[3,3,3,1,1,2,1,2]`, `Shop_dBikePalettes` `$7E370` (8 x 32 bytes).
+- Player state: `Menu_ram_Player`, `Menu_ram_MoneyPlayerA/B`,
+  `Menu_ram_BikeIdPlayerA/B`.
+- VDP: cell H-scroll (`$8B02`), H-scroll table `$6400`, auto-increment `$20`;
+  planes `$4000`, window `$7000` (64x28).
+
+## Coverage matrix
+
+| Function | Address | Contract | Algorithm | Data | Hardware | Why | Dynamic | Status |
+|----------|---------|----------|-----------|------|----------|-----|---------|--------|
+| `Shop_Init` | `0x74AA` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
+| `Shop_GameTick` | `0x79F8` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
+| `Shop_HandleInput` | `0x7B4C` | [x] | [x] | [x] | - | [x] | [ ] | analyzed |
+| `Shop_DrawCreditsAndPrice` | `0x7D5E` | [x] | [x] | [x] | - | [x] | [ ] | analyzed |
+| `Shop_PrepareMessages` | `0x7F62` | [x] | [x] | [x] | - | [x] | [ ] | analyzed |
+| `Shop_DrawBikes` | `0x803C` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
+| `Shop_UpdateScroll` | `0x8178` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
+
+Detailed listing/table/purchase logic: `docs/analysis/shop.md`.
+
+## External calls / dependencies
+
+- Callers: `top_level.asm`; results/high-score C; the shop sets `ram_FF0910` to
+  HighScore/RaceResults/Shop.
+- Uses `UncompressW/B`, `WriteToVRAM`, `WriteNametable(ToBuffer)`, `EncodeString`,
+  `Menu_ShowMessage`, `DmaWriteVRAM`, `DmaWriteCRAM`, `GetInputPlayerA/B`, `sub_C79A`,
+  `MenuPassword_CreatePassword`, `AudioFunc1/3/4`.
+
+## Buying / trade-in
+
+Credits = money + current bike price/2; price = selected bike price. Owned -> "You
+already own a ..."; insufficient -> "You need more credit ..."; otherwise money -=
+(price - current/2), set the bike id, redraw, regenerate the password. The credits box
+uses palette 2 when insufficient, otherwise palette 3.
+
+## Hacks / bugs / quirks
+
+- Cell-mode H-scroll table `$6400` with auto-increment `$20`; other screens use
+  `$6000`/full scroll. `[static]`
+- Palette copy skips source entry 4 and maps entry 13 to destination entry 4; three
+  base bike images are reused for eight bikes. `[static]`
+- "(its yours)" is assembled from three immediate longs written backwards. `[static]`
+- `ram_FF0952` is unnamed in `ram_const.asm`.
+
+## Verified facts
+
+- `[static]` Purchase/trade-in math and password regeneration.
+- `[static]` Eight bikes, stats/prices and the image/palette tables parsed.
+- `[static]` Start -> results; A -> high score; B -> results; C -> buy; Left/Right select.
+- `[static]` Description message (51+bike*8) for 10 s, then group 60 prompts.
+
+## Hypotheses
+
+- `[hypothesis]` The window has transparent cells exposing the scrolling plane bike band.
+  Test: capture the shop VRAM/window in BlastEm.
+- `[hypothesis]` The eight palette variants are the bike colours. Test: render them.
+
+## Rename proposals (apply only on request)
+
+| Current | Proposed | Evidence | Confidence |
+|---------|----------|----------|------------|
+| `sub_7EA2` | `Shop_ShowAlreadyOwned` | "You already own a ..." | high |
+| `sub_7F02` | `Shop_ShowCannotAfford` | "You need more credit ..." | high |
+| `ram_FF0952` | `Shop_ram_CurrentButtons` | button state | high |
+| `Shop_dBikePalettes` | `Shop_BikePalettes` | 8 palettes | high |
+| `unk_9EA1E`/`unk_9FDDE`/`unk_A122A` | `ImgShopBike1/2/3` | bike images | medium |
+| `unk_9E784`/`unk_9E874` | `ImgShopArrowLeft/Right` | arrows | medium |
+
+## Experiments performed
+
+| Goal | Setup / breakpoint | Observed | Conclusion |
+|------|--------------------|----------|------------|
+| Capture the shop | — (non-demo, needs input) | — | static analysis only |

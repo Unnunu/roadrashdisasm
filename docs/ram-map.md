@@ -154,6 +154,24 @@ The screen draws entries 0..4 (table font `$800`) and the player rows at the off
 (regular font `$0`). Assets: title `$A2F5C`, badge `$7EB72`, fonts `$A2BAA`->`$800`,
 `$A2E68`->`$1000`. See `docs/analysis/highscore.md`.
 
+### Bike shop (`shop.asm`)
+
+| Address | Name | Size | Meaning |
+|---|---|---|---|
+| `$FF0950` | `Shop_CurrentBikeId` | 2 | Selected bike id (0..7). |
+| `$FF0952` | `ram_FF0952` | 2 | Current buttons being handled. |
+| `$FF0954` | `Shop_ScrollPos` | 2 | H-scroll position (centre `$160`). |
+| `$FF0956` | `Shop_ImageBike1` | `$144` | 18x9 bike map. |
+| `$FF0A9A` | `Shop_ImageBike2` | `$144` | 18x9 bike map. |
+| `$FF0BDE` | `Shop_ImageBike3` | `$144` | 18x9 bike map. |
+| `$FF06EA` | `Shop_StrBuyNewBike` | TODO | "Press C to buy ..." + bike name. |
+| `$FF089A`/`$FF07C2`/`$FF082E` | dynamic messages | TODO | Owned/can't-afford and left/right bike names. |
+
+ROM: `Shop_BikeDescriptions` `$81D2`, `Shop_dPrices` `$8312`, `Shop_BikeImageTable`
+`$8322`, `Shop_dBikePalettes` `$7E370` (8 x 32 bytes). Purchase: credits = money +
+current price/2; money -= price - current/2; regenerate the password. See
+`docs/analysis/shop.md`.
+
 ### Messages (`message.asm`)
 
 | Address | Name | Size | Meaning |

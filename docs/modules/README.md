@@ -19,7 +19,7 @@ row to the table below.
 | `character.asm` | `0x0059C4` | Pre-race rider/opponent intro | [character.md](character.md) |
 | `race_results.asm` | `0x005F28` | Post-race results / bust / repair | [race_results.md](race_results.md) |
 | `highscore.asm` | `0x006DC0` | High-score screen | [highscore.md](highscore.md) |
-| `shop.asm` | `0x0074AA` | Bike shop | TODO |
+| `shop.asm` | `0x0074AA` | Bike shop | [shop.md](shop.md) |
 | `endlevel.asm` | `0x008342` | End-of-level menu | TODO |
 | `8FB4.asm` | `0x008FB4` | Not yet identified | TODO |
 | `98C2.asm` | `0x0098C2` | Not yet identified | TODO |
