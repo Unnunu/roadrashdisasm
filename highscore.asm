@@ -1,5 +1,17 @@
 ; *************************************************
+; highscore.asm - high-score table and attract/demo variant
+; ROM range: $6DC0-$74A9
+; Status:    analyzed (static; demo path)
+; API:       HighScore_Init, HighScore_GameTick(_Demo), HighScore_HandleInput
+; *************************************************
+
+; *************************************************
 ; Function HighScore_Init
+; Builds the high-score screen: VDP, background/title/badges/gamepad, fonts, the
+; 7x20 score table, player rows, message, DMA and audio.
+; In:  HighScore_ram_Table, HighScore_ram_PlayerATableOffset/B
+; Out: Menu_ram_FrameBuffer -> VRAM $7000; VRAM $0/$800/$1000/$8000-$B000; palette
+; Clobbers: d0-d7, a0-a3
 ; *************************************************
 
 HighScore_Init:
@@ -43,7 +55,7 @@ HighScore_Init:
 .loopClearDefault:
                 move.l  #0,(a0)
                 dbf     d0,.loopClearDefault
-; load background image
+; background to VRAM $8000 (same asset as the main menu)
                 lea     (img_MainMenu_Background).l,a3
                 lea     (Intro_ram_ImageBuffer).l,a1
                 jsr     (UncompressW).l
@@ -61,7 +73,7 @@ HighScore_Init:
                 move.w  #128,d6 ; plane width
                 lea     (Intro_ram_ImageBuffer + $4E8).l,a0 ; source
                 jsr     (WriteNametable).w
-; load "High Score" title image
+; "High Score" title image to VRAM $9000
                 lea     (unk_A2F5C).l,a3
                 lea     (Intro_ram_ImageBuffer).l,a1
                 jsr     (UncompressW).l
@@ -79,7 +91,7 @@ HighScore_Init:
                 move.w  #128,d6 ; plane width
                 lea     (Intro_ram_ImageBuffer + $568).l,a0 ; source
                 jsr     (WriteNametable).w
-; set palette
+; copy the background palette (the title/table use it)
                 lea     (Intro_ram_ImageBuffer + $4E4).l,a0
                 movea.l (Global_ram_PalettePtr).l,a1
 
@@ -102,7 +114,7 @@ HighScore_Init:
 .copyPal3:
                 move.l  (a0)+,(a1)+
                 dbf     d0,.copyPal3
-; load gamepad image
+; gamepad diagram on the plane at (2,22)
                 lea     (img_Gamepad).l,a3
                 lea     (Intro_ram_ImageBuffer).l,a1
                 jsr     (UncompressB).l
@@ -120,7 +132,7 @@ HighScore_Init:
                 move.w  #128,d6 ; plane width
                 lea     (Intro_ram_ImageBuffer + $B48).l,a0
                 jsr     (WriteNametable).w
-; load yellow badge image
+; yellow badge image; drawn in the five top-score slots
                 lea     (unk_7EB72).l,a3
                 lea     (Intro_ram_ImageBuffer).l,a1
                 jsr     (UncompressB).l
@@ -178,7 +190,7 @@ HighScore_Init:
                 move.w  #$80,d6
                 lea     (Intro_ram_ImageBuffer + $528).l,a0
                 jsr     (WriteNametable).w
-; load font
+; fonts: regular at $0, table font at $800, extra at $1000 (use TODO)
                 lea     (img_Intro_Font).l,a3
                 lea     (Intro_ram_ImageBuffer).l,a1
                 jsr     (UncompressW).l
@@ -186,7 +198,7 @@ HighScore_Init:
                 moveq   #0,d0
                 lea     (Intro_ram_ImageBuffer).l,a0
                 jsr     (WriteToVRAM).l
-; load table font
+; table font at VRAM $800
                 lea     (unk_A2BAA).l,a3
                 lea     (Intro_ram_ImageBuffer).l,a1
                 jsr     (UncompressW).l
@@ -202,7 +214,7 @@ HighScore_Init:
                 move.l  #$1000,d0
                 lea     (Intro_ram_ImageBuffer).l,a0
                 jsr     (WriteToVRAM).l
-; clear 22 lines in frame buffer
+; clear 22 lines to the default tile, the bottom 6 to spaces
                 lea     (Menu_ram_FrameBuffer).l,a0
                 move.l  #$7FF07FF,d1
                 move.w  #$2BF,d0
@@ -218,9 +230,11 @@ HighScore_Init:
                 move.l  d1,(a0)+
                 dbf     d0,.loopDrawSpace
 
+; encode the 7x20 table (header y=22,x=16,h=7,w=20)
                 lea     (HighScore_ram_Table).l,a0
                 lea     (Intro_ram_ImageBuffer).l,a1
                 bsr.w   EncodeString
+; top five rows use the table font at $800; rows are 40 bytes apart
 ; draw 1st row
                 lea     (HighScore_ram_Table).l,a0
                 move.w  6(a0),d0 ; width
@@ -280,6 +294,7 @@ HighScore_Init:
                 adda.w  #160,a0 ; source
                 lea     (Menu_ram_FrameBuffer).l,a1 ; destination
                 bsr.w   WriteNametableToBuffer
+; player rows use the regular font at $0 and the current row offsets
 ; draw player A row
                 lea     (HighScore_ram_Table).l,a0
                 move.w  6(a0),d0 ; width
@@ -325,6 +340,11 @@ HighScore_Init:
 
 ; *************************************************
 ; Function HighScore_GameTick_Demo
+; Attract variant: wait for a button release or 600 frames (10 s); on release clear
+; DemoMode so the top level returns to the menu instead of starting the demo race.
+; In:  pad input; Menu_ram_NextMessageTimer
+; Out: MainMenu_ram_DemoMode (cleared on release); ram_UpdateFunction=0 at end
+; Clobbers: d0/d1
 ; *************************************************
 
 HighScore_GameTick_Demo:
@@ -345,6 +365,7 @@ HighScore_GameTick_Demo:
                 and.w   d1,d0
                 bne.w   .buttonReleased
 
+; 600-frame timeout: keep DemoMode so the demo continues to the race
                 subq.w  #1,(Menu_ram_NextMessageTimer).l
                 bpl.w   .end
                 bra.w   .endStage
@@ -360,6 +381,11 @@ HighScore_GameTick_Demo:
 
 ; *************************************************
 ; Function HighScore_GameTick
+; Normal variant: DMA, release exits to the results, A restarts, B returns to the
+; results, C opens the shop; cycle message group 42.
+; In:  pad input; Menu_ram_CurrentMessageId/NextMessageTimer
+; Out: ram_FF0910 (next screen); ram_UpdateFunction=0 at end stage
+; Clobbers: d0/d1/a0
 ; *************************************************
 
 HighScore_GameTick:
@@ -399,6 +425,7 @@ HighScore_GameTick:
                 move.l  #MainMenu_ram_ButtonsPlayerA,(Menu_ram_CurrentButtonsPtr).l
                 jsr     (HighScore_HandleInput).l
 .loc_73D0:
+; message group 42: advance every 300 frames, reset at the group start/terminator
                 subq.w  #1,(Menu_ram_MessageBlinkTimer).l
                 subq.w  #1,(Menu_ram_NextMessageTimer).l
                 bpl.w   .loc_742A
@@ -432,7 +459,10 @@ HighScore_GameTick:
 
 ; *************************************************
 ; Function HighScore_HandleInput
-; d0 - current buttons state (SACBRLDU)
+; A restarts the page, B returns to the results, C opens the shop.
+; In:  d0 - current buttons (SACBRLDU; 1 = pressed)
+; Out: ram_FF0910 next-screen pointer
+; Clobbers: -
 ; *************************************************
 
 HighScore_HandleInput:
