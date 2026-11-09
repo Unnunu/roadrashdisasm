@@ -99,9 +99,11 @@ Action 4 (`a4+$10`, used by `sub_16458`'s final fallback) by profile:
 - `[dynamic]` Forcing PlayerA Speed to `$3000` and `ram_FF1A96=$FFFF` at
   `sub_12EA2` entry made profiles `6/8/9` advance to slot+4 and call `sub_16458`
   (`$12D8E/$12DB6/$12DCA`), confirming the dispatcher path. A follow-up trace at
-  `0x1651C` saw targets `PlayerA`, `$5A=0`, profiles 6/8/9, and reached the
-  `sub_16458` handler selection (slot `$12D8E/$12DB6`); the exact action2/action3
-  outcome still needs a distance/cooldown-controlled test.
+  `0x1651C` saw targets `PlayerA`, `$5A=0`, profiles 6/8/9.
+- `[dynamic]` Forced branch checks confirmed all three dispatcher paths: setting a
+  non-player target selected `0x164A2` (action2), setting `NearestActor=a1` and
+  `$5A=1` selected `0x16510` (action3), and setting `$69` bit4 selected
+  `0x16518` (action4).
 - `sub_16458` is entered only after `sub_12EA2` selects slot+4. In normal demo
   profiles `6/8/9` stay on `sub_1300E`; forcing PlayerA Speed to `$3000` makes the
   dispatcher reachable.
