@@ -679,21 +679,21 @@ LogoEA_Init:
                 ori     #$700,sr
                 movea.l #VdpCtrl,a4
                 movea.l #VdpData,a5
-                move.w  #$8004,(a4)     ; H-ints disabled, Pal Select 1, HVC latch disabled, Display gen enabled
+                move.w  #$8004,(a4)     ; H-ints off, left column unblanked, HV counter normal (display enabled later by doStart)
                 move.w  #$8134,(VdpCtrl).l  ; Display disabled, V-ints enabled, Height: 28, Mode 5, 64K VRAM
                 move.w  #$8228,(VdpCtrl).l  ; Scroll A Name Table:    $A000
                 move.w  #$8330,(VdpCtrl).l  ; Window Name Table:      $C000
-                move.w  #$8405,(VdpCtrl).l  ; Scroll B Name Table:    $A000
+                move.w  #$8405,(VdpCtrl).l  ; Scroll B Name Table:    $A000 (same table as Scroll A!)
                 move.w  #$856E,(VdpCtrl).l  ; Sprite Attribute Table: $DC00
                 move.w  #$8700,(a4)     ; Backdrop Color: $0
-                move.w  #$8B03,(a4)     ; E-ints disabled, V-Scroll: full, H-Scroll: line
+                move.w  #$8B03,(a4)     ; E-ints disabled, V-Scroll: full, H-Scroll: per line (text wave)
                 move.w  #$9003,(a4)     ; Scroll A/B Size: 128x32 (1024x256 pixels)
                 move.w  #$8C81,(a4)     ; Width: 40, Shadow/Highlight: disabled
                 move.w  #$8D08,(VdpCtrl).l  ; HScroll Data Table:     $2000
                 move.w  #$8F02,(VdpCtrl).l  ; Auto-increment: $2
                 move.w  #$9100,(VdpCtrl).l  ; WindowX: 0
                 move.w  #$9200,(VdpCtrl).l  ; WindowY: 0
-                move.w  #$8A01,(a4)     ; H-Int Counter: 1
+                move.w  #$8A01,(a4)     ; H-Int Counter: 1 (unused; H-int is disabled)
 ; clear VRAM
                 VDP_VRAM_WRITE $0,VdpCtrl
                 move.w  #$3FFF,d1
@@ -905,16 +905,16 @@ LogoEA_SetupGfx:
                 dbf     d0,.loopWriteTextImage
 
 ; write 'Electronic Arts' text nametable
-                VDP_VRAM_WRITE $8000,VdpCtrl
-                move.w  #$720C,d6 ; ???
+                VDP_VRAM_WRITE $8000,VdpCtrl ; full command: latch second word $0002 (high address bits)
+                move.w  #$720C,d6 ; first word for row 0 -> $720C & $3FFF | $0002<<14 = $B20C (plane A/B)
                 subq.w  #1,d1
                 subq.w  #1,d2
                 move.w  d2,d0
                 move.w  #$8001,d4 ; nametable value : high priority, pal 0, no flip, tile 1
 
 .loopHeight:
-                move.w  d6,(a4)
-                addi.w  #$100,d6
+                move.w  d6,(a4) ; single-word VRAM command; VDP retains the previous second word
+                addi.w  #$100,d6 ; next plane row (128 cells)
                 move.w  d2,d0
 .loopWidth:
                 move.w  d4,(a5) ; write nametable entry
@@ -922,15 +922,15 @@ LogoEA_SetupGfx:
                 dbf     d0,.loopWidth
                 dbf     d1,.loopHeight
 
-                move.w  #$7044,(a4) ; ???
+                move.w  #$7044,(a4) ; TM entry, address $B044 (retained high bits)
                 bsr.s   logoEA_WriteNametableEntry
-                move.w  #$7144,(a4) ; ???
+                move.w  #$7144,(a4) ; entry at $B144
                 bsr.s   logoEA_WriteNametableEntry
-                move.w  #$710C,(a4) ; ???
+                move.w  #$710C,(a4) ; entry at $B10C
                 bsr.s   logoEA_WriteNametableEntry
-                move.w  #$7136,(a4) ; ???
+                move.w  #$7136,(a4) ; entry at $B136
                 move.w  d4,(a5)
-                move.w  #$E2,(LogoEA_ram_TextTimer).w
+                move.w  #$E2,(LogoEA_ram_TextTimer).w ; text animation length = 226 frames
                 rts
 ; End of function LogoEA_SetupGfx
 
