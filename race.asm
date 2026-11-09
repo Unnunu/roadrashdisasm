@@ -8635,7 +8635,7 @@ sub_112C8:
                 dc.b   3
                 dc.b   0
                 dc.b $69 ; i
-                dc.b STRUCT_OFFSET_66 ; f
+                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
                 dc.b   0
                 dc.b   0
                 dc.b  $A
@@ -11005,7 +11005,7 @@ sub_12B24:
                 dc.b $44 ; D
                 dc.b $E6
                 dc.b $4C ; L
-                dc.b STRUCT_OFFSET_66 ; f
+                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
                 dc.b   0
                 dc.b   0
                 dc.b $3A ; :
@@ -11056,7 +11056,7 @@ sub_12B24:
                 dc.b   0
                 dc.b $FF
                 dc.b $17
-                dc.b STRUCT_OFFSET_66 ; f
+                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
                 dc.b $48 ; H
                 dc.b $80
                 dc.b $4C ; L
@@ -11315,7 +11315,7 @@ unk_12D0A:      dc.b $FF
                 dc.b $D0
                 dc.b   0
                 dc.b   1
-                dc.b STRUCT_OFFSET_66 ; f
+                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
                 dc.b $DC
                 dc.b   0
                 dc.b   1
@@ -11351,7 +11351,7 @@ unk_12D0A:      dc.b $FF
                 dc.b $E0
                 dc.b   0
                 dc.b   1
-                dc.b STRUCT_OFFSET_66 ; f
+                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
                 dc.b $24 ; $
                 dc.b   0
                 dc.b   1
@@ -11371,7 +11371,7 @@ unk_12D0A:      dc.b $FF
                 dc.b $E0
                 dc.b   0
                 dc.b   1
-                dc.b STRUCT_OFFSET_66 ; f
+                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
                 dc.b $6A ; j
                 dc.b   0
                 dc.b   1
@@ -11391,7 +11391,7 @@ unk_12D0A:      dc.b $FF
                 dc.b $E0
                 dc.b   0
                 dc.b   1
-                dc.b STRUCT_OFFSET_66 ; f
+                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
                 dc.b $12
                 dc.b   0
                 dc.b   1
@@ -11411,7 +11411,7 @@ unk_12D0A:      dc.b $FF
                 dc.b $E0
                 dc.b   0
                 dc.b   1
-                dc.b STRUCT_OFFSET_66 ; f
+                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
                 dc.b $B0
                 dc.b   0
                 dc.b   1
@@ -11431,7 +11431,7 @@ unk_12D0A:      dc.b $FF
                 dc.b $D0
                 dc.b   0
                 dc.b   1
-                dc.b STRUCT_OFFSET_66 ; f
+                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
                 dc.b $24 ; $
                 dc.b   0
                 dc.b   1
@@ -11451,7 +11451,7 @@ unk_12D0A:      dc.b $FF
                 dc.b $D0
                 dc.b   0
                 dc.b   1
-                dc.b STRUCT_OFFSET_66 ; f
+                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
                 dc.b $6A ; j
                 dc.b   0
                 dc.b   1
@@ -11471,7 +11471,7 @@ unk_12D0A:      dc.b $FF
                 dc.b $D0
                 dc.b   0
                 dc.b   1
-                dc.b STRUCT_OFFSET_66 ; f
+                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
                 dc.b $12
                 dc.b   0
                 dc.b   1
@@ -11491,7 +11491,7 @@ unk_12D0A:      dc.b $FF
                 dc.b $D0
                 dc.b   0
                 dc.b   1
-                dc.b STRUCT_OFFSET_66 ; f
+                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
                 dc.b $B0
                 dc.b   0
                 dc.b   1
@@ -11511,7 +11511,7 @@ unk_12D0A:      dc.b $FF
                 dc.b $D0
                 dc.b   0
                 dc.b   1
-                dc.b STRUCT_OFFSET_66 ; f
+                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
                 dc.b $2C ; ,
                 dc.b   0
                 dc.b   1
@@ -11531,7 +11531,7 @@ unk_12D0A:      dc.b $FF
                 dc.b $D0
                 dc.b   0
                 dc.b   1
-                dc.b STRUCT_OFFSET_66 ; f
+                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
                 dc.b $44 ; D
                 dc.b   0
                 dc.b   1
@@ -11551,7 +11551,7 @@ unk_12D0A:      dc.b $FF
                 dc.b $E0
                 dc.b   0
                 dc.b   1
-                dc.b STRUCT_OFFSET_66 ; f
+                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
                 dc.b $24 ; $
                 dc.b   0
                 dc.b   1
@@ -11571,7 +11571,7 @@ unk_12D0A:      dc.b $FF
                 dc.b $E0
                 dc.b   0
                 dc.b   1
-                dc.b STRUCT_OFFSET_66 ; f
+                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
                 dc.b $6A ; j
                 dc.b   0
                 dc.b   1
@@ -11591,7 +11591,7 @@ unk_12D0A:      dc.b $FF
                 dc.b $E0
                 dc.b   0
                 dc.b   1
-                dc.b STRUCT_OFFSET_66 ; f
+                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
                 dc.b $12
                 dc.b   0
                 dc.b   1
@@ -11611,7 +11611,7 @@ unk_12D0A:      dc.b $FF
                 dc.b $E0
                 dc.b   0
                 dc.b   1
-                dc.b STRUCT_OFFSET_66 ; f
+                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
                 dc.b $B0
                 dc.b   0
                 dc.b   1
@@ -11631,7 +11631,7 @@ unk_12D0A:      dc.b $FF
                 dc.b $D0
                 dc.b   0
                 dc.b   1
-                dc.b STRUCT_OFFSET_66 ; f
+                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
                 dc.b $24 ; $
                 dc.b   0
                 dc.b   1
@@ -11651,7 +11651,7 @@ unk_12D0A:      dc.b $FF
                 dc.b $D0
                 dc.b   0
                 dc.b   1
-                dc.b STRUCT_OFFSET_66 ; f
+                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
                 dc.b $6A ; j
                 dc.b   0
                 dc.b   1
@@ -11671,7 +11671,7 @@ unk_12D0A:      dc.b $FF
                 dc.b $D0
                 dc.b   0
                 dc.b   1
-                dc.b STRUCT_OFFSET_66 ; f
+                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
                 dc.b $12
                 dc.b   0
                 dc.b   1
@@ -11691,7 +11691,7 @@ unk_12D0A:      dc.b $FF
                 dc.b $D0
                 dc.b   0
                 dc.b   1
-                dc.b STRUCT_OFFSET_66 ; f
+                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
                 dc.b $B0
 
 ; =============== S U B R O U T I N E =======================================
@@ -11891,7 +11891,7 @@ sub_12EA2:
                 dc.b $FF
                 dc.b $18
                 dc.b $A4
-                dc.b STRUCT_OFFSET_66 ; f
+                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
                 dc.b   0
                 dc.b   0
                 dc.b $12
@@ -11917,7 +11917,7 @@ sub_12EA2:
                 dc.b   5
                 dc.b   0
                 dc.b $68 ; h
-                dc.b STRUCT_OFFSET_66 ; f
+                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
                 dc.b   0
                 dc.b   0
                 dc.b  $E
@@ -11972,14 +11972,14 @@ sub_12EA2:
                 dc.b $61 ; a
                 dc.b   0
                 dc.b   5
-                dc.b STRUCT_OFFSET_66 ; f
+                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
                 dc.b $B5
                 dc.b $FC
                 dc.b $FF
                 dc.b $FF
                 dc.b $FF
                 dc.b $FF
-                dc.b STRUCT_OFFSET_66 ; f
+                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
                 dc.b   0
                 dc.b   0
                 dc.b $18
@@ -11993,7 +11993,7 @@ sub_12EA2:
                 dc.b $FF
                 dc.b $18
                 dc.b $A4
-                dc.b STRUCT_OFFSET_66 ; f
+                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
                 dc.b   0
                 dc.b   0
                 dc.b $12
@@ -12149,7 +12149,7 @@ sub_13106:
                 dc.b $60 ; `
                 dc.b   0
                 dc.b   0
-                dc.b STRUCT_OFFSET_66 ; f
+                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
                 dc.b $30 ; 0
                 dc.b $29 ; )
                 dc.b   0
@@ -12178,7 +12178,7 @@ sub_13106:
                 dc.b   3
                 dc.b   0
                 dc.b $69 ; i
-                dc.b STRUCT_OFFSET_66 ; f
+                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
                 dc.b   0
                 dc.b   0
                 dc.b $22 ; "
@@ -13141,7 +13141,7 @@ sub_138CE:
                 dc.b $FF
                 dc.b   0
                 dc.b $56 ; V
-                dc.b STRUCT_OFFSET_66 ; f
+                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
                 dc.b   0
                 dc.b   0
                 dc.b $2E ; .
@@ -14206,7 +14206,7 @@ sub_1406A:
                 dc.b $FF
                 dc.b $17
                 dc.b $68 ; h
-                dc.b STRUCT_OFFSET_66 ; f
+                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
                 dc.b   0
                 dc.b   0
                 dc.b $3C ; <
@@ -14234,7 +14234,7 @@ sub_1406A:
                 dc.b $FF
                 dc.b $1E
                 dc.b $AA
-                dc.b STRUCT_OFFSET_66 ; f
+                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
                 dc.b   0
                 dc.b   0
                 dc.b $32 ; 2
@@ -14274,7 +14274,7 @@ sub_1406A:
                 dc.b $FF
                 dc.b $1E
                 dc.b $AA
-                dc.b STRUCT_OFFSET_66 ; f
+                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
                 dc.b   0
                 dc.b   0
                 dc.b  $A
@@ -14300,7 +14300,7 @@ sub_1406A:
                 dc.b   3
                 dc.b   0
                 dc.b $69 ; i
-                dc.b STRUCT_OFFSET_66 ; f
+                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
                 dc.b   0
                 dc.b   0
                 dc.b  $E
@@ -14472,7 +14472,7 @@ sub_1406A:
                 dc.b $FF
                 dc.b $17
                 dc.b $68 ; h
-                dc.b STRUCT_OFFSET_66 ; f
+                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
                 dc.b   0
                 dc.b   0
                 dc.b $3A ; :
@@ -14500,7 +14500,7 @@ sub_1406A:
                 dc.b $FF
                 dc.b $1E
                 dc.b $AA
-                dc.b STRUCT_OFFSET_66 ; f
+                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
                 dc.b   0
                 dc.b   0
                 dc.b $30 ; 0
@@ -14538,7 +14538,7 @@ sub_1406A:
                 dc.b $FF
                 dc.b $1E
                 dc.b $AA
-                dc.b STRUCT_OFFSET_66 ; f
+                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
                 dc.b   0
                 dc.b   0
                 dc.b  $A
@@ -14626,7 +14626,7 @@ sub_142D8:
                 dc.b   1
                 dc.b   0
                 dc.b $69 ; i
-                dc.b STRUCT_OFFSET_66 ; f
+                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
                 dc.b   0
                 dc.b   0
                 dc.b  $C
@@ -14668,7 +14668,7 @@ sub_142D8:
                 dc.b $A9
                 dc.b   0
                 dc.b $26 ; &
-                dc.b STRUCT_OFFSET_66 ; f
+                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
                 dc.b   0
                 dc.b   0
                 dc.b $12
@@ -14796,7 +14796,7 @@ sub_1438E:
                 dc.b $FF
                 dc.b $17
                 dc.b $68 ; h
-                dc.b STRUCT_OFFSET_66 ; f
+                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
                 dc.b   0
                 dc.b   0
                 dc.b  $C
@@ -14850,7 +14850,7 @@ sub_1438E:
                 dc.b $69 ; i
                 dc.b   0
                 dc.b $12
-                dc.b STRUCT_OFFSET_66 ; f
+                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
                 dc.b   0
                 dc.b   0
                 dc.b $10
@@ -16567,11 +16567,11 @@ sub_15446:
                 dc.b $6A ; j
                 dc.b   0
                 dc.b $12
-                dc.b STRUCT_OFFSET_66 ; f
+                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
                 dc.b   0
                 dc.b   0
                 dc.b $10
-                dc.b STRUCT_OFFSET_66 ; f
+                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
                 dc.b   0
                 dc.b   0
                 dc.b  $C
