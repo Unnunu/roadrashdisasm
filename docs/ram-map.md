@@ -30,8 +30,25 @@ Status tags: `[static]` from code; `[dynamic]` observed; `[confirmed]` both;
 
 - `[static]` Boot clears the whole 64 KiB work RAM, so every later structure is
   initialized by its own screen/module.
-- Audio is deferred, but the sound code seen at `$19FAA` uses a control block starting at
-  `$FFFF0000` and later loads the Z80 driver from `$1DA12` into `$A00000`.
+The 68k audio control block starts at `$FFFF0000`; see
+`docs/analysis/audio.md` for the full map and function meanings.
+
+| Address | Name | Size | Meaning |
+|---|---|---|---|
+| `$FF0000` | audio active byte | 1 | `$FF` when the sound engine is active/resumed. |
+| `$FF0006 + n*$48` | audio channel n | `$48` | Six 68k sequence channels (`n=0..5`). |
+| `$FF01B6` | current song id | 4 | Written by `AudioFunc3`. |
+| `$FF01BE` | command buffer | `$30` | Six 8-byte commands copied to Z80 `$A00256`. |
+| `$FF01EE` | special command | 5 | Copied to Z80 `$A000BB..BF` when `$FF01F3` is set. |
+| `$FF01F4` | resume flag | 1 | `1` prevents `AudioFunc18` from re-arming audio. |
+| `$FF0202` | command-ready | 1 | Command block processed/ready flag. |
+| `$FF0204/$0208/$0209` | engine ch.1 | 1/1/1 | Parameter / start-stop / volume. |
+| `$FF020A/$020E/$020F` | engine ch.2 | 1/1/1 | Parameter / start-stop / volume. |
+| `$FF0210/$0214/$0215` | engine ch.3 | 1/1/1 | Parameter / start-stop / volume. |
+| `$FF021B` | engine parameter | 1 | Set by `AudioFunc16` (distance-derived). |
+| `$A000BB..BF` | Z80 mailbox | 5 | Special command bytes. |
+| `$A00256` | Z80 command block | `$30` | Six channel commands. |
+| `$A00286` | Z80 command flag | 1 | Written after the command block. |
 
 ## Fade (`src/core/fade.asm`)
 

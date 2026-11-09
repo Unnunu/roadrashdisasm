@@ -51,7 +51,7 @@ See `docs/analysis/main.md` for the annotated boot flow and evidence.
 
 - `LogoEA_Init` / `LogoEA_GameTick` (logo).
 - `Boot_CheckRomChecksum` (ROM checksum), `Boot_CheckRomChecksum` failure path.
-- Z80 sound code (later at `$1D9C2`, audio deferred).
+- Z80 sound code (loader at `$1D9C2`; see `docs/analysis/audio.md`).
 - All include modules via `include` directives.
 
 ## Hacks / bugs / quirks

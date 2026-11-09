@@ -1,24 +1,24 @@
 sub_13D44 equ $13D44
 
 
-AudioFunc1 equ $19F62
-AudioFunc2 equ $19F66
-AudioFunc3 equ $19F6A
-AudioFunc4 equ $19F6E
-AudioFunc5 equ $19F72
-AudioFunc6 equ $19F76
-AudioFunc7 equ $19F7A
-AudioFunc8 equ $19F7E
-AudioFunc9 equ $19F82
-AudioFunc10 equ $19F86
-AudioFunc11 equ $19F8A
-AudioFunc12 equ $19F8E
-AudioFunc13 equ $19F92
-AudioFunc14 equ $19F96
-AudioFunc15 equ $19F9A
-AudioFunc16 equ $19F9E
-AudioFunc17 equ $19FA2
-AudioFunc18 equ $19FA6
+AudioFunc1 equ $19F62 ; per-frame tick; flush command buffer to Z80 mailbox
+AudioFunc2 equ $19F66 ; audio init; clear work RAM and load Z80 driver
+AudioFunc3 equ $19F6A ; start song (d0 = song id 0..11)
+AudioFunc4 equ $19F6E ; request stop/pause (processed by AudioFunc1)
+AudioFunc5 equ $19F72 ; SFX dispatcher (d0 0..18 -> jump table $1A6D6)
+AudioFunc6 equ $19F76 ; engine ch.1 start ($FF0208=1/3)
+AudioFunc7 equ $19F7A ; engine ch.1 stop ($FF0208=3)
+AudioFunc8 equ $19F7E ; engine ch.1 update ($FF0204/$FF0209)
+AudioFunc9 equ $19F82 ; engine ch.2 start ($FF020E=1/3)
+AudioFunc10 equ $19F86 ; engine ch.2 stop ($FF020E=3)
+AudioFunc11 equ $19F8A ; engine ch.2 update ($FF020A/$FF020F)
+AudioFunc12 equ $19F8E ; engine ch.3 start ($FF0214=1/3)
+AudioFunc13 equ $19F92 ; engine ch.3 stop ($FF0214=3)
+AudioFunc14 equ $19F96 ; engine ch.3 update ($FF0210/$FF0215)
+AudioFunc15 equ $19F9A ; stop music channel state ($FF011C=3)
+AudioFunc16 equ $19F9E ; set distance-derived parameter ($FF021B=d1)
+AudioFunc17 equ $19FA2 ; stop music channel state ($FF0164=3; $FF021D=0)
+AudioFunc18 equ $19FA6 ; resume/continue audio unless $FF01F4==1
 
 ; Actor/opponent tables now defined in race_engine_tables.asm/race_actor_tables.asm/
 ; race_actor_extra_tables.asm; track records in race_track_data.asm (see docs/analysis/race_actors.md)

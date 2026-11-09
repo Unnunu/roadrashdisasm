@@ -91,6 +91,13 @@ generated as `assets/images/ea_logo/data.bin`; the previously tracked root
 `LogoEA_Image_ElectronicArts.bin` was removed. It uses the custom
 `LogoEA_DecompressLZ` format, so PNG preview is deferred.
 
+## Audio binary assets
+
+`tools/asset_specs.json` also generates `assets/audio/z80_driver/data.bin`
+(`0x1DA12`, `0xBBB`) and `assets/audio/sound_data/data.bin`
+(`0x1E5CD`, `0x7203`). They are raw binaries; Z80 disassembly and sound-data
+parsing are tracked in `docs/analysis/audio.md`.
+
 ## Deferred
 
 - `race_map_0` (`unk_9B2F0`, 40×17): base tile `$4180` points at VRAM `$3000`;

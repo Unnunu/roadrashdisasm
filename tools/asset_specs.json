@@ -884,6 +884,40 @@
       "transparent0": false,
       "compression": "w",
       "palette_groups": null
+    },
+    {
+      "preview": false,
+      "palette_group": null,
+      "variants": null,
+      "atlas_lines": null,
+      "transparent0": false,
+      "palette_groups": null,
+      "race_tracks": null,
+      "tileset_asset": null,
+      "id": "z80_driver",
+      "label": "z80_driver",
+      "aliases": [],
+      "address": "0x1DA12",
+      "size": "0xBBB",
+      "category": "audio",
+      "compression": "raw"
+    },
+    {
+      "preview": false,
+      "palette_group": null,
+      "variants": null,
+      "atlas_lines": null,
+      "transparent0": false,
+      "palette_groups": null,
+      "race_tracks": null,
+      "tileset_asset": null,
+      "id": "sound_data",
+      "label": "sound_data",
+      "aliases": [],
+      "address": "0x1E5CD",
+      "size": "0x7203",
+      "category": "audio",
+      "compression": "raw"
     }
   ],
   "palettes": [

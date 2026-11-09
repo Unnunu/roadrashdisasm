@@ -163,7 +163,12 @@ Quirks (see `docs/analysis/main.md`):
 - YM2612: `$A04000` (address), `$A04001` (data); PSG: `$C00011`.
 - Boot loads a 38-byte Z80 stub and leaves the Z80 in reset; the sound code later
   (`$1D9C2`) loads the real driver from `$1DA12` (~3003 bytes) and releases reset.
-- Deep analysis of the sound driver is deferred (see `docs/architecture.md`).
+- The 68k side (`$19F62-$1D9C1`) builds six channel commands and sends them to Z80
+  RAM; see `docs/analysis/audio.md` for `AudioFunc1..18`, work-RAM fields and the
+  Z80 mailbox.
+- The current Z80 driver binary (`$1DA12`, `$BBB` bytes) and sound data
+  (`$1E5CD-$257CF`) are extracted by `tools/assets.py`; Z80 code/data and
+  YM2612/PSG command details remain TODO.
 
 ## 8. Game-specific configurations (fill during analysis)
 

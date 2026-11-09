@@ -167,6 +167,7 @@ tentative until the module card is filled in.
 | `0x016E70` | `src/screens/rider_intro_quotes.asm` | Rider-intro quote records (ROM gap) | [rider_intro.md](modules/rider_intro.md) |
 | `0x019A12` | `src/data/race_data_tables.asm` | Intro/results/level tables (ROM gap) | [race_data_tables.md](modules/race_data_tables.md) |
 | `0x0257D0` | `src/data/race_engine_tables.asm` | Physics/engine/audio tables (ROM gap) | [race_data_tables.md](modules/race_data_tables.md) |
+| `0x019F62` | raw bridge | 68k audio interface / Z80 driver / sound data | [audio.md](modules/audio.md) |
 | `0x0259B6` | `src/data/race_actor_extra_tables.asm` | Actor/AI tables (ROM gap) | [race_data_tables.md](modules/race_data_tables.md) |
 | `0x025EC0` | `src/data/race_track_data.asm` | Per-track records/streams (ROM gap) | [race_track_data.md](modules/race_track_data.md) |
 | `0x03BF1A` | `src/data/road_shapes.asm` | Road/object shape table/data (ROM gap) | [road_shapes.md](modules/road_shapes.md) |

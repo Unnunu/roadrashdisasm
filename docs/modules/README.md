@@ -44,6 +44,7 @@ row to the table below.
 | `src/data/race_misc_data.asm` | `0x07DCA8` | HUD/palette/results tables (ROM gap) | [race_misc_data.md](race_misc_data.md) |
 | `src/data/rom_assets.asm` | `0x07EA66` | Labelled asset/code tail | [rom_assets.md](rom_assets.md) |
 | `src/core/top_level.asm` | `0x07E6A2` | Top-level screen flow (intro/menu/race/results) | [top_level.md](top_level.md) |
+| audio raw bridge | `0x019F62` | 68k audio interface / Z80 driver / sound data | [audio.md](audio.md) |
 
 Helper/data files without code: `src/core/hw_const.asm`, `src/core/unknown.asm`, `src/core/ram_const.asm`,
 `src/data/race_actor_tables.asm`, `src/screens/rider_intro_quotes.asm`, `src/data/race_data_tables.asm`,

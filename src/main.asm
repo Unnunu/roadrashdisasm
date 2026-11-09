@@ -708,7 +708,7 @@ Audio_UpdateEngine:
     include "race.asm"
 ; *****************************************************************
 ; Raw bridge for the remaining not-yet-disassembled range:
-;   $019F62-$0257CF  audio/sound (deferred)
+;   $019F62-$0257CF  audio/sound (see docs/analysis/audio.md)
 ; All other bytes are real source or labelled data modules; the top-level flow at
 ; $7E6A2 is top_level.asm.
 ; *****************************************************************
