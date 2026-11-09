@@ -1143,7 +1143,7 @@ Race_InitVariables:
 
 ; *************************************************
 ; Function Race_InitActorLists
-; Builds the actor/object pointer tables and counts from unk_25856/unk_2585E.
+; Builds the actor/object pointer tables and counts from Race_ActorList/Race_ActorListMid.
 ; In:  -
 ; Out: ram_FF1A08/ram_FF1982 lists; ram_FF1A06; sentinels
 ; Clobbers: d0/a1/a2
@@ -1153,10 +1153,12 @@ Race_InitActorLists:
                 move.w  #0,(ram_FF1EA6).l
                 move.w  #0,(ram_FF19C4).l
                 move.w  #1,(ram_FF1A06).l
-                lea     (unk_25856).l,a1
+; first actor pointer (player A) then the second actor group
+                lea     (Race_ActorList).l,a1
                 lea     (ram_FF1A08).l,a2
                 move.l  (a1),(a2)+
 
+; skip to the second group (+$24 from the second entry)
                 adda.w  #$24,a1
                 move.w  #6,d0
 .loc_B6F2:
@@ -1167,7 +1169,8 @@ Race_InitActorLists:
                 move.l  #$FFFFFFFF,(a2)
                 lea     (ram_FF1982).l,a2
                 move.w  #0,(a2)+
-                lea     (unk_2585E).l,a1
+; middle group (exact 8+7 split TODO)
+                lea     (Race_ActorListMid).l,a1
                 move.w  #6,d0
 .loc_B71A:
                 addi.w  #1,(ram_FF1982).l
@@ -2533,7 +2536,7 @@ Race_BuildStandings:
                 beq.w   .loc_C904
                 lea     (Menu_ram_PlayerBOpponents).l,a3
 .loc_C904:
-                lea     (unk_CCDA).l,a4
+                lea     (Race_ActorDefinitionTable).l,a4
                 move.w  #3,d3
 
 .loc_C90E:
@@ -2696,20 +2699,31 @@ Race_LoadActorPalette:
 ; End of function Race_LoadActorPalette
 
 
-; =============== S U B R O U T I N E =======================================
-
+; *************************************************
+; Function Race_CreateActors
+; Fills the player/opponent actor structs from the actor definitions and the opponent
+; id list, then initializes the static actor group and the player sprite fields.
+; In:  Race_ActorList (player A + 15 opponents), Menu_ram_PlayerA/BOpponents,
+;      Menu_ram_Player; Race_ActorDefinitionTable, Race_ActorGraphicsTable
+; Out: actor structs at $FF1EAA + $80*i; static $FF2EAA/$FF2F2A; player A fields;
+;      actor palette (Race_LoadActorPalette)
+; Clobbers: all
+; Notes: definition = type, pad, graphics index/sign, +$73, +$77, rating*100, name.
+;        The 5 level pages (15 opponents each) are followed by "Player def" (id $4B).
+; *************************************************
 
 Race_CreateActors:
                 clr.l   d0
                 move.l  #$8000,(ram_FF1E76).l
                 move.w  #0,(ram_FF1E94).l
-                lea     (unk_25856).l,a0 ; get actor list
+; player A + 15 opponent actor structs (sentinels $FFFFFFFF)
+                lea     (Race_ActorList).l,a0 ; get actor list
                 lea     (Menu_ram_PlayerAOpponents).l,a3
                 tst.w   (Menu_ram_Player).l
                 beq.w   .loc_CB00
                 lea     (Menu_ram_PlayerBOpponents).l,a3
 .loc_CB00:
-                lea     (unk_258EE).l,a4
+                lea     (Race_ActorGraphicsTable).l,a4
                 move.w  #0,d0
                 move.w  #0,d1
 .loopCreateActor:
@@ -2719,11 +2733,13 @@ Race_CreateActors:
 
                 move.b  d0,STRUCT_OFFSET_INDEX(a1) ; set actor index
                 addq.w  #1,d0 ; increment index
+; id list: $4B (player def) followed by the current level's 15 opponents
                 move.w  (a3)+,d2 ; get actor id
-                lea     (unk_CCDA).l,a2
+                lea     (Race_ActorDefinitionTable).l,a2
                 asl.w   #4,d2
                 lea     (a2,d2.w),a2 ; load actor definition
                 clr.w   d2
+; definition byte 0 -> actor type/sprite; byte 1 -> +$74
                 move.b  (a2)+,d2
                 move.w  d2,STRUCT_OFFSET_16(a1)
                 move.b  (a2)+,STRUCT_OFFSET_74(a1)
@@ -2733,10 +2749,12 @@ Race_CreateActors:
                 andi.b  #$7F,d2
                 bset    #1,STRUCT_OFFSET_6B(a1)
 .loc_CB50:
+; byte 2 low 7 bits -> +$75 (graphics index); bit 7 -> +$6B bit1
                 move.b  d2,STRUCT_OFFSET_75(a1)
                 ext.w   d2
                 asl.w   #2,d2
                 movea.l (a4,d2.w),a5
+; graphics entry +$A/+$C/+$E -> actor sprite fields +$5E/+$60/+$5C
                 move.w  $A(a5),STRUCT_OFFSET_5E(a1)
                 move.w  $C(a5),STRUCT_OFFSET_60(a1)
                 move.w  $E(a5),STRUCT_OFFSET_5C(a1)
@@ -2744,6 +2762,7 @@ Race_CreateActors:
                 bne.w   .loc_CB80
                 move.w  (ram_FF18AA).l,STRUCT_OFFSET_5C(a1)
 .loc_CB80:
+; bytes 3/4 -> +$73/+$77; byte 5 * 100 -> +$66 (actor rating/skill)
                 move.b  (a2)+,STRUCT_OFFSET_73(a1)
                 move.b  (a2)+,STRUCT_OFFSET_77(a1)
                 move.b  (a2)+,d1
@@ -2795,7 +2814,8 @@ Race_CreateActors:
                 move.w  #$FF90,(ram_FF2F2A).l
                 move.w  #$FF90,(ram_FF2F5A).l
                 move.b  #0,(ram_FF2F9D).l
-                lea     (unk_2589A).l,a0
+; static actor group (type $10, indices $10+)
+                lea     (Race_StaticActorList).l,a0
                 move.b  #$10,d0
 .loc_CC88:
                 movea.l (a0)+,a1
@@ -2817,9 +2837,14 @@ Race_CreateActors:
 ; End of function Race_CreateActors
 
 
-unk_CCD0:
+; per-level first opponent id (level 1-5)
+Race_ActorLevelBase:
     dc.w 0, 15, 30, 45, 60
-unk_CCDA:
+
+; Actor definitions: 16 bytes each: type, pad, graphics index (bit7 = special),
+; +$73, +$77, rating*100, 10-byte name. Five pages of 15 opponents (levels 1-5),
+; then the player definition (id $4B, all zero; player fields set separately).
+Race_ActorDefinitionTable:
     dc.b    2,  1,   5, 0,  3, 100, "O'Leary   "
     dc.b    4, 11, 130, 2,  3,  93, "Viper     "
     dc.b    4,  7,   1, 2,  3,  92, "Shiva     "
@@ -5268,7 +5293,7 @@ sub_F40C:
                 tst.w   (ram_FF3040).l
                 bne.w   .loc_F480
                 move.w  #1,(ram_FF3040).l
-                lea     (unk_2589A).l,a2
+                lea     (Race_StaticActorList).l,a2
                 movea.l (a2)+,a1
                 cmpa.w  #$FFFF,a1
                 bne.w   .loc_F4CA
@@ -10022,7 +10047,7 @@ sub_11CC8:
 
 
 .loc_11E8C:
-                lea     (unk_2589A).l,a0
+                lea     (Race_StaticActorList).l,a0
                 move.l  #$6000,(ram_FF3038).l
                 move.w  #$37,(ram_FF303C).l ; '7'
                 move.w  #$40,(ram_FF303E).l ; '@'
@@ -10396,7 +10421,7 @@ sub_1218C:
                 bsr.w   sub_11906
 
 .loc_122FA:
-                lea     (unk_2589A).l,a0
+                lea     (Race_StaticActorList).l,a0
                 move.l  #$6000,(ram_FF3038).l
                 move.w  #$37,(ram_FF303C).l ; '7'
                 move.w  #$40,(ram_FF303E).l ; '@'
@@ -10818,7 +10843,7 @@ sub_1281E:
 
 
 .loc_1283E:
-                lea     (unk_2589A).l,a0
+                lea     (Race_StaticActorList).l,a0
 
 .loc_12844:
                 movea.l (a0)+,a1
@@ -10840,7 +10865,7 @@ sub_1281E:
 
 
 sub_12868:
-                lea     (unk_2589A).l,a2
+                lea     (Race_StaticActorList).l,a2
 
 .loc_1286E:
                 movea.l (a2)+,a1
@@ -10958,7 +10983,7 @@ sub_12974:
 .loc_129AC:
                 tst.w   d0
                 bpl.w   .loc_12A32
-                lea     (unk_2589A).l,a0
+                lea     (Race_StaticActorList).l,a0
 
 .loc_129B8:
                 movea.l (a0)+,a2
@@ -11874,7 +11899,7 @@ sub_12EA2:
                 move.b  $75(a1),d2
                 ext.w   d2
                 asl.w   #2,d2
-                lea     (unk_258EE).l,a4
+                lea     (Race_ActorGraphicsTable).l,a4
                 movea.l (a4,d2.w),a4
                 move.l  a4,(ram_FF1A68).l
                 move.w  $5C(a1),d0
@@ -12246,7 +12271,7 @@ sub_12EA2:
 
 
 sub_13106:
-                lea     (unk_2589A).l,a0
+                lea     (Race_StaticActorList).l,a0
 
 .loc_1310C:
                 movea.l (a0)+,a1
@@ -12872,13 +12897,13 @@ sub_13626:
                 beq.w   .loc_136B0
                 cmp.b   #$10,d2
                 bpl.w   .loc_13656
-                lea     (unk_25856).l,a0
+                lea     (Race_ActorList).l,a0
                 move.w  #0,d6
                 bra.w   .loc_13664
 
 
 .loc_13656:
-                lea     (unk_2589A).l,a0
+                lea     (Race_StaticActorList).l,a0
                 move.w  #$FFFF,d6
                 subi.w  #$10,d2
 
@@ -13215,7 +13240,7 @@ sub_138CE:
                 lea     (RacePlayerA).l,a1
                 btst    #4,$68(a1)
                 bne.w   .return
-                lea     (unk_2589A).l,a0
+                lea     (Race_StaticActorList).l,a0
 
 .loc_138E4:
                 movea.l (a0)+,a2
@@ -13705,11 +13730,11 @@ sub_13CFE:
                 move.w  (ram_FF1B38).l,d0
                 addq.w  #4,d0
                 move.b  d0,$75(a1)
-                lea     (unk_CCD0).l,a2
+                lea     (Race_ActorLevelBase).l,a2
                 subq.w  #5,d0
                 asl.w   #1,d0
                 move.w  (a2,d0.w),d0
-                lea     (unk_CCDA).l,a2
+                lea     (Race_ActorDefinitionTable).l,a2
                 asl.w   #4,d0
                 move.b  (a2,d0.w),d0
                 ext.w   d0
@@ -20648,7 +20673,7 @@ sub_16C1A:
 
 sub_16C4E:
                 movem.l d0-d1/a2,-(sp)
-                lea     (unk_25856).l,a0
+                lea     (Race_ActorList).l,a0
                 lea     (Menu_ram_PlayerAOpponents).l,a2
                 tst.w   (Menu_ram_Player).l
                 beq.w   .loc_16C6E
@@ -20659,7 +20684,7 @@ sub_16C4E:
                 ext.w   d0
                 asl.w   #1,d0
                 move.w  (a2,d0.w),d0
-                lea     (unk_CCDA).l,a2
+                lea     (Race_ActorDefinitionTable).l,a2
                 asl.w   #4,d0
                 lea     (a2,d0.w),a2
                 clr.w   d0

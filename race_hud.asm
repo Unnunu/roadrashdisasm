@@ -429,7 +429,7 @@ Race_DrawOpponentName:
                 beq.w   .loc_D750
                 lea     (Menu_ram_PlayerBOpponents).l,a0
 .loc_D750:
-                lea     (unk_CCDA).l,a1
+                lea     (Race_ActorDefinitionTable).l,a1
                 movea.l (ram_FF1908).l,a2
                 cmpa.l  #-1,a2
                 beq.w   .noOpponentAround
@@ -437,7 +437,7 @@ Race_DrawOpponentName:
                 bne.w   .loc_D788
                 move.w  (ram_FF1B38).l,d1
                 subq.w  #1,d1
-                lea     (unk_CCD0).l,a4
+                lea     (Race_ActorLevelBase).l,a4
                 asl.w   #1,d1
                 move.w  (a4,d1.w),d1
                 bra.w   .loc_D794

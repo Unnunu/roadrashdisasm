@@ -130,7 +130,8 @@ This is the double/quad buffering that avoids tearing.
 - `Race_InitTrack`: `CurrentTrackId*2` -> `unk_25EC0` -> the track record;
   `RaceTrack_Data1` = per-level word, `Data2/3` = the track-data decoder streams
   (`track_data.asm`), `Data4/5/6` = object/spawn/gfx data; initial time/position/state.
-- `Race_InitActorLists`/`Race_InitActorPositions`: object/actor pointer tables and their initial screen data.
+- `Race_InitActorLists`/`Race_InitActorPositions`: actor pointer groups and their
+  initial screen fields (`ram_FF1A08`/`ram_FF1982`; exact 8+7 split TODO).
 - `Race_InitPhysicsConstants`: bike physics/steering/engine constants.
 - `Race_LoadTrackParams`: per-track parameters from `unk_1471A`.
 - `Race_LoadBikeData`: bike id -> `unk_25B50` (0x13 words at `ram_FF1A70`) and
@@ -138,18 +139,22 @@ This is the double/quad buffering that avoids tearing.
 - `Race_SpawnOpponents`: `RaceTrack_Data5` spawn records (4 bytes, `$FFFFFFFF` terminator),
   split by per-level thresholds `word_B976`/`word_B980` and the `off_B98A` color
   table into `ram_FFD7D4` and `ram_FFDBD8` (object lists).
-- `Race_CreateActors` (`0xCAD0`): builds the actor/object records (the `$14`-byte
-  `Road_ObjectArray` array used by `road_render.asm`).
+- `Race_CreateActors` (`0xCAD0`): builds the rider/opponent **actor structs** from
+  `Race_ActorList`, `Menu_ram_PlayerA/BOpponents`, `Race_ActorDefinitionTable` and
+  `Race_ActorGraphicsTable`; the `0x14`-byte `Road_ObjectArray` is separate.
+  Details: `docs/analysis/race_actors.md`.
 
 ## RAM / structures (initial inventory)
 
-Player/bike structures:
+Actors/player structures:
 
 | Base | Size | Role |
 |---|---|---|
-| `$FF1EAA` | `$80` | Player A gameplay state (`RacePlayer` candidate). |
-| `$FF26AA` | `$80` | Player B gameplay state (`$FF1EAA + $800`). |
-| `$FF2FAA` | ? | Another actor/player-like struct used by `sub_12868` (`$68` bit6); **not** the same struct as `$FF1EAA`. |
+| `RacePlayerA` (`$FF1EAA`) | `$80` | Player A actor (the actor/player struct type). |
+| `RacePlayerB` (`$FF26AA`) | `$80` | Player B actor (inactive/2P; TODO). |
+| `$FF1F2A`..`$FF262A` | `$80` | 15 opponent actors (`Race_ActorList`). |
+| `$FF2EAA`/`$FF2F2A` | `$80` | static actors (type `$10`). |
+| `$FF2FAA` | `$80`? | further actor-like instance (not in the static list); role TODO. |
 | `$FFD37C` | `$14`/entry | Road/actor object array (fields in `docs/analysis/road_render.md`). |
 
 `RacePlayer` offsets observed in the top-level (more in the physics/AI chain):
@@ -160,6 +165,10 @@ Player/bike structures:
 | `+$04` | word | `PosXHigh` | `Race_Update`, 98C2 |
 | `+$06` | word | `PosXLow` | 98C2 |
 | `+$12` | word | `Speed` | `Race_Update` (`sub_F108`), main HInt |
+| `+$16` | byte | `ActorType` | actor definition byte0 |
+| `+$5C`/`+$5E`/`+$60` | word | actor graphics/sprite fields | `Race_ActorGraphicsTable` |
+| `+$66` | word | `Unk66`/ActorRating (definition byte5*100; divisor use) | `Race_CreateActors` |
+| `+$73`/`+$74`/`+$75`/`+$77` | byte | actor definition bytes 3/1/2/4 | `Race_CreateActors` |
 | `+$18` | word | `Gear` | 98C2, shop/gear |
 | `+$30` | word | `PosY` | 98C2, main HInt |
 | `+$66` | word | `Unk66` (TODO; copied from `+$56`, used as a divisor) | `STRUCT_OFFSET_66` code uses, `move.w $56(a0),$66(a0)` |
@@ -170,8 +179,8 @@ Player/bike structures:
 **Important:** the flat `STRUCT_OFFSET_*` symbols are IDA-derived and ambiguous:
 - `STRUCT_OFFSET_66` in `dc.b` animation data was an IDA mistake; the 43 bytes are
   now literal `$66` (`race: drop ida offset symbol from animation data`).
-- `$68(a1)` with `a1=ram_FF2FAA` (`sub_12868`) is a **different structure** than
-  `RacePlayerA+$68`; a global flat offset symbol hides this.
+- `$68(a1)` with `a1=ram_FF2FAA` (`sub_12868`) is a further actor-like instance; its
+  exact role is TODO, so a global flat offset symbol must not be assigned blindly.
 - The `a1` bases in the physics chain must be traced before assigning fields; no AS
   struct definitions will be created from the flat names.
 
@@ -184,9 +193,9 @@ Player/bike structures:
 | Buffering | `Race_SwapFrames` `0xBBFE`, `Race_FinishFrame` `0xBD24` |
 | Input | `Race_GetInput` `0xBE56`, `Race_GetInputDemo` `0xBE2C`, steering/pause |
 | Time | `Race_UpdateTime` `0xBA02`, `Race_ResetFrameTimers` `0xB9AE` |
-| Track/actors | `Race_InitTrack` `0xB016`, `Race_InitActorLists/B72A/B770/B840/B8D0`, `Race_CreateActors` `0xCAD0` |
+| Track/actors | `Race_InitTrack` `0xB016`, `Race_InitActorLists/Positions/PhysicsConstants/LoadTrackParams/SpawnOpponents`, `Race_CreateActors` `0xCAD0`; `Race_ActorList/DefinitionTable/GraphicsTable/StaticActorList` |
 | Physics/AI | `sub_F108`, `sub_16AF6`, `sub_13EA0`..`sub_13106` (TODO) |
-| Road/render | `PiecewiseLinearInterpolation`, `Road_FillProfileTables`, `sub_FD96/FB1E/F40C`, `sub_109B6/FC0E/10D46`, `Road_DrawObjects` (`8FB4`), `RoadMarking_Draw` |
+| Road/render | `PiecewiseLinearInterpolation`, `Road_FillProfileTables`, `sub_FD96/FB1E/F40C`, `sub_109B6/FC0E`, `Road_BuildVisibleList`, `Road_DrawObjects` (`road_render`), `RoadMarking_Draw` |
 | HUD | `RaceHud_Draw` (`race_hud.asm`) |
 | Animation | `UpdateAnimation(2)` (`animation.asm`), `RiderSprites_Build` |
 | Outcome | `Race_ComputeResults` (`0xC3F8`), `Race_SortResults`, `Race_UpdateHighScoreTable`, password/highscore |
@@ -194,8 +203,8 @@ Player/bike structures:
 
 ## Open questions / next steps
 
-1. Trace the `a1` bases in the physics/AI chain and map the `RacePlayer` and
-   `ram_FF2FAA` structs field by field (the struct inventory).
+1. Trace the `a1` bases in the physics/AI chain and map the actor struct fields
+   (see `docs/analysis/race_actors.md`; `RacePlayer`/`RaceActor`, `$FF2FAA`).
 2. Analyze the actor/physics functions (`sub_F108`, `sub_16AF6`, `sub_13xxx`,
    `sub_Dxxx`, `sub_Exxx`) and the object list.
 3. `race_hud.asm`, `road_marking.asm`, `animation.asm` cards + internals.
@@ -207,6 +216,9 @@ Player/bike structures:
 
 | Current | Proposed | Evidence | Confidence |
 |---------|----------|----------|------------|
-| `RacePlayer` (candidate) | `RacePlayer` | two `$80` instances at `$FF1EAA`/`$FF26AA` | medium |
-| `$FF2FAA` struct | `RaceActor`/`RacePlayerVisual` | separate `$68` bit6 struct | low |
+| `+$16` actor field | `ActorType` | definition byte0 | high |
+| `+$66` actor field | `ActorRating` | definition byte5*100 | medium |
+| `+$75` actor field | `ActorGraphicsIndex` | definition byte2 low 7 bits | high |
+| `RacePlayer`/`RaceActor` | (same actor struct type) | player A/B + 15 opponents + static | medium |
+| `$FF2FAA` struct | `RaceActor`/`RacePlayerVisual` | not in static list | low |
 

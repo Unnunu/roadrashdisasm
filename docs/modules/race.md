@@ -29,7 +29,8 @@ marking/animation, and the race outcome. `top_level.asm` calls `Race_Init`, inst
 | `Race_UpdateTime` | `0xBA02` | `Race_GameTick` | BCD race timer. |
 | `Race_ResetFrameTimers` | `0xB9AE` | `Race_GameTick` | Frame pacing. |
 | `Race_InitTrack` | `0xB016` | `Race_Init` | Track record/streams/spawn. |
-| `Race_CreateActors` | `0xCAD0` | `Race_Init` | Object/actor records. |
+| `Race_CreateActors` | `0xCAD0` | `Race_Init` | Rider/opponent actor structs and tables. |
+| `Race_InitActorLists`/`Positions` | `0xB6C4`/`0xB72A` | `Race_Init` | Actor pointer groups + screen spots. |
 | `Race_ComputeResults` | `0xC3F8` | race end | Outcome/places/password/money. |
 
 ## Control flow / state machine
@@ -45,13 +46,17 @@ marking/animation, and the race outcome. `top_level.asm` calls `Race_Init`, inst
 
 ## RAM / ROM & structures
 
-- Player/bike A/B: `$FF1EAA`/`$FF26AA`, `$80` each; candidate `RacePlayer` structure.
+- Player/bike A/B: `RacePlayerA/B` (`$FF1EAA`/`$FF26AA`), `$80` each; actor struct type.
   Known offsets: `+$02 PosZ`, `+$04 PosXHigh`, `+$06 PosXLow`, `+$12 Speed`,
   `+$18 Gear`, `+$30 PosY`, `+$66 Unk66` (word; copied from `+$56`),
   `+$68` flags (bit1 B, bit2 A, bit7 timer stop), `+$71 Index`.
-- `$FF2FAA`: a **different** player/actor-like struct used by `sub_12868` (`$68` bit6);
-  not the same layout as `$FF1EAA`.
+- `$FF2FAA`: a further actor-like instance used by `sub_12868` (`$68` bit6), not in
+  the static list; role/layout TODO (`docs/analysis/race_actors.md`).
 - `$FFD37C`: 0x14-byte road/actor objects (`docs/analysis/road_render.md`).
+- Actors: `Race_ActorList` `0x25856` (player A + 15 opponents, `$80` each),
+  `Race_ActorDefinitionTable` `0xCCDA` (76 x 16-byte definitions; player def `$4B`),
+  `Race_ActorGraphicsTable` `0x258EE`, `Race_StaticActorList` `0x2589A`;
+  fields/tables in `docs/analysis/race_actors.md`.
 - Track: `RaceTrack_Data1..6`, `unk_25EC0`, spawn data `RaceTrack_Data5`, per-level
   thresholds `word_B976/B980`, bike data `unk_25B50/25AC4`.
 - Buffers: `Intro_TitleScrollTable`/`Intro_TitleScrollSpeed` (+$400 SAT),
@@ -81,21 +86,21 @@ marking/animation, and the race outcome. `top_level.asm` calls `Race_Init`, inst
 | `Race_GetInput` | `0xBE56` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
 | `Race_Update` | `0xC00C` | [x] | [~] | [x] | [x] | [x] | [ ] | partial |
 | `Race_ComputeResults` | `0xC3F8` | [x] | [~] | [x] | - | [x] | [ ] | partial |
+| `Race_CreateActors` | `0xCAD0` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
 | Actors/physics/AI | `0xD9DA`+ | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | TODO |
 | `race_hud.asm` | `0xD278` | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | TODO |
 | `road_marking.asm` | `0xE732` | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | TODO |
 | `animation.asm` | `0x16860` | [~] | [~] | [x] | [x] | [x] | [ ] | partial |
 
-Detailed top-level flow, subsystem map and initial struct inventory:
-`docs/analysis/race.md`.
+Detailed top-level flow: `docs/analysis/race.md`; actors: `docs/analysis/race_actors.md`.
 
 ## External calls / dependencies
 
 - Callers: `top_level.asm`.
 - Uses `UncompressW/B`, `UncompressToVRAM`, `WriteToVRAM`, `WriteNametable(ToBuffer)`,
   `DmaWriteVRAM`, `DmaWriteCRAM`, `PiecewiseLinearInterpolation`, `Road_DrawObjects`
-  (`8FB4`), `RaceHud_Draw`, `RoadMarking_Draw`, `UpdateAnimation(2)`, the audio
-  functions, `GetInputPlayerA/B`, `Rand_GetWord`, `9FE4` track decoder.
+  (`road_render`), `RaceHud_Draw`, `RoadMarking_Draw`, `UpdateAnimation(2)`, the audio
+  functions, `GetInputPlayerA/B`, `Rand_GetWord`, `track_data` decoder, `Race_LoadActorPalette`.
 
 ## Hacks / bugs / quirks
 
@@ -108,6 +113,9 @@ Detailed top-level flow, subsystem map and initial struct inventory:
 - Demo mode ends after 3600 frames or any button.
 - Start toggles `Race_ram_State` (pause); the HInt raster effect is disabled for
   negative state.
+- The actor definitions have 5 pages of 15 opponents plus the all-zero "Player def"
+  (id `$4B`); the player stats come from the bike/physics init. `[static]`
+- The static actor group (`$FF2EAA/$FF2F2A`, type `$10`) is separate; role TODO.
 
 ## Verified facts
 
@@ -116,10 +124,14 @@ Detailed top-level flow, subsystem map and initial struct inventory:
   top-level.
 - `[static]` Track record/streams/spawn/bike data initialization.
 - `[static]` Race outcome fields (`ram_FF0526/28`, `Race_EventBuffer`, `ram_FF0918`).
+- `[static]` Actor tables: 76 definitions, 16-pointer rider list (player A + 15
+  opponents), graphics/static tables (parsed from `baserom.md`).
 
 ## Hypotheses / next steps
 
-- `[hypothesis]` `ram_FF2FAA` is the player visual/actor state; trace `sub_12868`.
+- `[hypothesis]` `ram_FF2FAA` is a further actor-like instance (not in the static
+  list); trace `sub_12868`.
+- TODO: actor fields `+$66/+$73/+$74/+$75/+$77/+$5C/+$5E/+$60`, player B, 8+7 split.
 - TODO: trace the `a1` bases and map the player/actor structures field by field.
 - TODO: actor/physics/AI functions; `race_hud`/`road_marking`/`animation` cards.
 - Only after the field layout is confirmed: AS `STRUCT`s, convert confirmed uses,
@@ -129,8 +141,10 @@ Detailed top-level flow, subsystem map and initial struct inventory:
 
 | Current | Proposed | Evidence | Confidence |
 |---------|----------|----------|------------|
-| `$FF1EAA`/`$FF26AA` | `RacePlayerA/B` (base equates) | two `$80` instances | medium |
-| `$FF2FAA` struct | `RaceActor`/`RacePlayerVisual` | separate `$68` bit6 | low |
+| `+$16` actor field | `ActorType` | definition byte0 | high |
+| `+$66` actor field | `ActorRating` | definition byte5*100 | medium |
+| `+$75` actor field | `ActorGraphicsIndex` | definition byte2 low 7 bits | high |
+| `$FF2FAA` struct | `RaceActor`/`RacePlayerVisual` | not in static list | low |
 
 ## Experiments performed
 
@@ -138,3 +152,4 @@ Detailed top-level flow, subsystem map and initial struct inventory:
 |------|--------------------|----------|------------|
 | Demo race renderer | GDB demo, `0x942A`/`0x8FB4` | object list/road strip | `road_render` card |
 | Track decoder | GDB demo, `0x9FE4` | stream pointers/lengths | `track_data` card |
+| Actor tables | parse `baserom.md` `0x25856/0xCCDA/0x258EE` | 16 pointers, 76 defs | `race_actors.md` |

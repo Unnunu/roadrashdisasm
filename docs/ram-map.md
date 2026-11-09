@@ -121,10 +121,10 @@ ROM: `RiderIntro_RecordTable` = `[5 levels][5 tracks][4 variants]` 8-byte record
 carry an 8-byte interleaved `size/header` prefix; the header gives the name string,
 image/nametable/palette offsets (see `docs/analysis/rider_intro.md`).
 
-### Player/bike and race state (`race.asm`)
+### Actors/player and race state (`race.asm`)
 
-The top-level `race.asm` analysis is in `docs/analysis/race.md`. Initial structure
-inventory:
+The top-level `race.asm` analysis is in `docs/analysis/race.md`; the actor tables and
+definitions are in `docs/analysis/race_actors.md`. Initial field inventory:
 
 | Offset | Size | Field | Evidence |
 |---|---|---|---|
@@ -132,16 +132,28 @@ inventory:
 | `+$04` | word | `PosXHigh` | `Race_Update`, 98C2 |
 | `+$06` | word | `PosXLow` | 98C2 |
 | `+$12` | word | `Speed` | `Race_Update` (`sub_F108`), main HInt |
+| `+$16` | byte | `ActorType` | actor definition byte0 |
+| `+$5C`/`+$5E`/`+$60` | word | actor graphics/sprite fields | `Race_ActorGraphicsTable` |
+| `+$66` | word | `ActorRating` (definition byte5*100) | `Race_CreateActors` |
 | `+$18` | word | `Gear` | 98C2/gear |
 | `+$30` | word | `PosY` | 98C2, main HInt |
 | `+$66` | word | `Unk66` (copied from `+$56`; divisor use) | `STRUCT_OFFSET_66` code uses |
 | `+$68` | byte | flags: bit1 = B, bit2 = A, bit7 = timer stop | `Race_GetInput`, `Race_UpdateTime` |
+| `+$73`/`+$74`/`+$75`/`+$77` | byte | actor definition bytes 3/1/2/4 | `Race_CreateActors` |
 | `+$71` | byte | `Index` | `STRUCT_OFFSET_INDEX` |
 
-Bases: `$FF1EAA` (player A), `$FF26AA` (player B), size `$80`. `$FF2FAA` is a
-**different** player/actor-like struct used by `sub_12868` (`$68` bit6) - the flat
-`STRUCT_OFFSET_*` symbols must not be assigned to one struct globally.
-`$FFD37C` is the 0x14-byte road/actor object array (see the `8FB4` section).
+Actor instances (`$80` each): `RacePlayerA`/`RacePlayerB` (`$FF1EAA`/`$FF26AA`),
+15 opponents `$FF1F2A`..`$FF262A` (`Race_ActorList`), static actors
+`$FF2EAA`/`$FF2F2A` (type `$10`); `$FF2FAA` is a further actor-like instance used by
+`sub_12868` (`$68` bit6), role TODO. `Road_ObjectArray` (`$FFD37C`) is the separate
+0x14-byte road object array (`road_render.asm`).
+
+Actor tables: `Race_ActorList` `$25856` (16 actor pointers + sentinel),
+`Race_ActorListMid` `$2585E`, `Race_StaticActorList` `$2589A`,
+`Race_ActorGraphicsTable` `$258EE`, `Race_ActorDefinitionTable` `$CCDA`
+(76 x 16-byte definitions; 5 levels x15 + player def `$4B`), `Race_ActorLevelBase`
+`$CCD0` (0,15,30,45,60). Actor screen groups: `ram_FF1A08`/`ram_FF1982`
+(`Race_InitActorLists`/`Race_InitActorPositions`).
 
 Top-level state: `Race_ram_State` (0 running, non-zero paused/loading),
 `Race_ram_TimeTicks/Seconds/Minutes` (BCD timer), `Race_ram_FrameCounter/Delay`,
