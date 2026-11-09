@@ -1,5 +1,19 @@
-; =============== S U B R O U T I N E =======================================
+; *************************************************
+; 9FE4.asm - track/road data decompressor (two-channel delta/bit-packed)
+; ROM range: $9FE4-$A4E1
+; Status:    analyzed (stream start captured dynamically; channel semantics TODO)
+; API:       sub_9FE4 (start), sub_A04A (per-call chunk), sub_A0D4/A2DA (channels)
+; *************************************************
 
+; *************************************************
+; Function sub_9FE4
+; Initializes two track data streams and the interleaved output, then decodes the
+; first d1 samples per channel.
+; In:  a2/a3 - two stream pointers (16-bit control length, controls, bit data)
+;      a1 - output (2-byte stride); d1 - samples per channel
+; Out: ram_FF13xx/14xx state; decoded bytes at a1
+; Clobbers: all (saved/restored)
+; *************************************************
 
 sub_9FE4:
                 movem.l d0-d7/a0-a6,-(sp)
@@ -28,8 +42,13 @@ sub_9FE4:
 ; End of function sub_9FE4
 
 
-; =============== S U B R O U T I N E =======================================
-
+; *************************************************
+; Function sub_A04A
+; Decodes the next per-call chunk on both channels (resumable state).
+; In:  d1 - samples per channel this call; ram_FF13xx/14xx state
+; Out: decoded bytes; updated state
+; Clobbers: all (saved/restored)
+; *************************************************
 
 sub_A04A:
                 bsr.w   sub_A0D4
@@ -38,6 +57,7 @@ sub_A04A:
 ; End of function sub_A04A
 
 
+; bit masks for the current data byte (8 widths x 8 bit positions)
 unk_A054:       dc.b $80
                 dc.b $40
                 dc.b $20
@@ -95,6 +115,7 @@ unk_A054:       dc.b $80
                 dc.b   3
                 dc.b   1
 
+; cross-byte masks (high bits of the next data byte)
 unk_A08C:       dc.b $80
                 dc.b $C0
                 dc.b $E0
@@ -103,6 +124,7 @@ unk_A08C:       dc.b $80
                 dc.b $FC
                 dc.b $FE
                 dc.b   0
+; right-shift counts; $FF entries request the cross-byte path
 unk_A094:       dc.b   7
                 dc.b   6
                 dc.b   5
@@ -159,6 +181,7 @@ unk_A094:       dc.b   7
                 dc.b $FC
                 dc.b $FB
                 dc.b $FA
+; boundary shift counts 7..0
 unk_A0CC:       dc.b   7
                 dc.b   6
                 dc.b   5
@@ -168,11 +191,19 @@ unk_A0CC:       dc.b   7
                 dc.b   1
                 dc.b   0
 
-; =============== S U B R O U T I N E =======================================
-
+; *************************************************
+; Function sub_A0D4
+; Channel 1 decoder: control byte = run-1 (high nibble), sign (bit3), width-1
+; (low 3 bits); per sample read a delta from the bit stream, update the accumulator
+; and write a byte at a1, a1+2, ...
+; In:  state at ram_FF13xx; budget ram_FF13B2
+; Out: output at ram_FF13D8; state
+; Clobbers: all (saved/restored)
+; *************************************************
 
 sub_A0D4:
                 movem.l d0-d7/a0-a6,-(sp)
+; first call: clear the channel state; later calls resume
                 tst.w   (ram_FF13E2).l
                 bne.w   .loc_A106
                 clr.w   (ram_FF13BC).l
@@ -297,8 +328,13 @@ sub_A0D4:
 ; End of function sub_A0D4
 
 
-; =============== S U B R O U T I N E =======================================
-
+; *************************************************
+; Function sub_A2DA
+; Channel 2 decoder: same format as channel 1, writing a1+1, a1+3, ...
+; In:  state at ram_FF13E4..140E; budget d1
+; Out: output at ram_FF1404; state
+; Clobbers: all (saved/restored)
+; *************************************************
 
 sub_A2DA:
                 movem.l d0-d7/a0-a6,-(sp)
@@ -312,6 +348,7 @@ sub_A2DA:
                 clr.w   (ram_FF13F4).l
 .loc_A30C:
                 movea.l (ram_FF1400).l,a0
+; channel 2 starts one byte after channel 1's output
                 addq.l  #1,a1
                 movea.l (ram_FF140A).l,a2
                 move.w  d1,(ram_FF13B2).l
