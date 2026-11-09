@@ -20,7 +20,7 @@
 
 ## Role & flow
 
-After a race the top-level flow (`top_level.asm` `0x7E8F4`) runs `sub_EFA4` and
+After a race the top-level flow (`top_level.asm` `0x7E8F4`) runs `Race_ComputeStandings` and
 `Race_ComputeResults` (race outcome/fines), then loops through
 `RaceResults_Init`/`RaceResults_GameTick`. The screen shows one of:
 

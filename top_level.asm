@@ -147,7 +147,7 @@ loc_7E8E4:
 loc_7E8F4:
                 jsr         (Fade_InitFadeOut).w
                 move.l      #Fade_GameTickWithInit,(ram_UpdateFunction).l
-                jsr         (sub_EFA4).l
+                jsr         (Race_ComputeStandings).l
                 jsr         (Race_ComputeResults).l
 loc_7E90E:
                 tst.l       (ram_UpdateFunction).l

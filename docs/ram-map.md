@@ -188,6 +188,24 @@ Buffers: `Intro_TitleScrollTable`/`Intro_TitleScrollSpeed` (+$400 SAT),
 (`x-$100000`), with active/free lists and distance checks; `Race_UpdateSpeedDisplay`
 + `Race_FormatDecimal` produce `ram_FF3046`. See `docs/analysis/race_spawn.md`.
 
+### Road profile/objects (`race_ai_road.asm`)
+
+| Address | Name | Size | Meaning |
+|---|---|---|---|
+| `Road_ram_XLeftArray`/`XRightArray`/`MarkingXArray` | road arrays | - | Per-line left/right/marking X. |
+| `RoadMarking_ram_XArray`/`WidthArray` | marking arrays | - | Marking X/width per line. |
+| `ram_FF310A`/`31D2`/`329A`/`3236`/`3362`/`3A9C` | profile arrays | - | Curve/height/marking values + indexes. |
+| `ram_FF1E68`/`6A`/`6C` | progress state | 2 each | Player progress/curve. |
+| `ram_FF1B50`/`1C50`/`1D50` | object lists | - | Sorted/visible object lists. |
+| `ram_FFD77C` | curve accumulator | - | Track curve integration. |
+| `unk_EB34` | road-edge data | - | Edge graphics for `Race_DrawRoadEdges`. |
+| `Interp_dDivisorMap` | interpolator table | - | Divisor map for `FillLinearInterpArray`. |
+
+`Road_FillProfileTables` builds the per-line HScroll/marking tables; `Race_IntegrateTrackCurve`
+fills the profile arrays; `Road_BuildVisibleList` builds `ram_FF1D50`; `Race_WriteSpriteTiles`
+stages sprite tiles. Standings: `Race_ComputeStandings`/`Race_ScaleResultValue`. See
+`docs/analysis/race_ai_road.md`.
+
 ### Camera/HInt/rearview (`race_physics.asm`)
 
 | Address | Name | Size | Meaning |

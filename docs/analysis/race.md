@@ -4,7 +4,7 @@
   actors/physics/AI, road/HUD/animation pipeline, race outcome
 - **ROM range:** `0x00A4E2`–`0x016E6F`; split modules: `race_core.asm`
   (`0xA4E2`-`0xD277`), `race_hud.asm` (`0xD278`-`0xD8F9`), `race_physics.asm`
-  (`0xD8FA`-`0xE731`), `road_marking.asm` (`0xE732`-`0xEB33`), `race_ai_road.asm` (`0xEB34`-`0x10DFF`), `race_ai.asm`
+  (`0xD8FA`-`0xE731`), `road_marking.asm` (`0xE732`-`0xEB33`), `race_ai_road.asm` (`0xEB34`-`0x10DFF`; road profile/objects/standings/speed; `docs/analysis/race_ai_road.md`), `race_ai.asm`
   (`0x10E00`-`0x14055`), `race_anim_audio.asm` (`0x14056`-`0x1685F`), `animation.asm` (`0x16860`-`0x169AF`), `race_spawn.asm`
   (`0x169B0`-`0x16E6F`); `race.asm` is the include list.
 - **Status:** partially analyzed (top-level flow, init/assets, input/loop, buffer
@@ -117,12 +117,12 @@ This is the double/quad buffering that avoids tearing.
    `sub_13BF4`, `sub_12868`, `sub_128E0`, `sub_12974`, `sub_138CE`, `sub_1281E`,
    `sub_11C44`, `sub_11CC8`, `sub_1218C`, `sub_123A8`, `Race_UpdateNearestOpponent`, `sub_12EA2`,
    `sub_13106`), the player/opponent x difference `ram_FF3036`, `sub_1611A`.
-4. Render prep: `Race_UpdateCamera`; if the frame is not ready: `sub_EDD0`, the
+4. Render prep: `Race_UpdateCamera`; if the frame is not ready: `Race_IntegrateTrackCurve`, the
    `PiecewiseLinearInterpolation` calls for the road arrays (`Road_ram_XLeftArray`,
    `Road_ram_MarkingXArray`, `Road_ram_XRightArray`), `Road_FillProfileTables`,
    `Race_BuildVScrollInfo`, `sub_FD96`, `sub_FB1E`, `sub_F40C`, the visible-object list
    (`ram_FF1B50`/`1C50`/`1D50` via `sub_109B6`/`sub_FC0E`/`Road_BuildVisibleList`),
-   `sub_14E38`, `Race_DrawRoadMarkingHud`, `sub_EC90`; reset the sprite chain indices;
+   `sub_14E38`, `Race_DrawRoadMarkingHud`, `Race_DrawRoadEdges`; reset the sprite chain indices;
    `RaceHud_Draw`, `Road_DrawObjects` (road/object renderer), `RoadMarking_Draw`; store the
    sprite count/tile count; `Race_DrawRearviewMirror`, `Race_BuildHScrollTable`; `Race_FinishFrame`.
 5. The road/actor/physics chain is where the `RacePlayer` and actor structures are

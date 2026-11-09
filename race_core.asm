@@ -1908,7 +1908,7 @@ Race_Update:
                 tst.w   (a0)
                 bne.w   .return
 
-                jsr     (sub_EDD0).l
+                jsr     (Race_IntegrateTrackCurve).l
                 move.w  (ram_FF1E54).l,d1
                 add.w   (ram_FF1E58).l,d1
                 move.w  d1,(ram_FF1E50).l
@@ -1960,7 +1960,7 @@ Race_Update:
 
                 jsr     (sub_14E38).l
                 jsr     (Race_DrawRoadMarkingHud).l
-                jsr     (sub_EC90).l
+                jsr     (Race_DrawRoadEdges).l
 
                 clr.w   (Animation_ram_SpriteIndex).l
                 clr.w   (Animation_ram_TileIndex).l

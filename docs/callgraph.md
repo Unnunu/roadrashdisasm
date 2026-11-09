@@ -35,13 +35,13 @@ flowchart LR
     TopLevel_Init["TopLevel_Init"] --> Menu_Init["Menu_Init"]
     TopLevel_Init["TopLevel_Init"] --> RaceResults_Init["RaceResults_Init"]
     TopLevel_Init["TopLevel_Init"] --> Race_ComputeResults["Race_ComputeResults"]
+    TopLevel_Init["TopLevel_Init"] --> Race_ComputeStandings["Race_ComputeStandings"]
     TopLevel_Init["TopLevel_Init"] --> Race_Init["Race_Init"]
     TopLevel_Init["TopLevel_Init"] --> Race_InitPhysicsConstants["Race_InitPhysicsConstants"]
     TopLevel_Init["TopLevel_Init"] --> Race_Update["Race_Update"]
     TopLevel_Init["TopLevel_Init"] --> RiderIntro_Init["RiderIntro_Init"]
     TopLevel_Init["TopLevel_Init"] --> Shop_Init["Shop_Init"]
     TopLevel_Init["TopLevel_Init"] --> TrackData_DecodeNextChunk["TrackData_DecodeNextChunk"]
-    TopLevel_Init["TopLevel_Init"] --> sub_EFA4["sub_EFA4"]
     HorizontalInterrupt["HorizontalInterrupt"]
     HorizontalInterrupt["HorizontalInterrupt"] --> AudioFunc1["AudioFunc1"]
     HorizontalInterrupt["HorizontalInterrupt"] --> AudioFunc11["AudioFunc11"]
@@ -210,7 +210,7 @@ flowchart LR
 | `Race_FinishFrame` | `0x0BD24` | `EndLevel_UpdateAnimation`, `Race_Update` | - |
 | `Race_GetInputDemo` | `0x0BE2C` | `Race_GameTick` | `GetInputPlayerA`, `GetInputPlayerB` |
 | `Race_GetInput` | `0x0BE56` | `Race_GameTick` | `AudioFunc18`, `AudioFunc4`, `GetInputPlayerA`, `GetInputPlayerB` |
-| `Race_Update` | `0x0C00C` | `Race_Init`, `TopLevel_Init` | `PiecewiseLinearInterpolation`, `RaceHud_Draw`, `Race_BuildHScrollTable`, `Race_BuildVScrollInfo`, `Race_DrawRearviewMirror`, `Race_DrawRoadMarkingHud`, `Race_FinishFrame`, `Race_SpawnTick`, `Race_UpdateCamera`, `Race_UpdateNearestOpponent`, `Race_UpdateSpeedDisplay`, `RoadMarking_Draw`, `Road_BuildVisibleList`, `Road_DrawObjects`, `Road_FillProfileTables`, `sub_109B6`, `sub_10DBE`, `sub_10DDA`, `sub_10E66`, `sub_11C44`, `sub_11CC8`, `sub_1218C`, `sub_123A8`, `sub_1281E`, `sub_12868`, `sub_128E0`, `sub_12974`, `sub_12EA2`, `sub_13106`, `sub_1383E`, `sub_138CE`, `sub_13A92`, `sub_13BF4`, `sub_13E94`, `sub_13EA0`, `sub_14E38`, `sub_160E2`, `sub_1611A`, `sub_EC90`, `sub_EDD0`, `sub_F40C`, `sub_FB1E`, `sub_FC0E`, `sub_FD96` |
+| `Race_Update` | `0x0C00C` | `Race_Init`, `TopLevel_Init` | `PiecewiseLinearInterpolation`, `RaceHud_Draw`, `Race_BuildHScrollTable`, `Race_BuildVScrollInfo`, `Race_DrawRearviewMirror`, `Race_DrawRoadEdges`, `Race_DrawRoadMarkingHud`, `Race_FinishFrame`, `Race_IntegrateTrackCurve`, `Race_SpawnTick`, `Race_UpdateCamera`, `Race_UpdateNearestOpponent`, `Race_UpdateSpeedDisplay`, `RoadMarking_Draw`, `Road_BuildVisibleList`, `Road_DrawObjects`, `Road_FillProfileTables`, `sub_109B6`, `sub_10DBE`, `sub_10DDA`, `sub_10E66`, `sub_11C44`, `sub_11CC8`, `sub_1218C`, `sub_123A8`, `sub_1281E`, `sub_12868`, `sub_128E0`, `sub_12974`, `sub_12EA2`, `sub_13106`, `sub_1383E`, `sub_138CE`, `sub_13A92`, `sub_13BF4`, `sub_13E94`, `sub_13EA0`, `sub_14E38`, `sub_160E2`, `sub_1611A`, `sub_F40C`, `sub_FB1E`, `sub_FC0E`, `sub_FD96` |
 | `Race_SortResults` | `0x0C378` | `Race_ComputeResults` | - |
 | `Race_ComputeResults` | `0x0C3F8` | `TopLevel_Init` | `MenuPassword_CreatePassword`, `Race_BuildStandings`, `Race_SortResults`, `Race_UpdateHighScoreTable` |
 | `Race_UpdateHighScoreTable` | `0x0C598` | `Race_ComputeResults` | `Race_FormatMoney` |
@@ -249,11 +249,11 @@ flowchart LR
 | `RoadMarking_SetSpriteGeometry` | `0x0E934` | `RoadMarking_Draw` | - |
 | `RoadMarking_ClearSpriteTiles` | `0x0E9D2` | `RoadMarking_Draw` | - |
 | `RoadMarking_CreateSprite` | `0x0E9F8` | `RoadMarking_Draw` | - |
-| `sub_EC90` | `0x0EC90` | `Race_Update` | - |
+| `Race_DrawRoadEdges` | `0x0EC90` | `Race_Update` | - |
 | `Road_FillProfileTables` | `0x0ECE0` | `Race_Update` | - |
-| `sub_EDD0` | `0x0EDD0` | `Race_Update` | - |
-| `sub_EFA4` | `0x0EFA4` | `TopLevel_Init` | `Rand_GetWord`, `sub_F0E4` |
-| `sub_F0E4` | `0x0F0E4` | `sub_EFA4` | - |
+| `Race_IntegrateTrackCurve` | `0x0EDD0` | `Race_Update` | - |
+| `Race_ComputeStandings` | `0x0EFA4` | `TopLevel_Init` | `Race_ScaleResultValue`, `Rand_GetWord` |
+| `Race_ScaleResultValue` | `0x0F0E4` | `Race_ComputeStandings` | - |
 | `Race_UpdateSpeedDisplay` | `0x0F108` | `Race_Update` | `Race_FormatDecimal` |
 | `Race_FormatDecimal` | `0x0F11C` | `RaceDebug_ShowDistanceTravelled`, `RaceDebug_ShowFrameDelay`, `RaceDebug_ShowPosZ`, `Race_UpdateSpeedDisplay`, `sub_999E` | - |
 | `PiecewiseLinearInterpolation` | `0x0F180` | `Race_Update` | `FillLinearInterpArray` |
@@ -375,7 +375,7 @@ flowchart LR
 | `sub_15538` | `0x15538` | `sub_11B7A`, `sub_12BD2`, `sub_145EC` | `Rand_GetWord` |
 | `sub_1555C` | `0x1555C` | `sub_12BD2`, `sub_145EC` | `Rand_GetWord` |
 | `Rand_Init` | `0x15FE8` | `Intro_Init` | - |
-| `Rand_GetWord` | `0x16034` | `EndLevel_InitVictoryCharacter`, `MainMenu_GameTick`, `RaceResults_DrawBusted`, `RaceResults_DrawRepair`, `Race_SpawnOpponents`, `Race_SpawnTick`, `RiderIntro_Init`, `sub_128E0`, `sub_138CE`, `sub_15538`, `sub_1555C`, `sub_1607C`, `sub_1662C`, `sub_EFA4` | - |
+| `Rand_GetWord` | `0x16034` | `EndLevel_InitVictoryCharacter`, `MainMenu_GameTick`, `RaceResults_DrawBusted`, `RaceResults_DrawRepair`, `Race_ComputeStandings`, `Race_SpawnOpponents`, `Race_SpawnTick`, `RiderIntro_Init`, `sub_128E0`, `sub_138CE`, `sub_15538`, `sub_1555C`, `sub_1607C`, `sub_1662C` | - |
 | `sub_1607C` | `0x1607C` | - | `Rand_GetWord` |
 | `sub_16088` | `0x16088` | `Intro_Init` | - |
 | `sub_160B0` | `0x160B0` | `MainMenu_GameTick` | - |
@@ -436,5 +436,5 @@ flowchart LR
 | `AudioFunc16` | `0x19F9E` | `sub_14E38` | - |
 | `AudioFunc17` | `0x19FA2` | `sub_14E38` | - |
 | `AudioFunc18` | `0x19FA6` | `Race_GetInput` | - |
-| `TopLevel_Init` | `0x7E6A2` | `doStart` | `AudioFunc2`, `EndLevel_Init`, `EndLevel_UpdateAnimation`, `Fade_InitFadeIn`, `Fade_InitFadeOut`, `HighScore_Init`, `Intro_Init`, `Menu_Init`, `RaceResults_Init`, `Race_ComputeResults`, `Race_Init`, `Race_InitPhysicsConstants`, `Race_Update`, `RiderIntro_Init`, `Shop_Init`, `TrackData_DecodeNextChunk`, `sub_EFA4` |
+| `TopLevel_Init` | `0x7E6A2` | `doStart` | `AudioFunc2`, `EndLevel_Init`, `EndLevel_UpdateAnimation`, `Fade_InitFadeIn`, `Fade_InitFadeOut`, `HighScore_Init`, `Intro_Init`, `Menu_Init`, `RaceResults_Init`, `Race_ComputeResults`, `Race_ComputeStandings`, `Race_Init`, `Race_InitPhysicsConstants`, `Race_Update`, `RiderIntro_Init`, `Shop_Init`, `TrackData_DecodeNextChunk` |
 | `Boot_CheckRomChecksum` | `0x7FF98` | `doStart` | - |

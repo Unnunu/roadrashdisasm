@@ -16,7 +16,7 @@ random and audio live in `race_anim_audio.asm`.
 
 | Symbol | Address | Called by | Description |
 |--------|---------|-----------|-------------|
-| `sub_EC90`..`sub_16732` | `0xEC90`–`0x16732` | `Race_Update` | AI/physics/render chain. |
+| `Race_DrawRoadEdges`..`sub_16732` | `0xEC90`–`0x16732` | `Race_Update` | AI/physics/render chain. |
 | `Race_BuildVisibleList` | `0x10D46` | `Race_Update` | Visible object list. |
 | `Race_UpdateSpeedDisplay` | `0xF108` | `Race_Update` | Speed display. |
 | `Race_FormatDecimal` | `0xF11C` | HUD/debug | Packed decimal. |

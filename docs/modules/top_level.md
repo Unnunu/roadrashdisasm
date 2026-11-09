@@ -79,7 +79,7 @@ results/shop/end-level dispatcher. It runs the per-frame update function through
 - Screens: `Intro_*`, `Menu_Init`/`MainMenu_GameTick`, `Character_*`, `HighScore_*`,
   `Race_Init`/`Race_GameTick`/`Race_Update`, `RaceResults_*`, `Shop_*`, `EndLevel_*`.
 - Audio: `AudioFunc2` (`$19F66`).
-- Helpers: `Race_InitPhysicsConstants`, `TrackData_DecodeNextChunk`, `sub_EFA4`, `Race_ComputeResults`.
+- Helpers: `Race_InitPhysicsConstants`, `TrackData_DecodeNextChunk`, `Race_ComputeStandings`, `Race_ComputeResults`.
 
 ## Hacks / bugs / quirks
 
@@ -118,6 +118,6 @@ results/shop/end-level dispatcher. It runs the per-frame update function through
 ## Open questions
 
 - [ ] Meaning of `ram_FF0918`, `$FF3692`, `$FF3696`, `$FF369A`.
-- [ ] What `Race_InitPhysicsConstants`, `TrackData_DecodeNextChunk`, `sub_EFA4`, `Race_ComputeResults` do.
+- [ ] What `Race_InitPhysicsConstants`, `TrackData_DecodeNextChunk`, `Race_ComputeStandings`, `Race_ComputeResults` do.
 - [ ] What `AudioFunc2` (`$19F66`) starts.
 - [ ] Shrink the raw gap bridge as the region below `$7E6A2` is disassembled.

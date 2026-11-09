@@ -361,7 +361,15 @@ unk_EB34:       dc.b   0
 ; =============== S U B R O U T I N E =======================================
 ; draw edges of the road ???
 
-sub_EC90:
+ ; *************************************************
+; Function Race_DrawRoadEdges
+; Draws the road edges into the HUD from the left road array and edge data.
+; In:  ram_FF3A9C, Road_ram_XLeftArray, Race_ram_CurrentAlpha
+; Out: Race_ram_CurrentHudBuffer edge rows
+; Clobbers: d0-d2/a0-a4
+; *************************************************
+
+Race_DrawRoadEdges:
                 lea     (ram_FF3A9C).l,a0
                 adda.w  #$130,a0
                 lea     (Road_ram_XLeftArray).l,a4
@@ -385,10 +393,18 @@ sub_EC90:
                 dbf     d0,.loc_ECC2
 
                 rts
-; End of function sub_EC90
+; End of function Race_DrawRoadEdges
 
 ; *************************************************
 ; Function Road_FillProfileTables
+; *************************************************
+
+ ; *************************************************
+; Function Road_FillProfileTables
+; Builds per-line HScroll (fg/bg), marking X/width and the sky rows.
+; In:  Road_ram_XLeft/XRight/MarkingX arrays, Race_ram_CurrentAlpha
+; Out: Race_ram_CurrentHScrollTable, RoadMarking_ram_XArray/WidthArray
+; Clobbers: d0-d3/a0-a6
 ; *************************************************
 
 Road_FillProfileTables:
@@ -494,7 +510,16 @@ Road_FillProfileTables:
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_EDD0:
+ ; *************************************************
+; Function Race_IntegrateTrackCurve
+; Integrates Track_CurveBuffer over the player progress into the road profile
+; values/index arrays.
+; In:  Track_CurveBuffer, ram_FF1E68/6A/6C
+; Out: ram_FF310A/31D2/329A/3236/3362/D77C
+; Clobbers: d0-d5/a0-a6
+; *************************************************
+
+Race_IntegrateTrackCurve:
                 lea     (ram_FF310A).l,a0
                 lea     (Track_CurveBuffer).l,a1
                 lea     (ram_FF31D2).l,a2
@@ -682,13 +707,21 @@ sub_EDD0:
 .loc_EFA0:
                 move.w  d7,(a1)
                 rts
-; End of function sub_EDD0
+; End of function Race_IntegrateTrackCurve
 
 
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_EFA4:
+ ; *************************************************
+; Function Race_ComputeStandings
+; Builds the race standings/result values after the race (top-level flow).
+; In:  player/race state, RaceTrack_Data1
+; Out: standings/result arrays
+; Clobbers: all
+; *************************************************
+
+Race_ComputeStandings:
                 lea     (RacePlayerA).l,a1
                 lea     (Race_EventBuffer).l,a2
                 btst    #7,$68(a1)
@@ -720,7 +753,7 @@ sub_EFA4:
                 ext.w   d1
                 btst    #7,$68(a1)
                 bne.w   .loc_F028
-                bsr.w   sub_F0E4
+                bsr.w   Race_ScaleResultValue
                 bra.w   .loc_F032
 
 
@@ -752,7 +785,7 @@ sub_EFA4:
                 cmpa.l  #ram_FF1F2A,a1
                 beq.w   .loc_F09A
                 move.b  $71(a1),d1
-                bsr.w   sub_F0E4
+                bsr.w   Race_ScaleResultValue
                 clr.l   d3
                 move.w  (RaceTrack_Data1).l,d3
                 swap    d3
@@ -787,20 +820,28 @@ sub_EFA4:
                 cmpa.l  #ram_FF1F2A,a1
                 beq.w   .loc_F0DE
                 move.b  $71(a1),d1
-                bsr.w   sub_F0E4
+                bsr.w   Race_ScaleResultValue
 
 .loc_F0DE:
                 dbf     d7,.loc_F0BC
 
 .locret_F0E2:
                 rts
-; End of function sub_EFA4
+; End of function Race_ComputeStandings
 
 
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_F0E4:
+ ; *************************************************
+; Function Race_ScaleResultValue
+; Scales a result value by RaceTrack_Data1 for the standings table.
+; In:  d0/d1/a2 - value/index/target
+; Out: (a2,d1) scaled result
+; Clobbers: d0-d2
+; *************************************************
+
+Race_ScaleResultValue:
                 movem.l d0-d2,-(sp)
                 move.l  (ram_FF1E9E).l,d2
                 asl.l   #8,d2
@@ -812,7 +853,7 @@ sub_F0E4:
                 move.l  d2,(a2,d1.w)
                 movem.l (sp)+,d0-d2
                 rts
-; End of function sub_F0E4
+; End of function Race_ScaleResultValue
 
 ; *************************************************
 ; Function Race_UpdateSpeedDisplay
@@ -901,6 +942,14 @@ Race_FormatDecimal:
 ; a2 - index array
 ; *************************************************
 
+ ; *************************************************
+; Function PiecewiseLinearInterpolation
+; Linearly interpolates a road array from value/index tables.
+; In:  a0 - target, a1 - values, a2 - indexes
+; Out: target array
+; Clobbers: d0-d7/a0-a3
+; *************************************************
+
 PiecewiseLinearInterpolation:
                 move.w  #31,d5 ; 32 points
                 subq.w  #1,d5
@@ -931,6 +980,14 @@ PiecewiseLinearInterpolation:
 ; d4 - index2
 ; d7 - count (not necessary equal to index2 - index1)
 ; a0 - array of values
+; *************************************************
+
+ ; *************************************************
+; Function FillLinearInterpArray
+; Fills one interpolation segment (helper for PiecewiseLinearInterpolation).
+; In:  a0 - target, a1 - values, a2 - indexes
+; Out: target segment
+; Clobbers: d0-d7/a0-a3
 ; *************************************************
 
 FillLinearInterpArray:
@@ -984,6 +1041,7 @@ FillLinearInterpArray:
 ; End of function FillLinearInterpArray
 
 
+; divisor map for FillLinearInterpArray
 Interp_dDivisorMap:
     dc.w    65535, 65535, 32768, 21845, 16384, 13107, 10922,  9362
     dc.w     8192,  7281,  6553,  5957,  5461,  5041,  4681,  4369
@@ -3488,6 +3546,14 @@ sub_108DA:
 ; =============== S U B R O U T I N E =======================================
 
 
+ ; *************************************************
+; Function Race_WriteSpriteTiles
+; Stages the next sprite tile block for VRAM before the frame DMA.
+; In:  Race_ram_NextSpriteTileArray/SpriteDestination
+; Out: sprite tile staging
+; Clobbers: d0-d3/a0-a2
+; *************************************************
+
 Race_WriteSpriteTiles:
                 movea.l (Race_ram_NextFrameReady).l,a2
                 move.w  #-1,(a2)
@@ -3840,6 +3906,14 @@ sub_10C4E:
 
 ; =============== S U B R O U T I N E =======================================
 
+
+ ; *************************************************
+; Function Road_BuildVisibleList
+; Builds the visible object list from the sorted object index lists.
+; In:  ram_FF1B50, ram_FF1C50
+; Out: ram_FF1D50
+; Clobbers: d0-d2/a0-a2
+; *************************************************
 
 Road_BuildVisibleList:
                 movem.l d0-d7/a0-a7,-(sp)

@@ -24,6 +24,16 @@ standings/results helpers and the speed display: `PiecewiseLinearInterpolation`,
 | `Race_FormatDecimal` | `0xF11C` | HUD/debug | Packed decimal. |
 | `Race_WriteSpriteTiles` | `0x10972` | `Race_GameTick` | Sprite tile staging. |
 
+## Key functions
+
+- `Race_DrawRoadEdges` `0xEC90`: road edges in the HUD; `unk_EB34` data.
+- `Road_FillProfileTables` `0xECE0`: per-line HScroll + marking X/width.
+- `Race_IntegrateTrackCurve` `0xEDD0`: `Track_CurveBuffer` -> profile arrays.
+- `PiecewiseLinearInterpolation` `0xF180`: road-array interpolation.
+- `Race_ComputeStandings`/`Race_ScaleResultValue` `0xEFA4`/`0xF0E4`: standings/results.
+- `Race_WriteSpriteTiles` `0x10972`: sprite-tile staging.
+- `Road_BuildVisibleList` `0x10D46`: visible object list.
+
 ## Coverage matrix
 
 | Function | Address | Contract | Algorithm | Data | Hardware | Why | Dynamic | Status |
