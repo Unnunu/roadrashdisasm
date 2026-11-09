@@ -76,9 +76,22 @@ The combat/action routines in `race_combat.asm`:
 | `sub_166F0` | Combat/collision response. |
 
 `Race_UpdateCollision` (`0x16732`) initializes an attack/collision state when the
-player/actor X/Y ranges overlap: it sets `$5A`, `$6C=0`, `$69` bit4/5/6 and the
-`$6D` timing from `ram_FF1ABC`/`RaceBike_ram_PhysicsConstants`. The record pointed
-to by `ram_FF1A68` supplies the distance/timer fields (`+0`, `+2`, `+8`).
+player/actor X/Y ranges overlap:
+
+- early return if `$69` bit4 is already set;
+- `d1 = $4A(a1) + $4A(a2) + $10`, `d2 = d1 - 8`;
+- `|X(player)-X(a1)|` is compared with `ram_FF1A68 + 2`;
+- `|Y(player)-Y(a1)|` is compared with `d1`; side `$69` bit5 is set from the
+  player/actor Y relation;
+- if Y diff < `d2`, low `$69` bit6 and `ram_FF1ABC` timing; otherwise high bit6
+  clear and `RaceBike_ram_PhysicsConstants` timing;
+- `$5A = ram_FF1A68 + 8` (cooldown), `$6C=0`, attack-active `$69` bit4 set;
+- `$6B` bit0 is cleared, then the low bit of `Race_ram_ActorDistanceScale` is ORed
+  back in; if `$6B` bit1 is armed, the timer is forced to `$3C`.
+
+The record pointed to by `ram_FF1A68` supplies the distance/timer fields
+(`+0`, `+2`, `+8`). This is the **collision-start** path; it does not itself add
+bike damage.
 
 `sub_1634E` (`0x1634E`) decodes `ram_FF1B24` into the same attack/steer fields,
 but **no callers or writer were found** in the current source; it may be dead or
@@ -101,9 +114,19 @@ and attack timing tables (`ram_FF1AC2`, `ram_FF1ABC`, `unk_257E2/E8/EE`).
 
 ## Damage
 
-Crashes/collisions add to `Race_ram_BikeDamage` via `sub_11B7A`, `sub_14486`,
-and `sub_14CEC`; `sub_1434A` computes the impact scale. Whether a punch directly
-changes bike damage, or only speed/Y/knockdown, is an open dynamic question.
+`sub_1434A` is the impact scale: if `ram_FF1768` is non-zero it returns 0;
+otherwise `abs(d0) >> 11` and stores it in `ram_FF1B28`.
+
+| Source | Added to `Race_ram_BikeDamage` | Notes |
+|---|---|---|
+| `sub_11B7A` | `sub_1434A(Speed) >> 2` | player/actor crash/impact path; sets `$68` bit4 and recovery animation |
+| `sub_14486` | `sub_1434A(result)` | impact/avoid path, also copies `$69` bit3 from the other actor |
+| `sub_14CEC` | `sub_1434A(result)` | speed-exchange collision path |
+
+`Race_UpdateCollision` starts the attack state but does not add damage itself.
+Whether a player punch changes the opponent’s bike-damage/knockdown only through
+these impact helpers is still a dynamic question.
+
 Attack SFX: `Audio_UpdateEngine0` sets `ram_FF1AD7=$0E` at attack phase 1;
 `sub_14E38` passes `ram_FF1AD6/AD7` to `Audio_PlaySfx`.
 
@@ -151,6 +174,20 @@ Conclusions:
 - `$5A` remains 0 at the input frame; phase/timer progression still needs frame
   stepping.
 
+## Dynamic test 3 (forced collision/attack, headless)
+
+At `Race_UpdateCollision` (`0x16732`) the active opponent X/Y was forced to the
+player position, and C was injected into `Race_ram_CurrentButtons` for the first
+five `Race_UpdateNearestTarget` (`0x1611A`) hits. After 90 frames:
+
+- player `$68=$42`, `$69=$26` (bits1/2/5), `$6B=0`;
+- `$5A=0`, `$6C=2`, `$6D=7`;
+- `Race_ram_BikeDamage=0`, nearest `$FF23AA`.
+
+This confirms the attack-state/phase fields under forced proximity, but did not
+produce bike damage in this snapshot. The armed/knockback/damage transition still
+needs a longer or more natural collision test.
+
 ## Open questions / next experiments
 
 - Confirm attack phase semantics (`$6C` 0..3), high/low/side bits, `$5A`.
@@ -158,6 +195,8 @@ Conclusions:
 - Map `$74` profiles to action handlers and enemy aggression.
 - Identify weapon visuals (club/chain) vs `WEAPON_1`; whether player can pick up.
 - Determine if punches damage `BikeDamage` or only knock/steer; player hit response.
+  Forced proximity/attack reached `$6C=2` but left `BikeDamage=0`; try a longer/natural
+  impact and an armed opponent.
 - Dynamic: race, press C/Up/Down near an opponent; breakpoints at `0x162B0`,
   `0x16732`, `0x16458`, `0x16612`, `0x1666A`, `0x16520`; inspect fields and
   opponent reaction. Test armed vs unarmed opponents.
