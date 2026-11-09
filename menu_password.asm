@@ -1,3 +1,10 @@
+; *************************************************
+; menu_password.asm - password entry/edit screen and password checksum
+; ROM range: $2446-$33FF
+; Status:    analyzed (password format/checksum reimplemented)
+; API:       MenuPassword_GameTick, ValidatePassword, ParsePassword, CreatePassword
+; *************************************************
+
 Menu_DefaultPassword:
     dc.b "01234  5678901234  56789"
 
@@ -9,6 +16,11 @@ unk_2468:
 
 ; *************************************************
 ; Function MenuPassword_GameTick
+; Password screen per-frame update: DMA the frame buffer, read pads, edit, exit.
+; In:  Menu_ram_FrameBuffer - 64x28 nametable buffer
+; Out: -
+; Clobbers: d0-d3/a0-a1 (the update callback may clobber all registers)
+; Notes: exits on Start release and installs MainMenu_GameTick.
 ; *************************************************
 
 MenuPassword_GameTick:
@@ -146,11 +158,16 @@ MenuPassword_GameTick:
                 jsr     (Menu_DrawPlayerInfo).l
                 move.l  #MainMenu_GameTick,(ram_UpdateFunction).l ; get to main menu
                 bra.s   .end
-; End of function NamePassword_GameTick
+; End of function MenuPassword_GameTick
 
 ; *************************************************
 ; Function MenuPassword_HandleInput
-; d0 - current buttons state (SACBRLDU)
+; Applies newly pressed/held buttons to the active name/password string.
+; In:  d0 - current SACBRLDU buttons
+;      MenuPassword_ram_StrPlayerNamePtr/StrPlayerPasswordPtr - active strings
+; Out: -
+; Clobbers: d0-d2/a0-a1
+; Notes: A/B cycle characters, C switches player, directions move the cursor.
 ; *************************************************
 
 MenuPassword_HandleInput:
@@ -344,6 +361,11 @@ MenuPassword_HandleInput:
 
 ; *************************************************
 ; Function sub_2A1E
+; Updates the password status message, validates and applies the password.
+; In:  active player name/password strings
+; Out: status string/level/message
+; Clobbers: d0-d2/a0-a2
+; Notes: calls ValidatePassword, ParsePassword and sub_2B2E on success.
 ; *************************************************
 
 sub_2A1E:
@@ -421,6 +443,12 @@ sub_2A1E:
 
 ; *************************************************
 ; Function MenuPassword_SetCursorPos
+; Draws/restores the cursor cell in the frame buffer.
+; In:  d0 - high byte value ($6000 restores text, 0 draws the cursor)
+;      d2 - x, d3 - y
+; Out: -
+; Clobbers: a0
+; Notes: writes only the high byte; the character tile stays unchanged.
 ; *************************************************
 
 MenuPassword_SetCursorPos:
@@ -435,6 +463,11 @@ MenuPassword_SetCursorPos:
 
 ; *************************************************
 ; Function sub_2B2E
+; Selects the current track from the player's race places.
+; In:  Menu_ram_Player (A/B), Menu_ram_PlayerA/BPlaces
+; Out: d0 - Menu_ram_CurrentTrackId (0,2,4,6,8)
+; Clobbers: d0/d1/a0
+; Notes: iterates the 5 places; the exact max-place rule is a hypothesis.
 ; *************************************************
 
 sub_2B2E:
@@ -493,6 +526,11 @@ sub_2B2E:
 
 ; *************************************************
 ; Function sub_2BEE
+; Swaps the player A/B name/password display blocks in the frame buffer.
+; In:  d0 - 0 = player A, non-zero = player B
+; Out: -
+; Clobbers: d0-d2/a0-a1
+; Notes: swaps 14 rows x 8 longs at FrameBuffer+$280.
 ; *************************************************
 
 sub_2BEE:
@@ -529,8 +567,13 @@ sub_2BEE:
 
 ; *************************************************
 ; Function MenuPassword_ValidatePassword
-; a0 - password string
-; d0 - result (out)
+; Verifies the 24-character password checksum.
+; In:  a0 - password string (header + 24 chars)
+; Out: d0 - 0 = valid, non-zero = invalid; d1 - checksum sum
+; Clobbers: d0-d3/a0-a1
+; Notes: password format: places 0-4, spaces 5-6, progress 7-10, money 11-16
+;        (nibble<<1; bit0 = checksum), spaces 17-18, level 19, bike/extra 20,
+;        checksum 21-23.
 ; *************************************************
 
 MenuPassword_ValidatePassword:
@@ -639,8 +682,12 @@ MenuPassword_ValidatePassword:
 
 ; *************************************************
 ; Function MenuPassword_ParsePassword
-; a0 - password word array (size 24)
-; d0 player index
+; Applies a valid password to player A/B state.
+; In:  a0 - password word array (24 words)
+;      d0 - 0 = player A, non-zero = player B
+; Out: level/places/progress/money/bike fields updated
+; Clobbers: d0-d2/a0-a1
+; Notes: opponents = $4B, (level-1)*15 + 0..14; money is sign-extended 24-bit.
 ; *************************************************
 
 MenuPassword_ParsePassword:
@@ -827,6 +874,12 @@ MenuPassword_ParsePassword:
 
 ; *************************************************
 ; Function MenuPassword_CreatePassword
+; Generates a password from the current player state.
+; In:  Menu_ram_Player, player level/money/bike/places/progress fields
+; Out: MenuPassword_ram_StrPlayerA/BPassword updated
+; Clobbers: d0-d2/a0-a1
+; Notes: writes the data words, embeds the checksum bits in the money chars,
+;        computes the three checksum chars, then DecodeString.
 ; *************************************************
 
 MenuPassword_CreatePassword:
@@ -901,15 +954,15 @@ MenuPassword_CreatePassword:
                 move.w  (Menu_ram_BikeIdPlayerA).l,d0
                 andi.w  #7,d0
                 or.w    d0,$28(a0)
-                move.w  #0,$2A(a0)
+                move.w  #0,$2A(a0) ; clear the three checksum chars
                 move.w  #0,$2C(a0)
                 move.w  #0,$2E(a0)
                 lea     (MenuPassword_ram_StrPlayerAPassword).l,a0
                 lea     (Intro_ram_ImageBuffer).l,a1
-                jsr     (DecodeString).w
+                jsr     (DecodeString).w ; data words -> password characters
                 lea     (MenuPassword_ram_StrPlayerAPassword).l,a0
-                jsr     (MenuPassword_ValidatePassword).w
-                lea     (Intro_ram_ImageBuffer).l,a0
+                jsr     (MenuPassword_ValidatePassword).w ; d1 = checksum sum
+                lea     (Intro_ram_ImageBuffer).l,a0 ; embed sum low bits into money chars
                 move.w  d1,d0
                 andi.w  #1,d0
                 or.w    d0,$16(a0)
@@ -932,6 +985,7 @@ MenuPassword_CreatePassword:
                 lsr.w   #1,d1
                 andi.w  #1,d1
                 or.w    d1,$20(a0)
+                ; last 3 chars: sum(words 7-11), sum(words 12-16), XOR of the two
                 move.w  $E(a0),d0
                 add.w   $10(a0),d0
                 add.w   $12(a0),d0
@@ -949,10 +1003,10 @@ MenuPassword_CreatePassword:
                 move.w  $2A(a0),d0
                 move.w  $2C(a0),d2
                 eor.w   d2,d0
-                move.w  d0,$2E(a0)
+                move.w  d0,$2E(a0) ; third checksum char = XOR of the first two
                 lea     (MenuPassword_ram_StrPlayerAPassword).l,a0
                 lea     (Intro_ram_ImageBuffer).l,a1
-                jsr     (DecodeString).w
+                jsr     (DecodeString).w ; final password characters
                 bra.w   .locret_3304
 .loc_3126:
                 lea     (MenuPassword_ram_StrPlayerBPassword).l,a0
@@ -1055,6 +1109,7 @@ MenuPassword_CreatePassword:
                 lsr.w   #1,d1
                 andi.w  #1,d1
                 or.w    d1,$20(a0)
+                ; last 3 chars: sum(words 7-11), sum(words 12-16), XOR of the two
                 move.w  $E(a0),d0
                 add.w   $10(a0),d0
                 add.w   $12(a0),d0
@@ -1083,6 +1138,11 @@ MenuPassword_CreatePassword:
 
 ; *************************************************
 ; Function MenuPassword_DrawNamesAndPasswords
+; Draws the A/B name and password strings into the frame buffer.
+; In:  player name/password strings
+; Out: Menu_ram_FrameBuffer updated
+; Clobbers: d0-d6/a0-a1
+; Notes: uses EncodeString + WriteNametableToBuffer (plane width 64).
 ; *************************************************
 
 MenuPassword_DrawNamesAndPasswords:
