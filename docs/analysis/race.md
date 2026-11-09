@@ -107,27 +107,47 @@ This is the double/quad buffering that avoids tearing.
   debounce.
 - `Race_GetInputDemo`: any pad button ends the demo (GameEnded/DemoGameEnded).
 
-## `Race_Update` (`0xC00C`)
+## `Race_Update` (`0xC00C`) — exact frame pipeline
 
-1. Bike damage `>= $20` -> set the race-end timers (`ram_FF3698=$171`,
-   `ram_FF1B18=480`), eventually `Race_ram_GameEnded`.
-2. Clear the per-frame player flags `ram_FF1AD6/D7/DD`.
-3. `Race_UpdateSpeedDisplay` with the player Speed; `Race_SpawnTick`; if the race has started
-   (`Race_ram_Started`): the player/opponent update chain (`Race_UpdatePlayerAnimation`, `Race_UpdateBikeLean`,
-   `sub_1383E`, `sub_13A92`, `Race_UpdateActorAI`, `sub_13E94`, `sub_10DBE`, `sub_10DDA`,
-   `sub_13BF4`, `Race_UpdateStaticActors`, `sub_128E0`, `sub_12974`, `sub_138CE`, `sub_1281E`,
-   `sub_11C44`, `sub_11CC8`, `sub_1218C`, `sub_123A8`, `Race_UpdateNearestOpponent`, `sub_12EA2`,
-   `sub_13106`), the player/opponent x difference `Race_ram_PlayerXDifference`, `Race_UpdateNearestTarget`.
-4. Render prep: `Race_UpdateCamera`; if the frame is not ready: `Race_IntegrateTrackCurve`, the
-   `PiecewiseLinearInterpolation` calls for the road arrays (`Road_ram_XLeftArray`,
-   `Road_ram_MarkingXArray`, `Road_ram_XRightArray`), `Road_FillProfileTables`,
-   `Race_BuildVScrollInfo`, `sub_FD96`, `sub_FB1E`, `sub_F40C`, the visible-object list
-   (`ram_FF1B50`/`1C50`/`1D50` via `sub_109B6`/`sub_FC0E`/`Road_BuildVisibleList`),
-   `sub_14E38`, `Race_DrawRoadMarkingHud`, `Race_DrawRoadEdges`; reset the sprite chain indices;
-   `RaceHud_Draw`, `Road_DrawObjects` (road/object renderer), `RoadMarking_Draw`; store the
-   sprite count/tile count; `Race_DrawRearviewMirror`, `Race_BuildHScrollTable`; `Race_FinishFrame`.
-5. The road/actor/physics chain is where the `RacePlayer` and actor structures are
-   read/written; it is the next analysis target.
+`[static]` source order; conditions from `race_core.asm`.
+
+1. **Finish/damage gate:** if `Race_ram_BikeDamage >= $20`, arm the end timer
+   (`ram_FF3698=$171`); decrement `ram_FF1B18` by `FrameDelay`, set
+   `Race_ram_GameEnded` when it expires.
+2. **Per-frame reset:** clear `ram_FF1AD6/D7/DD`.
+3. **HUD/spawn:** `Race_UpdateSpeedDisplay` (`0xF108`) from PlayerA Speed;
+   `Race_SpawnTick` (`0x16AF6`).
+4. **If `Race_ram_Started == 0`, skip to camera/render.** Otherwise, in order:
+   1. `Race_UpdatePlayerAnimation` (`0x160E2`) — player tile base.
+   2. `Race_UpdateBikeLean` (`0x13EA0`) with `a1=RacePlayerA` — steering/lean.
+   3. `sub_1383E`, `sub_13A92` (`0x13A92`) — player physics/gear state.
+   4. `Race_UpdateActorAI` (`0x10E66`) — walk active actors; speed/position/AI.
+   5. `sub_13E94`, `sub_10DBE`, `sub_10DDA`, `sub_13BF4`.
+   6. `Race_UpdateStaticActors` (`0x12868`) — static/police slots.
+   7. `$FF2FAA` gate: if `ram_FF1B30 < $1C`, clear its `$68` bit6; otherwise
+      `sub_128E0`/`sub_12974`.
+   8. `sub_138CE`, `sub_1281E`, `sub_11C44`, `sub_11CC8`, `sub_1218C`,
+      `sub_123A8` — traffic/actor collision/action helpers.
+   9. `Race_UpdateNearestOpponent` (`0xE5EE`), `sub_12EA2` (`0x12EA2`),
+      `sub_13106` — standings/action dispatch.
+   10. Compute `Race_ram_PlayerXDifference` from PlayerA `+$04` and
+       `ram_FF1F2E`; call `Race_UpdateNearestTarget` (`0x1611A`).
+5. **Camera:** `Race_UpdateCamera` (`0xDE9E`).
+6. **Render gate:** if `Race_ram_CurrentFrameReady != 0`, return without rendering.
+7. **Track/render prep:** `Race_IntegrateTrackCurve`; three
+   `PiecewiseLinearInterpolation` passes (`Road_ram_XLeftArray`,
+   `Road_ram_MarkingXArray`, `Road_ram_XRightArray`); `Road_FillProfileTables`;
+   `Race_BuildVScrollInfo`; `sub_FD96`/`sub_FB1E`/`sub_F40C`; visible-object
+   lists via `sub_109B6`/`sub_FC0E`/`Road_BuildVisibleList`.
+8. **Draw:** `sub_14E38`, `Race_DrawRoadMarkingHud`, `Race_DrawRoadEdges`; reset
+   sprite/tile counters; `RaceHud_Draw`, `Road_DrawObjects`, `RoadMarking_Draw`;
+   publish sprite/tile counts; `Race_DrawRearviewMirror`,
+   `Race_BuildHScrollTable`; `Race_FinishFrame`.
+
+Key field writers in the pipeline: `Race_UpdateActorAI` (`$12/$14/$26/$30/$68/$69`),
+`Race_UpdateBikeLean`/curve (`$3E/$40/$42`), `sub_13A92` (`$12/$14/$18`),
+`Race_UpdateCollision`/action helpers (`$4A/$4C/$4E/$5A/$69/$6B/$6C/$6D`).
+Dynamic confirmation of the call order is still TODO; source order is definitive.
 
 ## Track data / actors / bikes
 
