@@ -44,6 +44,41 @@
   `ram_FF1B50`/`ram_FF1C50` lists into `ram_FF1D50`; `Race_WriteSpriteTiles` stages the
   sprite tiles for `Race_GameTick`.
 
+## `Road_FillProfileTables` (`0xECE0`)
+
+`Race_ram_CurrentAlpha` selects the first road row: start at line `$98` and fill
+backwards for `$97-alpha` lines.
+
+For each row:
+
+- `roadX_left` = `Road_ram_XLeftArray[i]`, `roadX_right` = `Road_ram_XRightArray[i]`;
+- bg scroll: `clamp(right, -160, 192) - 192`;
+- fg scroll: `clamp(left, -192, 160) + 512`;
+- marking width: `(right-left)*1.5 >> 6`, forced into `1..8`;
+- marking X: `MarkingXArray[i] + 512`; if it reaches `>=320`, insert a gap
+  (`x=0,width=0`); if `x<0`, reduce width by `x`, clamp x/width to 0;
+- write bg/fg into `Race_ram_CurrentHScrollTable`, and X/width into
+  `RoadMarking_ram_XArray`/`WidthArray`.
+
+After the road rows, the top `alpha` sky rows get zero scroll/X/width entries.
+
+## `Road_BuildVisibleList` (`0x10D46`)
+
+`Road_BuildVisibleList` is an insertion sort of dword keys from the source list
+`a0` into the destination list `a1`, while it maintains a parallel word index list
+`a2`:
+
+- copies the first key; `a2[0]=0`;
+- for each next key, scans the already-written destination backwards comparing
+  `cmp.l (a3)+,d4` (BCC loop / BMI insertion), shifts entries and their indices,
+  then writes the key/index pair;
+- writes the `$FFFFFFFF` terminator and its index into both lists.
+
+Inputs are `ram_FF1B50`/`ram_FF1C50` from the object/sprite helpers; the sorted
+keys + indices feed `ram_FF1D50` (`Road_VisibleObjectList`) for
+`Road_DrawObjects`. The exact ascending/descending convention and key units are
+still TODO.
+
 ## RAM / data
 
 - `Road_ram_XLeftArray`/`XRightArray`/`MarkingXArray`;
