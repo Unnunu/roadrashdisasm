@@ -202,8 +202,12 @@ exit:
 - `$30 = $A0`.
 
 The low-attack branch returns before the armed `$6D=$3C` override; that override
-only appears in the high-attack branch. This confirms the armed bit and cooldown
-but still does not show direct `BikeDamage` from a punch.
+only appears in the high-attack branch.
+
+A second armed run used a Y offset of `+$24` to hit the high branch:
+`$69=$30` (bit4/5), `$6B=$03` (armed + low distance bit), `$5A=$B4`,
+`$6D=$3C`. This confirms the armed high-attack timer. Neither run showed direct
+`BikeDamage` from the punch; that remains a dynamic question.
 
 ## Open questions / next experiments
 

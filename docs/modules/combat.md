@@ -26,6 +26,6 @@ placeholder pending weapon identification).
 | `Race_DispatchActorAction` dispatcher | `0x16458` | [x] | [~] | [x] | [x] | [x] | [~] | static + forced dispatch |
 | `Audio_UpdateEngine0/State` | `0x16520`/`0x16548` | [x] | [~] | [x] | [x] | [~] | [ ] | name TBD |
 | action handlers | `0x165D0`–`0x166F0` | [~] | [~] | [x] | [x] | [~] | [ ] | static |
-| `Race_UpdateCollision` | `0x16732` | [x] | [~] | [x] | [x] | [x] | [~] | static + forced proximity/armed |
+| `Race_UpdateCollision` | `0x16732` | [x] | [~] | [x] | [x] | [x] | [~] | static + forced low/high armed |
 
 Detailed analysis: `docs/analysis/combat.md`.
