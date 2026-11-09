@@ -1,4 +1,23 @@
+; *************************************************
+; sub_5760.asm - rider/bike sprite chain builder
+; ROM range: $5760-$59C3
+; Status:    analyzed (static + demo dynamic)
+; API:       sub_5760 (called by 8FB4.asm), sub_593E wrapper
+; *************************************************
+
+; *************************************************
+; Function sub_5760
+; Builds a linked chunk of rider/bike SAT entries and advances the animation cursors.
+; In:  d0, d1 - strip/direction geometry from the caller (8FB4.asm)
+; Out: SAT entries at Race_ram_CurrentSpriteAttributeTable;
+;      Animation_ram_SpriteIndex / Animation_ram_TileIndex
+; Clobbers: d0-d7, a0, a1
+; Notes: unk_5944 supplies per-strip Y/link/tile/X offsets. A shadow/overlay layer is
+;        emitted when ram_FF133A != 0. Chain ends at tile index $150 or index $50.
+; *************************************************
+
 sub_5760:
+; mark first chunk (sentinel replaced by the computed tile offset below)
                 move.w  #$8000,(ram_FFDE68).l
                 movea.l (Race_ram_CurrentSpriteAttributeTable).l,a0
                 move.w  (Animation_ram_SpriteIndex).l,d2
@@ -8,15 +27,18 @@ sub_5760:
                 beq.w   .loc_57A2
                 cmp.w   #$50,d2 ; 'P'
                 blt.w   .loc_579E
+; $50 is the SAT capacity: abort when the chain is full
                 move.w  #$FFFF,(ram_FF1366).l
                 move.w  #$FFFF,(ram_FFDE62).l
                 bra.w   .locret_593C
 ; ---------------------------------------------------------------------------
 
 .loc_579E:
+; link the new chunk into the previous entry (low byte of size/link)
                 or.w    d2,-6(a0)
 
 .loc_57A2:
+; derive column/row counts (d2/d3) and strip bases from d0/d1
                 move.w  d0,d2
                 lsr.w   #5,d2
                 andi.w  #$18,d0
@@ -50,6 +72,7 @@ sub_5760:
                 move.w  d4,(ram_FFDE6A).l
 
 .loc_580C:
+; per-strip entry base: Y = base + $80, X = base + $80
                 move.w  (ram_FFDE70).l,d4
                 addi.w  #$80,d4
                 move.w  (Animation_ram_SpriteIndex).l,d5
@@ -72,6 +95,7 @@ sub_5760:
                 move.w  (ram_FF0908).l,d0
 
 .loc_585C:
+; select the unk_5944 strip record from the direction/column bases
                 movea.w #$18,a1
                 cmp.w   #0,d2
                 bne.w   .loc_586E
@@ -79,6 +103,7 @@ sub_5760:
 
 .loc_586E:
                 adda.w  d0,a1
+; word[table+2] = size/link bits for this strip
                 or.w    $5946(a1),d5
                 move.w  d4,(a0)+
                 move.w  d5,(a0)+
@@ -104,6 +129,7 @@ sub_5760:
                 add.w   $5948(a1),d6
                 cmp.w   #$150,d6
                 bmi.w   .loc_58EA
+; tile cursor reached the end of the frame: flag the chain end
                 movea.l (Race_ram_CurrentSpriteAttributeTable).l,a0
                 move.w  #$FFFF,(ram_FF1366).l
                 move.w  #$FFFF,(ram_FFDE62).l
@@ -134,6 +160,7 @@ sub_5760:
 
 .loc_5924:
                 dbf     d3,.loc_5824
+; clear the last link and store the animation cursors
                 andi.w  #$FF00,-6(a0)
                 subq.w  #1,d5
                 move.w  d5,(Animation_ram_SpriteIndex).l
@@ -143,9 +170,21 @@ sub_5760:
                 rts
 ; End of function sub_5760
 
+; *************************************************
+; Function sub_593E
+; Alternate entry point: builds a sprite chunk via sub_5760.
+; In/Out/Clobbers: same as sub_5760.
+; *************************************************
+
 sub_593E:
                 bsr.w   sub_5760
                 rts
+; End of function sub_593E
+
+; *************************************************
+; unk_5944 - per-strip SAT layout table (16 records x 8 bytes)
+; +0: Y advance, +2: size/link bits, +4: tile step, +6: shadow X adjust.
+; *************************************************
 
 unk_5944:
                 dc.b   0
