@@ -10,10 +10,13 @@ Matching disassembly of **Road Rash** (Sega Genesis, 1991, US region).
 - Reference ROM: `baserom.md`, the **full ROM**, **786432 bytes** (`0xC0000`),
   md5 `543b64ccb26c18edc6c98c12b1302dc0`.
 - Current coverage: `0x000000`–`0x016E6F` (fully disassembled),
-  `0x025856`–`0x0259B5` (actor pointer/graphics tables, `race_actor_tables.asm`) and
-  `0x07E6A2`–`0x07EA65` (top-level flow, `top_level.asm`). The remaining gap is
-  bridged with raw bytes from `baserom.md` in `main.asm`. As the gap is disassembled, shrink the bridge and grow
-  the real source coverage.
+  `0x019A12`–`0x019F61` (intro/results data tables, `race_data_tables.asm`),
+  `0x0257D0`–`0x0259B5` (physics/engine and actor tables, `race_engine_tables.asm` +
+  `race_actor_tables.asm`), `0x0259B6`–`0x025EBF` (actor/AI tables,
+  `race_actor_extra_tables.asm`) and `0x07E6A2`–`0x07EA65` (top-level flow,
+  `top_level.asm`). The remaining gap is bridged with raw bytes from `baserom.md` in
+  `main.asm`. As the gap is disassembled, shrink the bridge and grow the real source
+  coverage.
 - `baserom.md` is local-only (git-ignored). Ask the user for it if missing.
 - All documentation and source comments in this project are **English**.
 
@@ -46,8 +49,10 @@ cmp -n <built-size> build/roadrash.bin baserom.md
 ```
 
 The build now covers `0x000000`–`0x07EA65`. The top-level flow at `0x07E6A2` is
-real source (`top_level.asm`); the not-yet-disassembled gap before it is included from
-`baserom.md` with `binclude "baserom.md",$016E70,<length>` in `main.asm`. The check
+real source (`top_level.asm`); the not-yet-disassembled gap is included from
+`baserom.md` with several `binclude "baserom.md",<start>,<length>` chunks in `main.asm`
+(around the tables assembled by `race_data_tables.asm`, `race_engine_tables.asm`,
+`race_actor_tables.asm`, `race_actor_extra_tables.asm`). The check
 compares the built image against the same-length prefix of `baserom.md`. On success the
 temporary `build/roadrash.bin` is removed; on mismatch it is kept and the first
 differing byte is reported. `baserom.md` is the only ROM file and is git-ignored;
@@ -76,6 +81,9 @@ differing byte is reported. `baserom.md` is the only ROM file and is git-ignored
 | `road_render.asm`, `race_hud_debug.asm`, `track_data.asm` | Road/object renderer; HUD digits/debug; track data decompressor. |
 | `uncompress.asm` | Decompression routines. |
 | `race_actor_tables.asm` | Actor pointer/graphics tables from the ROM gap ($25856-$259B5). |
+| `race_data_tables.asm` | Intro/results/level data tables from the ROM gap ($19A12-$19F61). |
+| `race_engine_tables.asm` | Physics/engine/audio-timing tables from the ROM gap ($257D0-$25855). |
+| `race_actor_extra_tables.asm` | Actor/AI tables from the ROM gap ($259B6-$25EBF). |
 | `race.asm` | Include list for the split main gameplay (order: race_core, race_hud, race_physics, road_marking, race_ai, animation, race_spawn). |
 | `race_core.asm` | Race top-level/init/results/actor data. |
 | `race_hud.asm` | Race HUD. |

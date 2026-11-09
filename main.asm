@@ -712,11 +712,19 @@ Audio_UpdateEngine:
 ; the reference ROM; the top-level flow at $7E6A2 is top_level.asm.
 ; *****************************************************************
     org     $016E70
-    binclude "baserom.md",$016E70,($25856-$016E70)
-    include "race_actor_tables.asm"
+    binclude "baserom.md",$016E70,($19A12-$016E70)
+    include "race_data_tables.asm"
 
-    org     $0259B6
-    binclude "baserom.md",$0259B6,($7E6A2-$0259B6)
+    org     $019F62
+    binclude "baserom.md",$019F62,($257D0-$019F62)
+
+    org     $0257D0
+    include "race_engine_tables.asm"
+    include "race_actor_tables.asm"
+    include "race_actor_extra_tables.asm"
+
+    org     $025EC0
+    binclude "baserom.md",$025EC0,($7E6A2-$025EC0)
 
     org     $7E6A2
     include "top_level.asm"

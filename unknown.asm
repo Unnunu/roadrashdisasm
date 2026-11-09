@@ -1,11 +1,5 @@
 sub_13D44 equ $13D44
 
-RiderIntro_RecordTable equ $19A12
-RaceResults_LevelTablePos equ $19D32
-RaceResults_LevelTableNeg equ $19DD2
-RaceResults_CopTablePos equ $19E22
-RaceResults_CopTableNeg equ $19EC2
-EndLevel_LevelRiderTable equ $19F12
 
 AudioFunc1 equ $19F62
 AudioFunc2 equ $19F66
@@ -26,21 +20,8 @@ AudioFunc16 equ $19F9E
 AudioFunc17 equ $19FA2
 AudioFunc18 equ $19FA6
 
-unk_257D0 equ $257D0
-unk_257E2 equ $257E2
-unk_257E8 equ $257E8
-unk_257EE equ $257EE
-unk_25802 equ $25802
-unk_2580A equ $2580A
-unk_25812 equ $25812
-; Actor/opponent tables (see docs/analysis/race_actors.md)
-unk_259B6 equ $259B6
-unk_259C0 equ $259C0
-unk_25A10 equ $25A10
-unk_25A44 equ $25A44
-unk_25AC4 equ $25AC4
-unk_25B50 equ $25B50
-unk_25B70 equ $25B70
+; Actor/opponent tables now defined in race_engine_tables.asm/race_actor_tables.asm/
+; race_actor_extra_tables.asm (see docs/analysis/race_actors.md)
 unk_25EC0 equ $25EC0
 
 Road_ShapeTable equ $3BF1A

@@ -26,7 +26,7 @@ Related:
 | Header title | Road Rash |
 | Region | US (`U  ` in header) |
 | Entry | `RESET` at `0x000200` |
-| Disassembly coverage | `0x000000`–`0x016E6F` and `0x07E6A2`–`0x07EA65` (gap `0x016E70`–`0x07E6A1` is raw ROM bridge) |
+| Disassembly coverage | `0x000000`–`0x016E6F`, `0x019A12`–`0x019F61`, `0x0257D0`–`0x025EBF`, `0x07E6A2`–`0x07EA65`; the rest is a raw ROM bridge |
 
 `./build.sh` compares the built image against the same-length **prefix** of
 `baserom.md`; it grows as more of the ROM is disassembled.
@@ -70,8 +70,10 @@ Note: `main.asm` is not a single contiguous block. Its code is interleaved with
 screen-flow state machine. It uses `ram_UpdateFunction` (`$FF1A62`) as the per-frame
 update pointer and `Fade_*` for transitions. The source is `top_level.asm`, generated from `baserom.md` with
 `python3 tools/disasm.py 0x7E6A2 0x7EA66 --mode project --symbolize-immediates --entry-name TopLevel_Init`.
-The not-yet-disassembled gap before it is bridged with raw ROM bytes in `main.asm`;
-shrink that bridge as the gap is disassembled.
+The not-yet-disassembled gap is bridged with raw ROM bytes in `main.asm`, split around
+the data tables assembled by `race_data_tables.asm`, `race_engine_tables.asm`,
+`race_actor_tables.asm` and `race_actor_extra_tables.asm`; shrink those bridges as the
+gap is disassembled.
 
 Entry / intro (`$7E6A2`):
 
@@ -162,10 +164,15 @@ tentative until the module card is filled in.
 | `0x014056` | `race_anim_audio.asm` | Animations, random, engine audio | [race_anim_audio.md](modules/race_anim_audio.md) |
 | `0x016860` | `animation.asm` | Sprite animation | [animation.md](modules/animation.md) |
 | `0x0169B0` | `race_spawn.asm` | Track data + dynamic spawn | [race_spawn.md](modules/race_spawn.md) |
+| `0x019A12` | `race_data_tables.asm` | Intro/results/level tables (ROM gap) | [race_data_tables.md](modules/race_data_tables.md) |
+| `0x0257D0` | `race_engine_tables.asm` | Physics/engine/audio tables (ROM gap) | [race_data_tables.md](modules/race_data_tables.md) |
+| `0x0259B6` | `race_actor_extra_tables.asm` | Actor/AI tables (ROM gap) | [race_data_tables.md](modules/race_data_tables.md) |
 | `0x07E6A2` | `top_level.asm` | Top-level screen flow (intro/menu/race/results) | [top_level.md](modules/top_level.md) |
 
-Helpers without code in the image: `hw_const.asm` (constants/macros),
-`unknown.asm` (address equates), `ram_const.asm` (RAM equates).
+Helpers/data without code in the image: `hw_const.asm` (constants/macros),
+`unknown.asm` (address equates), `ram_const.asm` (RAM equates),
+`race_actor_tables.asm`, `race_data_tables.asm`, `race_engine_tables.asm`,
+`race_actor_extra_tables.asm`.
 
 ## RAM overview
 
