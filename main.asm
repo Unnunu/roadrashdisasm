@@ -89,7 +89,7 @@ header:
     dc.b    "             "                                     ; Reserved
 
 RESET:
-    tst.l   ($A10008).l
+    tst.l   ($A10008).l ; control ports 1/2: nonzero => warm reset?
     bne.s   .portA
     tst.w   ($A1000C).l
 
@@ -104,7 +104,7 @@ RESET:
     move.l  #'SEGA',$2F00(a1) ; A14000 disable TMSS
 
 .noTMSS:
-    move.w  (a4),d0
+    move.w  (a4),d0 ; read status to reset the VDP command latch
     moveq   #0,d0
     movea.l d0,a6
     move.l  a6,usp
@@ -120,8 +120,9 @@ RESET:
     move.l  (a5)+,(a4) ; set VRAM FILL destination
     move.w  d0,(a3) ; trigger FILL
     move.w  d7,(a1) ; $100 -> A11100 z80 BUS request
-    move.w  d7,(a2) ; $100 -> A11200 z80 RESET
+    move.w  d7,(a2) ; $100 -> A11200 release z80 reset
 
+; wait until the Z80 releases the bus (bit0 = 0)
 .z80_bus_req:
     btst    d0,(a1)
     bne.s   .z80_bus_req
@@ -131,23 +132,24 @@ RESET:
 .z80_load:
     move.b  (a5)+,(a0)+
     dbf     d2,.z80_load
-    move.w  d0,(a2) ; $100 -> A11200 z80 RESET off
+    move.w  d0,(a2) ; $000 -> A11200 assert z80 reset
     move.w  d0,(a1) ; $000 -> A11100 z80 BUS release
-    move.w  d7,(a2) ; $100 -> A11200 z80 RESET
+    move.w  d7,(a2) ; $100 -> A11200 release z80 reset
 
+; clear 64 KiB work RAM downwards; a6 wraps to $FF0000
 .clear_ram:
-    move.l  d0,-(a6) ; clear M68k RAM
+    move.l  d0,-(a6)
     dbf     d6,.clear_ram
 
-    move.l  (a5)+,(a4)
-    move.l  (a5)+,(a4) ; CRAM write
+    move.l  (a5)+,(a4) ; reg1: display/V-int/DMA off, 28 rows; reg15: autoincrement 2
+    move.l  (a5)+,(a4) ; CRAM write from offset 0
     moveq   #$1F,d3
 
 .clear_cram:
     move.l  d0,(a3)
     dbf     d3,.clear_cram
 
-    move.l  (a5)+,(a4) ; VSRAM write
+    move.l  (a5)+,(a4) ; VSRAM write from offset 0
     moveq   #$13,d4
 
 .clear_vsram:
@@ -160,25 +162,25 @@ RESET:
     move.b  (a5)+,$11(a3)
     dbf     d5,.mute_psg
 
-    move.w  d0,(a2)
-    movem.l (a6),d0-a6
+    move.w  d0,(a2) ; $000 -> A11200 assert z80 reset (driver started later)
+    movem.l (a6),d0-a6 ; zero d0-d7/a0-a6 from the cleared RAM at $FF0000
     move    #$2700,sr
 
-start:
+start: ; warm-reset entry: skip hardware init
     bra.s   doStart
 
 defaults:
     dc.w $8000   ; d5
     dc.w $3FFF   ; d6 M68k ram size for zero memset
-    dc.w $100    ; d7
+    dc.w $100    ; d7: $0100 (Z80 bus/reset value; VDP reg increment)
     dc.l $A00000 ; a0 Where Z80 RAM starts
     dc.l $A11100 ; a1 Z80 bus request line
     dc.l $A11200 ; a2 Z80 reset line
     dc.l $C00000 ; a3
     dc.l $C00004 ; a4
 ; VDP regs
-    dc.b 4   ; 0 palette select
-    dc.b $14 ; 1 Display off, DMA on, GENESIS
+    dc.b 4   ; 0: H-int off, left column unblanked, HV counter normal
+    dc.b $14 ; 1: display/V-int off, DMA on, 28 rows
     dc.b $30 ; 2 Plane A C000
     dc.b $3C ; 3 Window F000
     dc.b 7   ; 4 Plane B E000
@@ -207,7 +209,7 @@ z80_start:
     dc.l $FDE1ED47, $ED4FD1E1, $F108D9C1, $D1E1F1F9
     dc.w $F3ED, $5636, $E9E9
 z80_end:
-    dc.l $81048F02 ; display, vblank, dma OFF, rows 28, autoincrement 2
+    dc.l $81048F02 ; reg1: display/V-int/DMA off, 28 rows; reg15: autoincrement 2
     dc.l $C0000000 ; CRAM from offset 0
     dc.l $40000010 ; VSRAM from offset 0
     dc.b $9F,$BF,$DF,$FF ; PSG mute
