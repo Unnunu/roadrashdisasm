@@ -26,7 +26,7 @@ Related:
 | Header title | Road Rash |
 | Region | US (`U  ` in header) |
 | Entry | `RESET` at `0x000200` |
-| Disassembly coverage | `0x000000`–`0x016E6F`, `0x019A12`–`0x019F61`, `0x0257D0`–`0x07E6A1`, `0x07E6A2`–`0x07EA65`; raw bridge only `0x016E70`–`0x019A11` and `0x019F62`–`0x0257CF` |
+| Disassembly coverage | full ROM `0x000000`–`0x0BFFFF`; source/data `0x000000`–`0x019F61`, `0x0257D0`–`0x07EA65`; raw bridge `0x019F62`–`0x0257CF` (audio) + `0x07EA66`–`0x0BFFFF` (assets) |
 
 `./build.sh` compares the built image against the same-length **prefix** of
 `baserom.md`; it grows as more of the ROM is disassembled.
@@ -72,8 +72,8 @@ update pointer and `Fade_*` for transitions. The source is `top_level.asm`, gene
 `python3 tools/disasm.py 0x7E6A2 0x7EA66 --mode project --symbolize-immediates --entry-name TopLevel_Init`.
 The not-yet-disassembled gap is bridged with raw ROM bytes in `main.asm`, split around
 the data tables assembled by `race_data_tables.asm`, `race_engine_tables.asm`,
-`race_actor_tables.asm`, `race_actor_extra_tables.asm`, `race_track_data.asm`, `road_shapes.asm` and
-`race_misc_data.asm`; shrink those bridges as the gap is disassembled.
+`race_actor_tables.asm`, `rider_intro_quotes.asm`, `race_actor_extra_tables.asm`, `race_track_data.asm`,
+`road_shapes.asm` and `race_misc_data.asm`; only the audio range remains raw.
 
 Entry / intro (`$7E6A2`):
 
@@ -164,6 +164,7 @@ tentative until the module card is filled in.
 | `0x014056` | `race_anim_audio.asm` | Animations, random, engine audio | [race_anim_audio.md](modules/race_anim_audio.md) |
 | `0x016860` | `animation.asm` | Sprite animation | [animation.md](modules/animation.md) |
 | `0x0169B0` | `race_spawn.asm` | Track data + dynamic spawn | [race_spawn.md](modules/race_spawn.md) |
+| `0x016E70` | `rider_intro_quotes.asm` | Rider-intro quote records (ROM gap) | [rider_intro.md](modules/rider_intro.md) |
 | `0x019A12` | `race_data_tables.asm` | Intro/results/level tables (ROM gap) | [race_data_tables.md](modules/race_data_tables.md) |
 | `0x0257D0` | `race_engine_tables.asm` | Physics/engine/audio tables (ROM gap) | [race_data_tables.md](modules/race_data_tables.md) |
 | `0x0259B6` | `race_actor_extra_tables.asm` | Actor/AI tables (ROM gap) | [race_data_tables.md](modules/race_data_tables.md) |
@@ -171,12 +172,13 @@ tentative until the module card is filled in.
 | `0x03BF1A` | `road_shapes.asm` | Road/object shape table/data (ROM gap) | [road_shapes.md](modules/road_shapes.md) |
 | `0x07DCA8` | `race_misc_data.asm` | HUD/palette/results tables (ROM gap) | [race_misc_data.md](modules/race_misc_data.md) |
 | `0x07E6A2` | `top_level.asm` | Top-level screen flow (intro/menu/race/results) | [top_level.md](modules/top_level.md) |
+| `0x07EA66` | `main.asm` (`RomTail`) | Raw ROM asset tail (images/fonts/sound) | [rom_tail.md](analysis/rom_tail.md) |
 
 Helpers/data without code in the image: `hw_const.asm` (constants/macros),
 `unknown.asm` (address equates), `ram_const.asm` (RAM equates),
 `race_actor_tables.asm`, `race_data_tables.asm`, `race_engine_tables.asm`,
-`race_actor_extra_tables.asm`, `race_track_data.asm`, `road_shapes.asm`,
-`race_misc_data.asm`.
+`rider_intro_quotes.asm`, `race_actor_extra_tables.asm`, `race_track_data.asm`,
+`road_shapes.asm`, `race_misc_data.asm`.
 
 ## RAM overview
 

@@ -38,7 +38,10 @@ to the race and records the controller in `Race_ram_ActiveController`.
 - Image prefix at `image-8`: even bytes = compressed size, odd bytes = header pointer;
   header at `p`: `-10` string ptr (name at `+6`), `-6` image offset, `-4` nametable
   offset, `-2` palette offset.
-- Quote: `8-byte header (y,x,height,width) + width*height text`.
+- Quote: `8-byte header (y,x,height,width) + width*height text`; the 85 unique quote
+  records (`$16E70-$19863`) are in `rider_intro_quotes.asm` (tail to `$19A11` raw).
+- The 11 unique portrait images are at `$AF902-$BE628`, in the ROM tail after the
+  current `$7EA65` build coverage.
 - `ram_FF0520` = selected player's 2-bit "extra" field (`$FF0522`/`$FF0524`); variant 3
   and the `unk_B1506` overlay are used when it is non-zero and the image is `unk_AF902`.
 - `Menu_ram_Player` selects A/B; `Menu_ram_PlayerALevel/BLevel` and

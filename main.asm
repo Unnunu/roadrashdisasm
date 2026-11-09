@@ -707,14 +707,13 @@ Audio_UpdateEngine:
     include "track_data.asm"
     include "race.asm"
 ; *****************************************************************
-; Raw bridge for the two remaining not-yet-disassembled ranges:
-;   $016E70-$019A11  intro text/images
+; Raw bridge for the remaining not-yet-disassembled range:
 ;   $019F62-$0257CF  audio/sound (deferred)
 ; All other bytes are real source or labelled data modules; the top-level flow at
 ; $7E6A2 is top_level.asm.
 ; *****************************************************************
     org     $016E70
-    binclude "baserom.md",$016E70,($19A12-$016E70)
+    include "rider_intro_quotes.asm"
     include "race_data_tables.asm"
 
     org     $019F62
@@ -736,3 +735,12 @@ Audio_UpdateEngine:
 
     org     $7E6A2
     include "top_level.asm"
+
+; *****************************************************************
+; ROM tail after the top-level flow: data/assets not yet disassembled
+; (high-score images, intro portraits, results images, sound samples).
+; Kept byte-exact from the reference ROM.
+; *****************************************************************
+    org     $7EA66
+RomTail:
+    binclude "baserom.md",$7EA66,($C0000-$7EA66)

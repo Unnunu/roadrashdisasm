@@ -18,6 +18,7 @@ row to the table below.
 | `rider_sprites.asm` | `0x005760` | Rider/bike sprite chain builder | [rider_sprites.md](rider_sprites.md) |
 | `rider_intro.asm` | `0x0059C4` | Pre-race rider/opponent intro | [rider_intro.md](rider_intro.md) |
 | `race_results.asm` | `0x005F28` | Post-race results / bust / repair | [race_results.md](race_results.md) |
+| `rider_intro_quotes.asm` | `0x016E70` | Rider-intro quote records (ROM gap) | [rider_intro.md](rider_intro.md) |
 | `highscore.asm` | `0x006DC0` | High-score screen | [highscore.md](highscore.md) |
 | `shop.asm` | `0x0074AA` | Bike shop | [shop.md](shop.md) |
 | `endlevel.asm` | `0x008342` | Level-complete animation / level-up | [endlevel.md](endlevel.md) |
@@ -44,6 +45,6 @@ row to the table below.
 | `top_level.asm` | `0x07E6A2` | Top-level screen flow (intro/menu/race/results) | [top_level.md](top_level.md) |
 
 Helper/data files without code: `hw_const.asm`, `unknown.asm`, `ram_const.asm`,
-`race_actor_tables.asm`, `race_data_tables.asm`, `race_engine_tables.asm`,
-`race_actor_extra_tables.asm`, `race_track_data.asm`, `road_shapes.asm`,
-`race_misc_data.asm`.
+`race_actor_tables.asm`, `rider_intro_quotes.asm`, `race_data_tables.asm`,
+`race_engine_tables.asm`, `race_actor_extra_tables.asm`, `race_track_data.asm`,
+`road_shapes.asm`, `race_misc_data.asm`.

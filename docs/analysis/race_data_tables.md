@@ -17,7 +17,7 @@
 | `RaceResults_CopTableNeg` | `$19EC2` | `$50` | 5 cops x 2 variants (negative money). |
 | `EndLevel_LevelRiderTable` | `$19F12` | `$50` | 5 levels x 2 variants (rival + Natasha). |
 
-Evidence [static]: `RiderIntro_GameTick` indexes `d0` (0/8/0x10/0x18) + `(level-1)*$A0`
+Evidence [static]: the quote records are in `rider_intro_quotes.asm`; `RiderIntro_GameTick` indexes `d0` (0/8/0x10/0x18) + `(level-1)*$A0`
 + `track*$10`; results use `(index-1)*$20`/$10 with `rand & $18`/$8; end level uses
 `(level-1)*$10` with `rand & 8`. All records are `(quote_ptr,image_ptr)` consumed by
 `UncompressW` + `WriteToVRAM/WriteNametableToBuffer`.

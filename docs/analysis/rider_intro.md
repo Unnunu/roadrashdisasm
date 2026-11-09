@@ -14,6 +14,7 @@
 | `RiderIntro_GameTick` | `0x5E66` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
 | `RiderIntro_RecordTable` table | `0x19A12` | [x] | [x] | [x] | - | [x] | - | parsed |
 | image asset header | - | [x] | [x] | [x] | - | [x] | - | parsed (100 records) |
+| `RiderIntro_QuoteData` | `0x16E70` | [x] | [x] | [x] | - | [x] | - | extracted |
 
 ## Role & flow
 
@@ -39,6 +40,20 @@ returns to the race when the held button is released (or after the message timer
 - Parsed opponents include Natasha, Biff, Slater, O'Leary, O'Rourke, Ikira, O'Connor,
   Sergio, Helldog, O'Shea; e.g. level 1 track 0 variants = Natasha, Biff, Slater,
   Natasha (variant 3); level 5 track 0 = O'Connor, Sergio, Helldog, O'Connor.
+
+## Quote data (`rider_intro_quotes.asm`, `0x16E70-$19A11`)
+
+- Quote records are `8-byte header + height*width text`: header `(word y, word x,
+  word height, word width)`, text is fixed-size and space-padded.
+- `RiderIntro_Init` passes `(a0)=y` (shifted), `2(a0)=x`, `4(a0)=height`,
+  `6(a0)=width` to `EncodeString`/`WriteNametableToBuffer`.
+- `RiderIntro_RecordTable` references **85 unique** quote headers in
+  `0x16E70-$19863`; e.g. `$16E70`: y=7, x=16, h=4, w=19, then 76 text bytes.
+  Some records are separated by 1-4 padding bytes and the tail to `$19A11` is
+  unreferenced/unknown.
+- The region is assembled as one labelled `binclude` in `rider_intro_quotes.asm`.
+- The 11 unique image pointers are `$AF902-$BE628` (ROM tail after the current
+  `$7EA65` build coverage), so the portraits are not part of the current image yet.
 
 ## Image asset format
 

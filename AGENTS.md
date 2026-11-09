@@ -9,23 +9,20 @@ Matching disassembly of **Road Rash** (Sega Genesis, 1991, US region).
 - Goal: the assembly sources must assemble **byte-for-byte** into the original ROM.
 - Reference ROM: `baserom.md`, the **full ROM**, **786432 bytes** (`0xC0000`),
   md5 `543b64ccb26c18edc6c98c12b1302dc0`.
-- Current coverage: `0x000000`–`0x016E6F` (fully disassembled),
-  `0x019A12`–`0x019F61` (intro/results data tables, `race_data_tables.asm`),
-  `0x0257D0`–`0x0259B5` (physics/engine and actor tables, `race_engine_tables.asm` +
-  `race_actor_tables.asm`), `0x0259B6`–`0x025EBF` (actor/AI tables,
-  `race_actor_extra_tables.asm`), `0x025EC0`–`0x03BF19` (per-track records/streams,
-  `race_track_data.asm`), `0x03BF1A`–`0x07DCA7` (road shape table/data, `road_shapes.asm`),
-  `0x07DCA8`–`0x07E6A1` (HUD/palette/results data, `race_misc_data.asm`) and
-  `0x07E6A2`–`0x07EA65` (top-level flow, `top_level.asm`). The remaining raw bridge is
-  only `0x016E70`–`0x019A11` (intro text/images) and `0x019F62`–`0x0257CF`
-  (audio/sound), all in `main.asm`.
+- Current coverage: the **full ROM** `0x000000`–`0x0BFFFF` assembles byte-exactly.
+  Source/labelled data modules cover `0x000000`–`0x019F61` and `0x0257D0`–`0x07EA65`
+  (`rider_intro_quotes.asm`, `race_data_tables.asm`, `race_engine_tables.asm`,
+  `race_actor_tables.asm`, `race_actor_extra_tables.asm`, `race_track_data.asm`,
+  `road_shapes.asm`, `race_misc_data.asm`, `top_level.asm`, ...). Two raw bridges remain
+  in `main.asm`: `0x019F62`–`0x0257CF` (audio/sound, deferred) and `0x07EA66`–`0x0BFFFF`
+  (asset tail, `RomTail`; see `docs/analysis/rom_tail.md`).
 - `baserom.md` is local-only (git-ignored). Ask the user for it if missing.
 - All documentation and source comments in this project are **English**.
 
 ## Golden rule
 
 `./build.sh` must print `Matched OK: ...` after every change (currently
-`Matched OK: 518758 bytes of 786432 bytes`). The built image must be byte-identical to
+`Matched OK: 786432 bytes of 786432 bytes`, full ROM). The built image must be byte-identical to
 the matching prefix of `baserom.md`. A change that breaks byte-exactness is not done,
 even if it assembles without errors.
 
@@ -50,12 +47,11 @@ tools/p2bin build/roadrash.p build/roadrash.bin
 cmp -n <built-size> build/roadrash.bin baserom.md
 ```
 
-The build now covers `0x000000`–`0x07EA65`. The top-level flow at `0x07E6A2` is
-real source (`top_level.asm`); the not-yet-disassembled gap is included from
-`baserom.md` with several `binclude "baserom.md",<start>,<length>` chunks in `main.asm`
-(around the tables assembled by `race_data_tables.asm`, `race_engine_tables.asm`,
-`race_actor_tables.asm`, `race_actor_extra_tables.asm`, `race_track_data.asm`, `road_shapes.asm`,
-`race_misc_data.asm`). The check
+The build now covers the **full ROM** `0x000000`–`0x0BFFFF`. The top-level flow at
+`0x07E6A2` is real source (`top_level.asm`); data modules are included from source with
+`binclude "baserom.md",<start>,<length>` chunks inside them. The remaining raw bridges
+are the audio range `0x019F62`–`0x0257CF` and the asset tail `0x07EA66`–`0x0BFFFF`
+(`RomTail`) in `main.asm`. The check
 compares the built image against the same-length prefix of `baserom.md`. On success the
 temporary `build/roadrash.bin` is removed; on mismatch it is kept and the first
 differing byte is reported. `baserom.md` is the only ROM file and is git-ignored;
@@ -84,6 +80,7 @@ differing byte is reported. `baserom.md` is the only ROM file and is git-ignored
 | `road_render.asm`, `race_hud_debug.asm`, `track_data.asm` | Road/object renderer; HUD digits/debug; track data decompressor. |
 | `uncompress.asm` | Decompression routines. |
 | `race_actor_tables.asm` | Actor pointer/graphics tables from the ROM gap ($25856-$259B5). |
+| `rider_intro_quotes.asm` | Rider-intro quote records from the ROM gap ($16E70-$19A11). |
 | `race_data_tables.asm` | Intro/results/level data tables from the ROM gap ($19A12-$19F61). |
 | `race_engine_tables.asm` | Physics/engine/audio-timing tables from the ROM gap ($257D0-$25855). |
 | `race_actor_extra_tables.asm` | Actor/AI tables from the ROM gap ($259B6-$25EBF). |
@@ -295,6 +292,6 @@ The build must report `0 errors`. The only accepted warning class is the one abo
 
 - [ ] Change is limited to the requested scope.
 - [ ] AS syntax rules above are respected.
-- [ ] `./build.sh` reports `0 errors` and `Matched OK: 518758 bytes`.
+- [ ] `./build.sh` reports `0 errors` and `Matched OK: 786432 bytes`.
 - [ ] Module documentation updated when a module was studied/ported.
 - [ ] No generated or ignored files staged.
