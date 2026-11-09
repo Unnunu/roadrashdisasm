@@ -39,6 +39,7 @@ Headless BlastEm/GDB captures in `analysis/dumps/`:
 | `actor_running_ram.bin` | `0x10E66` `Race_UpdateActorAI`, PlayerA `$12` > 0 | demo race in motion |
 | `actor_steer_left_ram.bin` | `0x10E66`, `RaceBike_ram_CurrentSteering=-$600` each frame | 90-frame forced left steering |
 | `actor_steer_right_ram.bin` | same, `CurrentSteering=+$600` | 90-frame forced right steering |
+| `actor_offroad_left_ram.bin` | same, 300 frames of forced left steering | hard-left/likely off-road state |
 
 Observed demo state: `Race_ram_Started=1`, active count `8`, active list =
 `$FF1EAA,$FF232A,$FF23AA,$FF242A,$FF24AA,$FF252A,$FF25AA,$FF262A`; nearest target
@@ -54,6 +55,12 @@ Forced steering snapshots: PlayerA `Speed=$2D15`, `$14=$000E`, `$26=$00013B93`,
 `$36=$05`, `$38=$022B`, `$3A=$03`, `$3C=$00`, `$46=-$03` in both directions. This
 confirms `$04/$1E/$26` are current/previous X and per-frame distance, and `$42` is
 the signed lean/curve value.
+
+Long forced left (300 frames): PlayerA `Speed=$2CEE`, `$00=$FF89`, `$1A=$FFE4`,
+`$30=$FFEA`, `$36=$FF9F`, `$38=$FFFC`, `$3A=$0A5F`, `$3C=$FFF9`, `$42=$FFB6`,
+`$46=$FFFD`, `$4A=$0E`, `$4C=$0C`, `$4E=$0F`, `$68=$42`, `$69=$07`. `$68` bit3
+remained clear, so this is a **hard-curve** snapshot; it does not yet prove off-road
+detection. `$69` bits0/1/2 are all set in this state.
 
 ## Actor definitions (`Race_ActorDefinitionTable`, `0xCCDA`)
 
@@ -110,7 +117,7 @@ routines; `+$06` is its low word, not an independent X coordinate.
 
 | Offset | Width | Role / status | Evidence |
 |---|---|---|---|
-| `+$00` | word | current screen/draw Y; source uses `0(a1)` | `[dynamic]` steering `$35`; no-steer `$A0` |
+| `+$00` | word | current screen/draw Y; source uses `0(a1)` | `[dynamic]` steering `$35`; hard-left `$FF89`; no-steer `$A0` |
 | `+$02` | word | `PosZ` (existing name) | `[static]` endlevel/HInt |
 | `+$04` | long | current X position; `PosXHigh/Low` are one 32-bit value | `[confirmed]` `$04 = $1E + $26` in all snapshots |
 | `+$06` | word | low word of `+$04`; no separate field | same |
@@ -119,27 +126,27 @@ routines; `+$06` is its low word, not an independent X coordinate.
 | `+$14` | word | acceleration per frame; added to Speed with FrameDelay | `[confirmed]` `$22` low speed, `$0E` at `$2D15`; `Race_UpdateActorAI` |
 | `+$16` | word | `Type`/sprite from definition byte0 | `[confirmed]` 2/3/4; static actors anomaly below |
 | `+$18` | word | `Gear` | `[static]`; zero in demo |
-| `+$1A` | word | previous draw/road Y copied from `+$30` at `sub_11448` entry | `[dynamic]` steering `$31` vs `$30=$35` |
+| `+$1A` | word | previous draw/road Y copied from `+$30` at `sub_11448` entry | `[dynamic]` steering `$31` vs `$30=$35`; hard-left `$FFE4` |
 | `+$1C` | word | unknown; zero in snapshots | `[dynamic]` |
 | `+$1E` | long | previous X; `sub_11448` copies current `+$04` here before adding `+$26` | `[confirmed]` `$04-$1E=$26`; initial spawn value before movement |
 | `+$22`/`+$24` | word | X/Y screen delta/velocity; `$22` non-zero under steering | `[dynamic]` `$09/0` steering; zero no-steer |
 | `+$26` | long | frame distance = `Speed * Race_ram_FrameDelay` | `[confirmed]` Player `$EE*7=$682`, Opp `$111*7=$777`; steering `$2D15*7=$13B93` |
 | `+$2A` | word | screen/road Y offset; source derives from `+$02`/road value | `[dynamic]` `-$08` no-steer, `$223` steering; exact role TODO |
 | `+$2C`/`+$2E` | word | impact/speed fraction pair; source writes from Speed | `[static]`; zero in snapshots |
-| `+$30` | word | current road/target Y; `+$1A` keeps the previous value | `[dynamic]` steering `$35`; no-steer `$A0` |
+| `+$30` | word | current road/target Y; `+$1A` keeps the previous value | `[dynamic]` steering `$35`; hard-left `$FFEA`; no-steer `$A0` |
 | `+$32` | word | road/target Y candidate; zero in snapshots | `[dynamic]` |
 | `+$36`/`+$38`/`+$3A`/`+$3C` | word | road/curve/lean accumulators | `[dynamic]` steering `5/$22B/3/0`; zero no-steer |
 | `+$3E`/`+$40`/`+$42` | word | lean/curve state; `$42` signed | `[confirmed]` `$42=-$49` left, `+$49` right; `$3E/$40` zero in test |
 | `+$46` | word | curve/direction sign; AI flips it | `[dynamic]` `-$03` under forced steering |
-| `+$4A` | word | collision/proximity extent | `[dynamic]` `$0D` active; `[static]` `Race_UpdateCollision` |
-| `+$4C`/`+$4E` | word | left/right sprite/collision extents | `[dynamic]` `$0D/0` or `$0D/$0D`; exact role TODO |
+| `+$4A` | word | collision/proximity extent | `[dynamic]` `$0D` active, `$0E` hard-left; `[static]` `Race_UpdateCollision` |
+| `+$4C`/`+$4E` | word | left/right sprite/collision extents | `[dynamic]` `$0C/$0F` hard-left; exact role TODO |
 | `+$56` | word | sentinel/timer; `$FFFF` normal actors | `[dynamic]` `$FFFF`; static `$E2/$17` |
 | `+$5A` | word | attack/impact cooldown | `[static]/[dynamic]` combat; zero in demo |
 | `+$5C` | word | tile/animation base | `[confirmed]` Player `$A00 -> $507`; graphics table |
 | `+$5E`/`+$60` | word | sprite graphics fields | `[confirmed]` Player `$400/$180`; graphics table |
 | `+$66` | word | rating/skill; lifecycle value | `[confirmed]` definition byte5*100; spawn uses as `Speed`, recycle as distance |
 | `+$68` | byte | flags; bit6 = active/update marker (set for player + active opponents) | `[dynamic]` active `$42`, inactive `$00`; source `Race_UpdateActorAI` |
-| `+$69` | byte | state/attack flags; bit4/5/6 attack, bit2 set under steering | `[confirmed]` combat; `[dynamic]` steering `$04` vs idle `$02` |
+| `+$69` | byte | state/attack flags; bit4/5/6 attack, bit2 set under steering | `[confirmed]` combat; `[dynamic]` steering `$04`, hard-left `$07` |
 | `+$6A` | byte | animation/impact flags; bit7 used in animation code | `[static]`; zero in demo |
 | `+$6B` | byte | bit0 high attack, bit1 armed/special | `[confirmed]` Player `$00`, armed opponent `$02` |
 | `+$6C`/`+$6D` | byte | attack phase/timer | `[confirmed]` combat |
@@ -225,6 +232,7 @@ the active/free/static lists. Its owner and purpose remain open.
 | Active/free split | GDB dump of `$FF1A08/$FF1982` | 8 active, 7 free; active starts `$FF232A` | 8+7 split confirmed |
 | Speed/frame distance | `0x10E66`, Speed > 0 | `$EE/$111/$118`, `$26=$682/$777/$7A8`, FrameDelay 7 | `$26=Speed*FrameDelay` confirmed |
 | Steering/lean | `CurrentSteering=±$600` each frame, 90 frames | `$42=∓$49`, `$69=$04`, `$04-$1E=$26` | `$42` signed lean; `$1E` previous X |
+| Hard-left/off-road | 300 frames forced left | `$00=$FF89`, `$30=$FFEA`, `$69=$07`, `$4A/$4C/$4E=$0E/$0C/$0F` | hard-curve state; off-road bit3 not confirmed |
 | Static/extra slots | running dump | static `$16=0`, `$30=$8000`; extra zero except `$71` | static layout/owner TODO |
 
 ## Rename proposals (apply only on request)

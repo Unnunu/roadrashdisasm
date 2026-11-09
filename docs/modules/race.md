@@ -173,6 +173,9 @@ Detailed top-level flow: `docs/analysis/race.md`; actors: `docs/analysis/race_ac
   active/update marker, `$6B` bit1 armed. See `docs/analysis/race_actors.md`.
 - `[dynamic]` Forced `RaceBike_ram_CurrentSteering=±$600`: `$42=-$49/+$49`,
   `$69` bit2 set, `$00=current screen Y`, `$1A=previous $30`, `$30=current road Y`.
+  A 300-frame forced left turn gives negative `$00/$30`, `$69=$07`,
+  `$4A/$4C/$4E=$0E/$0C/$0F`; `$68` bit3 stays clear (hard-curve, not confirmed
+  off-road).
 
 ## Hypotheses / next steps
 
