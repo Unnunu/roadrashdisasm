@@ -14,7 +14,7 @@
 | `RiderIntro_GameTick` | `0x5E66` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
 | `RiderIntro_RecordTable` table | `0x19A12` | [x] | [x] | [x] | - | [x] | - | parsed |
 | image asset header | - | [x] | [x] | [x] | - | [x] | - | parsed (100 records) |
-| `RiderIntro_QuoteData` | `0x16E70` | [x] | [x] | [x] | - | [x] | - | extracted |
+| `RiderIntro_QuoteData` | `0x16E70` | [x] | [x] | [x] | - | [x] | - | source |
 
 ## Role & flow
 
@@ -47,11 +47,16 @@ returns to the race when the held button is released (or after the message timer
   word height, word width)`, text is fixed-size and space-padded.
 - `RiderIntro_Init` passes `(a0)=y` (shifted), `2(a0)=x`, `4(a0)=height`,
   `6(a0)=width` to `EncodeString`/`WriteNametableToBuffer`.
-- `RiderIntro_RecordTable` references **85 unique** quote headers in
-  `0x16E70-$19863`; e.g. `$16E70`: y=7, x=16, h=4, w=19, then 76 text bytes.
-  Some records are separated by 1-4 padding bytes and the tail to `$19A11` is
-  unreferenced/unknown.
-- The region is assembled as one labelled `binclude` in `src/screens/rider_intro_quotes.asm`.
+- `RiderIntro_RecordTable` references **85 unique** intro quote headers; the
+  results/end-level tables add more, giving **155 unique** referenced records in
+  `0x16E70-$19A11`.
+- The region is now a normal source file in `src/screens/rider_intro_quotes.asm`:
+  each record has a decimal `dc.w y,x,height,width` header and one `dc.b` line per
+  text row (`width` characters), matching the on-screen row layout.
+- 42 gaps remain between records (44 bytes total): 40 are 1-byte even-address
+  alignment, one is a 4-byte gap at `$1731A-$1731D`, and one is zero-length in the
+  current segmentation. They are preserved as `QuoteGap_*` `dc.b` blocks; the
+  4-byte gap needs a separate explanation.
 - The 11 unique image pointers are `$AF902-$BE628` (ROM tail after the current
   `$7EA65` build coverage), so the portraits are not part of the current image yet.
 

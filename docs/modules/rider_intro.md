@@ -38,8 +38,12 @@ to the race and records the controller in `Race_ram_ActiveController`.
 - Image prefix at `image-8`: even bytes = compressed size, odd bytes = header pointer;
   header at `p`: `-10` string ptr (name at `+6`), `-6` image offset, `-4` nametable
   offset, `-2` palette offset.
-- Quote: `8-byte header (y,x,height,width) + width*height text`; the 85 unique quote
-  records (`$16E70-$19863`) are in `src/screens/rider_intro_quotes.asm` (tail to `$19A11` raw).
+- Quote: `8-byte header (y,x,height,width) + width*height text`; 155 referenced
+  quote records (85 intro + results/end-level) are committed as normal source in
+  `src/screens/rider_intro_quotes.asm`, with headers in decimal and one `dc.b`
+  line per text row. Gap bytes are preserved as `QuoteGap_*`; 40 one-byte gaps
+  align records to even addresses, with one 4-byte gap at `$1731A-$1731D` still
+  to explain.
 - The 11 unique portrait images are at `$AF902-$BE628`, in the ROM tail after the
   current `$7EA65` build coverage.
 - `ram_FF0520` = selected player's 2-bit "extra" field (`$FF0522`/`$FF0524`); variant 3
