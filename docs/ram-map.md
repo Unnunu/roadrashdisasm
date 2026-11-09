@@ -172,6 +172,20 @@ ROM: `Shop_BikeDescriptions` `$81D2`, `Shop_dPrices` `$8312`, `Shop_BikeImageTab
 current price/2; money -= price - current/2; regenerate the password. See
 `docs/analysis/shop.md`.
 
+### HUD digits/debug (`98C2.asm`)
+
+| Address | Name | Size | Meaning |
+|---|---|---|---|
+| `$FF1AE0` | `ram_FF1AE0` | - | Standings pointer list. |
+| `$FF1AE4` | `ram_FF1AE4` | 2 | Standings value/timer (2 digits at `$1602`). |
+| `$FF1AE6` | `ram_FF1AE6` | 2 | Current standings index (palette 0 row). |
+| `$FF1EAA` | player struct | `$80` | Debug readouts of `POSZ`, `POSX_HIGH/LOW`, `POSY`, `GEAR`, `+$68`. |
+
+Digit HUD: `d1` packed row/column -> offset `row*128+column*2`; tile `$5C0+digit`, bit15
+priority, `d2` palette/priority. Buffers `Race_ram_CurrentHudBuffer`/`NextHudBuffer`.
+`sub_F11C` (`race.asm`) formats distance/POSZ values. No direct callers; likely debug/
+alternate HUD. See `docs/analysis/98C2.md`.
+
 ### Road/object renderer (`8FB4.asm`)
 
 | Address | Name | Size | Meaning |

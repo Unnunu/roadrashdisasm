@@ -149,7 +149,7 @@ tentative until the module card is filled in.
 | `0x0074AA` | `shop.asm` | Bike shop | [shop.md](modules/shop.md) |
 | `0x008342` | `endlevel.asm` | Level-complete animation / level-up | [endlevel.md](modules/endlevel.md) |
 | `0x008FB4` | `8FB4.asm` | Road/object renderer (partial) | [8FB4.md](modules/8FB4.md) |
-| `0x0098C2` | `98C2.asm` | Not yet identified | TODO |
+| `0x0098C2` | `98C2.asm` | HUD digit writers / debug overlay | [98C2.md](modules/98C2.md) |
 | `0x009B9E` | `uncompress.asm` | Decompression routines | TODO |
 | `0x009FE4` | `9FE4.asm` | Not yet identified | TODO |
 | `0x00A4E2` | `race.asm` | Main gameplay | TODO |
