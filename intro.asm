@@ -112,7 +112,7 @@ Intro_Init:
                 move.l  #0,(a3)+
                 dbf     d0,.clearHScroll
 
-                lea     (Intro_TitleScrollTable + $2F8).l,a2 ; Y = 190
+                lea     (Intro_TitleScrollTable + $2F8).l,a2 ; start at line 190; predecrement writes lines 189..150
                 lea     (Intro_TitleScrollSpeed + $2F8).l,a3
                 move.w  #39,d0 ; repeat for 40 lines
                 move.l  #$1900000,d1 ; scroll value on line 189 : 400 (completely out of screen)

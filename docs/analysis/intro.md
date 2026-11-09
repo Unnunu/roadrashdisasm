@@ -13,7 +13,7 @@
 | `Intro_Init` | `0x1704` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
 | `sub_1A2C` (player A init) | `0x1A2C` | [x] | [x] | [x] | - | [x] | [ ] | analyzed |
 | `sub_1B48` (player B init) | `0x1B48` | [x] | [x] | [x] | - | [x] | [ ] | analyzed |
-| `Intro_GameTick` | `0x1C64` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
+| `Intro_GameTick` | `0x1C64` | [x] | [x] | [x] | [x] | [x] | [x] | analyzed |
 | `EncodeString` | `0x2288` | [x] | [x] | [x] | - | [x] | - | analyzed |
 | `DecodeString` | `0x22B2` | [x] | [x] | [x] | - | [x] | - | analyzed |
 | `WriteNametable` | `0x2402` | [x] | [x] | [x] | [x] | [x] | - | analyzed |
@@ -84,10 +84,15 @@ the next frame without Start ends the stage). `.endStage` clears `ram_UpdateFunc
 
 - `Intro_TitleScrollTable` (`$FF439C`) and `Intro_TitleScrollSpeed` (`$FF4A1C`) are
   per-line arrays (4 bytes per line; `ram_const.asm` says `size $400 + $280`).
-- `Intro_Init` clears lines 0-149 and sets lines 190-229 with a generated ramp: the
-  foreground scroll starts at 400 (`$1900000`, "completely out of screen") and the delta
-  between lines grows by `$2000` (1/8 px steps); the background scroll word is zeroed
-  (`move.l d1,d3; clr.w d3`).
+- `Intro_Init` clears lines 0-149, then starts at offset `+$2F8` (line 190) and uses a
+  **predecrement** (`move.l d1,-(a2)`), so the generated ramp is actually written to
+  lines **189..150**: the foreground scroll starts at 400 (`$1900000`, "completely out
+  of screen") and the delta grows by `$2000` (1/8 px steps); the background scroll word
+  is zeroed (`move.l d1,d3; clr.w d3`). `clearHScroll2` then clears lines 190..223 with
+  a postincrement.
+- `[dynamic]` GDB: line 150 starts at `$01EC0000` and decreases by `12.0` (`$C0000`)
+  each frame; the timer starts at `$B4` (180) and decrements; `ram_UpdateFunction` is
+  `0x1C64` (Intro_GameTick).
 - `Intro_GameTick` updates lines 150-189 each frame from the speed array: the scroll
   value decreases toward it (or the speed is capped), with acceleration/deceleration and
   a minimum; after all developers are shown, the title is moved out (`$FD800000` =
@@ -138,6 +143,8 @@ persistent player/menu/high-score state:
   `WriteNametable` builds the VDP command from x/y/plane-width/tile-base.
 - `[static]` `sub_1A2C`/`sub_1B48` initialize player/menu/high-score state, including
   names, passwords, level, money, bike, places and opponents.
+- `[dynamic]` `Intro_GameTick` is installed as `ram_UpdateFunction` (`0x1C64`); the text
+  timer starts at 180 and the H-scroll line 150 value decreases by 12.0 per frame.
 
 ## Hypotheses / open questions
 
@@ -145,7 +152,8 @@ persistent player/menu/high-score state:
   bottom of the screen; confirm visually and with the H-scroll values.
 - `[hypothesis]` The second title nametable write is required because the plane is
   128 cells wide and the title scrolls horizontally; without it the right side is blank.
-- `[ ]` Confirm the visible line ranges (150-189 vs 190-229) and the exact wave.
+- `[x]` Visible title region: lines 150-189 (Init predecrement), lines 190-223 cleared.
+  The exact wave is still best confirmed visually.
 - `[ ]` Confirm the `$6000` text tile base / palette line 3 and the font layout.
 - `[ ]` `sub_16088` and the audio calls are deferred (audio deep dive).
 - `[ ]` Dynamic: confirm `Intro_GameTick` is called as `ram_UpdateFunction` (0x1C64) and

@@ -1,7 +1,7 @@
 # Module card: `intro.asm`
 
 - **ROM range:** `0x001704`–`0x002445`
-- **Status:** partially analyzed (VDP/text/scroll structure understood; exact title visuals TODO)
+- **Status:** partially analyzed (VDP/text/scroll structure and runtime confirmed; exact title visuals TODO)
 - **Related:** `docs/architecture.md`, `docs/coding-style.md`,
   `docs/reverse-engineering.md`, `docs/hardware.md`, `docs/ram-map.md`,
   `docs/analysis/intro.md`
@@ -81,7 +81,10 @@ reg90 $03   128x32 planes
 - The title nametable is written twice; the second write fills the off-screen right part
   of the 128-cell plane for the H-scroll.
 - The H-scroll tables are larger than the 224-line VDP H-scroll table; the DMA transfers
-  `$1C0` words (224 lines). The visible line ranges / wave are still TODO.
+  `$1C0` words (224 lines). `Intro_Init` writes lines 189..150 with a predecrement (the
+  source comment "Y = 190" is the start of the downward block), then clears 190..223.
+- GDB confirmed `Intro_GameTick` runs as `ram_UpdateFunction` (`0x1C64`), the timer starts
+  at 180, and H-scroll line 150 decreases by 12.0 per frame.
 
 ## Coverage matrix
 
@@ -96,6 +99,8 @@ See `docs/analysis/intro.md` for the full matrix.
 - `[static]` `EncodeString`/`DecodeString` use the font code tables; `WriteNametable`
   builds the VDP command from x/y/plane width/tile base.
 - `[static]` `sub_1A2C`/`sub_1B48` initialize the player/menu/high-score state.
+- `[dynamic]` `Intro_GameTick` (`0x1C64`) is the update function; the text timer starts
+  at 180; H-scroll line 150 decreases by 12.0 per frame.
 
 ## Hypotheses / open questions
 
