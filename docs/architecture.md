@@ -151,7 +151,7 @@ tentative until the module card is filled in.
 | `0x008FB4` | `8FB4.asm` | Road/object renderer (partial) | [8FB4.md](modules/8FB4.md) |
 | `0x0098C2` | `98C2.asm` | HUD digit writers / debug overlay | [98C2.md](modules/98C2.md) |
 | `0x009B9E` | `uncompress.asm` | LZSS decompressors (B/W/stream/VRAM) | [uncompress.md](modules/uncompress.md) |
-| `0x009FE4` | `9FE4.asm` | Not yet identified | TODO |
+| `0x009FE4` | `9FE4.asm` | Track/road data decompressor | [9FE4.md](modules/9FE4.md) |
 | `0x00A4E2` | `race.asm` | Main gameplay | TODO |
 | `0x00D278` | `race_hud.asm` | Race HUD (included by `race.asm`) | TODO |
 | `0x00E732` | `road_marking.asm` | Road marking / sprite placement (included by `race.asm`) | TODO |

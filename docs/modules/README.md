@@ -24,7 +24,7 @@ row to the table below.
 | `8FB4.asm` | `0x008FB4` | Road/object renderer (partial) | [8FB4.md](8FB4.md) |
 | `98C2.asm` | `0x0098C2` | HUD digit writers / debug overlay | [98C2.md](98C2.md) |
 | `uncompress.asm` | `0x009B9E` | LZSS decompressors (B/W/stream/VRAM) | [uncompress.md](uncompress.md) |
-| `9FE4.asm` | `0x009FE4` | Not yet identified | TODO |
+| `9FE4.asm` | `0x009FE4` | Track/road data decompressor | [9FE4.md](9FE4.md) |
 | `race.asm` | `0x00A4E2` | Main gameplay | TODO |
 | `race_hud.asm` | `0x00D278` | Race HUD (included by `race.asm`) | TODO |
 | `road_marking.asm` | `0x00E732` | Road marking / sprite placement (included by `race.asm`) | TODO |

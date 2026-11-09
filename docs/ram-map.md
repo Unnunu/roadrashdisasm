@@ -220,6 +220,21 @@ buffers. Level-up rider table `$19F12` (5 levels x 2), frame counts `$8C8C`,
 animation script `$8DC2`, tiles `$80000`, window image `$7F400`. `sub_8946` advances the
 level/opponents/password. See `docs/analysis/endlevel.md`.
 
+### Track data decoder (`9FE4.asm`)
+
+| Address | Name | Size | Meaning |
+|---|---|---|---|
+| `$FF13B2` | `ram_FF13B2` | 2 | Remaining per-call sample budget. |
+| `$FF13B8`..`$FF13E2` | channel 1 state | - | Accumulator, data byte, delta, control index, sign/width/run, bit position, pointers, caught-up flag. |
+| `$FF13E4`..`$FF140E` | channel 2 state | - | Same for the second channel/output. |
+| `$FFDC58` | `ram_FFDC58` | 0x200 | Decoded/scaled track data (4 x $80-byte chunks). |
+| `$FF1A52`/`$FF1A56` | `RaceTrack_Data2/3` | 4 each | Compressed track streams. |
+| `$FF1A6C` | `ram_FF1A6C` | 4 | Per-track scaling table pointer. |
+
+ROM: `off_16AB0` (race.asm) -> per-track tables; tables `$A054/$A08C/$A094/$A0CC`
+(bit masks/shifts). Race callers scale channel 1 by `signed byte * factor / $10000`
+(128 samples at level start, 64-sample chunks afterwards). See `docs/analysis/9FE4.md`.
+
 ### Decompressor (`uncompress.asm`)
 
 The LZSS ring is `Road_ram_XLeftArray` (0x1000 bytes, prefilled `$20`). Streaming
