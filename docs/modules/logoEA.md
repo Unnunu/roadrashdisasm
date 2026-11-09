@@ -51,8 +51,11 @@ the intro/menus; `doStart` polls `LogoEA_ram_Finished` to leave the logo.
   the TM/symbol entries. The H-scroll table gives the two shared planes different scroll
   values, producing a ghosted/wavy text.
 
-See `docs/analysis/logoEA.md` for the full address/effect analysis and the dynamic
-confirmation TODO.
+`vr` in BlastEm confirms the shared planes (`reg2=$28`, `reg4=$05`), per-line H-scroll
+(`reg0B=$03`), 128x32 planes (`reg90=$03`), and the unused H-int counter (`reg0A=$01`
+with H-int disabled). The VRAM viewer shows the figure tile buffers at 25-40%
+(`$4020`/`$4920`/`$5220`); the Plane debugger shows the text copies and no figures
+because the figures are sprites. See `docs/analysis/logoEA.md` for the full analysis.
 
 ## RAM / ROM & structures
 
@@ -90,6 +93,10 @@ address and the exact wave visuals need dynamic confirmation).
   8-bit control mask (literal/back-reference).
 - `[dynamic]` `LogoEA_GameTick` (`0x366`) is the update function during the logo (GDB
   experiment).
+- `[confirmed]` `vr`: plane A/B both `$A000`, H-scroll per line, 128x32, H-int counter
+  unused.
+- `[dynamic]` VRAM viewer: figure tiles at 25-40% (`$4020`/`$4920`/`$5220`); Plane
+  debugger shows the text copies and no figures (sprites).
 
 ## Hypotheses
 

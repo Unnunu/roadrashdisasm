@@ -17,7 +17,7 @@
 | `LogoEA_SetSquareSpritesHPos` | `0x0394` | [x] | [x] | [x] | [x] | [x] | - | analyzed |
 | `LogoEA_SetTriangleSpritesHPos` | `0x03C0` | [x] | [x] | [x] | [x] | [x] | - | analyzed |
 | `LogoEA_ShowSprites` | `0x03E2` | [x] | [x] | [x] | [x] | [x] | - | analyzed |
-| `LogoEA_Update` | `0x0406` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed (effect pending) |
+| `LogoEA_Update` | `0x0406` | [x] | [x] | [x] | [x] | [x] | [x] | analyzed (effect observed) |
 | `LogoEA_CreateSprite` | `0x07BC` | [x] | [x] | [x] | [x] | [x] | - | analyzed |
 | `LogoEA_CreateFigureSprites` | `0x07E0` | [x] | [x] | [x] | [x] | [x] | - | analyzed |
 | `LogoEA_GetSquareLineMemOffset` | `0x0804` | [x] | [x] | [x] | - | [x] | - | analyzed |
@@ -74,6 +74,42 @@ reg8A = $8A01 : H-int counter 1 (unused because H-int is disabled)
 
 The display is enabled later by `doStart` (`move.w #$8174,VdpCtrl`), not by
 `LogoEA_Init`.
+
+### Runtime confirmation (BlastEm `vr`)
+
+`vr` during the logo confirms:
+
+- `reg2=$28`, `reg4=$05` -> both planes at `$A000` (shared nametable);
+- `reg0B=$03` (H-scroll per line), `reg90=$03` (128x32), `reg8D=$08` (`$2000`);
+- `reg0A=$01` with `HINT Pending: true`, but `reg0=$04` disables H-int, so the counter
+  is not serviced;
+- `reg1=$74` (display enabled by `doStart`), `reg5=$6E` (`$DC00`), `reg0C=$81`;
+- DMA group (`length 0`, source `$101FFFE`, `Copy`) is stale boot state; the logo does
+  not use DMA.
+
+The BlastEm **Plane debugger** shows several copies of the EA text (shared plane +
+per-line scroll/wrap) and no figures: the three figures are **sprites** (SAT `$DC00`),
+not plane tiles.
+
+### VRAM map (percentages from the BlastEm viewer)
+
+The user sees the yellow/green/blue stripes at ~25-40% of VRAM. Mapping the code's
+addresses to a 64 KiB VRAM:
+
+| VRAM | Percent | Contents |
+|---|---|---|
+| `$0020` | ~0.03% | Text image tiles (65 tiles). |
+| `$2000` | 12.5% | H-scroll table (per-line values). |
+| `$4020` | 25.1% | Square tile buffer (72 tiles). |
+| `$4920` | 28.6% | Circle tile buffer (72 tiles). |
+| `$5220` | 32.1% | Triangle tile buffer (72 tiles). |
+| `$5B20` | 35.6% | End of the figure tile buffers (`$5B20`). |
+| `$A000` | 62.5% | Shared plane A/B nametable (128x32). |
+| `$B20C` | 69.7% | EA text nametable (via the command-latch trick). |
+| `$DC00` | 86.0% | Sprite attribute table (640 bytes). |
+
+So the yellow/green/blue stripes at 25-40% are the **runtime-generated figure tiles**,
+exactly as the code says.
 
 ### The strange part: shared plane + VDP command-latch trick
 
