@@ -81,8 +81,8 @@ is analyzed:
 | `$FF067E` | `MenuPassword_StrPasswordStatus` | TODO | Password status message string. |
 
 The player state used by the password system: `Menu_ram_Player` `$FF0508`, levels
-`$FF050C/$FF050E`, money `$FF0518/$FF051C`, progress `$FF0510/$FF0514`, extra bits
-`$FF0522/$FF0524`, places `$FF052E/$FF0538`, opponents `$FF0546/$FF0566`, bike ids
+`$FF050C/$FF050E`, money `$FF0518/$FF051C`, progress `$FF0510/$FF0514`, extra field `$FF0522/$FF0524` (0..3, current
+`$FF0520`), places `$FF052E/$FF0538`, opponents `$FF0546/$FF0566`, bike ids
 `$FF0542/$FF0544`.
 
 ### Main menu (`menu_main.asm`)
@@ -104,6 +104,23 @@ The player state used by the password system: `Menu_ram_Player` `$FF0508`, level
 | `$FFB62C` | `Menu_ram_FrameBuffer` | `$E00` | 64x28 window/text frame buffer (DMA to `$7000`). |
 | `$FF8364` | `Race_ram_ImageBuffer2` | TODO | Race badge/card nametable staging. |
 
+### Character intro (`character.asm`)
+
+| Address | Name | Size | Meaning |
+|---|---|---|---|
+| `$FF0520` | `ram_FF0520` | 2 | Current player's "extra" field (0..3), copied from `$FF0522`/`$FF0524`. |
+| `$FF0522`/`$FF0524` | `ram_FF0522/24` | 2 each | Player A/B 2-bit password "extra" field (not the bike id). |
+| `$FF1ADA` | `Race_ram_ActiveController` | 2 | 0/1: controller that exited the intro (used by the race). |
+| `$FF0508` | `Menu_ram_Player` | 2 | 0 = A, `$FFFF` = B. |
+| `$FF050C`/`$FF050E` | `Menu_ram_PlayerALevel/PlayerBLevel` | 2 each | Table level index (1..5). |
+| `$FF05DC` | `Menu_ram_CurrentTrackId` | 2 | 0,2,4,6,8 (five tracks). |
+| `$FFB62C` | `Menu_ram_FrameBuffer` | `$E00` | 64x28 window buffer DMA'd to `$7000`. |
+
+ROM: `unk_19A12` = `[5 levels][5 tracks][4 variants]` 8-byte records
+(`quote_ptr,image_ptr`), index `base+variant+(level-1)*$A0+track*$10`. Image assets
+carry an 8-byte interleaved `size/header` prefix; the header gives the name string,
+image/nametable/palette offsets (see `docs/analysis/character.md`).
+
 ### Messages (`message.asm`)
 
 | Address | Name | Size | Meaning |
@@ -115,8 +132,7 @@ The player state used by the password system: `Menu_ram_Player` `$FF0508`, level
 | `$FF05E8` | `Message_ram_ButtonBlinkPeriod` | 2 | Button icon blink period. |
 
 The message field is rows 22-27 (40x6) of `Menu_ram_FrameBuffer`.
-- `Character_ram_*`, `RaceResults_ram_*`, `HighScore_ram_*`, `Shop_ram_*`,
-  `EndLevel_ram_*` — TODO.
+- `RaceResults_ram_*`, `HighScore_ram_*`, `Shop_ram_*`, `EndLevel_ram_*` — TODO.
 
 ## Race (`race.asm`, `race_hud.asm`, `road_marking.asm`, `animation.asm`)
 

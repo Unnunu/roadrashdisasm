@@ -143,7 +143,7 @@ tentative until the module card is filled in.
 | `0x003400` | `menu_main.asm` | Main menu | [menu_main.md](modules/menu_main.md) |
 | `0x004226` | `message.asm` | On-screen messages / button prompts | [message.md](modules/message.md) |
 | `0x005760` | `sub_5760.asm` | Rider/bike sprite chain builder | [sub_5760.md](modules/sub_5760.md) |
-| `0x0059C4` | `character.asm` | Character screen / rider rendering | TODO |
+| `0x0059C4` | `character.asm` | Pre-race rider/opponent intro | [character.md](modules/character.md) |
 | `0x005F28` | `race_results.asm` | Post-race results screen | TODO |
 | `0x006DC0` | `highscore.asm` | High-score screen | TODO |
 | `0x0074AA` | `shop.asm` | Bike shop | TODO |

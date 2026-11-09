@@ -1,0 +1,105 @@
+# Module card: `character.asm`
+
+- **ROM range:** `0x0059C4`–`0x005F27` (`Character_Init` `0x59C4`,
+  `Character_GameTick` `0x5E66`)
+- **Status:** analyzed (static; rendering not yet dynamically confirmed)
+- **Related:** `docs/architecture.md`, `docs/reverse-engineering.md`,
+  `docs/hardware.md`, `docs/ram-map.md`, `docs/analysis/character.md`
+
+## Role / purpose
+
+Pre-race **rider/opponent introduction**. After the main menu (non-demo path only) the
+screen shows the rider you will race next: portrait, name, taunt/quote, a background
+and gamepad, and a timed message. A button press (or the message sequence ending) exits
+to the race and records the controller in `Race_ram_ActiveController`.
+
+## Entry points & API
+
+| Symbol | Address | Called by | Description |
+|--------|---------|-----------|-------------|
+| `Character_Init` | `0x59C4` | `top_level.asm` `0x7E78C` | Build the screen. |
+| `Character_GameTick` | `0x5E66` | `top_level.asm` `0x7E790` (fade wrapper) | Per-frame update/input. |
+
+`top_level.asm` skips the screen when `MainMenu_ram_DemoMode != 0` (`0x7E782`).
+
+## Control flow / state machine
+
+1. `Init`: VDP setup (same as main menu), background/gamepad/portrait panel, select
+   opponent record, decode name/quote/palette, optional overlay, font, message, DMA.
+2. `GameTick`: DMA the frame buffer, edge-detect pad A then B (newly pressed button
+   exits, setting the active controller), advance the message every 300 frames until
+   the `$FFFFFFFF` terminator, redraw the message, audio tick.
+
+## RAM / ROM & structures
+
+- Opponent table `unk_19A12` (`0x19A12`): `[5 levels][5 tracks][4 variants]`, 8-byte
+  records `quote_ptr, image_ptr`; index `base + variant + (level-1)*$A0 + track*$10`;
+  variant in `{0,8,$10,$18}`, track in `{0,2,4,6,8}`.
+- Image prefix at `image-8`: even bytes = compressed size, odd bytes = header pointer;
+  header at `p`: `-10` string ptr (name at `+6`), `-6` image offset, `-4` nametable
+  offset, `-2` palette offset.
+- Quote: `8-byte header (y,x,height,width) + width*height text`.
+- `ram_FF0520` = selected player's 2-bit "extra" field (`$FF0522`/`$FF0524`); variant 3
+  and the `unk_B1506` overlay are used when it is non-zero and the image is `unk_AF902`.
+- `Menu_ram_Player` selects A/B; `Menu_ram_PlayerALevel/BLevel` and
+  `Menu_ram_CurrentTrackId` select the record.
+- Frame buffer `Menu_ram_FrameBuffer` (`$FFB62C`, 64x28) DMA'd to VRAM `$7000`.
+
+## Coverage matrix
+
+| Function | Address | Contract | Algorithm | Data | Hardware | Why | Dynamic | Status |
+|----------|---------|----------|-----------|------|----------|-----|---------|--------|
+| `Character_Init` | `0x59C4` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
+| `Character_GameTick` | `0x5E66` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
+| `unk_19A12` | `0x19A12` | [x] | [x] | [x] | - | [x] | - | parsed |
+
+Detailed listing, table parse and layout: `docs/analysis/character.md`.
+
+## External calls / dependencies
+
+- Callers: `top_level.asm`.
+- Uses `UncompressW/B`, `WriteToVRAM`, `WriteNametable(ToBuffer)`, `EncodeString`,
+  `Menu_ShowMessage`, `DmaWriteVRAM`, `Rand_GetWord`, `GetInputPlayerA/B`,
+  `AudioFunc1/4`.
+
+## Hacks / bugs / quirks
+
+- Background tiles are written to VRAM `$4000` but the map uses base tile `$400`
+  (`$8000`); the visible background relies on the main menu's tiles at `$8000`. The
+  `$4000` write is overwritten by the nametable. `[static]`
+- Quote rows are double-spaced by using destination stride 128 (rows 3,5,7,9); the
+  destination Y is the header Y shifted right by one. `[static]`
+- Variant 3 is not chosen randomly; it replaces variant 0 only when the player's
+  "extra" field is non-zero. `[static]`
+- The portrait palette overwrites all 64 global palette words. `[static]`
+
+## Verified facts
+
+- `[static]` Flow: main menu -> Character (non-demo) -> race; demo skips it.
+- `[static]` Table/asset formats and 100 opponent records parsed from `baserom.md`.
+- `[static]` Message cycle starts at index 18, advances by 8 every 300 frames, ends at
+  `$FFFFFFFF`; any newly pressed button on pad A/B exits and sets the active controller.
+
+## Hypotheses
+
+- `[hypothesis]` `unk_B1506` is Natasha's bike/overlay; `ram_FF0520` is a bike/opponent
+  class. Test: render `unk_B1506` and the portrait with the game palette.
+- `[hypothesis]` The `$4000` background write is a leftover/bug (should be `$8000`).
+  Test: enter the screen right after `Character_Init` without the main menu and inspect
+  VRAM.
+
+## Rename proposals (apply only on request)
+
+| Current | Proposed | Evidence | Confidence |
+|---------|----------|----------|------------|
+| `Character_Init` | `RiderIntro_Init` | pre-race opponent intro | high |
+| `Character_GameTick` | `RiderIntro_GameTick` | same | high |
+| `unk_19A12` | `RiderIntro_RecordTable` | [level][track][variant] records | high |
+| `unk_AF902` | `RiderIntro_NatashaImage` | parsed name | medium |
+| `unk_B1506` | `RiderIntro_NatashaBike` | conditional overlay | low |
+
+## Experiments performed
+
+| Goal | Setup / breakpoint | Observed | Conclusion |
+|------|--------------------|----------|------------|
+| Reach the screen | GDB demo + force `DemoMode=0` at `0x7E782` | Not reached within budget (demo path/time) | visual confirmation pending |
