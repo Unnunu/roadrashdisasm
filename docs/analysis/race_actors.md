@@ -219,8 +219,17 @@ static updater is analyzed.
 
 `[dynamic]` `$FF2FAA` is zero except `+$71=$12` in both demo snapshots; it is not in
 the active/free/static lists. `Race_CreateActors` writes `$12` at `$FF2FAA+$71`, so
-this is a third static-like slot; `sub_12974`/collision paths reference it. Its
-owner and full purpose remain open.
+this is a third static-like slot; `sub_128E0`/`sub_12974`/collision paths reference
+it. `sub_128E0` activates it when `Race_ram_ProgressSnapshotB >= $708`, sets `$68`
+bit6, `$73` 0/2, `$30/$00/$1A`, `$69` bit3, `$12=$1770`, and a progress-derived X;
+`sub_12974` then updates/moves it. This looks like a late-race **police/static**
+actor, but the role is still a hypothesis.
+
+`Race_UpdateStaticActors` only processes static actors with `$56==$FFFF` and `$68`
+bit6. It uses `$16` as the `unk_25A10` type index, recomputes `$26`, calls
+`sub_113A4`/`sub_116E2`/`sub_11940`, then `$36+$38 -> $00`, `sub_137E4`,
+`sub_12C9A`, `sub_13DE0`. The observed static `$16=0` after update is therefore an
+open semantic question, not a reason to rename the field.
 
 ## Actor lifecycle notes
 
@@ -247,8 +256,9 @@ owner and full purpose remain open.
 - Static group `$FF2EAA/$FF2F2A` and `$FF2FAA` (index `$12`); player B
   (`$FF26AA`) is zero in demo.
 - Which fields are copied/overwritten by `Race_SpawnOpponent`/`Race_RecycleActor`.
-- Next dynamic tests: accelerate/brake, off-road, 2P/player B, static/police
-  appearance. Steering/lean is covered by the left/right snapshots above.
+- Next dynamic tests: brake/accelerate via native pad or after disabling demo mode,
+  off-road, 2P/player B, static/police appearance. Steering/lean is covered by the
+  left/right snapshots above.
 
 ## Experiments performed
 
@@ -260,6 +270,7 @@ owner and full purpose remain open.
 | Steering/lean | `CurrentSteering=±$600` each frame, 90 frames | `$42=∓$49`, `$69=$04`, `$04-$1E=$26` | `$42` signed lean; `$1E` previous X |
 | Hard-left/off-road | 300 frames forced left | `$00=$FF89`, `$30=$FFEA`, `$69=$07`, `$4A/$4C/$4E=$0E/$0C/$0F` | hard-curve state; off-road bit3 not confirmed |
 | Static/extra slots | running dump | static `$16=0`, `$30=$8000`; extra zero except `$71` | static layout/owner TODO |
+| Brake/input injection | break at `0xBE6C` in demo | `Race_GetInputDemo` path, injected d0 ignored | use native pad or disable demo mode |
 
 ## Rename proposals (apply only on request)
 
