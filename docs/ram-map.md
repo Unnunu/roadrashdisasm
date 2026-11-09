@@ -172,6 +172,20 @@ ROM: `Shop_BikeDescriptions` `$81D2`, `Shop_dPrices` `$8312`, `Shop_BikeImageTab
 current price/2; money -= price - current/2; regenerate the password. See
 `docs/analysis/shop.md`.
 
+### End level (`endlevel.asm`)
+
+| Address | Name | Size | Meaning |
+|---|---|---|---|
+| `-` | `EndLevel_ram_AnimFrame` | 2 | Victory animation frame; `-1` ends the animation stage. |
+| `$FF0D24` | `ram_FF0D24` | 2 | 5-frame sprite-table swap delay. |
+
+The module reuses the race animation state (`Animation_ram_BaseTile=$2E0`,
+`Race_ram_FrameReady/FrameReady2`, `Race_ram_*SpriteAttributeTable`,
+`Race_ram_*ScrollTable`, `Race_ram_SpriteDestination=$8680`) with `Intro_TitleScrollTable`
+buffers. Level-up rider table `$19F12` (5 levels x 2), frame counts `$8C8C`,
+animation script `$8DC2`, tiles `$80000`, window image `$7F400`. `sub_8946` advances the
+level/opponents/password. See `docs/analysis/endlevel.md`.
+
 ### Messages (`message.asm`)
 
 | Address | Name | Size | Meaning |

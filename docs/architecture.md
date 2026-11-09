@@ -147,7 +147,7 @@ tentative until the module card is filled in.
 | `0x005F28` | `race_results.asm` | Post-race results / bust / repair | [race_results.md](modules/race_results.md) |
 | `0x006DC0` | `highscore.asm` | High-score screen | [highscore.md](modules/highscore.md) |
 | `0x0074AA` | `shop.asm` | Bike shop | [shop.md](modules/shop.md) |
-| `0x008342` | `endlevel.asm` | End-of-level menu | TODO |
+| `0x008342` | `endlevel.asm` | Level-complete animation / level-up | [endlevel.md](modules/endlevel.md) |
 | `0x008FB4` | `8FB4.asm` | Not yet identified | TODO |
 | `0x0098C2` | `98C2.asm` | Not yet identified | TODO |
 | `0x009B9E` | `uncompress.asm` | Decompression routines | TODO |
