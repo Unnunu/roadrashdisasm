@@ -61,7 +61,7 @@ speed/curve (`Race_ram_TrackParam0`/`Race_ram_TrackParam2`/`Race_ram_TrackParam3
   flips `$46` when clamped.
 - The table targets `sub_16458`, `sub_165D0`, `sub_165E0`, `sub_16612`, `sub_16624`,
   `sub_1662C`, `sub_16644`, `sub_1666A`, `sub_166B0`, `sub_166DC` in
-  `src/race/race_anim_audio.asm`.
+  `src/race/race_combat.asm`.
 - Code at these entry points is now disassembled in `src/race/race_ai.asm`; exact AI/action
   semantics and dynamic behavior remain TODO.
 
@@ -72,7 +72,8 @@ Actor fields used here: `$12` Speed, `$14`, `$16` type, `$22`/`$26` movement,
 `$71` index, `$73`, `$75`, `$78`. Data: `unk_258AE`/`unk_25A10` actor data,
 `unk_10E3E`, `unk_12B7C`, `unk_12D0A`, `unk_13A1A`, `Track_CurveBuffer`,
 `Race_ram_TrackParam0`/`Race_ram_TrackParam2`/`Race_ram_TrackParam3`, `word_14742`, `Race_ram_PlayerProgress`/`Race_ram_BestProgress`/`Race_ram_ProgressSnapshotB`, `Race_ram_FrameDelay`/
-`CurrentButtons`, `Race_StaticActorList`, `$FF2FAA`, `unk_14056` (race_anim_audio).
+`CurrentButtons`, `Race_StaticActorList`, `$FF2FAA`, `unk_14056` (race_anim_audio);
+combat handlers are in `race_combat.asm`.
 
 ## Open questions
 
@@ -80,7 +81,8 @@ Actor fields used here: `$12` Speed, `$14`, `$16` type, `$22`/`$26` movement,
 - Static/police actor role and the `$FF2FAA` actor.
 - AI tables (`unk_10E3E`/`unk_12B7C`/`unk_13A1A`) and the on-foot rules.
 - Exact actor-action handler semantics (`0x12FE4`..`0x131BE`) and dynamic checks.
-- Next: `src/race/race_anim_audio.asm` (animations/random/audio).
+- Next: `src/race/race_combat.asm` (attack/action semantics) and
+  `src/race/race_anim_audio.asm` (animations/random/audio).
 
 ## Rename proposals
 

@@ -10,7 +10,8 @@
 Actor movement/AI/physics and input: `sub_10E00`..`Race_GetCurveSpeedLimit`, including
 `Race_HandleInputOnFoot`/`Race_AnotherInputOnFoot` and the per-frame actor/opponent
 update chain. Road/profile/objects/standings live in `src/race/race_ai_road.asm`; animations,
-random and audio live in `src/race/race_anim_audio.asm`.
+random and audio live in `src/race/race_anim_audio.asm`; attack/action handlers live in
+`src/race/race_combat.asm`.
 
 ## Entry points & API
 

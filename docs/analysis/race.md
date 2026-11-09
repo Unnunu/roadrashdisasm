@@ -5,7 +5,8 @@
 - **ROM range:** `0x00A4E2`–`0x016E6F`; split modules: `src/race/race_core.asm`
   (`0xA4E2`-`0xD277`), `src/race/race_hud.asm` (`0xD278`-`0xD8F9`), `src/race/race_physics.asm`
   (`0xD8FA`-`0xE731`), `src/race/road_marking.asm` (`0xE732`-`0xEB33`), `src/race/race_ai_road.asm` (`0xEB34`-`0x10DFF`; road profile/objects/standings/speed; `docs/analysis/race_ai_road.md`), `src/race/race_ai.asm`
-  (`0x10E00`-`0x14055`), `src/race/race_anim_audio.asm` (`0x14056`-`0x1685F`), `src/race/animation.asm` (`0x16860`-`0x169AF`), `src/race/race_spawn.asm`
+  (`0x10E00`-`0x14055`), `src/race/race_anim_audio.asm` (`0x14056`-`0x16119`),
+  `src/race/race_combat.asm` (`0x1611A`-`0x1685F`), `src/race/animation.asm` (`0x16860`-`0x169AF`), `src/race/race_spawn.asm`
   (`0x169B0`-`0x16E6F`); `src/race/race.asm` is the include list.
 - **Status:** partially analyzed (top-level flow, init/assets, input/loop, buffer
   rotation, initial struct inventory; actor/physics/AI and sub-module internals TODO)
@@ -202,7 +203,8 @@ Actors/player structures:
 | Track/actors | `Race_InitTrack` `0xB016`, `Race_InitActorLists/Positions/PhysicsConstants/LoadTrackParams/SpawnOpponents`, `Race_CreateActors` `0xCAD0`; `Race_ActorList/DefinitionTable/GraphicsTable/StaticActorList` |
 | Spawn/traffic | `Race_SpawnTick` `0x16AF6`, `Race_SpawnOpponent/Traffic`, active/free lists, `Race_UpdateSpeedDisplay`/`Race_FormatDecimal` |
 | AI/physics | `sub_10E00`..`Race_GetCurveSpeedLimit`, `Race_HandleInputOnFoot` `0x110AE`/`Another` `0x111FA` (`src/race/race_ai.asm`) |
-| Animations/audio | `Race_UpdateLeanCurve`..`Race_UpdateCollision`, `Rand_Init` `0x15FE8`/`Rand_GetWord` `0x16034`, `Audio_UpdateEngine0` `0x16520` (`src/race/race_anim_audio.asm`) |
+| Animations/audio | `Race_UpdateLeanCurve`, `Race_UpdatePlayerAnimation`, `Rand_Init` `0x15FE8`/`Rand_GetWord` `0x16034` (`src/race/race_anim_audio.asm`) |
+| Combat | `Race_UpdateNearestTarget` `0x1611A`, `sub_162B0`, action handlers, `Race_UpdateCollision` `0x16732` (`src/race/race_combat.asm`) |
 | Camera/scroll/rearview | `Race_UpdateCamera`, `Race_BuildVScrollInfo`/`HScrollTable`, `Race_DrawRearviewMirror`, `Race_DrawRoadMarkingHud`, `Race_UpdateNearestOpponent` (`src/race/race_physics.asm`) |
 | Physics/AI | `Race_UpdateSpeedDisplay`, `Race_SpawnTick`, `Race_UpdateBikeLean`..`sub_13106` (TODO) |
 | Road/render | `PiecewiseLinearInterpolation`, `Road_FillProfileTables`, `sub_FD96/FB1E/F40C`, `sub_109B6/FC0E`, `Road_BuildVisibleList`, `Road_DrawObjects` (`road_render`), `RoadMarking_Draw` |

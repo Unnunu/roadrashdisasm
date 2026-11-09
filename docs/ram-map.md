@@ -184,7 +184,7 @@ Buffers: `Intro_TitleScrollTable`/`Intro_TitleScrollSpeed` (+$400 SAT),
 `Intro_ram_ImageBuffer`/`Race_ram_ImageBuffer2`, VScroll info
 `ram_FF3FDC/$411C/$425C` with `Race_ram_Alpha1/2/3`, HUD/SAT/HScroll DMA targets.
 
-### Combat / attack state (`race_ai.asm`, `race_anim_audio.asm`)
+### Combat / attack state (`race_combat.asm`, action table in `race_ai.asm`)
 
 | Address | Name | Size | Meaning |
 |---|---|---|---|

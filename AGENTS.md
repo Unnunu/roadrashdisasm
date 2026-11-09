@@ -91,7 +91,7 @@ differing byte is reported. `baserom.md` is the only ROM file and is git-ignored
 | `src/data/road_shapes.asm` | Road/object shape table and shape bytes ($3BF1A-$7DCA7). |
 | `src/data/race_misc_data.asm` | HUD/needle, palette and results tables ($7DCA8-$7E6A1). |
 | `src/data/rom_assets.asm` | Labelled asset/code tail ($7EA66-$BFFFF). |
-| `src/race/race.asm` | Include list for the split main gameplay (order: race_core, race_hud, race_physics, road_marking, race_ai, animation, race_spawn). |
+| `src/race/race.asm` | Include list for the split main gameplay (order: race_core, race_hud, race_physics, road_marking, race_ai, race_anim_audio, race_combat, animation, race_spawn). |
 | `src/race/race_core.asm` | Race top-level/init/results/actor data. |
 | `src/race/race_hud.asm` | Race HUD. |
 | `src/race/race_physics.asm` | DmaWriteVRAM + actor/physics/AI functions. |
@@ -99,7 +99,8 @@ differing byte is reported. `baserom.md` is the only ROM file and is git-ignored
 | `src/race/race_ai_road.asm` | Road profile/objects/standings/speed. |
 | `src/race/combat_const.asm` | Temporary `WEAPON_0`/`WEAPON_1` combat enum placeholders. |
 | `src/race/race_ai.asm` | Actor/input/AI/physics. |
-| `src/race/race_anim_audio.asm` | Animations, random, engine audio. |
+| `src/race/race_anim_audio.asm` | Animations, random, audio/impact helpers ($14056-$16119). |
+| `src/race/race_combat.asm` | Player fist, AI combat, nearest-target/collision ($1611A-$1685F). |
 | `src/race/animation.asm` | Sprite animation. |
 | `src/race/race_spawn.asm` | Track data + dynamic spawn. |
 | `src/core/top_level.asm` | Top-level screen flow at `0x07E6A2` (intro/menu/race/results); generated with `tools/disasm.py`. |

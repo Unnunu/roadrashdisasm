@@ -24,7 +24,8 @@ marking/animation, and the race outcome. `src/core/top_level.asm` calls `Race_In
 | `src/race/road_marking.asm` | `$E732-$EB33` | Road marking / sprite placement | [road_marking.md](road_marking.md) |
 | `src/race/race_ai_road.asm` | `$EB34-$10DFF` | Road profile/objects/standings/speed | [race_ai_road.md](race_ai_road.md) |
 | `src/race/race_ai.asm` | `$10E00-$14055` | Actor/input/AI/physics | [race_ai.md](race_ai.md) |
-| `src/race/race_anim_audio.asm` | `$14056-$1685F` | Animations, random, engine audio | [race_anim_audio.md](race_anim_audio.md) |
+| `src/race/race_anim_audio.asm` | `$14056-$16119` | Animations, random, audio/impact helpers | [race_anim_audio.md](race_anim_audio.md) |
+| `src/race/race_combat.asm` | `$1611A-$1685F` | Player fist, AI combat, nearest-target/collision | [combat.md](combat.md) |
 | `src/race/animation.asm` | `$16860-$169AF` | Sprite animation | [animation.md](animation.md) |
 | `src/race/race_spawn.asm` | `$169B0-$16E6F` | Track data + dynamic spawn | [race_spawn.md](race_spawn.md) |
 | `src/data/race_actor_tables.asm` | `$25856-$259B5` | Actor pointer/graphics tables (ROM gap data) | - |
@@ -36,7 +37,7 @@ marking/animation, and the race outcome. `src/core/top_level.asm` calls `Race_In
 | `src/data/race_misc_data.asm` | `$7DCA8-$7E6A1` | HUD/palette/results tables (ROM gap) | [race_misc_data.md](race_misc_data.md) |
 
 `src/race/race.asm` includes these in exactly that order; the code is split at the original
-`race_hud`/`road_marking`/`animation` include boundaries.
+`race_hud`/`road_marking`/`racing audio/combat`/`animation` include boundaries.
 
 ## Entry points & API
 

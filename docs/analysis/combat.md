@@ -3,8 +3,9 @@
 - **Status:** static map; dynamic verification and naming pending
 - **Scope:** player fist attack, AI attack/collision actions, high/low/side state,
   armed/special flag, attack timers/SFX
-- **Source:** `src/race/race_ai.asm`, `src/race/race_anim_audio.asm`,
-  `src/race/race_physics.asm`; temporary enum in `src/race/combat_const.asm`
+- **Source:** `src/race/race_combat.asm` (`0x1611A`–`0x1685F`), action dispatch in
+  `src/race/race_ai.asm`, and `src/race/race_physics.asm`; temporary enum in
+  `src/race/combat_const.asm`
 - **Related:** `docs/modules/combat.md`, `docs/analysis/race_ai.md`,
   `docs/analysis/race_anim_audio.md`, `docs/analysis/race_physics.md`,
   `docs/analysis/race_actors.md`, `docs/ram-map.md`
@@ -58,7 +59,7 @@ despite the current names; rename only after dynamic confirmation.
 
 `unk_12D16` (`0x12D16`) is a 99-entry action-handler table; `unk_259C0` selects
 slots via the actor `$74` profile; `unk_25A44` is the 16-entry static-actor table.
-The combat/action routines in `race_anim_audio.asm`:
+The combat/action routines in `race_combat.asm`:
 
 | Function | Role (static hypothesis) |
 |---|---|
