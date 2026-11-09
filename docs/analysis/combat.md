@@ -67,16 +67,16 @@ The combat/action routines in `race_combat.asm`:
 | Function | Role (static hypothesis) |
 |---|---|
 | `Race_DispatchActorAction` | Dispatch: attack/cooldown, nearest-target action selection. |
-| `sub_165D0` | Steer/road-center + collision/speed check (`sub_131BE`). |
-| `sub_165E0` | Steering/brake state + movement/curve update. |
-| `sub_16612` | Collision check + speed/steer correction. |
-| `sub_16624` | Steering update followed by collision. |
-| `sub_1662C` | Random choice: attack/collision vs pursuit. |
-| `sub_16644` | React to player/nearest; close -> random attack/avoid. |
-| `sub_1666A` | Target-distance rule: on-foot `$5A` timer or pursue/attack. |
-| `sub_166B0` | Attack when target within graphics-record distance. |
-| `sub_166DC` | Evade/steer toward player. |
-| `sub_166F0` | Combat/collision response. |
+| `Race_ActorSteerRoadCenter` | Steer/road-center + collision/speed check (`Race_UpdateActorSpeedGear`). |
+| `Race_ActorSteerThrottle` | Steering/brake state + movement/curve update. |
+| `Race_ActorCollideSteer` | Collision check + speed/steer correction. |
+| `Race_ActorSteerCollide` | Steering update followed by collision. |
+| `Race_ActorRandomCombatChoice` | Random choice: attack/collision vs pursuit. |
+| `Race_ActorProximityReaction` | React to player/nearest; close -> random attack/avoid. |
+| `Race_ActorPursueAttack` | Target-distance rule: on-foot `$5A` timer or pursue/attack. |
+| `Race_ActorAttackIfClose` | Attack when target within graphics-record distance. |
+| `Race_ActorEvadePlayer` | Evade/steer toward player. |
+| `Race_ActorCombatResponse` | Combat/collision response. |
 
 `Race_UpdateCollision` (`0x16732`) initializes an attack/collision state when the
 player/actor X/Y ranges overlap:
@@ -108,9 +108,17 @@ Applied in R3b: `Race_UpdateActorPairCollision` (`sub_124E2`),
 (`sub_12A9C`), `Race_GetStaticCollisionExtent` (`sub_12AF8`),
 `Race_GetAttackerReach` (`sub_12B0C`), `Race_GetDefenderReach` (`sub_12B24`).
 
+Applied in R3c: `Race_ActorSteerRoadCenter`, `Race_ActorSteerThrottle`,
+`Race_ActorCollideSteer`, `Race_ActorSteerCollide`,
+`Race_ActorRandomCombatChoice`, `Race_ActorProximityReaction`,
+`Race_ActorPursueAttack`, `Race_ActorAttackIfClose`, `Race_ActorEvadePlayer`,
+`Race_ActorCombatResponse`, `Race_ActorStateCollision`,
+`Race_ActorFollowPath`, `Race_ActorNormalUpdate`, `Race_ActorNormalVariant`,
+`Race_ActorRecovery`, `Race_UpdateActorSpeedGear`.
+
 `[dynamic]` Forced dispatcher trace exercised the live handlers: profile `6`
-entered `sub_16624`/`sub_165E0` (action4), profile `8`
-`sub_13004`/`sub_16612`, and profile `9` `sub_166B0`/`sub_16612`.
+entered `Race_ActorSteerCollide`/`Race_ActorSteerThrottle` (action4), profile `8`
+`Race_ActorFollowPath`/`Race_ActorCollideSteer`, and profile `9` `Race_ActorAttackIfClose`/`Race_ActorCollideSteer`.
 
 ## Pair collision / knockback
 

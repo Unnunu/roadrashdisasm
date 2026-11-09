@@ -314,7 +314,7 @@ locret_16456:
 
 
  ; *************************************************
-; Function Race_DispatchActorAction (temporary name)
+; Function Race_DispatchActorAction
 ; Combat/action dispatcher: advances the attack/cooldown timer, selects an
 ; action handler from the actor graphics record, and applies the nearest-target
 ; distance/action rules.
@@ -476,35 +476,35 @@ Audio_UpdateEngineState:
 
 
  ; *************************************************
-; Function sub_165D0 (temporary name)
+; Function Race_ActorSteerRoadCenter
 ; AI action: steer toward the lane/road center and apply the speed/collision
-; check via sub_131BE.
+; check via Race_UpdateActorSpeedGear.
 ; In:  a1 - actor
 ; Out: actor $46/$30 and movement
 ; Clobbers: d0/d1/a6
 ; *************************************************
 
-sub_165D0:
+Race_ActorSteerRoadCenter:
                 move.b  $72(a1),d0
                 ext.w   d0
                 bsr.w   sub_1384C
-                bsr.w   sub_131BE
+                bsr.w   Race_UpdateActorSpeedGear
                 rts
-; End of function sub_165D0
+; End of function Race_ActorSteerRoadCenter
 
 
 ; =============== S U B R O U T I N E =======================================
 
 
  ; *************************************************
-; Function sub_165E0 (temporary name)
+; Function Race_ActorSteerThrottle
 ; AI action: steering/brake state plus movement update.
 ; In:  a1 - actor; $68 bit5
 ; Out: actor $68/$46/$69
 ; Clobbers: d0-d1/a6
 ; *************************************************
 
-sub_165E0:
+Race_ActorSteerThrottle:
                 move.b  $72(a1),d0
                 ext.w   d0
                 bset    #1,$68(a1)
@@ -518,108 +518,108 @@ sub_165E0:
 .loc_1660C:
                 bsr.w   sub_13A92
                 rts
-; End of function sub_165E0
+; End of function Race_ActorSteerThrottle
 
 
 ; =============== S U B R O U T I N E =======================================
 
 
  ; *************************************************
-; Function sub_16612 (temporary name)
+; Function Race_ActorCollideSteer
 ; AI action: run the player/actor collision check, then apply the speed/steer
-; correction (sub_131BE + sub_1333C).
+; correction (Race_UpdateActorSpeedGear + sub_1333C).
 ; In:  a1 - actor; RacePlayerA
 ; Out: actor collision/speed fields
 ; Clobbers: d0-d1/a2
 ; *************************************************
 
-sub_16612:
+Race_ActorCollideSteer:
                 bsr.w   Race_UpdateCollision
                 move.w  d1,-(sp)
-                bsr.w   sub_131BE
+                bsr.w   Race_UpdateActorSpeedGear
                 move.w  (sp)+,d1
                 bsr.w   sub_1333C
                 rts
-; End of function sub_16612
+; End of function Race_ActorCollideSteer
 
 
 ; =============== S U B R O U T I N E =======================================
 
 
  ; *************************************************
-; Function sub_16624 (temporary name)
+; Function Race_ActorSteerCollide
 ; AI action: steering update followed by a collision check.
 ; In:  a1 - actor
 ; Out: actor fields
 ; Clobbers: see callees
 ; *************************************************
 
-sub_16624:
-                bsr.s   sub_165E0
+Race_ActorSteerCollide:
+                bsr.s   Race_ActorSteerThrottle
                 bsr.w   Race_UpdateCollision
                 rts
-; End of function sub_16624
+; End of function Race_ActorSteerCollide
 
 
 ; =============== S U B R O U T I N E =======================================
 
 
  ; *************************************************
-; Function sub_1662C (temporary name)
-; AI action: random choice between collision/attack (sub_16612) and pursuit
-; (sub_1666A).
+; Function Race_ActorRandomCombatChoice
+; AI action: random choice between collision/attack (Race_ActorCollideSteer) and pursuit
+; (Race_ActorPursueAttack).
 ; In:  a1 - actor; Rand_GetWord
 ; Out: actor fields
 ; Clobbers: d0
 ; *************************************************
 
-sub_1662C:
+Race_ActorRandomCombatChoice:
                 jsr     (Rand_GetWord).l
                 btst    #0,d0
                 bne.w   .loc_1663E
-                bsr.s   sub_16612
+                bsr.s   Race_ActorCollideSteer
                 rts
 
 
 .loc_1663E:
-                bsr.w   sub_1666A
+                bsr.w   Race_ActorPursueAttack
                 rts
-; End of function sub_1662C
+; End of function Race_ActorRandomCombatChoice
 
 
 ; =============== S U B R O U T I N E =======================================
 
 
  ; *************************************************
-; Function sub_16644 (temporary name)
+; Function Race_ActorProximityReaction
 ; AI action: reacts to the player/nearest actor position; close -> random
-; attack/avoid (sub_1662C), otherwise speed correction.
+; attack/avoid (Race_ActorRandomCombatChoice), otherwise speed correction.
 ; In:  a1 - actor; $FF1EAE
 ; Out: actor speed/steer
 ; Clobbers: d0/d1
 ; *************************************************
 
-sub_16644:
+Race_ActorProximityReaction:
                 move.l  4(a1),d0
                 sub.l   (RacePlayerA + RaceActor_X).l,d0
                 cmp.l   #$C000,d0
                 bpl.w   .loc_1665C
-                bsr.s   sub_1662C
+                bsr.s   Race_ActorRandomCombatChoice
                 rts
 
 .loc_1665C:
                 move.w  #$FFC0,d1
                 bsr.w   sub_1333C
-                bsr.w   sub_131BE
+                bsr.w   Race_UpdateActorSpeedGear
                 rts
-; End of function sub_16644
+; End of function Race_ActorProximityReaction
 
 
 ; =============== S U B R O U T I N E =======================================
 
 
  ; *************************************************
-; Function sub_1666A (temporary name)
+; Function Race_ActorPursueAttack
 ; AI action: check ram_FF1786/target thresholds; on-foot uses the $5A timer,
 ; otherwise pursue/steer or apply a speed correction.
 ; In:  a1 - actor; ram_FF1786; ram_FF1A68
@@ -627,8 +627,8 @@ sub_16644:
 ; Clobbers: d0/d1/a4
 ; *************************************************
 
-sub_1666A:
-                bsr.w   sub_131BE
+Race_ActorPursueAttack:
+                bsr.w   Race_UpdateActorSpeedGear
                 move.l  (ram_FF1786).l,d0
                 movea.l (ram_FF1A68).l,a4
                 btst    #4,$68(a1)
@@ -654,14 +654,14 @@ sub_1666A:
                 move.w  #0,d1
                 bsr.w   sub_1333C
                 rts
-; End of function sub_1666A
+; End of function Race_ActorPursueAttack
 
 
 ; =============== S U B R O U T I N E =======================================
 
 
  ; *************************************************
-; Function sub_166B0 (temporary name)
+; Function Race_ActorAttackIfClose
 ; AI action: if the nearest target is within the graphics-record distance,
 ; run the collision/attack action; otherwise steer/speed-correct.
 ; In:  a1 - actor; ram_FF1786; ram_FF1A68
@@ -669,50 +669,50 @@ sub_1666A:
 ; Clobbers: d0/d1/a4
 ; *************************************************
 
-sub_166B0:
+Race_ActorAttackIfClose:
                 move.l  (ram_FF1786).l,d0
                 movea.l (ram_FF1A68).l,a4
                 move.w  2(a4),d7
                 ext.l   d7
                 cmp.l   d7,d0
                 bpl.w   .loc_166CE
-                bsr.w   sub_16612
+                bsr.w   Race_ActorCollideSteer
                 rts
 
 
 .loc_166CE:
                 move.w  #0,d1
                 bsr.w   sub_1333C
-                bsr.w   sub_131BE
+                bsr.w   Race_UpdateActorSpeedGear
                 rts
-; End of function sub_166B0
+; End of function Race_ActorAttackIfClose
 
 
 ; =============== S U B R O U T I N E =======================================
 
 
  ; *************************************************
-; Function sub_166DC (temporary name)
+; Function Race_ActorEvadePlayer
 ; AI action: evade/steer toward the player using sub_1333C/sub_13292.
 ; In:  a1 - actor; RacePlayerA
 ; Out: actor movement
 ; Clobbers: d0-d2
 ; *************************************************
 
-sub_166DC:
+Race_ActorEvadePlayer:
                 lea     (RacePlayerA).l,a2
                 move.w  #0,d1
                 bsr.w   sub_1333C
                 bsr.w   sub_13292
                 rts
-; End of function sub_166DC
+; End of function Race_ActorEvadePlayer
 
 
 ; =============== S U B R O U T I N E =======================================
 
 
  ; *************************************************
-; Function sub_166F0 (temporary name)
+; Function Race_ActorCombatResponse
 ; Combat/collision response: resolves the target and runs Race_UpdateCollision
 ; or the speed/steer correction.
 ; In:  a1 - actor; RacePlayerA; ram_FF1A68
@@ -720,7 +720,7 @@ sub_166DC:
 ; Clobbers: d0-d3/a2
 ; *************************************************
 
-sub_166F0:
+Race_ActorCombatResponse:
                 bclr    #2,$69(a1)
                 move.b  $72(a1),d0
                 ext.w   d0
@@ -730,20 +730,20 @@ sub_166F0:
                 cmpa.l  #RacePlayerA,a2
                 beq.w   .loc_16720
                 bsr.w   sub_13422
-                bsr.w   sub_131BE
+                bsr.w   Race_UpdateActorSpeedGear
                 bra.w   .locret_16730
 
 
 .loc_16720:
                 bsr.w   Race_UpdateCollision
                 move.w  d1,-(sp)
-                bsr.w   sub_131BE
+                bsr.w   Race_UpdateActorSpeedGear
                 move.w  (sp)+,d1
                 bsr.w   sub_1333C
 
 .locret_16730:
                 rts
-; End of function sub_166F0
+; End of function Race_ActorCombatResponse
 
 
 ; =============== S U B R O U T I N E =======================================

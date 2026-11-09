@@ -22,7 +22,7 @@
 | `sub_1281E`/`Race_UpdateStaticActors`/`sub_128E0`/`sub_12974` | `0x1281E`+ | Static/police actor AI. |
 | `sub_12...`/`sub_13...` | `0x12A88`+ | Road/actor movement, collision helpers. |
 | `unk_12D0A`/`Race_ActorActionTable` | `0x12D0A`/`0x12D16` | 6-word offset table + 99-entry actor action code-pointer table. |
-| `sub_12FE4`/`sub_13004`/`sub_1300E`/`sub_1307C`/`sub_130D2` | `0x12FE4`+ | Actor action handlers (state/curve/recovery). |
+| `Race_ActorStateCollision`/`Race_ActorFollowPath`/`Race_ActorNormalUpdate`/`Race_ActorNormalVariant`/`Race_ActorRecovery` | `0x12FE4`+ | Actor action handlers (state/curve/recovery). |
 | `Race_ClampActorY` | `0x13130` | Y clamp + `$46` sign flip (shared `Race_StaticActionTable` handler). |
 | `Race_SetupActorSprite` | `0x13746` | Actor sprite/field setup (spawn). |
 | `Race_UpdateBikeLean` | `0x13EA0` | Steering/lean from Speed/Steering. |
@@ -91,35 +91,35 @@ Profile map from the ROM (slot -> actions at `+0/+4/+8/+C`):
 
 | `$74` | Slot | Action 0 (normal) | +4 (dispatcher) | +8 | +C |
 |---|---|---|---|---|---|
-| 0 | `$12D2A` | `sub_1300E` | `sub_1307C` | `sub_1300E` | `sub_1300E` |
-| 1 | `$12D16` | `sub_130D2` | `Race_DispatchActorAction` | `sub_13004` | `sub_165D0` |
-| 2 | `$12D3A` | `sub_1300E` | `Race_DispatchActorAction` | `sub_13004` | `sub_165E0` |
-| 3 | `$12D4E` | `sub_1300E` | `Race_DispatchActorAction` | `sub_13004` | `sub_165E0` |
-| 4 | `$12D62` | `sub_1300E` | `Race_DispatchActorAction` | `sub_13004` | `sub_165E0` |
-| 5 | `$12D76` | `sub_1300E` | `Race_DispatchActorAction` | `sub_13004` | `sub_165E0` |
-| 6 | `$12D8A` | `sub_1300E` | `Race_DispatchActorAction` | `sub_13004` | `sub_165D0` |
-| 7 | `$12D9E` | `sub_1300E` | `Race_DispatchActorAction` | `sub_13004` | `sub_165D0` |
-| 8 | `$12DB2` | `sub_1300E` | `Race_DispatchActorAction` | `sub_13004` | `sub_165D0` |
-| 9 | `$12DC6` | `sub_1300E` | `Race_DispatchActorAction` | `sub_13004` | `sub_165D0` |
-| 10 | `$12DDA` | `sub_1300E` | `Race_DispatchActorAction` | `sub_13004` | `sub_165D0` |
-| 11 | `$12DEE` | `sub_1300E` | `Race_DispatchActorAction` | `sub_13004` | `sub_165D0` |
-| 12 | `$12E02` | `sub_1300E` | `Race_DispatchActorAction` | `sub_12FE4` | `sub_165E0` |
-| 13 | `$12E16` | `sub_1300E` | `Race_DispatchActorAction` | `sub_12FE4` | `sub_165E0` |
-| 14 | `$12E2A` | `sub_1300E` | `Race_DispatchActorAction` | `sub_12FE4` | `sub_165E0` |
-| 15 | `$12E3E` | `sub_1300E` | `Race_DispatchActorAction` | `sub_12FE4` | `sub_165E0` |
-| 16 | `$12E52` | `sub_1300E` | `Race_DispatchActorAction` | `sub_12FE4` | `sub_165D0` |
-| 17 | `$12E66` | `sub_1300E` | `Race_DispatchActorAction` | `sub_12FE4` | `sub_165D0` |
-| 18 | `$12E7A` | `sub_1300E` | `Race_DispatchActorAction` | `sub_12FE4` | `sub_165D0` |
-| 19 | `$12E8E` | `sub_1300E` | `Race_DispatchActorAction` | `sub_12FE4` | `sub_165D0` |
+| 0 | `$12D2A` | `Race_ActorNormalUpdate` | `Race_ActorNormalVariant` | `Race_ActorNormalUpdate` | `Race_ActorNormalUpdate` |
+| 1 | `$12D16` | `Race_ActorRecovery` | `Race_DispatchActorAction` | `Race_ActorFollowPath` | `Race_ActorSteerRoadCenter` |
+| 2 | `$12D3A` | `Race_ActorNormalUpdate` | `Race_DispatchActorAction` | `Race_ActorFollowPath` | `Race_ActorSteerThrottle` |
+| 3 | `$12D4E` | `Race_ActorNormalUpdate` | `Race_DispatchActorAction` | `Race_ActorFollowPath` | `Race_ActorSteerThrottle` |
+| 4 | `$12D62` | `Race_ActorNormalUpdate` | `Race_DispatchActorAction` | `Race_ActorFollowPath` | `Race_ActorSteerThrottle` |
+| 5 | `$12D76` | `Race_ActorNormalUpdate` | `Race_DispatchActorAction` | `Race_ActorFollowPath` | `Race_ActorSteerThrottle` |
+| 6 | `$12D8A` | `Race_ActorNormalUpdate` | `Race_DispatchActorAction` | `Race_ActorFollowPath` | `Race_ActorSteerRoadCenter` |
+| 7 | `$12D9E` | `Race_ActorNormalUpdate` | `Race_DispatchActorAction` | `Race_ActorFollowPath` | `Race_ActorSteerRoadCenter` |
+| 8 | `$12DB2` | `Race_ActorNormalUpdate` | `Race_DispatchActorAction` | `Race_ActorFollowPath` | `Race_ActorSteerRoadCenter` |
+| 9 | `$12DC6` | `Race_ActorNormalUpdate` | `Race_DispatchActorAction` | `Race_ActorFollowPath` | `Race_ActorSteerRoadCenter` |
+| 10 | `$12DDA` | `Race_ActorNormalUpdate` | `Race_DispatchActorAction` | `Race_ActorFollowPath` | `Race_ActorSteerRoadCenter` |
+| 11 | `$12DEE` | `Race_ActorNormalUpdate` | `Race_DispatchActorAction` | `Race_ActorFollowPath` | `Race_ActorSteerRoadCenter` |
+| 12 | `$12E02` | `Race_ActorNormalUpdate` | `Race_DispatchActorAction` | `Race_ActorStateCollision` | `Race_ActorSteerThrottle` |
+| 13 | `$12E16` | `Race_ActorNormalUpdate` | `Race_DispatchActorAction` | `Race_ActorStateCollision` | `Race_ActorSteerThrottle` |
+| 14 | `$12E2A` | `Race_ActorNormalUpdate` | `Race_DispatchActorAction` | `Race_ActorStateCollision` | `Race_ActorSteerThrottle` |
+| 15 | `$12E3E` | `Race_ActorNormalUpdate` | `Race_DispatchActorAction` | `Race_ActorStateCollision` | `Race_ActorSteerThrottle` |
+| 16 | `$12E52` | `Race_ActorNormalUpdate` | `Race_DispatchActorAction` | `Race_ActorStateCollision` | `Race_ActorSteerRoadCenter` |
+| 17 | `$12E66` | `Race_ActorNormalUpdate` | `Race_DispatchActorAction` | `Race_ActorStateCollision` | `Race_ActorSteerRoadCenter` |
+| 18 | `$12E7A` | `Race_ActorNormalUpdate` | `Race_DispatchActorAction` | `Race_ActorStateCollision` | `Race_ActorSteerRoadCenter` |
+| 19 | `$12E8E` | `Race_ActorNormalUpdate` | `Race_DispatchActorAction` | `Race_ActorStateCollision` | `Race_ActorSteerRoadCenter` |
 
 Action 4 (`a4+$10`, used by `Race_DispatchActorAction`'s final fallback) by profile:
-`0 -> sub_1300E`; `1 -> sub_166DC`; `2/6/12/16 -> sub_16624`;
-`3/7/13/17 -> sub_1666A`; `4/8/14/18 -> sub_16612`;
-`5/9/15/19 -> sub_166B0`; `10 -> sub_1662C`; `11 -> sub_16644`.
+`0 -> Race_ActorNormalUpdate`; `1 -> Race_ActorEvadePlayer`; `2/6/12/16 -> Race_ActorSteerCollide`;
+`3/7/13/17 -> Race_ActorPursueAttack`; `4/8/14/18 -> Race_ActorCollideSteer`;
+`5/9/15/19 -> Race_ActorAttackIfClose`; `10 -> Race_ActorRandomCombatChoice`; `11 -> Race_ActorProximityReaction`.
 
 - `[dynamic]` Demo trace at `0x12FD8` (before `jsr (a6)`) observed the normal path
-  for every active actor: player `$74=0` -> `$12D2A`/`sub_1300E`; opponents with
-  `$74=6/8/9` -> `$12D8A/$12DB2/$12DC6` and also `sub_1300E`.
+  for every active actor: player `$74=0` -> `$12D2A`/`Race_ActorNormalUpdate`; opponents with
+  `$74=6/8/9` -> `$12D8A/$12DB2/$12DC6` and also `Race_ActorNormalUpdate`.
 - `[dynamic]` Forcing PlayerA Speed to `$3000` and `ram_FF1A96=$FFFF` at
   `Race_UpdateActorActions` entry made profiles `6/8/9` advance to slot+4 and call `Race_DispatchActorAction`
   (`$12D8E/$12DB6/$12DCA`), confirming the dispatcher path. A follow-up trace at
@@ -134,12 +134,12 @@ Action 4 (`a4+$10`, used by `Race_DispatchActorAction`'s final fallback) by prof
   profile/action4 table and confirms that action2/3/4 are live code, not just
   unreachable table entries.
 - `Race_DispatchActorAction` is entered only after `Race_UpdateActorActions` selects slot+4. In normal demo
-  profiles `6/8/9` stay on `sub_1300E`; forcing PlayerA Speed to `$3000` makes the
+  profiles `6/8/9` stay on `Race_ActorNormalUpdate`; forcing PlayerA Speed to `$3000` makes the
   dispatcher reachable.
-- Handler roles: `sub_1300E` normal target/curve update; `sub_1307C` variant;
-  `sub_130D2` recovery timer; `sub_12FE4` state/collision + `sub_13A92`;
-  `sub_13004` movement/`sub_131BE`; `Race_DispatchActorAction` dispatcher; `sub_165D0/165E0`
-  combat actions; `sub_16612/16624/1662C/16644/1666A/166B0/166DC/166F0` deeper
+- Handler roles: `Race_ActorNormalUpdate` normal target/curve update; `Race_ActorNormalVariant` variant;
+  `Race_ActorRecovery` recovery timer; `Race_ActorStateCollision` state/collision + `sub_13A92`;
+  `Race_ActorFollowPath` movement/`Race_UpdateActorSpeedGear`; `Race_DispatchActorAction` dispatcher; `Race_ActorSteerRoadCenter/165E0`
+  combat actions; `Race_ActorCollideSteer/16624/1662C/16644/1666A/166B0/166DC/166F0` deeper
   combat/action handlers (see `docs/analysis/combat.md`).
 
 ## Static actor action table (`Race_StaticActionTable`)
@@ -182,5 +182,13 @@ combat handlers are in `race_combat.asm`.
 Applied in R2: `Race_ActorProfileTable` (`unk_259C0`), `Race_ActorActionTable`
 (`unk_12D16`), `Race_StaticActionTable` (`unk_25A44`), `Race_UpdateActorActions`
 (`sub_12EA2`), `Race_DispatchActorAction` (`sub_16458`), `Race_ClampActorY`
-(`sub_13130`), `Race_UpdateStaticActions` (`sub_13106`). Remaining field/data names
-are TODO.
+(`sub_13130`), `Race_UpdateStaticActions` (`sub_13106`).
+
+Applied in R3c: action handlers `Race_ActorSteerRoadCenter`,
+`Race_ActorSteerThrottle`, `Race_ActorCollideSteer`, `Race_ActorSteerCollide`,
+`Race_ActorRandomCombatChoice`, `Race_ActorProximityReaction`,
+`Race_ActorPursueAttack`, `Race_ActorAttackIfClose`, `Race_ActorEvadePlayer`,
+`Race_ActorCombatResponse`, plus `Race_ActorStateCollision`,
+`Race_ActorFollowPath`, `Race_ActorNormalUpdate`, `Race_ActorNormalVariant`,
+`Race_ActorRecovery`, `Race_UpdateActorSpeedGear`. Remaining field/data names are
+TODO.

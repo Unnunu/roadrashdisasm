@@ -3322,31 +3322,31 @@ unk_12D0A:
 
 ; inner dispatch table: 99 code pointers (ActorActionSlot_* index into it)
 Race_ActorActionTable:
-    dc.l    sub_130D2,Race_DispatchActorAction,sub_13004,sub_165D0
-    dc.l    sub_166DC,sub_1300E,sub_1307C,sub_1300E
-    dc.l    sub_1300E,sub_1300E,Race_DispatchActorAction,sub_13004
-    dc.l    sub_165E0,sub_16624,sub_1300E,Race_DispatchActorAction
-    dc.l    sub_13004,sub_165E0,sub_1666A,sub_1300E
-    dc.l    Race_DispatchActorAction,sub_13004,sub_165E0,sub_16612
-    dc.l    sub_1300E,Race_DispatchActorAction,sub_13004,sub_165E0
-    dc.l    sub_166B0,sub_1300E,Race_DispatchActorAction,sub_13004
-    dc.l    sub_165D0,sub_16624,sub_1300E,Race_DispatchActorAction
-    dc.l    sub_13004,sub_165D0,sub_1666A,sub_1300E
-    dc.l    Race_DispatchActorAction,sub_13004,sub_165D0,sub_16612
-    dc.l    sub_1300E,Race_DispatchActorAction,sub_13004,sub_165D0
-    dc.l    sub_166B0,sub_1300E,Race_DispatchActorAction,sub_13004
-    dc.l    sub_165D0,sub_1662C,sub_1300E,Race_DispatchActorAction
-    dc.l    sub_13004,sub_165D0,sub_16644,sub_1300E
-    dc.l    Race_DispatchActorAction,sub_12FE4,sub_165E0,sub_16624
-    dc.l    sub_1300E,Race_DispatchActorAction,sub_12FE4,sub_165E0
-    dc.l    sub_1666A,sub_1300E,Race_DispatchActorAction,sub_12FE4
-    dc.l    sub_165E0,sub_16612,sub_1300E,Race_DispatchActorAction
-    dc.l    sub_12FE4,sub_165E0,sub_166B0,sub_1300E
-    dc.l    Race_DispatchActorAction,sub_12FE4,sub_165D0,sub_16624
-    dc.l    sub_1300E,Race_DispatchActorAction,sub_12FE4,sub_165D0
-    dc.l    sub_1666A,sub_1300E,Race_DispatchActorAction,sub_12FE4
-    dc.l    sub_165D0,sub_16612,sub_1300E,Race_DispatchActorAction
-    dc.l    sub_12FE4,sub_165D0,sub_166B0
+    dc.l    Race_ActorRecovery,Race_DispatchActorAction,Race_ActorFollowPath,Race_ActorSteerRoadCenter
+    dc.l    Race_ActorEvadePlayer,Race_ActorNormalUpdate,Race_ActorNormalVariant,Race_ActorNormalUpdate
+    dc.l    Race_ActorNormalUpdate,Race_ActorNormalUpdate,Race_DispatchActorAction,Race_ActorFollowPath
+    dc.l    Race_ActorSteerThrottle,Race_ActorSteerCollide,Race_ActorNormalUpdate,Race_DispatchActorAction
+    dc.l    Race_ActorFollowPath,Race_ActorSteerThrottle,Race_ActorPursueAttack,Race_ActorNormalUpdate
+    dc.l    Race_DispatchActorAction,Race_ActorFollowPath,Race_ActorSteerThrottle,Race_ActorCollideSteer
+    dc.l    Race_ActorNormalUpdate,Race_DispatchActorAction,Race_ActorFollowPath,Race_ActorSteerThrottle
+    dc.l    Race_ActorAttackIfClose,Race_ActorNormalUpdate,Race_DispatchActorAction,Race_ActorFollowPath
+    dc.l    Race_ActorSteerRoadCenter,Race_ActorSteerCollide,Race_ActorNormalUpdate,Race_DispatchActorAction
+    dc.l    Race_ActorFollowPath,Race_ActorSteerRoadCenter,Race_ActorPursueAttack,Race_ActorNormalUpdate
+    dc.l    Race_DispatchActorAction,Race_ActorFollowPath,Race_ActorSteerRoadCenter,Race_ActorCollideSteer
+    dc.l    Race_ActorNormalUpdate,Race_DispatchActorAction,Race_ActorFollowPath,Race_ActorSteerRoadCenter
+    dc.l    Race_ActorAttackIfClose,Race_ActorNormalUpdate,Race_DispatchActorAction,Race_ActorFollowPath
+    dc.l    Race_ActorSteerRoadCenter,Race_ActorRandomCombatChoice,Race_ActorNormalUpdate,Race_DispatchActorAction
+    dc.l    Race_ActorFollowPath,Race_ActorSteerRoadCenter,Race_ActorProximityReaction,Race_ActorNormalUpdate
+    dc.l    Race_DispatchActorAction,Race_ActorStateCollision,Race_ActorSteerThrottle,Race_ActorSteerCollide
+    dc.l    Race_ActorNormalUpdate,Race_DispatchActorAction,Race_ActorStateCollision,Race_ActorSteerThrottle
+    dc.l    Race_ActorPursueAttack,Race_ActorNormalUpdate,Race_DispatchActorAction,Race_ActorStateCollision
+    dc.l    Race_ActorSteerThrottle,Race_ActorCollideSteer,Race_ActorNormalUpdate,Race_DispatchActorAction
+    dc.l    Race_ActorStateCollision,Race_ActorSteerThrottle,Race_ActorAttackIfClose,Race_ActorNormalUpdate
+    dc.l    Race_DispatchActorAction,Race_ActorStateCollision,Race_ActorSteerRoadCenter,Race_ActorSteerCollide
+    dc.l    Race_ActorNormalUpdate,Race_DispatchActorAction,Race_ActorStateCollision,Race_ActorSteerRoadCenter
+    dc.l    Race_ActorPursueAttack,Race_ActorNormalUpdate,Race_DispatchActorAction,Race_ActorStateCollision
+    dc.l    Race_ActorSteerRoadCenter,Race_ActorCollideSteer,Race_ActorNormalUpdate,Race_DispatchActorAction
+    dc.l    Race_ActorStateCollision,Race_ActorSteerRoadCenter,Race_ActorAttackIfClose
 
 Race_UpdateActorActions:
                 move.w  #0,(ram_FF1A98).l
@@ -3449,14 +3449,14 @@ Race_UpdateActorActions:
                 rts
 ; End of function Race_UpdateActorActions
  ; *****
-; Function sub_12FE4
+; Function Race_ActorStateCollision
 ; Actor action handler: updates $68 state bits and calls sub_13422/sub_13A92.
 ; In:  a1 - actor
 ; Out: actor $68 bits
 ; Clobbers: see callees
 ; *****
 
-sub_12FE4:
+Race_ActorStateCollision:
                 bsr.w       sub_13422
                 btst.b      #$5,$68(a1)
                 beq.w       loc_12FFE
@@ -3465,11 +3465,11 @@ sub_12FE4:
 loc_12FFE:
                 bsr.w       sub_13A92
                 rts
-sub_13004:
+Race_ActorFollowPath:
                 bsr.w       sub_13422
-                bsr.w       sub_131BE
+                bsr.w       Race_UpdateActorSpeedGear
                 rts
-sub_1300E:
+Race_ActorNormalUpdate:
                 bclr.b      #$4,$69(a1)
                 bclr.b      #$2,$69(a1)
                 move.b      $72(a1),d0
@@ -3498,7 +3498,7 @@ loc_1306A:
 loc_13076:
                 bsr.w       sub_13A92
                 rts
-sub_1307C:
+Race_ActorNormalVariant:
                 bclr.b      #$4,$69(a1)
                 bclr.b      #$2,$69(a1)
                 move.b      $72(a1),d0
@@ -3514,7 +3514,7 @@ sub_1307C:
 loc_130B2:
                 bsr.w       sub_13422
 loc_130B6:
-                bsr.w       sub_131BE
+                bsr.w       Race_UpdateActorSpeedGear
 loc_130BA:
                 btst.b      #$5,$68(a1)
                 beq.w       loc_130D0
@@ -3522,7 +3522,7 @@ loc_130BA:
                 bclr.b      #$1,$68(a1)
 loc_130D0:
                 rts
-sub_130D2:
+Race_ActorRecovery:
                 move.w      (ram_FF1B32).l,d0
                 beq.w       loc_13100
                 move.w      #$0,$14(a1)
@@ -3532,7 +3532,7 @@ sub_130D2:
                 bgt.w       loc_13104
                 move.w      #$0,(ram_FF1B32).l
 loc_13100:
-                bsr.w       sub_1300E
+                bsr.w       Race_ActorNormalUpdate
 loc_13104:
                 rts
 
@@ -3605,7 +3605,7 @@ loc_131B8:
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_131BE:
+Race_UpdateActorSpeedGear:
                 lea     (RacePlayerA).l,a2
                 move.w  $12(a1),d6
                 movea.l (ram_FF1A68).l,a4
@@ -3674,7 +3674,7 @@ sub_131BE:
 .loc_1328C:
                 bsr.w   sub_13A92
                 rts
-; End of function sub_131BE
+; End of function Race_UpdateActorSpeedGear
 
 
 ; =============== S U B R O U T I N E =======================================
