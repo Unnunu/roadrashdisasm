@@ -26,7 +26,7 @@ open the shop (C), or inspect the cash/password (B).
 
 ## Control flow / state machine
 
-1. `Init`: set timers; copy `ram_FF0526/28` -> `ram_FF0918`; choose message group
+1. `Init`: set timers; copy `ram_FF0526/28` -> `RaceResults_ram_Outcome`; choose message group
    21/28/35; VDP setup; background/gamepad/font; choose layout:
    `RaceResults_DrawStandings` if `Race_EventBuffer != $FFFF`, else cops (`Race_CopIndex != 0`) or repair.
    DMA; fill the cash/password box; patch the congratulations level; audio.
@@ -36,12 +36,12 @@ open the shop (C), or inspect the cash/password (B).
 
 ## RAM / ROM & structures
 
-- `ram_FF0526/28` per-player outcome -> `ram_FF0918`: 0 = course not completed, >4 =
+- `ram_FF0526/28` per-player outcome -> `RaceResults_ram_Outcome`: 0 = course not completed, >4 =
   4th place not reached, 4 = level complete (EndLevel).
 - `Race_EventBuffer` 16-long event/sort buffer; first word `$FFFF` = busted/destroyed.
-- `Race_CopIndex` cop index (1..5) or 0 = bike destroyed; `ram_FF091A` fine/repair.
+- `Race_CopIndex` cop index (1..5) or 0 = bike destroyed; `RaceResults_ram_Amount` fine/repair.
 - `ram_FF1414/18/1A` standings string header/text, height, width.
-- `ram_FF0910` next-screen pointer (HighScore/Shop/RaceResults); `ram_FF0914` set but
+- `RaceResults_ram_NextFunction` next-screen pointer (HighScore/Shop/RaceResults); `RaceResults_ram_DrawRoutine` set but
   unread; `Menu_ram_PlayerLevel` for fine/repair/congratulations.
 - Result portrait tables: `$19D32` (level, money>=0, 5x4), `$19DD2` (level, money<0,
   5x2), `$19E22` (cop, money>=0, 5x4), `$19EC2` (cop, money<0, 5x2); 8-byte records
@@ -67,7 +67,7 @@ Detailed listing and table parse: `docs/analysis/race_results.md`.
 
 ## External calls / dependencies
 
-- Callers: `src/core/top_level.asm` (and `src/screens/shop.asm`/`src/screens/highscore.asm` set `ram_FF0910` back to
+- Callers: `src/core/top_level.asm` (and `src/screens/shop.asm`/`src/screens/highscore.asm` set `RaceResults_ram_NextFunction` back to
   `RaceResults_Init`).
 - Uses `UncompressW/B`, `WriteToVRAM`, `WriteNametable(ToBuffer)`, `EncodeString`,
   `Menu_ShowMessage`, `DmaWriteVRAM`, `GetInputPlayerA/B`, `Rand_GetWord`, `Race_FormatMoney`,
@@ -76,7 +76,7 @@ Detailed listing and table parse: `docs/analysis/race_results.md`.
 
 ## Hacks / bugs / quirks
 
-- `ram_FF0914` is set to the active draw routine but never read. `[static]`
+- `RaceResults_ram_DrawRoutine` is set to the active draw routine but never read. `[static]`
 - `DrawString` (`0x6C5E`) is unused; the source notes it may not belong to this file.
 - The tail data `unk_6C94`/`6D00`/`6D14`/`6D50`/`6D88` is unreferenced (dead/legacy).
 - Start exits while **held**; A/C are new-press edges; B shows the cash box.
@@ -84,7 +84,7 @@ Detailed listing and table parse: `docs/analysis/race_results.md`.
 ## Verified facts
 
 - `[static]` Outcome mapping 0/>4/4 -> message groups 21/28/35; 4 -> EndLevel.
-- `[static]` `ram_FF091A` fine = `PlayerLevel*$14`; repair = 10% of the bike price;
+- `[static]` `RaceResults_ram_Amount` fine = `PlayerLevel*$14`; repair = 10% of the bike price;
   deducted from money by `Race_ComputeResults`.
 - `[static]` The result portrait tables and names were parsed from `baserom.md`.
 - `[static]` Buttons: Start exit, A high score, C shop, B cash/password.

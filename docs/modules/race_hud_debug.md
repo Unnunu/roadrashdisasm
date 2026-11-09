@@ -23,7 +23,7 @@ is in `src/race/race_hud.asm`.
 | `RaceDebug_ShowFrameDelay` | `0x997E` | — | Frame-delay readout (buggy position). |
 | `sub_999E` | `0x999E` | — | `ram_FF304C` readout. |
 | `RaceDebug_ShowState` | `0x99C2` | — | Multi-value debug panel. |
-| `sub_9A98` | `0x9A98` | — | `ram_FF3046` readout. |
+| `sub_9A98` | `0x9A98` | — | `Race_ram_SpeedDisplay` readout. |
 | `RaceHud_DrawGear` | `0x9AB4` | — | Gear indicator. |
 | `RaceHud_WriteDigit1`/`RaceHud_WriteDigit2`/`RaceHud_WriteDigit4` | `0x9AD4`/`0x9AF4`/`0x9B34` | debug functions | 1/2/4-digit HUD writers. |
 
@@ -44,7 +44,7 @@ is in `src/race/race_hud.asm`.
 - Standings: `ram_FF1AE0` pointer list, `ram_FF1AE4` value/timer, `ram_FF1AE6` current
   index.
 - Debug values: `RacePlayerA + STRUCT_OFFSET_*` (`POSZ/POSX_HIGH/POSX_LOW/POSY/GEAR/
-  +$68`), `Race_ram_NumSprites`, `ram_FF1B3E`, `ram_FF3046/304C`, `ram_FF1786`,
+  +$68`), `Race_ram_NumSprites`, `ram_FF1B3E`, `Race_ram_SpeedDisplay`/`ram_FF304C`, `ram_FF1786`,
   `Race_ram_FrameDelay`.
 - `Race_FormatDecimal` (`src/race/race.asm` `0xF11C`) number formatter.
 

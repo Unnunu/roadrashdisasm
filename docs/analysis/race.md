@@ -62,9 +62,9 @@ loop then alternates `Race_GameTick` (VDP/input) and `Race_Update`
 
 - Frame delay/state; in the running state (`Race_ram_State == 0`) increment
   `Race_ram_FrameCounter` and run `Race_UpdateTime`.
-- Apply the VScroll info buffer: VDP control writes, VSRAM scroll, `ram_FF0406`
+- Apply the VScroll info buffer: VDP control writes, VSRAM scroll, `Race_ram_HIntScrollOffset`
   (HInt scroll offset), the extra VDP register words.
-- `ram_FF369E` = `-1` when `Race_ram_State < 0`, else 0 (HInt raster effect enable).
+- `Race_ram_HIntRasterDisabled` = `-1` when `Race_ram_State < 0`, else 0 (HInt raster effect enable).
 - If `Race_ram_NextFrameReady`: write sprite tiles first (`Race_WriteSpriteTiles`) when
   `Race_ram_NextSpriteSizePtr` is non-zero; otherwise DMA the window/HUD (`$3000`,
   `$740` words = 29 lines), the HScroll+Sprite tables (`$C000`, `$340` words), the
@@ -112,7 +112,7 @@ This is the double/quad buffering that avoids tearing.
    `ram_FF1B18=480`), eventually `Race_ram_GameEnded`.
 2. Clear the per-frame player flags `ram_FF1AD6/D7/DD`.
 3. `Race_UpdateSpeedDisplay` with the player Speed; `Race_SpawnTick`; if the race has started
-   (`ram_FF1B20`): the player/opponent update chain (`Race_UpdatePlayerAnimation`, `Race_UpdateBikeLean`,
+   (`Race_ram_Started`): the player/opponent update chain (`Race_UpdatePlayerAnimation`, `Race_UpdateBikeLean`,
    `sub_1383E`, `sub_13A92`, `Race_UpdateActorAI`, `sub_13E94`, `sub_10DBE`, `sub_10DDA`,
    `sub_13BF4`, `Race_UpdateStaticActors`, `sub_128E0`, `sub_12974`, `sub_138CE`, `sub_1281E`,
    `sub_11C44`, `sub_11CC8`, `sub_1218C`, `sub_123A8`, `Race_UpdateNearestOpponent`, `sub_12EA2`,
@@ -137,7 +137,7 @@ This is the double/quad buffering that avoids tearing.
   initial screen fields (`ram_FF1A08`/`ram_FF1982`; exact 8+7 split TODO).
 - `Race_InitPhysicsConstants`: bike physics/steering/engine constants.
 - `Race_LoadTrackParams`: per-track parameters from `unk_1471A`.
-- `Race_LoadBikeData`: bike id -> `unk_25B50` (0x13 words at `ram_FF1A70`) and
+- `Race_LoadBikeData`: bike id -> `unk_25B50` (0x13 words at `RaceBike_ram_Parameters`) and
   `unk_25AC4` (steering/engine values).
 - `Race_SpawnOpponents`: `RaceTrack_Data5` spawn records (4 bytes, `$FFFFFFFF` terminator),
   split by per-level thresholds `word_B976`/`word_B980` and the `off_B98A` color
@@ -148,7 +148,7 @@ This is the double/quad buffering that avoids tearing.
   Details: `docs/analysis/race_actors.md`.
 - `Race_SpawnTick`/`Race_SpawnOpponent`/`Race_SpawnTraffic`: dynamic actor spawning,
   active/free lists and distance checks; `Race_UpdateSpeedDisplay`/`Race_FormatDecimal`
-  produce `ram_FF3046`. Details: `docs/analysis/race_spawn.md`.
+  produce `Race_ram_SpeedDisplay`. Details: `docs/analysis/race_spawn.md`.
 
 ## RAM / structures (initial inventory)
 

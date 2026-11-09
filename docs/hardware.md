@@ -105,12 +105,12 @@ code (`src/core/fade.asm`) uses DMA to upload the 64-word palette to CRAM (`DmaW
   `rte`. The update function may clobber all registers.
 - **HBlank (IRQ 4, `HorizontalInterrupt` `$145A`).** Raster effect:
   - re-arms the H-int counter with `$8AFF`;
-  - returns immediately while `ram_FF369E == $FFFF` (effect disabled, e.g. logo);
-  - indexes `Race_ram_NextVScrollInfo + ram_FF0406`, sets the VSRAM write address and
+  - returns immediately while `Race_ram_HIntRasterDisabled == $FFFF` (effect disabled, e.g. logo);
+  - indexes `Race_ram_NextVScrollInfo + Race_ram_HIntScrollOffset`, sets the VSRAM write address and
     waits on the HV counter for a precise scanline/horizontal position;
   - writes a longword to `VdpData`, then **36 NOPs** (VDP write-recovery delay), then
     writes the next command word to `VdpCtrl`;
-  - when the next `ram_FF0406 == $90`, runs a once-per-frame engine-audio update
+  - when the next `Race_ram_HIntScrollOffset == $90`, runs a once-per-frame engine-audio update
     (`Audio_Update/8/11`, `Audio_UpdateEngine`).
 - **HV counter** (`$C00008`): high byte = vertical counter, low byte = horizontal
   counter. The handler polls both to place writes at a specific raster position.

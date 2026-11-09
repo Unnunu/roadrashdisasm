@@ -105,22 +105,22 @@ Race (`$7E80C`):
 - `Race_Init`, `Fade_InitFadeIn`, `sr=$2300`, install `Fade_GameTickWithInit`, wait;
   install `Race_GameTick` (`$BA76`).
 - Frame loop (`$7E836`): optional demo reset; call `Race_Update`; track
-  `ram_FF1E68`/`ram_FF1E82`; on `Race_ram_GameEnded` either return to the menu (demo)
+  `Race_ram_PlayerProgress`/`Race_ram_BestProgress`; on `Race_ram_GameEnded` either return to the menu (demo)
   or go to the results dispatcher (`$7E924`).
 
-Results dispatcher (`$7E924`) uses `ram_FF0910` as the next-screen selector:
+Results dispatcher (`$7E924`) uses `RaceResults_ram_NextFunction` as the next-screen selector:
 
 - `RaceResults_Init` -> `RaceResults_GameTick`
 - `HighScore_Init` -> `HighScore_GameTick`
 - `Shop_Init` -> `Shop_GameTick`
-- `EndLevel_Init` (when `ram_FF0918 == 4`) -> `EndLevel_GameTick`
+- `EndLevel_Init` (when `RaceResults_ram_Outcome == 4`) -> `EndLevel_GameTick`
 
 Each screen runs the same fade-in (with `FadeWithFunction_GameTick`) / fade-out (with
 `Fade_GameTick`) pair and loops back to the dispatcher. After the dispatcher,
 `Menu_ram_PlayerMode == 3` toggles `Menu_ram_Player` with `eori.w #3`, then jumps back
 to the menu.
 
-Exact meanings of `ram_FF0918`, `$FF3692`, `$FF3696`, `$FF369A`: **TODO**. The region
+Exact meanings of `RaceResults_ram_Outcome`, `$FF3692`, `$FF3696`, `$FF369A`: **TODO**. The region
 is assembled from `src/core/top_level.asm` and verified byte-for-byte by `./build.sh`.
 
 ### Interrupts

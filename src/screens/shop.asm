@@ -24,7 +24,7 @@ Shop_Init:
                 move.w  #$3F,(Message_ram_ButtonBlinkPeriod).l
                 move.w  #$12C,(Menu_ram_NextMessageTimer).l
                 move.w  #$1E0,(Menu_ram_CurrentMessageId).l
-                move.l  #0,(ram_FF0910).l
+                move.l  #0,(RaceResults_ram_NextFunction).l
                 move.w  (Menu_ram_BikeIdPlayerA).l,(Shop_CurrentBikeId).l
                 tst.w   (Menu_ram_Player).l
                 beq.w   .loc_751A
@@ -376,9 +376,9 @@ Shop_ShowBikeDescription:
 ; *************************************************
 ; Function Shop_GameTick
 ; Per-frame update: DMA, H-scroll animation, Start -> results, A/B/C/D-pad edges,
-; message cycle. Ends when ram_FF0910 is set.
+; message cycle. Ends when RaceResults_ram_NextFunction is set.
 ; In:  pad input; Shop_ScrollPos; message timers
-; Out: ram_FF0910 (next screen); ram_UpdateFunction=0 at end stage
+; Out: RaceResults_ram_NextFunction (next screen); ram_UpdateFunction=0 at end stage
 ; Clobbers: d0/d1/a0
 ; *************************************************
 
@@ -445,13 +445,13 @@ Shop_GameTick:
                 move.w  #$1E0,(Menu_ram_CurrentMessageId).l
 .loc_7B16:
                 bsr.w   Menu_ShowMessage
-                cmpi.l  #0,(ram_FF0910).l
+                cmpi.l  #0,(RaceResults_ram_NextFunction).l
                 bne.w   .loc_7B3A
 .loc_7B28:
                 jsr     (Audio_Update).l
                 rts
 .loc_7B30:
-                move.l  #$5F28,(ram_FF0910).l
+                move.l  #$5F28,(RaceResults_ram_NextFunction).l
 .loc_7B3A:
                 jsr     (Audio_StopMusic).l
                 move.l  #0,(ram_UpdateFunction).l
@@ -462,7 +462,7 @@ Shop_GameTick:
 ; Function Shop_HandleInput
 ; A -> high score, B -> results, C -> buy/trade in, Right/Left -> select bike.
 ; In:  d0 - current buttons (1 = pressed)
-; Out: ram_FF0910, money/bike id/password on purchase; redraw + scroll on select
+; Out: RaceResults_ram_NextFunction, money/bike id/password on purchase; redraw + scroll on select
 ; Clobbers: d0-d3/a0/a1
 ; *************************************************
 
@@ -470,11 +470,11 @@ Shop_HandleInput:
                 move.b  d0,(Shop_ram_CurrentButtons).l
                 btst    #6,(Shop_ram_CurrentButtons).l
                 beq.w   .loc_7B68
-                move.l  #HighScore_Init,(ram_FF0910).l
+                move.l  #HighScore_Init,(RaceResults_ram_NextFunction).l
 .loc_7B68:
                 btst    #4,(Shop_ram_CurrentButtons).l
                 beq.w   .loc_7B7E
-                move.l  #RaceResults_Init,(ram_FF0910).l
+                move.l  #RaceResults_Init,(RaceResults_ram_NextFunction).l
 .loc_7B7E:
                 btst    #5,(Shop_ram_CurrentButtons).l
                 beq.w   .loc_7C64

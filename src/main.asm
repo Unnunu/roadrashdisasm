@@ -224,7 +224,7 @@ doStart:
     bne.s   .anyButtonPressed
     bsr.w   LogoEA_Init
     move.w  #$8174,(VdpCtrl).l  ; Enable display
-    move.w  #$FFFF,(ram_FF369E).l
+    move.w  #$FFFF,(Race_ram_HIntRasterDisabled).l
     move.l  #LogoEA_GameTick,(ram_UpdateFunction).l
     move    #$2500,sr
 
@@ -456,7 +456,7 @@ SpuriousInterrupt:
 ; *************************************************
 ; Interrupt Handler HorizontalInterrupt
 ; Per-line VSRAM/scroll raster effect + engine-audio update.
-; In:  ram_FF369E - $FFFF disables the effect
+; In:  Race_ram_HIntRasterDisabled - $FFFF disables the effect
 ;      Race_ram_NextVScrollInfo - scroll table
 ; Out: -
 ; Clobbers: d0-d2/a0-a2 (saved/restored)
@@ -465,12 +465,12 @@ SpuriousInterrupt:
 
 HorizontalInterrupt:
                 move.w  #$8AFF,(VdpCtrl).l ; next Hint after 255 scanlines
-                cmpi.w  #$FFFF,(ram_FF369E).l ; $FFFF = raster effect disabled
+                cmpi.w  #$FFFF,(Race_ram_HIntRasterDisabled).l ; $FFFF = raster effect disabled
                 beq.w   .return
                 movem.l d0-d2/a0-a2,-(sp)
                 lea     (VdpCtrl).l,a1
                 lea     (VdpData).l,a2
-                move.w  (ram_FF0406).l,d0 ; scroll-table offset
+                move.w  (Race_ram_HIntScrollOffset).l,d0 ; scroll-table offset
                 ble.w   .loc_1632
                 movea.l (Race_ram_NextVScrollInfo).l,a0 ; scroll/VSRAM command table
                 adda.w  d0,a0
@@ -478,7 +478,7 @@ HorizontalInterrupt:
                 move.w  (a0)+,d0
                 move.w  (a0)+,d1
                 move.l  (a0)+,d2
-                move.w  (a0)+,(ram_FF0406).l
+                move.w  (a0)+,(Race_ram_HIntScrollOffset).l
                 VDP_VSRAM_WRITE $0,(a1) ; VSRAM from offset 0
                 movea.w d0,a0
                 andi.w  #$FF00,d0
@@ -532,10 +532,10 @@ HorizontalInterrupt:
                 nop
                 nop
                 move.w  d1,(a1) ; next VSRAM command
-                cmpi.w  #$90,(ram_FF0406).l ; next offset $90 -> once-per-frame audio
+                cmpi.w  #$90,(Race_ram_HIntScrollOffset).l ; next offset $90 -> once-per-frame audio
                 bne.w   .loc_164C
-; run this only if ram_FF0406 == $90
-                move.w  #0,(ram_FF0406).l
+; run this only if Race_ram_HIntScrollOffset == $90
+                move.w  #0,(Race_ram_HIntScrollOffset).l
                 tst.w   (ram_MusicEnabled).l
                 bne.w   .loc_162C
                 tst.w   (Race_ram_State).l
@@ -565,7 +565,7 @@ HorizontalInterrupt:
                 clr.w   d0
                 swap    d0
 .loc_1590:
-                add.w   (ram_FF36C4).l,d0
+                add.w   (Race_ram_EngineSpeedBase).l,d0
                 move.w  d0,(ram_FF36B6).l
                 lea     (RacePlayerA).l,a1
                 move.w  (ram_FF36B6).l,d0
@@ -592,7 +592,7 @@ HorizontalInterrupt:
                 tst.b   STRUCT_OFFSET_6E(a1)
                 bmi.w   .loc_1616
                 lea     (RacePlayerB).l,a1
-                move.l  (ram_FF1E68).l,d1
+                move.l  (Race_ram_PlayerProgress).l,d1
                 sub.l   4(a1),d1
                 bpl.w   .loc_1606
                 neg.l   d1
@@ -604,16 +604,16 @@ HorizontalInterrupt:
                 move.w  #$1F,d1
 .loc_1616:
                 jsr     (Audio_Engine1Update).l
-                movea.l (ram_FF1908).l,a1
+                movea.l (Race_ram_NearestActor).l,a1
                 bsr.w   Audio_UpdateEngine
                 jsr     (Audio_Engine2Update).l
 .loc_162C:
                 jsr     (Audio_Update).l
 .loc_1632: ; disable the raster effect until the next request
-                move.w  #$FFFF,(ram_FF369E).l
-                tst.w   (ram_FF0406).l
+                move.w  #$FFFF,(Race_ram_HIntRasterDisabled).l
+                tst.w   (Race_ram_HIntScrollOffset).l
                 ble.w   .loc_164C
-                move.w  #0,(ram_FF369E).l ; effect re-enabled
+                move.w  #0,(Race_ram_HIntRasterDisabled).l ; effect re-enabled
 .loc_164C:
                 movem.l (sp)+,d0-d2/a0-a2
 .return:
@@ -677,7 +677,7 @@ Audio_UpdateEngine:
 .loc_16D6:
                 add.w   (ram_FF36C0).l,d0
                 move.w  d0,(ram_FF36C0).l
-                move.l  (ram_FF1E68).l,d1
+                move.l  (Race_ram_PlayerProgress).l,d1
                 sub.l   4(a1),d1
                 bpl.w   .loc_16F2
                 neg.l   d1

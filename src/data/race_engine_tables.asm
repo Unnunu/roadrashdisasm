@@ -3,7 +3,7 @@
 ; ROM range: $257D0-$25855 (audio timing tables included as data); included from main.asm.
 ; *************************************************
 
-; unk_257D0: 9 words copied to ram_FF1AB6 by Race_InitPhysicsConstants.
+; unk_257D0: 9 words copied to RaceBike_ram_PhysicsConstants by Race_InitPhysicsConstants.
 unk_257D0:
     dc.w    $0100,$0600,$0E00,$0A00,$1100,$0A00,$0A00,$1000
     dc.w    $1000

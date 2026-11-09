@@ -12,7 +12,7 @@ TrackData_InitLevel:
                 move.w  (Menu_ram_CurrentTrackId).l,d0
                 asl.w   #1,d0
                 lea     (off_16AB0).l,a0
-                move.l  (a0,d0.w),(ram_FF1A6C).l
+                move.l  (a0,d0.w),(Race_ram_TrackScaleTable).l
                 movem.l (sp)+,d0/a0
                 movea.l (RaceTrack_Data2).l,a2
                 movea.l (RaceTrack_Data3).l,a3
@@ -22,7 +22,7 @@ TrackData_InitLevel:
                 move.w  (Menu_ram_PlayerLevel).l,d0
                 subq.w  #1,d0
                 asl.w   #1,d0
-                movea.l (ram_FF1A6C).l,a0
+                movea.l (Race_ram_TrackScaleTable).l,a0
                 move.w  (a0,d0.w),d2
                 lea     (Track_CurveBuffer).l,a1
                 move.w  #$7F,d0
@@ -80,7 +80,7 @@ TrackData_DecodeNextChunk:
                 move.w  (Menu_ram_PlayerLevel).l,d0
                 subq.w  #1,d0
                 asl.w   #1,d0
-                movea.l (ram_FF1A6C).l,a0
+                movea.l (Race_ram_TrackScaleTable).l,a0
                 move.w  (a0,d0.w),d2
                 move.w  #$3F,d0 ; '?'
 
@@ -150,25 +150,25 @@ word_16AEC:     dc.w $B333
 ; *************************************************
 ; Function Race_SpawnTick
 ; Opponent/traffic spawn ticker: timer, active-count and speed gates.
-; In:  player A $68/Speed, ram_FF1EA6 timer, ram_FF1A06 active count
-; Out: active/free lists; spawned actor; ram_FF1EA6 next timer
+; In:  player A $68/Speed, Race_ram_SpawnTimer timer, ram_FF1A06 active count
+; Out: active/free lists; spawned actor; Race_ram_SpawnTimer next timer
 ; Clobbers: d0/a1
 ; *************************************************
 
 Race_SpawnTick:
                 btst    #7,(RacePlayerA + STRUCT_OFFSET_68).l
                 bne.w   .return
-                tst.w   (ram_FF1EA6).l
+                tst.w   (Race_ram_SpawnTimer).l
                 beq.w   .loc_16B2E
-                move.w  (ram_FF1EA6).l,d0
+                move.w  (Race_ram_SpawnTimer).l,d0
                 sub.w   (Race_ram_FrameDelay).l,d0
                 ble.w   .loc_16B26
-                move.w  d0,(ram_FF1EA6).l
+                move.w  d0,(Race_ram_SpawnTimer).l
                 bra.w   .return
 
 
 .loc_16B26:
-                move.w  #0,(ram_FF1EA6).l
+                move.w  #0,(Race_ram_SpawnTimer).l
 
 .loc_16B2E:
                 cmpi.w  #6,(ram_FF1A06).l
@@ -185,7 +185,7 @@ Race_SpawnTick:
 .loc_16B58:
                 jsr     (Rand_GetWord).l
                 andi.w  #$1FF,d0
-                move.w  d0,(ram_FF1EA6).l
+                move.w  d0,(Race_ram_SpawnTimer).l
 
 .return:
                 rts
@@ -207,7 +207,7 @@ Race_CheckOpponentAhead:
                 cmpa.l  #ram_FF1F2A,a1
                 beq.w   .locret_16B9C
                 bsr.w   Race_GetActorDistance
-                move.w  (ram_FF1E68).l,d1
+                move.w  (Race_ram_PlayerProgress).l,d1
                 addi.w  #$20,d1
                 cmp.w   d1,d0
                 ble.w   .locret_16B9C
@@ -235,7 +235,7 @@ Race_CheckTrafficBehind:
                 cmpa.l  #ram_FF1F2A,a1
                 beq.w   .locret_16BC6
                 bsr.w   Race_GetActorDistance
-                move.w  (ram_FF1E68).l,d1
+                move.w  (Race_ram_PlayerProgress).l,d1
                 subi.w  #$10,d1
                 cmp.w   d1,d0
                 bgt.w   .locret_16BC6
@@ -251,7 +251,7 @@ Race_CheckTrafficBehind:
 
 ; *************************************************
 ; Function Race_GetActorDistance
-; Scales the actor rating (+$66) by ram_FF1E9C.
+; Scales the actor rating (+$66) by Race_ram_ActorDistanceScale.
 ; In:  a1 - actor
 ; Out: d0 - distance value
 ; Clobbers: d0
@@ -259,7 +259,7 @@ Race_CheckTrafficBehind:
 
 Race_GetActorDistance:
                 move.w  STRUCT_OFFSET_66(a1),d0
-                mulu.w  (ram_FF1E9C).l,d0
+                mulu.w  (Race_ram_ActorDistanceScale).l,d0
                 swap    d0
                 rts
 ; End of function Race_GetActorDistance
@@ -394,7 +394,7 @@ Race_RecycleOpponent:
 ; Removes an actor from the race, pushes traffic actors to ram_FF19C4 and handles
 ; the first-opponent level transition.
 ; In:  a1 - actor
-; Out: free/active lists; ram_FF1B38/34/36
+; Out: free/active lists; Race_ram_LevelIndex/34/36
 ; Clobbers: d0/a1/a2
 ; *************************************************
 
@@ -403,13 +403,13 @@ Race_RecycleActor:
                 cmpa.l  #ram_FF1F2A,a1
                 bne.w   .loc_16CE8
                 move.w  (Menu_ram_PlayerLevel).l,d0
-                cmp.w   (ram_FF1B38).l,d0
+                cmp.w   (Race_ram_LevelIndex).l,d0
                 bne.w   .loc_16CDC
                 move.w  #0,(ram_FF1B36).l
                 move.w  #0,(ram_FF1B34).l
 
 .loc_16CDC:
-                move.w  #0,(ram_FF1B38).l
+                move.w  #0,(Race_ram_LevelIndex).l
                 bra.w   .loc_16CF2
 
 
@@ -420,7 +420,7 @@ Race_RecycleActor:
 .loc_16CF2:
                 bsr.w   Race_RemoveActiveActor
                 move.l  4(a1),d0
-                divu.w  (ram_FF1E9C).l,d0
+                divu.w  (Race_ram_ActorDistanceScale).l,d0
                 move.w  d0,STRUCT_OFFSET_66(a1)
                 movem.l (sp)+,d0-d1/a2
                 rts

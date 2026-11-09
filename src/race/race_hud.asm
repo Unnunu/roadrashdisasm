@@ -59,14 +59,14 @@ RaceHud_DrawSpeedArrow:
 
  ; *************************************************
 ; Function RaceHud_DrawRPMArrow
-; Draws the RPM needle from the gear curve (ram_FF1A70) and speed.
-; In:  RacePlayerA speed/gear; ram_FF1A70; unk_7DEAA
+; Draws the RPM needle from the gear curve (RaceBike_ram_Parameters) and speed.
+; In:  RacePlayerA speed/gear; RaceBike_ram_Parameters; unk_7DEAA
 ; Out: ram_FF1AA2; sprite table/tile array
 ; Clobbers: d0-d2/a0/a1/a4
 ; *************************************************
 
 RaceHud_DrawRPMArrow:
-                lea     (ram_FF1A70).l,a0
+                lea     (RaceBike_ram_Parameters).l,a0
                 move.w  (RacePlayerA + STRUCT_OFFSET_GEAR).l,d1
                 asl.w   #1,d1
                 move.w  $E(a0,d1.w),d1
@@ -190,14 +190,14 @@ RaceHud_DrawOdometer:
 
  ; *************************************************
 ; Function RaceHud_DrawPlace
-; Draws the player place (ram_FF1B40) at x=27,y=24.
-; In:  ram_FF1B40; Race_ram_CurrentHudBuffer
+; Draws the player place (Race_ram_PlayerPlace) at x=27,y=24.
+; In:  Race_ram_PlayerPlace; Race_ram_CurrentHudBuffer
 ; Out: buffer
 ; Clobbers: d0-d2/a0
 ; *************************************************
 
 RaceHud_DrawPlace:
-                move.w  (ram_FF1B40).l,d0
+                move.w  (Race_ram_PlayerPlace).l,d0
                 move.w  #$181B,d1 ; x = 27, y = 24
                 move.w  #3,d2
                 movea.l (Race_ram_CurrentHudBuffer).l,a0
@@ -245,8 +245,8 @@ RaceHud_DrawTime:
 
  ; *************************************************
 ; Function RaceHud_DrawStamina
-; Draws opponent (ram_FF1908) and player stamina bars (green/yellow/red).
-; In:  ram_FF1908/$5C; RacePlayerA $5C
+; Draws opponent (Race_ram_NearestActor) and player stamina bars (green/yellow/red).
+; In:  Race_ram_NearestActor/$5C; RacePlayerA $5C
 ; Out: buffer at +$9B8/+$984
 ; Clobbers: d0-d1/a0/a1
 ; *************************************************
@@ -260,7 +260,7 @@ RaceHud_DrawStamina:
                 move.l  d0,8(a0)
                 move.l  d0,$C(a0)
                 move.l  d0,$10(a0)
-                movea.l (ram_FF1908).l,a1
+                movea.l (Race_ram_NearestActor).l,a1
                 cmpa.l  #$FFFFFFFF,a1
                 beq.w   .loc_D4CC
                 move.w  $5C(a1),d1
@@ -391,47 +391,47 @@ RaceHud_dRankStrings:
  ; *************************************************
 ; Function Race_DrawPlayerNameOrPlace
 ; Alternates the player name and "Nth PLACE" text with a timed timer.
-; In:  ram_FF14B8/BA/BC; Menu_ram_Player; names; RaceHud_dRankStrings
+; In:  RaceHud_ram_NameTimer/BA/BC; Menu_ram_Player; names; RaceHud_dRankStrings
 ; Out: buffer via EncodeString/WriteNametableToBuffer
 ; Clobbers: d0-d3/a0/a1
 ; *************************************************
 
 Race_DrawPlayerNameOrPlace:
-                cmpi.w  #$30,(ram_FF14B8).l
+                cmpi.w  #$30,(RaceHud_ram_NameTimer).l
                 ble.w   .loc_D5E2
-                move.w  #$30,(ram_FF14B8).l
+                move.w  #$30,(RaceHud_ram_NameTimer).l
 .loc_D5E2:
-                move.w  (ram_FF1B40).l,d0
-                cmp.w   (ram_FF14BA).l,d0
+                move.w  (Race_ram_PlayerPlace).l,d0
+                cmp.w   (RaceHud_ram_LastPlace).l,d0
                 beq.w   .loc_D628
-                move.w  d0,(ram_FF14BA).l
-                tst.w   (ram_FF14B8).l
+                move.w  d0,(RaceHud_ram_LastPlace).l
+                tst.w   (RaceHud_ram_NameTimer).l
                 bpl.w   .loc_D614
                 btst    #4,d0
                 beq.w   .loc_D60C
                 subq.w  #6,d0
 .loc_D60C:
                 subq.w  #1,d0
-                move.w  d0,(ram_FF14BC).l
+                move.w  d0,(RaceHud_ram_Rank).l
 
 .loc_D614:
-                cmpi.w  #$18,(ram_FF14B8).l
+                cmpi.w  #$18,(RaceHud_ram_NameTimer).l
                 bpl.w   .loc_D628
-                addi.w  #$18,(ram_FF14B8).l
+                addi.w  #$18,(RaceHud_ram_NameTimer).l
 
 .loc_D628:
-                lea     (ram_FF14BE).l,a0
+                lea     (RaceHud_ram_TextDescriptor).l,a0
                 move.w  #$A,6(a0)
                 move.w  #1,4(a0)
                 move.w  #2,2(a0)
                 move.w  #$14,(a0)
-                tst.w   (ram_FF14B8).l
+                tst.w   (RaceHud_ram_NameTimer).l
                 bpl.w   .loc_D684
 
 .loc_D64E:
-                tst.w   (ram_FF14B8).l
+                tst.w   (RaceHud_ram_NameTimer).l
                 bmi.w   .loc_D65E
-                subq.w  #1,(ram_FF14B8).l
+                subq.w  #1,(RaceHud_ram_NameTimer).l
 
 .loc_D65E:
                 lea     (MenuPassword_ram_StrPlayerAName + 8).l,a1
@@ -447,12 +447,12 @@ Race_DrawPlayerNameOrPlace:
 
 
 .loc_D684:
-                move.w  (ram_FF14BC).l,d0
+                move.w  (RaceHud_ram_Rank).l,d0
                 cmp.w   #$10,d0
                 bcc.s   .loc_D64E
-                btst    #1,(ram_FF14B9).l
+                btst    #1,(RaceHud_ram_NameFlags).l
                 beq.w   .loc_D6CE
-                subq.w  #1,(ram_FF14B8).l
+                subq.w  #1,(RaceHud_ram_NameTimer).l
                 lea     (RaceHud_dRankStrings).l,a1
                 asl.w   #2,d0
                 adda.w  d0,a1
@@ -467,18 +467,18 @@ Race_DrawPlayerNameOrPlace:
                 move.l  #'    ',8(a0)
                 move.l  #'    ',$C(a0)
                 move.w  #'  ',$10(a0)
-                subq.w  #1,(ram_FF14B8).l
-                move.w  (ram_FF14BA).l,d0
+                subq.w  #1,(RaceHud_ram_NameTimer).l
+                move.w  (RaceHud_ram_LastPlace).l,d0
                 btst    #4,d0
                 beq.w   .loc_D6FA
                 subq.w  #6,d0
 .loc_D6FA:
                 subq.w  #1,d0
-                move.w  d0,(ram_FF14BC).l
+                move.w  d0,(RaceHud_ram_Rank).l
 .loc_D702:
                 movea.l (Race_ram_CurrentSpriteTileArray).l,a1
                 jsr     (EncodeString).w
-                lea     (ram_FF14BE).l,a0
+                lea     (RaceHud_ram_TextDescriptor).l,a0
                 move.w  6(a0),d0
                 move.w  4(a0),d1
                 move.w  2(a0),d2
@@ -498,7 +498,7 @@ Race_DrawPlayerNameOrPlace:
  ; *************************************************
 ; Function Race_DrawOpponentName
 ; Draws the nearest opponent's name (or the level rider name at the finish).
-; In:  ram_FF1908; Menu_ram_PlayerA/B_Opponents; Race_ActorDefinitionTable
+; In:  Race_ram_NearestActor; Menu_ram_PlayerA/B_Opponents; Race_ActorDefinitionTable
 ; Out: buffer via EncodeString/WriteNametableToBuffer
 ; Clobbers: d0-d1/a0-a4
 ; *************************************************
@@ -510,12 +510,12 @@ Race_DrawOpponentName:
                 lea     (Menu_ram_PlayerBOpponents).l,a0
 .loc_D750:
                 lea     (Race_ActorDefinitionTable).l,a1
-                movea.l (ram_FF1908).l,a2
+                movea.l (Race_ram_NearestActor).l,a2
                 cmpa.l  #-1,a2
                 beq.w   .noOpponentAround
                 cmpa.l  #ram_FF1F2A,a2
                 bne.w   .loc_D788
-                move.w  (ram_FF1B38).l,d1
+                move.w  (Race_ram_LevelIndex).l,d1
                 subq.w  #1,d1
                 lea     (Race_ActorLevelBase).l,a4
                 asl.w   #1,d1
@@ -529,7 +529,7 @@ Race_DrawOpponentName:
 .loc_D794:
                 asl.w   #4,d1
                 lea     6(a1,d1.w),a1 ; get name
-                lea     (ram_FF14BE).l,a0
+                lea     (RaceHud_ram_TextDescriptor).l,a0
                 move.w  #10,6(a0) ; width
                 move.w  #1,4(a0) ; height
                 move.w  #28,2(a0) ; x
@@ -539,7 +539,7 @@ Race_DrawOpponentName:
                 move.w  (a1)+,$10(a0)
                 bra.w   .draw
 .noOpponentAround:
-                lea     (ram_FF14BE).l,a0
+                lea     (RaceHud_ram_TextDescriptor).l,a0
                 move.w  #10,6(a0) ; width
                 move.w  #1,4(a0) ; height
                 move.w  #28,2(a0) ; x
@@ -550,7 +550,7 @@ Race_DrawOpponentName:
 .draw:
                 movea.l (Race_ram_CurrentSpriteTileArray).l,a1
                 jsr     (EncodeString).w
-                lea     (ram_FF14BE).l,a0
+                lea     (RaceHud_ram_TextDescriptor).l,a0
 ; draw opponent's name
                 move.w  6(a0),d0 ; width
                 move.w  4(a0),d1 ; height

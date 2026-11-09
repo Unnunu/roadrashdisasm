@@ -113,15 +113,15 @@ loc_7E850:
                 tst.w       (ram_FF369A).l
                 bne.w       loc_7E8B4
 loc_7E864:
-                move.w      (ram_FF1E68).l,d0
-                cmp.w       (ram_FF1E82).l,d0
+                move.w      (Race_ram_PlayerProgress).l,d0
+                cmp.w       (Race_ram_BestProgress).l,d0
                 ble.w       loc_7E87A
-                move.w      d0,(ram_FF1E82).l
+                move.w      d0,(Race_ram_BestProgress).l
 loc_7E87A:
-                move.l      (ram_FF1E96).l,(ram_FF1E9A).l
+                move.l      (Race_ram_ProgressSnapshotA).l,(Race_ram_ProgressSnapshotB).l
                 jsr         (Race_Update).l
-                move.w      (ram_FF1E82).l,d1
-                move.w      (ram_FF1E68).l,d0
+                move.w      (Race_ram_BestProgress).l,d1
+                move.w      (Race_ram_PlayerProgress).l,d0
                 cmp.w       d1,d0
                 ble.w       loc_7E8B4
                 andi.w      #$FF,d1
@@ -134,7 +134,7 @@ loc_7E87A:
 loc_7E8B4:
                 move.w      (Race_ram_GameEnded).l,(Race_ram_DemoGameEnded).l
                 beq.w       loc_7E836
-                move.l      (ram_FF1E9A).l,(ram_FF1E9E).l
+                move.l      (Race_ram_ProgressSnapshotB).l,(Race_ram_ProgressSnapshotC).l
                 tst.w       (MainMenu_ram_DemoMode).l
                 beq.w       loc_7E8F4
                 jsr         (Fade_InitFadeOut).w
@@ -153,9 +153,9 @@ loc_7E90E:
                 tst.l       (ram_UpdateFunction).l
                 bne.s       loc_7E90E
                 move.w      #$2500,sr
-                move.l      #RaceResults_Init,(ram_FF0910).l
+                move.l      #RaceResults_Init,(RaceResults_ram_NextFunction).l
 loc_7E924:
-                cmpi.l      #RaceResults_Init,(ram_FF0910).l
+                cmpi.l      #RaceResults_Init,(RaceResults_ram_NextFunction).l
                 bne.w       loc_7E96A
                 jsr         (RaceResults_Init).w
                 movea.l     #RaceResults_GameTick,a0
@@ -171,7 +171,7 @@ loc_7E960:
                 bne.s       loc_7E960
                 bra.s       loc_7E924
 loc_7E96A:
-                cmpi.l      #HighScore_Init,(ram_FF0910).l
+                cmpi.l      #HighScore_Init,(RaceResults_ram_NextFunction).l
                 bne.w       loc_7E9B2
                 jsr         (HighScore_Init).w
                 movea.l     #HighScore_GameTick,a0
@@ -187,7 +187,7 @@ loc_7E9A6:
                 bne.s       loc_7E9A6
                 bra.w       loc_7E924
 loc_7E9B2:
-                cmpi.l      #Shop_Init,(ram_FF0910).l
+                cmpi.l      #Shop_Init,(RaceResults_ram_NextFunction).l
                 bne.w       loc_7E9FA
                 jsr         (Shop_Init).w
                 movea.l     #Shop_GameTick,a0
@@ -203,7 +203,7 @@ loc_7E9EE:
                 bne.s       loc_7E9EE
                 bra.w       loc_7E924
 loc_7E9FA:
-                cmpi.w      #$4,(ram_FF0918).l
+                cmpi.w      #$4,(RaceResults_ram_Outcome).l
                 bne.w       loc_7EA44
                 jsr         (EndLevel_Init).l
                 movea.l     #EndLevel_GameTick,a0

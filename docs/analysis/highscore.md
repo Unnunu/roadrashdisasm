@@ -60,7 +60,7 @@ background palette (at `ImageBuffer+$4E4`) is copied to the global palette.
 ## `HighScore_Init` (`0x6DC0`)
 
 1. Timers: next message 600 (10 s), pad state cleared, message blink `$FFFF`, button
-   period `$3F`, message id `8*42`, `ram_FF0910 = 0`.
+   period `$3F`, message id `8*42`, `RaceResults_ram_NextFunction = 0`.
 2. VDP; clear sprite table (16 bytes), VSRAM, default tile; background to `$8000`;
    title `ImgHighScoreTitle` to `$9000`; background palette; gamepad to `$A000`.
 3. Badge `ImgHighScoreBadge` to `$B000`, drawn five times on the plane.
@@ -74,12 +74,12 @@ background palette (at `ImageBuffer+$4E4`) is copied to the global palette.
 
 - DMA the frame buffer.
 - **Release edge** on pad A or B (`~input & previous`; `GetInput` returns 1 = pressed)
-  -> `ram_FF0910 = RaceResults_Init` (back to the results) and end the stage.
+  -> `RaceResults_ram_NextFunction = RaceResults_Init` (back to the results) and end the stage.
 - New-press edges: A -> `HighScore_Init` (restart the page), B -> `RaceResults_Init`,
   C -> `Shop_Init`.
 - Message cycle: every 300 frames, advance by 8 within group 42 (reset at the
   `$FFFFFFFF` terminator); the `Menu_ram_MessageBlinkTimer` decrements each frame.
-- End when `ram_FF0910 != 0`; `Audio_Update` per frame, `Audio_StopMusic` at the end.
+- End when `RaceResults_ram_NextFunction != 0`; `Audio_Update` per frame, `Audio_StopMusic` at the end.
 
 ## `HighScore_GameTick_Demo` (`0x72BA`)
 

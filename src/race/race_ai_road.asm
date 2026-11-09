@@ -514,7 +514,7 @@ Road_FillProfileTables:
 ; Function Race_IntegrateTrackCurve
 ; Integrates Track_CurveBuffer over the player progress into the road profile
 ; values/index arrays.
-; In:  Track_CurveBuffer, ram_FF1E68/6A/6C
+; In:  Track_CurveBuffer, Race_ram_PlayerProgress/6A/6C
 ; Out: ram_FF310A/31D2/329A/3236/3362/D77C
 ; Clobbers: d0-d5/a0-a6
 ; *************************************************
@@ -527,7 +527,7 @@ Race_IntegrateTrackCurve:
                 lea     (ram_FF3236).l,a4
                 lea     (ram_FF3362).l,a5
                 lea     (ram_FFD77C).l,a6
-                move.w  (ram_FF1E68).l,d0
+                move.w  (Race_ram_PlayerProgress).l,d0
                 andi.w  #$FF,d0
                 asl.w   #1,d0
                 adda.w  d0,a1
@@ -726,14 +726,14 @@ Race_ComputeStandings:
                 lea     (Race_EventBuffer).l,a2
                 btst    #7,$68(a1)
                 bne.w   .loc_EFD6
-                move.l  (ram_FF1E9A).l,(ram_FF1E9E).l
+                move.l  (Race_ram_ProgressSnapshotB).l,(Race_ram_ProgressSnapshotC).l
                 move.w  4(a1),(ram_FF1762).l
                 move.l  #$FFFFFFFF,(a2)
                 bra.w   .loc_EFEE
 
 
 .loc_EFD6:
-                move.l  $62(a1),(ram_FF1E9E).l
+                move.l  $62(a1),(Race_ram_ProgressSnapshotC).l
                 move.w  (RaceTrack_Data1).l,(ram_FF1762).l
                 move.l  $62(a1),d0
                 move.l  d0,(a2)
@@ -843,7 +843,7 @@ Race_ComputeStandings:
 
 Race_ScaleResultValue:
                 movem.l d0-d2,-(sp)
-                move.l  (ram_FF1E9E).l,d2
+                move.l  (Race_ram_ProgressSnapshotC).l,d2
                 asl.l   #8,d2
                 divu.w  d0,d2
                 mulu.w  (RaceTrack_Data1).l,d2
@@ -863,7 +863,7 @@ Race_ScaleResultValue:
 ; Function Race_UpdateSpeedDisplay
 ; Converts the player Speed to a packed decimal and stores the HUD speed value.
 ; In:  d0 - player Speed
-; Out: ram_FF3046
+; Out: Race_ram_SpeedDisplay
 ; Clobbers: d0/d1
 ; *************************************************
 
@@ -873,7 +873,7 @@ Race_UpdateSpeedDisplay:
                 lsr.w   #2,d1
                 add.w   d1,d0
                 bsr.w   Race_FormatDecimal
-                move.w  d1,(ram_FF3046).l
+                move.w  d1,(Race_ram_SpeedDisplay).l
                 rts
 ; End of function Race_UpdateSpeedDisplay
 
@@ -1107,7 +1107,7 @@ sub_F40C:
 .loc_F480:
                 cmpi.w  #2,(ram_FF3040).l
                 beq.w   .loc_F83C
-                cmpi.l  #$708,(ram_FF1E9A).l
+                cmpi.l  #$708,(Race_ram_ProgressSnapshotB).l
                 bcs.w   .loc_F83C
                 move.w  #2,(ram_FF3040).l
                 lea     (unk_258A6).l,a2
@@ -1117,7 +1117,7 @@ sub_F40C:
                 btst    #6,$68(a1)
                 beq.w   .loc_F83C
                 move.l  4(a1),d0
-                sub.l   (ram_FF1E68).l,d0
+                sub.l   (Race_ram_PlayerProgress).l,d0
                 bmi.w   .loc_F83C
 
 .loc_F4CA:
@@ -1152,7 +1152,7 @@ sub_F40C:
                 move.l  4(a1),d0
                 move.l  d0,d2
                 swap    d0
-                sub.w   (ram_FF1E68).l,d0
+                sub.w   (Race_ram_PlayerProgress).l,d0
                 bpl.w   .loc_F556
                 cmp.w   #$FFF0,d0
                 bmi.w   .loc_F69C
@@ -1163,7 +1163,7 @@ sub_F40C:
 .loc_F556:
                 cmp.w   #$1E,d0
                 bgt.w   .loc_F838
-                sub.l   (ram_FF1E68).l,d2
+                sub.l   (Race_ram_PlayerProgress).l,d2
                 lsr.l   #8,d2
                 addi.w  #$100,d2
                 clr.l   d1
@@ -1264,7 +1264,7 @@ sub_F40C:
 
 .loc_F64E:
                 move.l  4(a1),d0
-                sub.l   (ram_FF1E68).l,d0
+                sub.l   (Race_ram_PlayerProgress).l,d0
                 lea     (ram_FF1B50).l,a6
                 move.w  (ram_FFDE72).l,d7
                 asl.w   #2,d7
@@ -1332,7 +1332,7 @@ sub_F40C:
                 move.l  4(a1),d0
                 move.l  d0,d2
                 swap    d0
-                sub.w   (ram_FF1E68).l,d0
+                sub.w   (Race_ram_PlayerProgress).l,d0
                 bpl.w   .loc_F758
                 cmp.w   #$FFF0,d0
                 bmi.w   .loc_F838
@@ -1354,7 +1354,7 @@ sub_F40C:
                 addi.l  #$3000,d0
 
 .loc_F79A:
-                sub.l   (ram_FF1E68).l,d0
+                sub.l   (Race_ram_PlayerProgress).l,d0
                 move.l  d0,(a6,d7.w)
                 addi.w  #1,(ram_FFDE72).l
                 move.b  $76(a1),d0
@@ -1439,7 +1439,7 @@ sub_F842:
                 asl.w   #2,d7
                 move.l  4(a1),d0
                 subi.l  #$3000,d0
-                sub.l   (ram_FF1E68).l,d0
+                sub.l   (Race_ram_PlayerProgress).l,d0
                 move.l  d0,(a6,d7.w)
                 addi.w  #1,(ram_FFDE72).l
                 bclr    #3,$A(a0)
@@ -1511,7 +1511,7 @@ sub_F90E:
                 asl.w   #2,d7
                 move.l  4(a1),d0
                 addi.l  #EndLevel_AnimationTiles,d0
-                sub.l   (ram_FF1E68).l,d0
+                sub.l   (Race_ram_PlayerProgress).l,d0
                 move.l  d0,(a6,d7.w)
                 addi.w  #1,(ram_FFDE72).l
                 bclr    #3,$A(a0)
@@ -1556,7 +1556,7 @@ sub_F9C4:
                 asl.w   #2,d7
                 move.l  4(a1),d0
                 subi.l  #$100,d0
-                sub.l   (ram_FF1E68).l,d0
+                sub.l   (Race_ram_PlayerProgress).l,d0
                 move.l  d0,(a6,d7.w)
                 addi.w  #1,(ram_FFDE72).l
                 bclr    #3,$A(a0)
@@ -1617,7 +1617,7 @@ sub_FA98:
                 asl.w   #2,d7
                 move.l  4(a1),d0
                 addi.l  #$3000,d0
-                sub.l   (ram_FF1E68).l,d0
+                sub.l   (Race_ram_PlayerProgress).l,d0
                 move.l  d0,(a6,d7.w)
                 addi.w  #1,(ram_FFDE72).l
                 bclr    #3,$A(a0)
@@ -1647,11 +1647,11 @@ sub_FA98:
 
 sub_FB1E:
                 lea     (Road_ObjectArray).l,a0
-                cmpi.w  #$C,(ram_FF1E68).l
+                cmpi.w  #$C,(Race_ram_PlayerProgress).l
                 bpl.w   .loc_FB42
                 move.l  #$C0000,d0
                 move.l  d0,d1
-                sub.l   (ram_FF1E68).l,d1
+                sub.l   (Race_ram_PlayerProgress).l,d1
                 bra.w   .loc_FB62
 
 
@@ -1660,7 +1660,7 @@ sub_FB1E:
                 move.w  (RaceTrack_Data1).l,d0
                 swap    d0
                 move.l  d0,d1
-                sub.l   (ram_FF1E68).l,d1
+                sub.l   (Race_ram_PlayerProgress).l,d1
                 bcs.w   .locret_FC0C
                 cmp.l   #$1F0000,d1
                 bcc.w   .locret_FC0C
@@ -1729,7 +1729,7 @@ sub_FC0E:
                 mulu.w  #$14,d0
                 adda.w  d0,a0
                 move.l  a0,(ram_FFD7D0).l
-                move.l  (ram_FF1E68).l,d0
+                move.l  (Race_ram_PlayerProgress).l,d0
                 movea.l (ram_FFD7CC).l,a1
 
 .loc_FC3A:
@@ -1750,7 +1750,7 @@ sub_FC0E:
                 beq.w   .locret_FD6C
                 clr.w   d1
                 move.l  d1,d2
-                sub.l   (ram_FF1E68).l,d2
+                sub.l   (Race_ram_PlayerProgress).l,d2
                 bcc.w   .loc_FC82
                 addi.l  #4,(ram_FFD7CC).l
                 bra.w   .loc_FD62
@@ -1924,7 +1924,7 @@ sub_FE3A:
                 movem.l d4-d7/a0-a6,-(sp)
                 move.w  d0,d4
                 move.l  d0,d3
-                move.l  (ram_FF1E68).l,d5
+                move.l  (Race_ram_PlayerProgress).l,d5
                 sub.l   d5,d0
                 bpl.w   .loc_FE56
                 move.w  #0,d0
@@ -3580,7 +3580,7 @@ sub_109B6:
                 move.w  #$FFFF,(ram_FF1B30).l
                 movea.l (ram_FFD7C4).l,a1
                 move.w  (a1),d0
-                move.w  (ram_FF1E68).l,d1
+                move.w  (Race_ram_PlayerProgress).l,d1
                 sub.w   (ram_FFD7C8).l,d1
                 bpl.w   .loc_10A1A
                 cmpa.l  (RaceTrack_Data4).l,a1
@@ -3599,7 +3599,7 @@ sub_109B6:
                 addq.w  #1,d1
                 mulu.w  d2,d1
                 sub.w   d1,(ram_FFD7C8).l
-                move.w  (ram_FF1E68).l,d1
+                move.w  (Race_ram_PlayerProgress).l,d1
                 sub.w   (ram_FFD7C8).l,d1
                 bra.w   .loc_10A2E
 
@@ -3633,7 +3633,7 @@ sub_109B6:
                 mulu.w  d3,d2
                 add.w   d2,(ram_FFD7C8).l
                 move.w  (a1),d0
-                move.w  (ram_FF1E68).l,d1
+                move.w  (Race_ram_PlayerProgress).l,d1
                 sub.w   (ram_FFD7C8).l,d1
                 bra.s   .loc_10A1A
 
@@ -3989,7 +3989,7 @@ sub_10DBE:
 sub_10DDA:
                 movea.l (Global_ram_PalettePtr).l,a0
                 adda.w  #$5A,a0 ; 'Z'
-                movea.l (ram_FF1908).l,a1
+                movea.l (Race_ram_NearestActor).l,a1
                 cmpa.l  #$FFFFFFFF,a1
                 beq.w   .locret_10DFE
                 lea     (ram_FF1B04).l,a2

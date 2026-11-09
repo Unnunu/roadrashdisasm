@@ -33,7 +33,7 @@
   arrays (`Road_ram_XLeftArray`, `Road_ram_MarkingXArray`, `Road_ram_XRightArray`) from
   the `ram_FF329A`/`ram_FF31D2`/`ram_FF3362` values and `ram_FF3236` indexes, then
   `Road_FillProfileTables` to build the per-line HScroll/marking tables.
-- `Race_IntegrateTrackCurve` reads `Track_CurveBuffer` at `ram_FF1E68 & $FF` and fills
+- `Race_IntegrateTrackCurve` reads `Track_CurveBuffer` at `Race_ram_PlayerProgress & $FF` and fills
   the profile value/index arrays (`ram_FF310A`/`31D2`/`329A`/`3236`/`3362`/`D77C`).
 - `Road_FillProfileTables` clamps the bg scroll to `[-192,192]` and fg to `[-192,160]`
   (+512), computes the marking width `(roadWidth*3/2)/64` (1..8), clamps marking X and
@@ -48,7 +48,7 @@
 
 - `Road_ram_XLeftArray`/`XRightArray`/`MarkingXArray`;
   `RoadMarking_ram_XArray`/`WidthArray`; `Race_ram_CurrentHScrollTable`/`Alpha`.
-- `ram_FF310A`/`31D2`/`329A`/`3236`/`3362`/`3A9C`/`D77C`; `ram_FF1E68/6A/6C`.
+- `ram_FF310A`/`ram_FF31D2`/`ram_FF329A`/`ram_FF3236`/`ram_FF3362`/`ram_FF3A9C`/`ram_FFD77C`; `Race_ram_PlayerProgress`/`ram_FF1E6A`/`ram_FF1E6C`.
 - `ram_FF1B50`/`1C50`/`1D50` visible lists; `Race_ram_CurrentHudBuffer`.
 - Sprite staging: `Race_ram_NextSpriteTileArray`, `Race_ram_SpriteDestination`,
   `Race_ram_CurrentSpriteTileArray`.

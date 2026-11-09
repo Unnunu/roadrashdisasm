@@ -23,7 +23,7 @@ HighScore_Init:
                 move.w  #$FFFF,(Menu_ram_MessageBlinkTimer).l
                 move.w  #$3F,(Message_ram_ButtonBlinkPeriod).l
                 move.w  #(8*42),(Menu_ram_CurrentMessageId).l
-                move.l  #0,(ram_FF0910).l
+                move.l  #0,(RaceResults_ram_NextFunction).l
                 lea     (VdpCtrl).l,a0
                 move.w  #$8004,(a0) ; H-ints disabled, Pal Select 1, HVC latch disabled, Display gen enabled
                 move.w  #$8174,(a0) ; Display enabled, V-ints enabled, Height: 28, Mode 5, 64K VRAM
@@ -384,7 +384,7 @@ HighScore_GameTick_Demo:
 ; Normal variant: DMA, release exits to the results, A restarts, B returns to the
 ; results, C opens the shop; cycle message group 42.
 ; In:  pad input; Menu_ram_CurrentMessageId/NextMessageTimer
-; Out: ram_FF0910 (next screen); ram_UpdateFunction=0 at end stage
+; Out: RaceResults_ram_NextFunction (next screen); ram_UpdateFunction=0 at end stage
 ; Clobbers: d0/d1/a0
 ; *************************************************
 
@@ -444,13 +444,13 @@ HighScore_GameTick:
                 move.w  #(8*42),(Menu_ram_CurrentMessageId).l
 .loc_742A:
                 bsr.w   Menu_ShowMessage
-                cmpi.l  #0,(ram_FF0910).l
+                cmpi.l  #0,(RaceResults_ram_NextFunction).l
                 bne.w   .endStage
 .loc_743C:
                 jsr     (Audio_Update).l
                 rts
 .buttonReleased:
-                move.l  #RaceResults_Init,(ram_FF0910).l ; restart this menu
+                move.l  #RaceResults_Init,(RaceResults_ram_NextFunction).l ; restart this menu
 .endStage:
                 jsr     (Audio_StopMusic).l
                 move.l  #0,(ram_UpdateFunction).l
@@ -461,7 +461,7 @@ HighScore_GameTick:
 ; Function HighScore_HandleInput
 ; A restarts the page, B returns to the results, C opens the shop.
 ; In:  d0 - current buttons (SACBRLDU; 1 = pressed)
-; Out: ram_FF0910 next-screen pointer
+; Out: RaceResults_ram_NextFunction next-screen pointer
 ; Clobbers: -
 ; *************************************************
 
@@ -469,15 +469,15 @@ HighScore_HandleInput:
                 move.b  d0,(HighScore_ram_CurrentButtons).l
                 btst    #6,(HighScore_ram_CurrentButtons).l
                 beq.w   .checkB
-                move.l  #HighScore_Init,(ram_FF0910).l ; pressed A -> restart this page
+                move.l  #HighScore_Init,(RaceResults_ram_NextFunction).l ; pressed A -> restart this page
 .checkB:
                 btst    #4,(HighScore_ram_CurrentButtons).l
                 beq.w   .checkC
-                move.l  #RaceResults_Init,(ram_FF0910).l ; pressed B -> go back to race results
+                move.l  #RaceResults_Init,(RaceResults_ram_NextFunction).l ; pressed B -> go back to race results
 .checkC:
                 btst    #5,(HighScore_ram_CurrentButtons).l
                 beq.w   .return
-                move.l  #Shop_Init,(ram_FF0910).l ; pressed C -> go to shop
+                move.l  #Shop_Init,(RaceResults_ram_NextFunction).l ; pressed C -> go to shop
 .return:
                 rts
 ; End of function HighScore_HandleInput

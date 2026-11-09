@@ -24,11 +24,11 @@ decoder to expand the level's track data into `Track_CurveBuffer` and scale it b
 level factor.
 
 - `TrackData_InitLevel`:
-  - `Menu_ram_CurrentTrackId*2` -> `off_16AB0` -> `ram_FF1A6C` (per-track factor table
+  - `Menu_ram_CurrentTrackId*2` -> `off_16AB0` -> `Race_ram_TrackScaleTable` (per-track factor table
     pointer).
   - `a2 = RaceTrack_Data2`, `a3 = RaceTrack_Data3`, `a1 = Track_CurveBuffer`, `d1 = $7F`
     (128 values) -> `TrackData_StartDecode`.
-  - Then scale the first channel: factor `d2 = ram_FF1A6C[PlayerLevel-1]`; each signed
+  - Then scale the first channel: factor `d2 = Race_ram_TrackScaleTable[PlayerLevel-1]`; each signed
     byte `Track_CurveBuffer[2*i] * d2 / $10000` (mulu/swap with sign), 128 entries.
 - `TrackData_DecodeNextChunk` (called from `src/core/top_level.asm` when the race progress crosses a chunk):
   chunk `(d0+1)&3`, destination `Track_CurveBuffer + chunk*$80`, `d1=$3F` (64 values) ->
@@ -66,7 +66,7 @@ Channel 1 (`TrackData_DecodeChannel1`):
 - `ram_FF13CA`/`CC` table index/mask, `ram_FF13CE` bit position, `ram_FF13D0`/`D2`
   data-byte index, `ram_FF13D4` data pointer, `ram_FF13D8` output pointer,
   `ram_FF13DC` control length, `ram_FF13DE` control pointer, `ram_FF13E2` caught-up
-  flag, `ram_FF13B2` remaining budget.
+  flag, `Uncompress_ram_Budget` remaining budget.
 
 Channel 2 (`TrackData_DecodeChannel2`) is the same with `ram_FF13E4`..`ram_FF140E` and the output
 pointer `ram_FF1404`.

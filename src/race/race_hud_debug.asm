@@ -198,14 +198,14 @@ RaceDebug_ShowState:
 
 ; *************************************************
 ; Function sub_9A98
-; Debug: shows ram_FF3046 at HUD cell $180D.
-; In:  ram_FF3046
+; Debug: shows Race_ram_SpeedDisplay at HUD cell $180D.
+; In:  Race_ram_SpeedDisplay
 ; Out: Race_ram_CurrentHudBuffer
 ; Clobbers: d0/d1/d2/a0
 ; *************************************************
 
 sub_9A98:
-                move.w  (ram_FF3046).l,d0
+                move.w  (Race_ram_SpeedDisplay).l,d0
                 move.w  #$180D,d1
                 move.w  #0,d2
                 movea.l (Race_ram_CurrentHudBuffer).l,a0

@@ -29,7 +29,7 @@ bridge.
 
 | Label | Address | Size | Layout |
 |---|---|---|---|
-| `unk_257D0` | `$257D0` | `$12` | 9 words copied to `ram_FF1AB6` (physics constants). |
+| `unk_257D0` | `$257D0` | `$12` | 9 words copied to `RaceBike_ram_PhysicsConstants` (physics constants). |
 | `unk_257E2` | `$257E2` | 6 | 3 words (engine timing). |
 | `unk_257E8` | `$257E8` | 6 | 3 words (engine timing). |
 | `unk_257EE` | `$257EE` | `$14` | 10 words (engine timing). |

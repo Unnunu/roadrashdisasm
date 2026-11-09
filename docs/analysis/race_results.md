@@ -38,11 +38,11 @@ A opens the high-score table; C opens the bike shop; B shows the cash/password b
 
 | Address | Meaning |
 |---|---|
-| `ram_FF0526`/`ram_FF0528` | Player A/B race outcome; copied to `ram_FF0918`. |
-| `ram_FF0918` | 0 = a course not completed; >4 = a course worse than 4th; 4 = all five courses in 1st-4th (level complete). |
+| `ram_FF0526`/`ram_FF0528` | Player A/B race outcome; copied to `RaceResults_ram_Outcome`. |
+| `RaceResults_ram_Outcome` | 0 = a course not completed; >4 = a course worse than 4th; 4 = all five courses in 1st-4th (level complete). |
 | `Race_EventBuffer` | 16-long race sort/event buffer; first word `$FFFF` = busted or bike destroyed. |
 | `Race_CopIndex` | Cop/officer index (1..5) when busted; 0 = bike destroyed. |
-| `ram_FF091A` | Fine/repair amount: cop fine = `PlayerLevel * $14`; repair = 10% of the bike price (`Shop_dPrices`), deducted from money. |
+| `RaceResults_ram_Amount` | Fine/repair amount: cop fine = `PlayerLevel * $14`; repair = 10% of the bike price (`Shop_dPrices`), deducted from money. |
 | `ram_FF1414`/`FF1418`/`FF141A` | Standings string header/text, height, width (built by `src/race/race.asm`). |
 | `Menu_ram_PlayerLevel` | Level (1..5) for the fine, repair and congratulations text. |
 
@@ -71,7 +71,7 @@ index 28 (`unk_52CE`: complete every course in 4th place or better); 4 -> index 
 - Same asset format as `src/screens/rider_intro.asm`: 8-byte interleaved size/header prefix; header
   gives name string, image/nametable/palette offsets. Draw 10x12 at (3,6), name at
   (3,19), quote at (16,y/2) with stride 128.
-- Message: `unk_56AC` "Caught by the cops / Your fine -" with `ram_FF091A` formatted by
+- Message: `unk_56AC` "Caught by the cops / Your fine -" with `RaceResults_ram_Amount` formatted by
   `Race_FormatNumber`, or `unk_56D8` "Can't afford bail / GAME OVER"; drawn at (16,18), stride 64.
 - Cop names in the table: O'Leary, O'Rourke, Flynn, O'Shea, O'Connor.
 
@@ -80,7 +80,7 @@ index 28 (`unk_52CE`: complete every course in 4th place or better); 4 -> index 
 - Panel `unk_7EA66` -> `$B000`, 12x14 at (2,5).
 - Select the portrait from `RaceResults_LevelTablePos` (money >= 0, 5 levels x4 variants) or
   `RaceResults_LevelTableNeg` (money < 0, 5x2), index `Menu_ram_PlayerLevel-1`, random variant.
-- Message: `unk_5704` "Your bike needs repairs -" with `ram_FF091A` formatted, or
+- Message: `unk_5704` "Your bike needs repairs -" with `RaceResults_ram_Amount` formatted, or
   `unk_5730` "No money for repairs / GAME OVER".
 - Level-table names: Biff, Slater, Ikira, Sergio, Helldog.
 
@@ -130,7 +130,7 @@ Result portrait tables (8-byte records `quote_ptr, image_ptr`):
 
 ## Quirks / unused data
 
-- `ram_FF0914` is set to the active draw routine (`RaceResults_DrawStandings`/`RaceResults_DrawBusted`/`RaceResults_DrawRepair`) but
+- `RaceResults_ram_DrawRoutine` is set to the active draw routine (`RaceResults_DrawStandings`/`RaceResults_DrawBusted`/`RaceResults_DrawRepair`) but
   is never read in the disassembled source. `[static]` (purpose TODO)
 - `DrawString` (`0x6C5E`) is not called by this module (the shop has its own
   `Shop_DrawString`); the source itself notes "not sure this function belongs to this

@@ -31,11 +31,11 @@ DmaWriteVRAM:
                 rol.w   #2,d0
                 andi.w  #3,d0
                 ori.b   #$80,d0
-                move.w  d0,(ram_FF14D8).l
+                move.w  d0,(Race_ram_VdpDmaControl).l
                 andi.w  #$3FFF,d1
                 addi.w  #$4000,d1
                 move.w  d1,(VdpCtrl).l
-                move.w  (ram_FF14D8).l,(VdpCtrl).l
+                move.w  (Race_ram_VdpDmaControl).l,(VdpCtrl).l
                 rts
 ; End of function DmaWriteVRAM
 
@@ -70,11 +70,11 @@ DmaWriteCRAM:
                 rol.w   #2,d0
                 andi.w  #3,d0
                 ori.b   #$80,d0
-                move.w  d0,(ram_FF14D8).l
+                move.w  d0,(Race_ram_VdpDmaControl).l
                 andi.w  #$3FFF,d1
                 addi.w  #-$4000,d1
                 move.w  d1,(VdpCtrl).l
-                move.w  (ram_FF14D8).l,(VdpCtrl).l
+                move.w  (Race_ram_VdpDmaControl).l,(VdpCtrl).l
                 rts
 ; End of function DmaWriteCRAM
 
@@ -85,7 +85,7 @@ DmaWriteCRAM:
 ; *************************************************
 ; Function Race_DrawRearviewMirror
 ; Draws the road in the rearview mirror (HUD row 25) from the player position.
-; In:  player A PosX/PosY; ram_FF33CC road rows
+; In:  player A PosX/PosY; Race_ram_RearviewTileRows road rows
 ; Out: Race_ram_CurrentHudBuffer mirror rows
 ; Clobbers: d0-d2/a0-a2
 ; *************************************************
@@ -148,7 +148,7 @@ Race_DrawMirrorRoad:
                 bmi.w   .loc_DA6C
                 move.w  #$A,d1
 .loc_DA6C:
-                movea.l #ram_FF33CC,a0
+                movea.l #Race_ram_RearviewTileRows,a0
                 asl.w   #5,d1
                 lea     (a0,d1.w),a0
                 move.w  #1,d0
@@ -179,7 +179,7 @@ Race_DrawMirrorRoad:
                 bmi.w   .loc_DABA
                 move.w  #$A,d1
 .loc_DABA:
-                movea.l #ram_FF33CC,a0
+                movea.l #Race_ram_RearviewTileRows,a0
                 move.w  #5,d0
                 asl.w   d0,d1
                 lea     (a0,d1.w),a0
@@ -201,14 +201,14 @@ Race_DrawMirrorRoad:
 ; *************************************************
 ; Function Race_ProjectActorSprite
 ; Projects an actor position vs the player progress into sprite Y/X fields.
-; In:  a1 - actor; ram_FF1E68 progress
+; In:  a1 - actor; Race_ram_PlayerProgress progress
 ; Out: actor/sprite fields; ram_FF1B50 list
 ; Clobbers: d0-d2/a0/a3
 ; *************************************************
 
 Race_ProjectActorSprite:
                 move.l  4(a1),d2
-                sub.l   (ram_FF1E68).l,d2
+                sub.l   (Race_ram_PlayerProgress).l,d2
                 neg.l   d2
                 lea     (ram_FF1B50).l,a3
                 move.w  (ram_FFDE72).l,d0
@@ -609,7 +609,7 @@ Race_RoadMarkingDataB:       dc.b $BB
 Race_DrawRoadMarkingHud:
                 move.w  #$98,d0
                 move.w  (ram_FF1B30).l,d4
-                move.w  (ram_FF1E68).l,d6
+                move.w  (Race_ram_PlayerProgress).l,d6
                 move.w  #$FFFF,d7
                 lea     (ram_FF3238).l,a0
                 movea.l (Race_ram_CurrentHudBuffer).l,a1
@@ -713,7 +713,7 @@ Race_DrawRoadMarkingHud:
 ; Updates the camera offset/road position and integrates the track curve over the
 ; player X movement.
 ; In:  player A $68/6E/PosX/PosY/32; Track_CurveBuffer
-; Out: ram_FFD340/ram_FF1E54/56/60/64/68/76/7A/7E/86
+; Out: Race_ram_CameraOffset/ram_FF1E54/56/60/64/68/76/7A/7E/86
 ; Clobbers: d0-d4/a0
 ; *************************************************
 
@@ -724,9 +724,9 @@ Race_UpdateCamera:
                 bne.w   .loc_DF14
                 cmpi.b  #2,(RacePlayerA + STRUCT_OFFSET_6E).l
                 bmi.w   .loc_DED2
-                move.l  (ram_FFD340).l,d0
+                move.l  (Race_ram_CameraOffset).l,d0
                 asr.l   #2,d0
-                sub.l   d0,(ram_FFD340).l
+                sub.l   d0,(Race_ram_CameraOffset).l
                 bra.w   .loc_DF14
 .loc_DED2:
                 move.l  (RacePlayerA + STRUCT_OFFSET_26).l,d0
@@ -735,13 +735,13 @@ Race_UpdateCamera:
                 beq.w   .loc_DEE8
                 neg.l   d0
 .loc_DEE8:
-                add.l   d0,(ram_FFD340).l
-                cmpi.l  #$FFFF9000,(ram_FFD340).l
+                add.l   d0,(Race_ram_CameraOffset).l
+                cmpi.l  #$FFFF9000,(Race_ram_CameraOffset).l
                 bpl.w   .loc_DF14
-                move.l  #$FFFF9000,(ram_FFD340).l
+                move.l  #$FFFF9000,(Race_ram_CameraOffset).l
                 bra.w   .loc_DF14
 .loc_DF0A:
-                move.l  #0,(ram_FFD340).l
+                move.l  #0,(Race_ram_CameraOffset).l
 .loc_DF14:
                 move.w  (RacePlayerA + STRUCT_OFFSET_POSY).l,d0
                 asr.w   #1,d0
@@ -776,11 +776,11 @@ Race_UpdateCamera:
                 moveq   #$5D,d0
 .loc_DF90:
                 move.l  d0,(ram_FF1E64).l
-                move.w  (ram_FF1E68).l,d1
+                move.w  (Race_ram_PlayerProgress).l,d1
                 move.l  (RacePlayerA + STRUCT_OFFSET_POSX_HIGH).l,d0
                 sub.l   (ram_FF1E76).l,d0
-                sub.l   (ram_FFD340).l,d0
-                move.l  d0,(ram_FF1E68).l
+                sub.l   (Race_ram_CameraOffset).l,d0
+                move.l  d0,(Race_ram_PlayerProgress).l
                 swap    d0
                 move.w  d0,d2
                 lea     (Track_CurveBuffer).l,a0
@@ -1138,7 +1138,7 @@ Race_BuildVScrollInfo:
                 sub.l   d4,(ram_FF30F6).l
                 sub.l   d5,(ram_FF30FA).l
                 sub.l   d6,(ram_FF30FE).l
-                addi.l  #$10000,(ram_FF14DC).l
+                addi.l  #$10000,(Race_ram_HIntVScroll).l
                 rts
 ; End of function Race_BuildVScrollInfo
 
@@ -1178,7 +1178,7 @@ Race_BuildHScrollTable:
                 bmi.w   .loc_E4DC
                 move.w  #$17,d0
 .loc_E4DC:
-                move.l  (ram_FF14DC).l,d1
+                move.l  (Race_ram_HIntVScroll).l,d1
                 asr.l   #1,d1
                 add.l   (ram_FF30FA).l,d1
                 swap    d1
@@ -1191,7 +1191,7 @@ Race_BuildHScrollTable:
                 addq.w  #1,d0
                 subi.w  #$18,d0
                 bmi.w   .loc_E51A
-                move.l  (ram_FF14DC).l,d1
+                move.l  (Race_ram_HIntVScroll).l,d1
                 add.l   (ram_FF30F2).l,d1
                 swap    d1
 .loc_E512:
@@ -1231,7 +1231,7 @@ Race_BuildHScrollTable:
                 bmi.w   .loc_E572
                 move.w  #$17,d0
 .loc_E572:
-                move.l  (ram_FF14DC).l,d1
+                move.l  (Race_ram_HIntVScroll).l,d1
                 asr.l   #2,d1
                 add.l   (ram_FF30FE).l,d1
                 swap    d1
@@ -1244,9 +1244,9 @@ Race_BuildHScrollTable:
                 addi.w  #$D,d0
                 subi.w  #$18,d0
                 bmi.w   .loc_E5BC
-                move.l  (ram_FF14DC).l,d1
+                move.l  (Race_ram_HIntVScroll).l,d1
                 asr.l   #1,d1
-                add.l   (ram_FF14DC).l,d1
+                add.l   (Race_ram_HIntVScroll).l,d1
                 asr.l   #1,d1
                 add.l   (ram_FF30F6).l,d1
                 swap    d1
@@ -1281,7 +1281,7 @@ Race_BuildHScrollTable:
 ; Function Race_UpdateNearestOpponent
 ; Finds the nearest ahead/behind actor and derives the engine-audio values.
 ; In:  ram_FF1A08 actor list; player/actor positions
-; Out: ram_FF14E0/E4, ram_FF36AE/B2/B0/B4, ram_FF1B40
+; Out: Race_ram_NearestBehindDistance/E4, Race_ram_NearestBehindIndex/B2/B0/B4, Race_ram_PlayerPlace
 ; Clobbers: d0-d4/a0-a4
 ; *************************************************
 
@@ -1289,8 +1289,8 @@ Race_UpdateNearestOpponent:
                 movem.l d0-d3/a0-a4,-(sp)
                 btst    #7,(RacePlayerA + STRUCT_OFFSET_68).l
                 bne.w   .loc_E72C
-                move.l  #$7FFFFFFF,(ram_FF14E4).l
-                move.l  #$80000000,(ram_FF14E0).l
+                move.l  #$7FFFFFFF,(Race_ram_NearestAheadDistance).l
+                move.l  #$80000000,(Race_ram_NearestBehindDistance).l
                 lea     (ram_FF1A08).l,a0
                 movea.l (a0)+,a1
                 move.l  4(a1),d0
@@ -1327,23 +1327,23 @@ Race_UpdateNearestOpponent:
                 addq.w  #1,d1
 
 .loc_E66C:
-                cmp.l   (ram_FF14E0).l,d2
+                cmp.l   (Race_ram_NearestBehindDistance).l,d2
                 bmi.s   .loc_E648
-                move.l  d2,(ram_FF14E0).l
+                move.l  d2,(Race_ram_NearestBehindDistance).l
                 move.b  $71(a2),d3
                 ext.w   d3
-                move.w  d3,(ram_FF36AE).l
+                move.w  d3,(Race_ram_NearestBehindIndex).l
                 movea.l a2,a3
                 bra.s   .loc_E648
 
 
 .loc_E68A:
-                cmp.l   (ram_FF14E4).l,d2
+                cmp.l   (Race_ram_NearestAheadDistance).l,d2
                 bpl.s   .loc_E648
-                move.l  d2,(ram_FF14E4).l
+                move.l  d2,(Race_ram_NearestAheadDistance).l
                 move.b  $71(a2),d3
                 ext.w   d3
-                move.w  d3,(ram_FF36B2).l
+                move.w  d3,(Race_ram_NearestAheadIndex).l
                 movea.l a2,a4
                 bra.s   .loc_E648
 
@@ -1355,12 +1355,12 @@ Race_UpdateNearestOpponent:
                 ori.w   #$10,d1
 
 .loc_E6B8:
-                move.w  d1,(ram_FF1B40).l
-                move.l  (ram_FF14E4).l,d1
+                move.w  d1,(Race_ram_PlayerPlace).l
+                move.l  (Race_ram_NearestAheadDistance).l,d1
                 cmp.l   #$7FFFFFFF,d1
                 bne.w   .loc_E6E2
-                move.w  #$FFFF,(ram_FF36B2).l
-                move.w  #0,(ram_FF36B4).l
+                move.w  #$FFFF,(Race_ram_NearestAheadIndex).l
+                move.w  #0,(Race_ram_NearestAheadSpeed).l
                 bra.w   .loc_E6F4
 
 
@@ -1371,14 +1371,14 @@ Race_UpdateNearestOpponent:
                 move.w  d1,d0
 
 .loc_E6EE:
-                move.w  d0,(ram_FF36B4).l
+                move.w  d0,(Race_ram_NearestAheadSpeed).l
 
 .loc_E6F4:
-                move.l  (ram_FF14E0).l,d1
+                move.l  (Race_ram_NearestBehindDistance).l,d1
                 cmp.l   #$80000000,d1
                 bne.w   .loc_E718
-                move.w  #$FFFF,(ram_FF36AE).l
-                move.w  #0,(ram_FF36B0).l
+                move.w  #$FFFF,(Race_ram_NearestBehindIndex).l
+                move.w  #0,(Race_ram_NearestBehindSpeed).l
                 bra.w   .loc_E72C
 
 
@@ -1390,7 +1390,7 @@ Race_UpdateNearestOpponent:
                 move.w  d1,d0
 
 .loc_E726:
-                move.w  d0,(ram_FF36B0).l
+                move.w  d0,(Race_ram_NearestBehindSpeed).l
 
 .loc_E72C:
                 movem.l (sp)+,d0-d3/a0-a4

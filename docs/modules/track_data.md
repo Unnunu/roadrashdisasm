@@ -37,8 +37,8 @@ track/level factor.
 
 - Sources `RaceTrack_Data2/3` (`$FF1A52/$FF1A56`); output `Track_CurveBuffer` (`$FFDC58`),
   4 x `$80`-byte chunks.
-- Channel 1 state `ram_FF13B2/13B8..13E2`; channel 2 `ram_FF13E4..140E`.
-- Scale: `Menu_ram_CurrentTrackId` -> `off_16AB0` -> `ram_FF1A6C` (per-track table);
+- Channel 1 state `Uncompress_ram_Budget/13B8..13E2`; channel 2 `ram_FF13E4..140E`.
+- Scale: `Menu_ram_CurrentTrackId` -> `off_16AB0` -> `Race_ram_TrackScaleTable` (per-track table);
   factor `[PlayerLevel-1]`; signed byte * factor / `$10000`.
 - Race callers: `TrackData_InitLevel` (128 samples at level start), `TrackData_DecodeNextChunk` (64-sample chunks
   as the race progresses).

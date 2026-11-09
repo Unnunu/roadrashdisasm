@@ -1763,7 +1763,7 @@ sub_14B04:
                 asr.l   #8,d1
                 move.w  d1,$52(a2)
                 move.w  d1,(ram_FF1A9C).l
-                cmpa.l  (ram_FF1908).l,a2
+                cmpa.l  (Race_ram_NearestActor).l,a2
                 bne.w   .locret_14C3A
                 tst.w   (ram_FF1906).l
                 beq.w   .locret_14C3A
@@ -1774,7 +1774,7 @@ sub_14B04:
 .loc_14B44:
                 move.w  $5E(a2),d0
                 muls.w  d0,d1
-                cmpa.l  (ram_FF1908).l,a2
+                cmpa.l  (Race_ram_NearestActor).l,a2
                 bne.w   .loc_14B66
                 tst.w   (ram_FF1906).l
                 beq.w   .loc_14B66
@@ -2207,7 +2207,7 @@ sub_14FB4:
                 beq.w   .loc_15000
                 tst.b   $6E(a1)
                 bpl.w   .loc_15000
-                cmpi.w  #5,(ram_FF1B40).l
+                cmpi.w  #5,(Race_ram_PlayerPlace).l
                 bpl.w   .loc_15000
                 move.b  #$15,(ram_FF1AD6).l
 
@@ -2274,14 +2274,14 @@ sub_15014:
                 btst    #3,$69(a1)
                 bne.w   .loc_150C0
                 move.w  4(a1),d7
-                cmp.w   (ram_FF1E68).l,d7
+                cmp.w   (Race_ram_PlayerProgress).l,d7
                 bpl.w   .loc_150EE
                 bra.w   .loc_150CE
 
 
 .loc_150C0:
                 move.w  4(a1),d7
-                cmp.w   (ram_FF1E68).l,d7
+                cmp.w   (Race_ram_PlayerProgress).l,d7
                 bmi.w   .loc_150EE
 
 .loc_150CE:
@@ -2635,7 +2635,7 @@ sub_15478:
                 bsr.w   sub_154D2
                 tst.w   d0
                 bpl.w   .loc_154C0
-                move.w  #1,(ram_FF1B20).l
+                move.w  #1,(Race_ram_Started).l
                 move.b  #0,(ram_FF302A).l
                 move.b  #0,(ram_FF302B).l
                 bra.s   .loc_15482
@@ -5623,7 +5623,7 @@ Race_UpdateNearestTarget:
 
 .loc_16176:
                 movea.l (sp)+,a2
-                move.l  a2,(ram_FF1908).l
+                move.l  a2,(Race_ram_NearestActor).l
                 cmpa.l  #$FFFFFFFF,a2
                 beq.w   .loc_161BE
                 move.w  $16(a2),d0
@@ -5686,7 +5686,7 @@ Race_UpdateNearestTarget:
                 bpl.w   .loc_16298
                 btst    #6,$69(a1)
                 bne.w   .loc_16282
-                lea     (ram_FF1AB6).l,a4
+                lea     (RaceBike_ram_PhysicsConstants).l,a4
                 btst    #1,$6B(a1)
                 beq.w   .loc_16272
                 lea     (ram_FF1AC2).l,a4
@@ -5730,7 +5730,7 @@ sub_162B0:
                 bset    #4,$69(a1)
                 bset    #0,(ram_FF1B22).l
                 move.b  #0,$6C(a1)
-                move.b  (ram_FF1AB6).l,$6D(a1)
+                move.b  (RaceBike_ram_PhysicsConstants).l,$6D(a1)
                 btst    #1,$6B(a1)
                 beq.w   .loc_162EC
                 move.b  (ram_FF1AC2).l,$6D(a1)
@@ -5751,7 +5751,7 @@ sub_162B0:
                 move.b  (ram_FF1ABC).l,$6D(a1)
 
 .loc_16320:
-                movea.l (ram_FF1908).l,a0
+                movea.l (Race_ram_NearestActor).l,a0
                 cmpa.l  #$FFFFFFFF,a0
                 beq.w   .locret_1634C
                 move.w  $30(a1),d1
@@ -5918,7 +5918,7 @@ loc_164E2:
                 bra.w   loc_1651C
 ; ---------------------------------------------------------------------------
 loc_164FE:
-                cmpa.l  (ram_FF1908).l,a1
+                cmpa.l  (Race_ram_NearestActor).l,a1
                 bne.w   loc_16510
                 tst.w   $5A(a1)
                 ble.w   loc_16518
@@ -6207,7 +6207,7 @@ sub_166F0:
  ; *************************************************
 ; Function Race_UpdateCollision
 ; Player/actor proximity/impact: sets collision/engine/gear flags from $4A/$30.
-; In:  a1 - actor; RacePlayerA; ram_FF1A68; ram_FF1AB6/1ABC
+; In:  a1 - actor; RacePlayerA; ram_FF1A68; RaceBike_ram_PhysicsConstants/1ABC
 ; Out: actor $5A/$69/$6B/$6C/$6D
 ; Clobbers: d0-d3/a2/a4
 ; *************************************************
@@ -6252,8 +6252,8 @@ Race_UpdateCollision:
 
 .loc_167BC:
                 bclr    #6,$69(a1)
-                move.b  (ram_FF1AB6).l,$6D(a1)
-                move.w  (ram_FF1E9C).l,d0
+                move.b  (RaceBike_ram_PhysicsConstants).l,$6D(a1)
+                move.w  (Race_ram_ActorDistanceScale).l,d0
                 andi.b  #1,d0
                 or.b    d0,$6B(a1)
                 btst    #1,$6B(a1)
@@ -6279,8 +6279,8 @@ Race_UpdateCollision:
 
 .loc_16828:
                 bclr    #6,$69(a1)
-                move.b  (ram_FF1AB6).l,$6D(a1)
-                move.w  (ram_FF1E9C).l,d0
+                move.b  (RaceBike_ram_PhysicsConstants).l,$6D(a1)
+                move.w  (Race_ram_ActorDistanceScale).l,d0
                 andi.b  #1,d0
                 or.b    d0,$6B(a1)
                 btst    #1,$6B(a1)

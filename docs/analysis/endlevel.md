@@ -20,7 +20,7 @@
 
 ## Role & flow
 
-The top level enters this module when the race outcome is 4 (`ram_FF0918 == 4`): all
+The top level enters this module when the race outcome is 4 (`RaceResults_ram_Outcome == 4`): all
 five courses finished in 1st-4th. The module plays the level's victory animation, then
 shows a rider/quote level-up screen, increments the player's level, rebuilds the level
 opponents and regenerates the password, and returns to the main menu.
@@ -54,7 +54,7 @@ opponents and regenerates the password, and returns to the main menu.
 - `EndLevel_UpdateAnimation`: per level frame counts `EndLevel_FrameCounts` = `35,54,81,91,123`
   (`Menu_ram_PlayerLevel-1`); calls `UpdateAnimation2` with the script `EndLevel_AnimationScript`
   (x=`$80`, y=`$80`), `Race_FinishFrame`; increments `EndLevel_ram_AnimFrame`.
-- `EndLevel_GameTick`: every 5 frames (`ram_FF0D24=5`) when the next frame is ready,
+- `EndLevel_GameTick`: every 5 frames (`EndLevel_ram_SpriteSwapDelay=5`) when the next frame is ready,
   DMA the next sprite table (`NextScrollTable+$400` -> `$1000`, `$140` words) and
   `Race_SwapFrames`; decrements the message timer; when `EndLevel_ram_AnimFrame < 0`
   it ends the animation stage.
@@ -101,7 +101,7 @@ in `src/screens/race_results.asm` (`$6C94`..). Likely dead/legacy text. `[static
 
 ## RAM
 
-- `EndLevel_ram_AnimFrame`; `ram_FF0D24` (5-frame swap delay).
+- `EndLevel_ram_AnimFrame`; `EndLevel_ram_SpriteSwapDelay` (5-frame swap delay).
 - Race animation state: `Animation_ram_BaseTile` (`$2E0`), `Animation_ram_SpriteIndex`,
   `Race_ram_FrameReady/FrameReady2`, `Race_ram_Current/NextSpriteAttributeTable`,
   `Race_ram_Current/NextScrollTable`, `Race_ram_Current/NextSpriteTileArray`,

@@ -34,20 +34,20 @@ table/tile array for the two needles via `UpdateAnimation`).
 
 - Needles use `unk_7DEAA` (animation script at `0x7DEAA`, gap) with
   `UpdateAnimation`; speed `d0 = min(speed/453,31)` at `X=$88,Y=$80`; RPM divisor comes
-  from the gear curve `ram_FF1A70[gear]` (`ram_FF1AA2`), frame = `(speed/divisor)/682`.
+  from the gear curve `RaceBike_ram_Parameters[gear]` (`ram_FF1AA2`), frame = `(speed/divisor)/682`.
 - Odometer reads `RacePlayerA+POSX_HIGH`, divides by 330 and draws three digits from
   the `ram_FF352C` font into `CurrentHudBuffer+$E00`.
-- Stamina: opponent (`ram_FF1908` `$5C/5`) at `+$9B8` (`y=19,x=28`), player
+- Stamina: opponent (`Race_ram_NearestActor` `$5C/5`) at `+$9B8` (`y=19,x=28`), player
   (`RacePlayerA+$5C/5`) at `+$984` (`y=19,x=2`); colors `$E5FF`/`$A427`/`$842F`.
 - Bike HP: `$20 - Race_ram_BikeDamage` clamped, at `+$99C` (`y=19,x=14`).
 - Place/time use `RaceHud_DrawNumber2Digits`; the `:` uses tile `$1FE`.
-- Name/place: `ram_FF14B8` timer, `ram_FF14BA` last place, `ram_FF14BC` rank; copies
+- Name/place: `RaceHud_ram_NameTimer` timer, `RaceHud_ram_LastPlace` last place, `RaceHud_ram_Rank` rank; copies
   `MenuPassword_ram_StrPlayerA/BName+8` or builds `"Nth PLACE"` from
-  `RaceHud_dRankStrings`; `ram_FF14BE` is the text descriptor passed to
+  `RaceHud_dRankStrings`; `RaceHud_ram_TextDescriptor` is the text descriptor passed to
   `EncodeString`/`WriteNametableToBuffer`.
 - Opponent name: `Menu_ram_PlayerA/B_Opponents` maps `$71` actor index -> actor id ->
   `Race_ActorDefinitionTable+6` name (16-byte records); finish rider from
-  `ram_FF1B38`/`Race_ActorLevelBase`; draws via the same text descriptor.
+  `Race_ram_LevelIndex`/`Race_ActorLevelBase`; draws via the same text descriptor.
 - `RaceHud_DrawSymbol`/`Number2/4Digits` compute the buffer offset as
   `2*(y*64+x)` and set bit 15 (priority) + palette + tile.
 
@@ -56,16 +56,16 @@ table/tile array for the two needles via `UpdateAnimation`).
 - `RaceHud_dRankStrings` (`0xD58E`): `" 1st"`..`"16th"` (4 bytes each).
 - `unk_7DEAA`: speed/RPM needle animation script (now `src/data/race_misc_data.asm`), frames/tilemap
   still TODO.
-- `ram_FF1A70`: gear curve (divisor source); `ram_FF1AA2`: RPM divisor.
+- `RaceBike_ram_Parameters`: gear curve (divisor source); `ram_FF1AA2`: RPM divisor.
 - `ram_FF352C`: odometer digit font (8 longs/digit).
-- `ram_FF1B40`: place; `ram_FF1908`: nearest actor; `Race_ram_BikeDamage $FF1B26`.
-- `ram_FF14B8/BA/BC`: name timer / last place / rank; `ram_FF14BE`: text descriptor.
+- `Race_ram_PlayerPlace`: place; `Race_ram_NearestActor`: nearest actor; `Race_ram_BikeDamage $FF1B26`.
+- `RaceHud_ram_NameTimer/BA/BC`: name timer / last place / rank; `RaceHud_ram_TextDescriptor`: text descriptor.
 - `Race_ram_CurrentHudBuffer $FF38C8`; `CurrentSpriteAttributeTable $FF38AC`;
   `CurrentSpriteTileArray $FF38D0`.
 
 ## Open questions
 
-- `unk_7DEAA` script layout and the `ram_FF1A70` gear curve.
+- `unk_7DEAA` script layout and the `RaceBike_ram_Parameters` gear curve.
 - `ram_FF352C` font layout and the exact HUD palette/colors.
 - `RaceHud_DrawNumber4Digits` callers (possibly unused in race).
 - Dynamic verification of the name/place timer and bar colors.

@@ -15,7 +15,7 @@
 |---|---|---|
 | `Race_UpdateLeanCurve` | `0x1406A` | Lean/curve `$3E/$40` and `ram_FF3042`. |
 | `Race_UpdatePlayerAnimation` | `0x160E2` | Player `$5C` animation/tile base clamp. |
-| `Race_UpdateNearestTarget` | `0x1611A` | Nearest actor by squared distance -> `ram_FF1908`. |
+| `Race_UpdateNearestTarget` | `0x1611A` | Nearest actor by squared distance -> `Race_ram_NearestActor`. |
 | `Race_UpdateCollision` | `0x16732` | Player/actor proximity + engine/gear state. |
 | `Audio_UpdateEngineState` | `0x16548` | Engine/gear state (`$6C/$6D`, timing tables). |
 | `Audio_UpdateEngine0` | `0x16520` | Engine audio trigger/flag. |
@@ -38,12 +38,12 @@ and sets the two indexes (`ram_FF18FE`/`ram_FF1900`, 0..31). `Rand_GetWord` retu
 - `Audio_UpdateEngineState` advances `$6C`/`$6D`; the timing tables `unk_257E2`/
   `unk_257E8`/`unk_257EE` (by engine type/gear); clears `$69` bit4 at the end.
 - `Race_UpdateCollision` compares the player/actor `$4A`/`$30` ranges (`ram_FF1A68`),
-  sets `$5A`/`$6C`/`$6B`/`$69` bits and picks engine timings (`ram_FF1AB6/1ABC`).
+  sets `$5A`/`$6C`/`$6B`/`$69` bits and picks engine timings (`RaceBike_ram_PhysicsConstants/1ABC`).
 - `Race_UpdateLeanCurve` computes the lean/curve from `$3E`/d0 into `$40`/`ram_FF3042`.
 - `Race_UpdatePlayerAnimation` advances the player tile base `$5C` up to `ram_FF18AA`
   by `Race_ram_FrameDelay` (on-foot/`$6E` gated).
 - `Race_UpdateNearestTarget` finds the nearest actor by squared X/Y distance and
-  stores `ram_FF1908`, `ram_FF1AA4`, `ram_FF1786`.
+  stores `Race_ram_NearestActor`, `ram_FF1AA4`, `ram_FF1786`.
 
 ## Data / RAM
 

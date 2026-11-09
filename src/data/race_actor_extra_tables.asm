@@ -55,7 +55,7 @@ unk_259C0:
 
 ; unk_25A10: 13-pointer actor-data table (Race_UpdateNearestTarget and AI).
 unk_25A10:
-    dc.l    ram_FF1A70
+    dc.l    RaceBike_ram_Parameters
     dc.l    ActorBikeRecord_18
     dc.l    ActorBikeRecord_0
     dc.l    ActorBikeRecord_1

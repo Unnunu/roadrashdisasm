@@ -43,7 +43,7 @@ Race_Init:
                 jsr     (Race_InitVdp).l
                 jsr     (Race_SpawnOpponents).l
                 jsr     (Race_LoadTrackParams).l
-                move.w  #$FFFF,(ram_FF369E).l
+                move.w  #$FFFF,(Race_ram_HIntRasterDisabled).l
                 move.w  #0,(ram_FF33C8).l
                 move.w  #0,(ram_FF304C).l
                 jsr     (Race_InitAudio).l
@@ -713,7 +713,7 @@ Race_LoadHUD:
 ; Function Race_LoadRoadImage
 ; Loads the road image, builds the pre-scaled road tile rows and calls Race_DrawRearviewMirror.
 ; In:  unk_9DDCC
-; Out: VRAM $F880/$7800/$7900; ram_FF33CC tiles
+; Out: VRAM $F880/$7800/$7900; Race_ram_RearviewTileRows tiles
 ; Clobbers: d0-d6/a0/a1/a3
 ; *************************************************
 
@@ -727,7 +727,7 @@ Race_LoadRoadImage:
                 jsr     (WriteToVRAM).l
 
                 lea     (Intro_ram_ImageBuffer + $728).l,a0
-                movea.l #ram_FF33CC,a1
+                movea.l #Race_ram_RearviewTileRows,a1
                 move.w  #$57,d0 ; $B0 tiles in total
 .loc_AE30:
                 move.l  (a0)+,d1
@@ -942,7 +942,7 @@ Race_InitTrack:
                 move.w  #$70,(ram_FF36AC).l
                 move.w  #0,(ram_FF30E8).l
                 move.l  #$5D,(ram_FF1E64).l
-                move.l  #$100,(ram_FF1E68).l
+                move.l  #$100,(Race_ram_PlayerProgress).l
                 move.w  #1,(ram_FF1E6E).l
                 move.w  #$3E,(ram_FF30DE).l
                 move.w  #$3E,(ram_FF30E0).l
@@ -965,16 +965,16 @@ Race_InitTrack:
 
 Race_InitVariables:
                 move.l  #0,(ram_FF1E5C).l
-                move.w  #0,(ram_FF0406).l
+                move.w  #0,(Race_ram_HIntScrollOffset).l
                 move.w  #-1,(ram_FF3698).l
                 move.w  #0,(ram_FF369A).l
                 move.w  #0,(ram_FF1ACC).l
-                move.l  #$FFFFFFFF,(ram_FF1908).l
+                move.l  #$FFFFFFFF,(Race_ram_NearestActor).l
                 move.w  #0,(Race_ram_BikeDamage).l
                 move.w  #$E10,(ram_FF1B32).l
                 move.w  #$E10,(ram_FF1B34).l
                 move.w  #0,(ram_FF1B36).l
-                move.w  #0,(ram_FF1B38).l
+                move.w  #0,(Race_ram_LevelIndex).l
                 move.l  #0,(ram_FF1B3A).l
                 move.w  #0,(ram_FF1AFA).l
                 move.l  #$333,(ram_FF1AFC).l
@@ -984,17 +984,17 @@ Race_InitVariables:
                 move.l  #0,(ram_FF1B0A).l
                 move.b  #$FF,(ram_FF302B).l
                 move.b  #$FF,(ram_FF302A).l
-                move.l  #1,(ram_FF1E9A).l
-                move.l  #1,(ram_FF1E96).l
+                move.l  #1,(Race_ram_ProgressSnapshotB).l
+                move.l  #1,(Race_ram_ProgressSnapshotA).l
                 move.w  #1,(Race_ram_FrameDelay).l
-                move.w  #0,(ram_FF1B20).l
+                move.w  #0,(Race_ram_Started).l
                 move.w  #0,(Race_ram_GameEnded).l
                 move.w  #0,(Race_ram_DemoGameEnded).l
                 move.w  #0,(ram_FF1B22).l
                 move.w  #0,(ram_FF1B2E).l
                 move.w  #0,(ram_FF1B30).l
                 move.w  #0,(ram_FF1B3E).l
-                move.w  #0,(ram_FF1B40).l
+                move.w  #0,(Race_ram_PlayerPlace).l
                 move.w  #0,(ram_FF1B42).l
                 move.w  #0,(ram_FF1B44).l
                 move.w  #0,(ram_FF1B46).l
@@ -1009,8 +1009,8 @@ Race_InitVariables:
                 move.w  #0,(ram_FF1E5A).l
                 move.l  #0,(ram_FF1E60).l
                 move.l  #$5D,(ram_FF1E64).l
-                move.l  #$100,(ram_FF1E68).l
-                move.w  #0,(ram_FF1E82).l
+                move.l  #$100,(Race_ram_PlayerProgress).l
+                move.w  #0,(Race_ram_BestProgress).l
                 move.w  #0,(ram_FF1E6C).l
                 move.w  #1,(ram_FF1E6E).l
                 move.w  #0,(ram_FF1E70).l
@@ -1033,7 +1033,7 @@ Race_InitVariables:
                 move.w  #0,(ram_FF3040).l
                 move.w  #0,(ram_FF3042).l
                 move.w  #0,(ram_FF3044).l
-                move.w  #0,(ram_FF3046).l
+                move.w  #0,(Race_ram_SpeedDisplay).l
                 move.w  #0,(Race_ram_FrameCounter).l
                 move.w  #0,(Race_ram_FrameDelay).l
                 move.w  #0,(ram_FF304C).l
@@ -1061,13 +1061,13 @@ Race_InitVariables:
                 move.w  #0,(ram_FF368E).l
                 move.w  #0,(ram_FF3690).l
                 move.w  #0,(ram_FF369C).l
-                move.w  #0,(ram_FF369E).l
+                move.w  #0,(Race_ram_HIntRasterDisabled).l
                 move.w  #0,(ram_FF36AA).l
                 move.w  #$70,(ram_FF36AC).l
-                move.w  #0,(ram_FF36AE).l
-                move.w  #$FFFF,(ram_FF36B0).l
-                move.w  #0,(ram_FF36B2).l
-                move.w  #$FFFF,(ram_FF36B4).l
+                move.w  #0,(Race_ram_NearestBehindIndex).l
+                move.w  #$FFFF,(Race_ram_NearestBehindSpeed).l
+                move.w  #0,(Race_ram_NearestAheadIndex).l
+                move.w  #$FFFF,(Race_ram_NearestAheadSpeed).l
                 move.w  #0,(Race_ram_FrameReady).l
                 move.w  #0,(Race_ram_FrameReady2).l
                 move.w  #0,(Race_ram_Alpha1).l
@@ -1099,7 +1099,7 @@ Race_InitVariables:
                 move.l  #Intro_ram_ImageBuffer,(Race_ram_CurrentSpriteTileArray).l
                 move.l  #Race_ram_SpriteSize1,(Race_ram_CurrentSpriteSizePtr).l
                 move.l  #Race_ram_SpriteSize1,(Race_ram_NextSpriteSizePtr).l
-                move.l  #0,(ram_FFD340).l
+                move.l  #0,(Race_ram_CameraOffset).l
                 move.w  #0,(ram_FFD344).l
                 move.w  #0,(ram_FFD346).l
                 move.w  #0,(Race_ram_NumSprites).l
@@ -1155,7 +1155,7 @@ Race_InitVariables:
 ; *************************************************
 
 Race_InitActorLists:
-                move.w  #0,(ram_FF1EA6).l
+                move.w  #0,(Race_ram_SpawnTimer).l
                 move.w  #0,(ram_FF19C4).l
                 move.w  #1,(ram_FF1A06).l
 ; first actor pointer (player A) then the second actor group
@@ -1221,7 +1221,7 @@ Race_InitActorPositions:
 ; Function Race_InitPhysicsConstants
 ; Initializes the bike/engine/steering physics constants and HUD/scroll defaults.
 ; In:  -
-; Out: ram_FF1AB6/D330/D338, ram_FF1AE8..F4, ram_FF18A8..B6, ram_FF1A9E/A0
+; Out: RaceBike_ram_PhysicsConstants/D330/D338, ram_FF1AE8..F4, ram_FF18A8..B6, ram_FF1A9E/A0
 ; Clobbers: d0/a0/a1
 ; *************************************************
 
@@ -1230,7 +1230,7 @@ Race_InitPhysicsConstants:
                 move.w  #$20,(ram_FF1ACA).l
                 move.w  #8,d0
                 lea     (unk_257D0).l,a0
-                lea     (ram_FF1AB6).l,a1
+                lea     (RaceBike_ram_PhysicsConstants).l,a1
 .loc_B790:
                 move.w  (a0)+,(a1)+
                 dbf     d0,.loc_B790
@@ -1288,7 +1288,7 @@ Race_LoadTrackParams:
 ; Function Race_LoadBikeData
 ; Loads the selected bike's parameter block and steering/engine values.
 ; In:  Menu_ram_Player, Menu_ram_BikeIdPlayerA/B
-; Out: ram_FF1A70 (0x13 words); ram_FF1AA6/AAA; RaceBike_ram_*; ram_FF1AB2/B4
+; Out: RaceBike_ram_Parameters (0x13 words); ram_FF1AA6/AAA; RaceBike_ram_*; ram_FF1AB2/B4
 ; Clobbers: d0/d1/a0/a1
 ; *************************************************
 
@@ -1302,7 +1302,7 @@ Race_LoadBikeData:
                 lea     (unk_25B50).l,a0
                 movea.l (a0,d0.w),a0
 
-                lea     (ram_FF1A70).l,a1
+                lea     (RaceBike_ram_Parameters).l,a1
                 move.w  #$12,d1
 .loc_B896:
                 move.w  (a0)+,(a1)+
@@ -1435,12 +1435,12 @@ Race_ResetFrameTimers:
 ; Function Race_UpdateTime
 ; Advances the BCD race timer while the player is not finished (player $68 bit7).
 ; In:  player struct $68; Race_ram_TimeTicks/Seconds/Minutes
-; Out: timer fields; ram_FF1E96 frame count
+; Out: timer fields; Race_ram_ProgressSnapshotA frame count
 ; Clobbers: d0/d1
 ; *************************************************
 
 Race_UpdateTime:
-                addi.l  #1,(ram_FF1E96).l
+                addi.l  #1,(Race_ram_ProgressSnapshotA).l
                 btst    #7,(RacePlayerA + STRUCT_OFFSET_68).l
                 bne.w   .return
 
@@ -1495,13 +1495,13 @@ Race_GameTick:
                 move.w  4(a2),(a0)
                 VDP_VSRAM_WRITE $0,(a0)
                 move.l  6(a2),(a1)
-                move.w  $A(a2),(ram_FF0406).l
+                move.w  $A(a2),(Race_ram_HIntScrollOffset).l
                 move.l  $C(a2),(a0)
 
-                move.w  #-1,(ram_FF369E).l
+                move.w  #-1,(Race_ram_HIntRasterDisabled).l
                 tst.w   (Race_ram_State).l
                 bmi.w   .loc_BAE6
-                move.w  #0,(ram_FF369E).l
+                move.w  #0,(Race_ram_HIntRasterDisabled).l
 .loc_BAE6:
                 movea.l (Race_ram_NextFrameReady).l,a2
                 tst.w   (a2)
@@ -1569,7 +1569,7 @@ Race_GameTick:
                 jsr     (Audio_Engine2Stop).l
                 jsr     (Audio_Engine3Stop).l
                 move.l  #0,(ram_UpdateFunction).l
-                move.w  #-1,(ram_FF369E).l
+                move.w  #-1,(Race_ram_HIntRasterDisabled).l
 .return:
                 rts
 ; End of function Race_GameTick
@@ -1859,7 +1859,7 @@ Race_Update:
                 move.w  (RacePlayerA + STRUCT_OFFSET_SPEED).l,d0
                 jsr     (Race_UpdateSpeedDisplay).l ; HUD speed value
                 jsr     (Race_SpawnTick).l ; dynamic opponent/traffic spawn
-                tst.w   (ram_FF1B20).l
+                tst.w   (Race_ram_Started).l
                 beq.w   .loc_C15A
 ; race started ??
                 jsr     (Race_UpdatePlayerAnimation).l
@@ -2159,14 +2159,14 @@ Race_ComputeResults:
                 lea     (ram_FF0528).l,a4
                 lea     (Menu_ram_PlayerBLevel).l,a6
 .loc_C48C:
-                move.w  #0,(ram_FF091A).l
+                move.w  #0,(RaceResults_ram_Amount).l
                 cmpi.w  #$FFFF,(Race_EventBuffer).l
                 bne.w   .loc_C4E2
                 tst.w   (Race_CopIndex).l
                 beq.w   .loc_C4C0
                 move.w  (Menu_ram_PlayerLevel).l,d0
                 mulu.w  #$14,d0
-                move.w  d0,(ram_FF091A).l
+                move.w  d0,(RaceResults_ram_Amount).l
                 sub.l   d0,(a3)
                 bra.w   .loc_C4E2
 .loc_C4C0:
@@ -2177,7 +2177,7 @@ Race_ComputeResults:
                 mulu.w  #$A,d0
                 divu.w  #$64,d0
                 ext.l   d0
-                move.w  d0,(ram_FF091A).l
+                move.w  d0,(RaceResults_ram_Amount).l
                 movea.l (sp)+,a3
                 sub.l   d0,(a3)
 .loc_C4E2:
@@ -2668,7 +2668,7 @@ Race_LoadBikePalette:
 .loc_CA66:
                 lea     (unk_25B70).l,a0
                 asl.w   #1,d0
-                move.w  (a0,d0.w),(ram_FF36C4).l
+                move.w  (a0,d0.w),(Race_ram_EngineSpeedBase).l
                 asl.w   #4,d0
                 lea     (Shop_BikePalettes).l,a0
                 lea     (a0,d0.w),a0

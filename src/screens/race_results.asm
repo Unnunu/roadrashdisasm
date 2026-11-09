@@ -10,7 +10,7 @@
 ; Builds the post-race screen: outcome flags, VDP setup, one of the normal/busted/
 ; repair layouts, cash/password box, congratulations text, audio.
 ; In:  ram_FF0526/28 (outcome), Race_EventBuffer (event buffer), Race_CopIndex (cop index),
-;      ram_FF091A (fine/repair), Menu_ram_Money/PlayerLevel
+;      RaceResults_ram_Amount (fine/repair), Menu_ram_Money/PlayerLevel
 ; Out: Menu_ram_FrameBuffer -> VRAM $7000; VRAM $0/$8000/$9000/$A000/$B000/$C000
 ; Clobbers: d0-d7, a0-a3
 ; Notes: message group 21 = course incomplete, 28 = worse than 4th, 35 = level clear.
@@ -25,17 +25,17 @@ RaceResults_Init:
                 move.w  #$FFFF,(Menu_ram_MessageBlinkTimer).l
                 move.w  #$3F,(Message_ram_ButtonBlinkPeriod).l
                 move.w  #1500,(Menu_ram_NextMessageTimer).l
-                move.l  #0,(ram_FF0910).l
+                move.l  #0,(RaceResults_ram_NextFunction).l
 ; outcome: 0 = incomplete, >4 = worse than 4th, 4 = level complete
-                move.w  (ram_FF0526).l,(ram_FF0918).l ; player A
+                move.w  (ram_FF0526).l,(RaceResults_ram_Outcome).l ; player A
                 tst.w   (Menu_ram_Player).l
                 beq.w   .loc_5F90
-                move.w  (ram_FF0528).l,(ram_FF0918).l ; player B
+                move.w  (ram_FF0528).l,(RaceResults_ram_Outcome).l ; player B
 .loc_5F90:
 ; pick the message group for this outcome
-                tst.w   (ram_FF0918).l
+                tst.w   (RaceResults_ram_Outcome).l
                 beq.w   .loc_5FBE
-                cmpi.w  #4,(ram_FF0918).l
+                cmpi.w  #4,(RaceResults_ram_Outcome).l
                 bne.w   .loc_5FB2
                 move.w  #(8*35),(Menu_ram_CurrentMessageId).l
                 bra.w   .loc_5FCA
@@ -238,7 +238,7 @@ RaceResults_Init:
 ; *************************************************
 
 RaceResults_DrawStandings:
-                move.l  #RaceResults_DrawStandings,(ram_FF0914).l
+                move.l  #RaceResults_DrawStandings,(RaceResults_ram_DrawRoutine).l
 ; load the "race results" title image
                 lea     (unk_AF26C).l,a3
                 lea     (Intro_ram_ImageBuffer).l,a1
@@ -361,13 +361,13 @@ RaceResults_DrawStandings:
 ; *************************************************
 ; Function RaceResults_DrawBusted
 ; Caught-by-cops layout: title, panel, cop portrait/quote by Race_CopIndex, fine or GAME OVER.
-; In:  Race_CopIndex (cop index), Menu_ram_MoneyPlayerA/B, ram_FF091A (fine)
+; In:  Race_CopIndex (cop index), Menu_ram_MoneyPlayerA/B, RaceResults_ram_Amount (fine)
 ; Out: Menu_ram_FrameBuffer portrait/name/quote/message; VRAM $9000/$B000/$C000
 ; Clobbers: d0-d7, a0-a3
 ; *************************************************
 
 RaceResults_DrawBusted:
-                move.l  #RaceResults_DrawBusted,(ram_FF0914).l
+                move.l  #RaceResults_DrawBusted,(RaceResults_ram_DrawRoutine).l
                 lea     (unk_7ED66).l,a3
                 lea     (Intro_ram_ImageBuffer).l,a1
                 jsr     (UncompressB).l
@@ -565,7 +565,7 @@ RaceResults_DrawBusted:
                 move.b  (a0)+,(a1)+
                 dbf     d0,.loc_6758
                 clr.l   d0
-                move.w  (ram_FF091A).l,d0
+                move.w  (RaceResults_ram_Amount).l,d0
                 lea     -2(a1),a0
                 jsr     (Race_FormatNumber).l
                 lea     (Menu_ram_TempString).l,a0
@@ -589,13 +589,13 @@ RaceResults_DrawBusted:
 ; *************************************************
 ; Function RaceResults_DrawRepair
 ; Bike-repair layout: panel, portrait/quote by player level, repair cost or GAME OVER.
-; In:  Menu_ram_PlayerLevel, Menu_ram_MoneyPlayerA/B, ram_FF091A (repair cost)
+; In:  Menu_ram_PlayerLevel, Menu_ram_MoneyPlayerA/B, RaceResults_ram_Amount (repair cost)
 ; Out: Menu_ram_FrameBuffer portrait/name/quote/message; VRAM $B000/$C000
 ; Clobbers: d0-d7, a0-a3
 ; *************************************************
 
 RaceResults_DrawRepair:
-                move.l  #RaceResults_DrawRepair,(ram_FF0914).l
+                move.l  #RaceResults_DrawRepair,(RaceResults_ram_DrawRoutine).l
                 lea     (unk_7EA66).l,a3
                 lea     (Intro_ram_ImageBuffer).l,a1
                 jsr     (UncompressB).l
@@ -778,7 +778,7 @@ RaceResults_DrawRepair:
                 move.b  (a0)+,(a1)+
                 dbf     d0,.loc_6A3C
                 clr.l   d0
-                move.w  (ram_FF091A).l,d0
+                move.w  (RaceResults_ram_Amount).l,d0
                 lea     -2(a1),a0
                 jsr     (Race_FormatNumber).l
                 lea     (Menu_ram_TempString).l,a0
@@ -803,8 +803,8 @@ RaceResults_DrawRepair:
 ; Function RaceResults_GameTick
 ; Per-frame update: DMA, Start exits, A -> high score, C -> shop, B -> cash box;
 ; cycle the outcome messages; end when a next-screen pointer is set.
-; In:  pad input, ram_FF0918, Menu_ram_CurrentMessageId/NextMessageTimer
-; Out: ram_FF0910 (next screen), ram_UpdateFunction=0 at end stage
+; In:  pad input, RaceResults_ram_Outcome, Menu_ram_CurrentMessageId/NextMessageTimer
+; Out: RaceResults_ram_NextFunction (next screen), ram_UpdateFunction=0 at end stage
 ; Clobbers: d0/d1/a0
 ; *************************************************
 
@@ -855,9 +855,9 @@ RaceResults_GameTick:
                 movea.l (a0,d0.w),a0
                 cmpa.l  #$FFFFFFFF,a0
                 bne.w   .loc_6BA8
-                tst.w   (ram_FF0918).l
+                tst.w   (RaceResults_ram_Outcome).l
                 beq.w   .loc_6B9C
-                cmpi.w  #4,(ram_FF0918).l
+                cmpi.w  #4,(RaceResults_ram_Outcome).l
                 bne.w   .loc_6B90
                 move.w  #$118,(Menu_ram_CurrentMessageId).l
                 bra.w   .loc_6BA8
@@ -869,7 +869,7 @@ RaceResults_GameTick:
                 bra.w   .loc_6BA8
 .loc_6BA8:
                 bsr.w   Menu_ShowMessage
-                cmpi.l  #0,(ram_FF0910).l
+                cmpi.l  #0,(RaceResults_ram_NextFunction).l
                 bne.w   .endStage
 .loc_6BBA:
                 jsr     (Audio_Update).l
@@ -884,7 +884,7 @@ RaceResults_GameTick:
 ; Function RaceResults_HandleInput
 ; Handles A (high score), B (show cash/password for 25 s) and C (shop).
 ; In:  d0 - current buttons (SACBRLDU; 1 = pressed)
-; Out: ram_FF0910 and the message timers/IDs on action
+; Out: RaceResults_ram_NextFunction and the message timers/IDs on action
 ; Clobbers: -
 ; *************************************************
 
@@ -892,15 +892,15 @@ RaceResults_HandleInput:
                 move.b  d0,(RaceResults_ram_CurrentButtons).l
                 btst    #6,(RaceResults_ram_CurrentButtons).l
                 beq.w   .checkB
-                move.l  #HighScore_Init,(ram_FF0910).l ; A pressed -> go to high score table
+                move.l  #HighScore_Init,(RaceResults_ram_NextFunction).l ; A pressed -> go to high score table
 .checkB:
                 btst    #4,(RaceResults_ram_CurrentButtons).l
                 beq.w   .loc_6C46
                 move.w  #$1E,(Menu_ram_MessageBlinkTimer).l ; B pressed -> show cash and password
                 move.w  #1500,(Menu_ram_NextMessageTimer).l ; for 25 seconds
-                tst.w   (ram_FF0918).l
+                tst.w   (RaceResults_ram_Outcome).l
                 beq.w   .loc_6C3A
-                cmpi.w  #4,(ram_FF0918).l
+                cmpi.w  #4,(RaceResults_ram_Outcome).l
                 bne.w   .loc_6C2E
                 move.w  #(8*35),(Menu_ram_CurrentMessageId).l
                 bra.w   .loc_6C46
@@ -913,7 +913,7 @@ RaceResults_HandleInput:
 .loc_6C46:
                 btst    #5,(RaceResults_ram_CurrentButtons).l
                 beq.w   .return
-                move.l  #Shop_Init,(ram_FF0910).l ; C pressed -> go to bike shop
+                move.l  #Shop_Init,(RaceResults_ram_NextFunction).l ; C pressed -> go to bike shop
 .return:
                 rts
 ; End of function RaceResults_HandleInput

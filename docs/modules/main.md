@@ -44,7 +44,7 @@ See `docs/analysis/main.md` for the annotated boot flow and evidence.
 
 - `ram_UpdateFunction` `$FF1A62` — per-frame update pointer.
 - `LogoEA_ram_Finished` `$FF1A66` — logo completion flag.
-- `ram_FF369E` — set to `$FFFF` while the logo runs.
+- `Race_ram_HIntRasterDisabled` — set to `$FFFF` while the logo runs.
 - ROM checksum routine `Boot_CheckRomChecksum` (`0x7FF98`, outside this file's code range).
 
 ## External calls / dependencies
@@ -80,8 +80,8 @@ parameters inside `HorizontalInterrupt`/`Audio_UpdateEngine` are deferred with t
   (GDB-remote experiment, see `fade.md`).
 - `[dynamic]` After the first input read, control ports 1/2 are `$40`; `GetInputPlayerA`
   returns the button byte in the low 8 bits (upper bits untouched).
-- `[dynamic]` `HorizontalInterrupt` disables the raster effect while `ram_FF369E=$FFFF`
-  (logo) and enables it later (`$FF369E=0`); `ram_FF0406` is the scroll-table offset.
+- `[dynamic]` `HorizontalInterrupt` disables the raster effect while `Race_ram_HIntRasterDisabled=$FFFF`
+  (logo) and enables it later (`$FF369E=0`); `Race_ram_HIntScrollOffset` is the scroll-table offset.
 - `[static]` Exception-handler tags are written to address 0 (ROM, ignored); `stop`
   freezes the CPU.
 

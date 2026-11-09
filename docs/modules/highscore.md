@@ -29,7 +29,7 @@ play A/B/C select high score/results/shop and a release returns to the results.
   `MainMenu_ram_DemoMode`; end.
 - `GameTick`: DMA; release edge -> `RaceResults_Init`; A -> `HighScore_Init`,
   B -> `RaceResults_Init`, C -> `Shop_Init`; cycle message group 42 every 300 frames;
-  end when `ram_FF0910 != 0`.
+  end when `RaceResults_ram_NextFunction != 0`.
 
 ## RAM / ROM & structures
 
@@ -39,7 +39,7 @@ play A/B/C select high score/results/shop and a release returns to the results.
 - `HighScore_ram_PlayerATableOffset/B` (`$FF052A/$FF052C`): player row offsets (20*5,
   20*6 initially; can move after sorting).
 - `HighScore_ram_CurrentButtons` (`$FF094E`); `MainMenu_ram_DemoMode` (`$FF3692`);
-  `ram_FF0910` next-screen pointer; `Menu_ram_CurrentMessageId/NextMessageTimer`.
+  `RaceResults_ram_NextFunction` next-screen pointer; `Menu_ram_CurrentMessageId/NextMessageTimer`.
 - Assets: `ImgHighScoreTitle` title -> `$9000`, `ImgHighScoreBadge` badge -> `$B000`,
   `FontHighScoreTable` table font -> `$800`, `unk_A2E68` -> `$1000` (use TODO),
   `img_Intro_Font` -> `$0`, background -> `$8000`, gamepad -> `$A000`.
@@ -57,7 +57,7 @@ Detailed listing/table: `docs/analysis/highscore.md`.
 
 ## External calls / dependencies
 
-- Callers: `src/core/top_level.asm`; `src/screens/race_results.asm`/`src/screens/shop.asm` set `ram_FF0910` to
+- Callers: `src/core/top_level.asm`; `src/screens/race_results.asm`/`src/screens/shop.asm` set `RaceResults_ram_NextFunction` to
   `HighScore_Init`.
 - Uses `UncompressW/B`, `WriteToVRAM`, `WriteNametable(ToBuffer)`, `EncodeString`,
   `Menu_ShowMessage`, `DmaWriteVRAM`, `GetInputPlayerA/B`, `Audio_Update/3/4`.

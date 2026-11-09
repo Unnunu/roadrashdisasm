@@ -25,9 +25,9 @@ EndLevel_Init:
                 move.w  #$FFFF,(Menu_ram_MessageBlinkTimer).l
                 move.w  #$3F,(Message_ram_ButtonBlinkPeriod).l
                 move.w  #$180,(Menu_ram_CurrentMessageId).l
-                move.l  #0,(ram_FF0910).l
+                move.l  #0,(RaceResults_ram_NextFunction).l
                 move.w  #0,(EndLevel_ram_AnimFrame).l
-                move.w  #5,(ram_FF0D24).l
+                move.w  #5,(EndLevel_ram_SpriteSwapDelay).l
                 move.w  #0,(Race_ram_FrameReady).l
                 move.w  #0,(Race_ram_FrameReady2).l
                 move.l  #Intro_ram_ImageBuffer,(Race_ram_NextSpriteTileArray).l
@@ -488,7 +488,7 @@ EndLevel_GameTickVictoryCharacter:
                 beq.w   .loc_8ADC
 .loc_8AC2:
                 bsr.w   Menu_ShowMessage
-                cmpi.l  #0,(ram_FF0910).l
+                cmpi.l  #0,(RaceResults_ram_NextFunction).l
                 bne.w   .loc_8ADC
 .loc_8AD4:
                 jsr     (Audio_Update).l
@@ -525,14 +525,14 @@ EndLevel_GameTick:
                 tst.w   (EndLevel_ram_AnimFrame).l
                 bmi.w   .endStage
 
-                subq.w  #1,(ram_FF0D24).l
+                subq.w  #1,(EndLevel_ram_SpriteSwapDelay).l
                 bpl.w   .end
                 lea     (VdpCtrl).l,a0
                 lea     (VdpData).l,a1
                 movea.l (Race_ram_NextFrameReady).l,a2
                 tst.w   (a2)
                 beq.w   .end
-                move.w  #5,(ram_FF0D24).l
+                move.w  #5,(EndLevel_ram_SpriteSwapDelay).l
 ; set sprite table
                 move.l  (Race_ram_NextScrollTable).l,d0
                 addi.w  #$400,d0

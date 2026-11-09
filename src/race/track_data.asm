@@ -18,7 +18,7 @@
 TrackData_StartDecode:
                 movem.l d0-d7/a0-a6,-(sp)
                 clr.w   (ram_FF13E2).l
-                move.w  d1,(ram_FF13B2).l
+                move.w  d1,(Uncompress_ram_Budget).l
                 clr.l   d2
                 move.w  (a2)+,d2
                 move.w  d2,(ram_FF13DC).l
@@ -196,7 +196,7 @@ TrackData_BoundaryShifts:       dc.b   7
 ; Channel 1 decoder: control byte = run-1 (high nibble), sign (bit3), width-1
 ; (low 3 bits); per sample read a delta from the bit stream, update the accumulator
 ; and write a byte at a1, a1+2, ...
-; In:  state at ram_FF13xx; budget ram_FF13B2
+; In:  state at ram_FF13xx; budget Uncompress_ram_Budget
 ; Out: output at ram_FF13D8; state
 ; Clobbers: all (saved/restored)
 ; *************************************************
@@ -215,7 +215,7 @@ TrackData_DecodeChannel1:
 .loc_A106:
                 movea.l (ram_FF13D4).l,a0
                 movea.l (ram_FF13DE).l,a2
-                move.w  d1,(ram_FF13B2).l
+                move.w  d1,(Uncompress_ram_Budget).l
                 tst.w   (ram_FF13E2).l
                 bne.w   .loc_A29C
                 move.b  (a0)+,(ram_FF13B9).l
@@ -305,8 +305,8 @@ TrackData_DecodeChannel1:
                 move.b  d0,(ram_FF13B8).l
                 move.b  d0,(a1)
                 addq.l  #2,a1
-                subq.w  #1,(ram_FF13B2).l
-                tst.w   (ram_FF13B2).l
+                subq.w  #1,(Uncompress_ram_Budget).l
+                tst.w   (Uncompress_ram_Budget).l
                 bmi.w   .loc_A2C0
 .loc_A29C:
                 addq.w  #1,(ram_FF13C8).l
@@ -351,7 +351,7 @@ TrackData_DecodeChannel2:
 ; channel 2 starts one byte after channel 1's output
                 addq.l  #1,a1
                 movea.l (ram_FF140A).l,a2
-                move.w  d1,(ram_FF13B2).l
+                move.w  d1,(Uncompress_ram_Budget).l
                 tst.w   (ram_FF140E).l
                 bne.w   .loc_A4A4
                 move.b  (a0)+,(ram_FF13E5).l
@@ -441,8 +441,8 @@ TrackData_DecodeChannel2:
                 move.b  d0,(ram_FF13E4).l
                 move.b  d0,(a1)
                 addq.l  #2,a1
-                subq.w  #1,(ram_FF13B2).l
-                tst.w   (ram_FF13B2).l
+                subq.w  #1,(Uncompress_ram_Budget).l
+                tst.w   (Uncompress_ram_Budget).l
                 bmi.w   .loc_A4C8
 .loc_A4A4:
                 addq.w  #1,(ram_FF13F4).l

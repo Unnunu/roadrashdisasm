@@ -56,7 +56,7 @@ speed/curve (`ram_FF302E/3032/3034`, `word_14742`). `Race_GetCurveSpeedLimit` re
   `sub_1307C` (variant path), `sub_130D2` (recovery timer `ram_FF1B32`, then
   `sub_1300E`).
 - `sub_13130` is the shared handler of all 16 `unk_25A44` entries: it compares
-  `|4(a1)-ram_FF1E68|` with `$210000`, otherwise computes a Y value from
+  `|4(a1)-Race_ram_PlayerProgress|` with `$210000`, otherwise computes a Y value from
   `$46*$12` + `$30`, clamps on-road to `$37..$A9` / off-road to `-$57..-$C9`, and
   flips `$46` when clamped.
 - The table targets `sub_16458`, `sub_165D0`, `sub_165E0`, `sub_16612`, `sub_16624`,
@@ -71,7 +71,7 @@ Actor fields used here: `$12` Speed, `$14`, `$16` type, `$22`/`$26` movement,
 `$30`/`$36/$38` Y/road, `$3E/$40/$42` lean, `$56`, `$68` bits, `$69` bits, `$6E`,
 `$71` index, `$73`, `$75`, `$78`. Data: `unk_258AE`/`unk_25A10` actor data,
 `unk_10E3E`, `unk_12B7C`, `unk_12D0A`, `unk_13A1A`, `Track_CurveBuffer`,
-`ram_FF302E/3032/3034`, `word_14742`, `ram_FF1E68/82/9A`, `Race_ram_FrameDelay`/
+`ram_FF302E`/`ram_FF3032`/`ram_FF3034`, `word_14742`, `Race_ram_PlayerProgress`/`Race_ram_BestProgress`/`Race_ram_ProgressSnapshotB`, `Race_ram_FrameDelay`/
 `CurrentButtons`, `Race_StaticActorList`, `$FF2FAA`, `unk_14056` (race_anim_audio).
 
 ## Open questions

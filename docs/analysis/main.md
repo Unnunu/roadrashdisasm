@@ -173,7 +173,7 @@ Then:
 - `[static]` If the control ports are nonzero (`$A10008`/`$A1000C`), skip the logo and
   go straight to `.anyButtonPressed`.
 - `[static]` Otherwise `LogoEA_Init`, enable display (`$8174`), set
-  `ram_FF369E = $FFFF`, install `LogoEA_GameTick` as `ram_UpdateFunction`, and loop
+  `Race_ram_HIntRasterDisabled = $FFFF`, install `LogoEA_GameTick` as `ram_UpdateFunction`, and loop
   reading both controllers until a button is pressed or `LogoEA_ram_Finished` is set.
 - `[static]` On exit: `ram_UpdateFunction = 0`; `jmp (loc_7E6A2)` (top-level flow).
 
@@ -245,15 +245,15 @@ budget.
 `[static]` This is a raster-effect and engine-audio handler:
 
 1. `move.w #$8AFF,VdpCtrl` re-arms the H-int counter for 255 lines.
-2. If `ram_FF369E == $FFFF`, return immediately (effect disabled; used during the
+2. If `Race_ram_HIntRasterDisabled == $FFFF`, return immediately (effect disabled; used during the
    logo/fade).
 3. Save `d0-d2/a0-a2`.
-4. Read the scroll-step offset `ram_FF0406`; if `<= 0`, skip to the end.
+4. Read the scroll-step offset `Race_ram_HIntScrollOffset`; if `<= 0`, skip to the end.
 5. Index the VSRAM/scroll table at `Race_ram_NextVScrollInfo + offset`; it yields a
    VDP command word, a target HV value, a data word and a next offset:
    - write the command word to `VdpCtrl`;
    - load `d0` (target), `d1` (data word), `d2` (longword data), and the next
-     `ram_FF0406`;
+     `Race_ram_HIntScrollOffset`;
    - set VSRAM write address 0 (`VDP_VSRAM_WRITE`).
 6. Busy-wait on the HV counter until the target scanline and horizontal position are
    reached (`.loc_14AA`, `.loc_14B2`, `.loc_14BC`); then write the longword `d2` to the
@@ -261,21 +261,21 @@ budget.
 7. Execute **36 NOPs**; `[hardware]`/`[design]` this is a VDP write-recovery delay
    (timing-critical; exact count probably tuned for the board/VDP).
 8. Write `d1` to `VdpCtrl`.
-9. If the next `ram_FF0406 == $90`, run the once-per-frame engine-audio update:
-   - reset `ram_FF0406 = 0`;
+9. If the next `Race_ram_HIntScrollOffset == $90`, run the once-per-frame engine-audio update:
+   - reset `Race_ram_HIntScrollOffset = 0`;
    - if `ram_MusicEnabled != 0`, skip to `Audio_Update`;
    - if `Race_ram_State != 0`, call `Audio_Engine1Update`/`Audio_Engine2Update` and skip;
    - otherwise compute a speed/engine parameter from `RacePlayerA` (struct offset `$14`
      × `Race_ram_FrameCounter` + `STRUCT_OFFSET_SPEED`, scaled by `ram_FF1AA2` and
      `$3800`), smooth it into `ram_FF36B8` with a ±`$64` rate limit, derive `d1`
      (`>>5 + 2`, min 0), handle player B's struct `RacePlayerB` (distance to
-     `ram_FF1E68`), call `Audio_Engine1Update`, `Audio_UpdateEngine` (with `ram_FF1908`) and
+     `Race_ram_PlayerProgress`), call `Audio_Engine1Update`, `Audio_UpdateEngine` (with `Race_ram_NearestActor`) and
      `Audio_Engine2Update`.
-10. Set `ram_FF369E = $FFFF`; if `ram_FF0406 > 0`, set it back to 0 (re-enable the
+10. Set `Race_ram_HIntRasterDisabled = $FFFF`; if `Race_ram_HIntScrollOffset > 0`, set it back to 0 (re-enable the
     effect next time).
 
-`[dynamic]` GDB-remote observed `ram_FF369E = $FFFF` during the logo, then `0` once the
-effect was enabled; `ram_FF0406 = $10` and `ram_MusicEnabled = 1` in the observed
+`[dynamic]` GDB-remote observed `Race_ram_HIntRasterDisabled = $FFFF` during the logo, then `0` once the
+effect was enabled; `Race_ram_HIntScrollOffset = $10` and `ram_MusicEnabled = 1` in the observed
 frames. `[static]` The audio calls are sound-driver entry points (`Audio_Update/8/11`);
 their exact parameters are deferred with the audio deep dive.
 
@@ -290,7 +290,7 @@ their exact parameters are deferred with the audio deep dive.
   `ram_FF1AA4` and `$3800`.
 - Add `$400`, clamp to `>= $400`, smooth toward `ram_FF36C0` with a ±`$64` rate limit,
   store back into `ram_FF36C0`.
-- Compute `|ram_FF1E68 - 4(a1)| * 2`, take the high word, clamp to `<= $1F` -> `d1`.
+- Compute `|Race_ram_PlayerProgress - 4(a1)| * 2`, take the high word, clamp to `<= $1F` -> `d1`.
 
 `[hypothesis]` The routine computes engine-audio parameters for player B (or a second
 object), mirroring the player-A math in `HorizontalInterrupt`; the struct fields
@@ -331,9 +331,9 @@ exception the game freezes.
   upper bits untouched (`d0=$0000FF00` with no buttons pressed).
 - `[dynamic]` During the logo, `ram_UpdateFunction = 0x366` (`LogoEA_GameTick`) and
   `VerticalInterrupt` dispatches it every frame.
-- `[dynamic]` `HorizontalInterrupt` fires during the logo with `ram_FF369E = $FFFF`
-  (effect disabled) and later with `ram_FF369E = 0` (effect enabled);
-  `ram_FF0406 = $10`, `ram_MusicEnabled = 1` in the observed frames.
+- `[dynamic]` `HorizontalInterrupt` fires during the logo with `Race_ram_HIntRasterDisabled = $FFFF`
+  (effect disabled) and later with `Race_ram_HIntRasterDisabled = 0` (effect enabled);
+  `Race_ram_HIntScrollOffset = $10`, `ram_MusicEnabled = 1` in the observed frames.
 - `[static]` The exception handlers write their tags to address 0 (ROM), so the writes
   have no runtime effect; `stop #$2700` freezes the CPU.
 

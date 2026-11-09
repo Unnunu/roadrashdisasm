@@ -31,7 +31,7 @@ The module writes digit tiles into the race HUD buffers (`Race_ram_CurrentHudBuf
 - `RaceHud_DrawStandings`, which draws a race value plus a racer/standings list with the current
   row highlighted;
 - several debug readouts (`RaceDebug_ShowDistanceTravelled`, POSZ, frame delay,
-  `ram_FF304C`, `ram_FF3046`, the gear, and a multi-value debug panel).
+  `ram_FF304C`, `Race_ram_SpeedDisplay`, the gear, and a multi-value debug panel).
 
 None of the labels are called by the disassembled modules (`src/race/race_hud.asm` has its own
 drawing); they are likely debug/alternate HUD code or called indirectly from the
@@ -67,7 +67,7 @@ offset is `((d1 & $FF00) >> 1) + ((d1 & $FF) << 1)` = `row*128 + column*2`
 | `RaceDebug_ShowFrameDelay` | `Race_ram_FrameDelay` | none (bug, see below) |
 | `sub_999E` | `ram_FF304C` (formatted) | `$1914` |
 | `RaceDebug_ShowState` | `ram_FF1786`, `NumSprites`, `ram_FF1B3E`, struct `+$68`, `POSY`, `POSZ`, `POSX_HIGH`, `POSX_LOW & $FF00` | `$1420/$140D/$150D/$1418/$1A08/$1A10/$1A17/$1A1C` |
-| `sub_9A98` | `ram_FF3046` | `$180D` |
+| `sub_9A98` | `Race_ram_SpeedDisplay` | `$180D` |
 | `RaceHud_DrawGear` | player `GEAR` + `$5C1` | `$1716` |
 
 `Race_FormatDecimal` (`src/race/race.asm` `0xF11C`) converts the value for the distance readouts. These

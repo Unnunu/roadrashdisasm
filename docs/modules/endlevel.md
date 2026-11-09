@@ -10,7 +10,7 @@
 Level-complete sequence: plays the per-level victory animation, then shows a rider/
 quote level-up screen, increments the player's level, rebuilds the level opponents and
 regenerates the password, and returns to the main menu. Entered when all five courses
-of a level are finished in 1st-4th (`ram_FF0918 == 4`).
+of a level are finished in 1st-4th (`RaceResults_ram_Outcome == 4`).
 
 ## Entry points & API
 
@@ -37,7 +37,7 @@ of a level are finished in 1st-4th (`ram_FF0918 == 4`).
 
 ## RAM / ROM & structures
 
-- `EndLevel_ram_AnimFrame`; `ram_FF0D24` (5-frame swap delay);
+- `EndLevel_ram_AnimFrame`; `EndLevel_ram_SpriteSwapDelay` (5-frame swap delay);
   `Race_ram_*` animation state; `Animation_ram_BaseTile=$2E0`.
 - `EndLevel_LevelRiderTable` (`0x19F12`): 5 levels x 2 `quote_ptr,image_ptr` records (rival + Natasha);
   index `(level-1)*$10 + (Rand & 8)`.

@@ -55,7 +55,7 @@ marking/animation, and the race outcome. `src/core/top_level.asm` calls `Race_In
 | `Race_CreateActors` | `0xCAD0` | `Race_Init` | Rider/opponent actor structs and tables. |
 | `Race_InitActorLists`/`Positions` | `0xB6C4`/`0xB72A` | `Race_Init` | Actor pointer groups + screen spots. |
 | `Race_ComputeResults` | `0xC3F8` | race end | Outcome/places/password/money. |
-| `Race_UpdateSpeedDisplay` | `0xF108` | `Race_Update` | Speed -> `ram_FF3046`. |
+| `Race_UpdateSpeedDisplay` | `0xF108` | `Race_Update` | Speed -> `Race_ram_SpeedDisplay`. |
 | `Race_FormatDecimal` | `0xF11C` | HUD/debug | Packed 5-digit decimal. |
 | `Race_SpawnTick` | `0x16AF6` | `Race_Update` | Opponent/traffic spawning. |
 | `Race_SpawnOpponent`/`Traffic` | `0x16BD6`/`0x16C1A` | spawn tick | Ahead/behind spawn paths. |
@@ -80,9 +80,9 @@ marking/animation, and the race outcome. `src/core/top_level.asm` calls `Race_In
 - `$FF2FAA`: a further actor-like instance used by `Race_UpdateStaticActors` (`$68` bit6), not in
   the static list; role/layout TODO (`docs/analysis/race_actors.md`).
 - Spawn lists: `ram_FF1A0C` active actors, `ram_FF1A06` count, `ram_FF1982` opponent
-  free list, `ram_FF19C4` traffic free list; `ram_FF1E68` progress, `ram_FF1E9C`
-  distance scale, `ram_FF1EA6` spawn timer, `ram_FF1F2A` first opponent,
-  `ram_FF1B38/34/36` level/recycle state; speed display `ram_FF3046`.
+  free list, `ram_FF19C4` traffic free list; `Race_ram_PlayerProgress` progress, `Race_ram_ActorDistanceScale`
+  distance scale, `Race_ram_SpawnTimer` spawn timer, `ram_FF1F2A` first opponent,
+  `Race_ram_LevelIndex`/`ram_FF1B34`/`ram_FF1B36` level/recycle state; speed display `Race_ram_SpeedDisplay`.
   Details: `docs/analysis/race_spawn.md`.
 - `$FFD37C`: 0x14-byte road/actor objects (`docs/analysis/road_render.md`).
 - Actors: `Race_ActorList` `0x25856` (player A + 15 opponents, `$80` each),
@@ -157,12 +157,12 @@ Detailed top-level flow: `docs/analysis/race.md`; actors: `docs/analysis/race_ac
 - `[static]` Input/steering/pause and the player `$68` bit1/bit2/bit7 meanings in the
   top-level.
 - `[static]` Track record/streams/spawn/bike data initialization.
-- `[static]` Race outcome fields (`ram_FF0526/28`, `Race_EventBuffer`, `ram_FF0918`).
+- `[static]` Race outcome fields (`ram_FF0526/28`, `Race_EventBuffer`, `RaceResults_ram_Outcome`).
 - `[static]` Actor tables: 76 definitions, 16-pointer rider list (player A + 15
   opponents), graphics/static tables (parsed from `baserom.md`).
 - `[static]` Spawn flow: `Race_SpawnTick` -> opponent (ahead, x+$200000) or traffic
   (behind, x-$100000), active/free lists, distance checks, rating from the opponent
-  definition; speed display `ram_FF3046`.
+  definition; speed display `Race_ram_SpeedDisplay`.
 
 ## Hypotheses / next steps
 

@@ -175,8 +175,8 @@ Actor tables: `Race_ActorList` `$25856` (16 actor pointers + sentinel),
 Top-level state: `Race_ram_State` (0 running, non-zero paused/loading),
 `Race_ram_TimeTicks/Seconds/Minutes` (BCD timer), `Race_ram_FrameCounter/Delay`,
 `Race_ram_ActiveController`/`CurrentButtons`, `Race_ram_GameEnded`/`DemoGameEnded`,
-`ram_FF1B20` (race started), `ram_FF1B18` (finish timer), `ram_FF3698/369A/368E`
-(pause/demo), `ram_FF1E96` (frame count), interpolation arrays
+`Race_ram_Started` (race started), `ram_FF1B18` (finish timer), `ram_FF3698/369A/368E`
+(pause/demo), `Race_ram_ProgressSnapshotA` (frame count), interpolation arrays
 `ram_FF1E50/52/54/56/58/5A`, `ram_FF3036` (player x difference).
 
 Buffers: `Intro_TitleScrollTable`/`Intro_TitleScrollSpeed` (+$400 SAT),
@@ -192,18 +192,18 @@ Buffers: `Intro_TitleScrollTable`/`Intro_TitleScrollSpeed` (+$400 SAT),
 | `$FF1A06` | `ram_FF1A06` | 2 | Active actor count (spawn threshold `< 6`). |
 | `$FF1982` | `ram_FF1982` | - | Opponent free list (7 initial; push/pop). |
 | `$FF19C4` | `ram_FF19C4` | - | Traffic free list (push/pop; initial count TODO). |
-| `$FF1E68` | `ram_FF1E68` | 4 | Player progress for ahead/behind checks. |
-| `$FF1E9C` | `ram_FF1E9C` | 2 | Actor-distance scale (`+$66 * scale >> 16`). |
-| `$FF1EA6` | `ram_FF1EA6` | 2 | Spawn timer (0..511 frames). |
+| `$FF1E68` | `Race_ram_PlayerProgress` | 4 | Player progress for ahead/behind checks. |
+| `$FF1E9C` | `Race_ram_ActorDistanceScale` | 2 | Actor-distance scale (`+$66 * scale >> 16`). |
+| `$FF1EA6` | `Race_ram_SpawnTimer` | 2 | Spawn timer (0..511 frames). |
 | `$FF1F2A` | `ram_FF1F2A` | - | First opponent actor (special cases). |
-| `$FF1B20` | `ram_FF1B20` | 2 | Race started flag. |
-| `$FF1B38` | `ram_FF1B38` | 2 | Current level/cop index used by the recycler. |
+| `$FF1B20` | `Race_ram_Started` | 2 | Race started flag. |
+| `$FF1B38` | `Race_ram_LevelIndex` | 2 | Current level/cop index used by the recycler. |
 | `$FF1B34`/`$FF1B36` | `ram_FF1B34/36` | 2 each | Reset on the first-opponent level transition. |
-| `$FF3046` | `ram_FF3046` | 2 | Speed display (`Race_UpdateSpeedDisplay`). |
+| `$FF3046` | `Race_ram_SpeedDisplay` | 2 | Speed display (`Race_UpdateSpeedDisplay`). |
 
 `Race_SpawnTick` spawns ahead opponents (`x+$200000`) or behind traffic
 (`x-$100000`), with active/free lists and distance checks; `Race_UpdateSpeedDisplay`
-+ `Race_FormatDecimal` produce `ram_FF3046`. See `docs/analysis/race_spawn.md`.
++ `Race_FormatDecimal` produce `Race_ram_SpeedDisplay`. See `docs/analysis/race_spawn.md`.
 
 ### PRNG/audio/animation (`src/race/race_anim_audio.asm`)
 
@@ -251,7 +251,7 @@ See `docs/analysis/race_ai.md`.
 | `Road_ram_XLeftArray`/`XRightArray`/`MarkingXArray` | road arrays | - | Per-line left/right/marking X. |
 | `RoadMarking_ram_XArray`/`WidthArray` | marking arrays | - | Marking X/width per line. |
 | `ram_FF310A`/`31D2`/`329A`/`3236`/`3362`/`3A9C` | profile arrays | - | Curve/height/marking values + indexes. |
-| `ram_FF1E68`/`6A`/`6C` | progress state | 2 each | Player progress/curve. |
+| `Race_ram_PlayerProgress` / `ram_FF1E6A` / `ram_FF1E6C` | progress state | 2 each | Player progress/curve. |
 | `ram_FF1B50`/`1C50`/`1D50` | object lists | - | Sorted/visible object lists. |
 | `ram_FFD77C` | curve accumulator | - | Track curve integration. |
 | `unk_EB34` | road-edge data | - | Edge graphics for `Race_DrawRoadEdges`. |
@@ -266,17 +266,17 @@ stages sprite tiles. Standings: `Race_ComputeStandings`/`Race_ScaleResultValue`.
 
 | Address | Name | Size | Meaning |
 |---|---|---|---|
-| `ram_FF14D8` | `ram_FF14D8` | 2 | VDP DMA control word. |
-| `ram_FF14DC` | `ram_FF14DC` | 4 | HInt vertical scroll accumulator. |
-| `ram_FF14E0`/`E4` | `ram_FF14E0/E4` | 4 each | Nearest behind/ahead actor distances. |
+| `Race_ram_VdpDmaControl` | `Race_ram_VdpDmaControl` | 2 | VDP DMA control word. |
+| `Race_ram_HIntVScroll` | `Race_ram_HIntVScroll` | 4 | HInt vertical scroll accumulator. |
+| `Race_ram_NearestBehindDistance` / `Race_ram_NearestAheadDistance` | `Race_ram_NearestBehindDistance`/`Race_ram_NearestAheadDistance` | 4 each | Nearest behind/ahead actor distances. |
 | `ram_FF30EA`/`EE`/`F2`/`F6`/`FA`/`FE` | HInt HScroll layers | 4 each | Sky/road/ground scroll values. |
 | `ram_FF3274` | `ram_FF3274` | 2 | Horizon/VScroll base. |
-| `ram_FFD340` | `ram_FFD340` | 4 | Camera offset subtracted from the player X. |
+| `Race_ram_CameraOffset` | `Race_ram_CameraOffset` | 4 | Camera offset subtracted from the player X. |
 | `ram_FF1E54`/`56`/`60`/`64`/`68`/`76`/`7A`/`7E`/`86` | camera/road state | 2/4 each | Camera position, progress, curve accumulators. |
-| `ram_FF36AE`/`B2` | nearest actor indices | 2 each | Ahead/behind actor index (or `$FFFF`). |
-| `ram_FF36B0`/`B4` | engine-audio values | 2 each | Nearest-opponent audio speeds. |
-| `ram_FF1B40` | `ram_FF1B40` | 2 | Nearest/rank count. |
-| `ram_FF33CC` | `ram_FF33CC` | - | Road tile rows for the rearview mirror. |
+| `Race_ram_NearestBehindIndex` / `Race_ram_NearestAheadIndex` | nearest actor indices | 2 each | Ahead/behind actor index (or `$FFFF`). |
+| `Race_ram_NearestBehindSpeed` / `Race_ram_NearestAheadSpeed` | engine-audio values | 2 each | Nearest-opponent audio speeds. |
+| `$FF1B40` | `Race_ram_PlayerPlace` | 2 | Player place/rank. |
+| `Race_ram_RearviewTileRows` | `Race_ram_RearviewTileRows` | - | Road tile rows for the rearview mirror. |
 | `ram_FF3238` | `ram_FF3238` | - | Road marking widths; `RoadMarking_ram_WidthArray`/`ram_FF3A9C` X. |
 
 `Race_BuildVScrollInfo`/`Race_BuildHScrollTable` produce the per-frame
@@ -290,10 +290,10 @@ See `docs/analysis/race_physics.md`.
 | Address | Name | Size | Meaning |
 |---|---|---|---|
 | `$FF0526`/`$FF0528` | `ram_FF0526/28` | 2 each | Player A/B outcome (0 = incomplete, >4 = worse than 4th, 4 = level complete). |
-| `$FF0910` | `ram_FF0910` | 4 | Next-screen function pointer (RaceResults/HighScore/Shop). |
-| `$FF0914` | `ram_FF0914` | 4 | Active draw routine pointer (set, not read). |
-| `$FF0918` | `ram_FF0918` | 2 | Copied outcome; `4` selects the end-level screen. |
-| `$FF091A` | `ram_FF091A` | 2 | Fine/repair amount formatted into the bust/repair message. |
+| `$FF0910` | `RaceResults_ram_NextFunction` | 4 | Next-screen function pointer (RaceResults/HighScore/Shop). |
+| `$FF0914` | `RaceResults_ram_DrawRoutine` | 4 | Active draw routine pointer (set, not read). |
+| `$FF0918` | `RaceResults_ram_Outcome` | 2 | Copied outcome; `4` selects the end-level screen. |
+| `$FF091A` | `RaceResults_ram_Amount` | 2 | Fine/repair amount formatted into the bust/repair message. |
 | `$FF04C8` | `Race_EventBuffer` | `$40` | 16-long race event/sort buffer; first word `$FFFF` = busted/destroyed. |
 | `$FF1B1A` | `Race_CopIndex` | 2 | Cop/officer index (1..5); 0 = bike destroyed. |
 | `$FF1414`/`FF1418`/`FF141A` | `ram_FF1414/18/1A` | - | Standings string header/text, height, width. |
@@ -358,9 +358,9 @@ alternate HUD. See `docs/analysis/race_hud_debug.md`.
 | `$FF38CC` | `Race_ram_NextHudBuffer` | 4 | Next HUD buffer/DMA source. |
 | `$FF1EA4`/`$FF1EA5` | `Race_ram_TimeMinutes/TimeSeconds` | 1 each | BCD time. |
 | `$FF1B26` | `Race_ram_BikeDamage` | 2 | Bike damage (HP bar = `$20-damage`). |
-| `$FF1B40` | `ram_FF1B40` | 2 | Player place. |
+| `$FF1B40` | `Race_ram_PlayerPlace` | 2 | Player place. |
 | `$FF14B8`/`$FF14BA`/`$FF14BC` | name/place state | 2 each | Timer / last place / rank. |
-| `$FF14BE` | `ram_FF14BE` | - | Text descriptor for `WriteNametableToBuffer`. |
+| `$FF14BE` | `RaceHud_ram_TextDescriptor` | - | Text descriptor for `WriteNametableToBuffer`. |
 | `$FF352C` | odometer font | - | 4x2 digit tiles (8 longs each). |
 | `$FF1A70` | gear curve | - | RPM-arrow divisor source. |
 | `$FF1AA2` | RPM divisor | 2 | `speed/divisor/682`. |
@@ -427,7 +427,7 @@ SAT is double-buffered: `$FF479C`/`$FF4E1C`. Shape table `Road_ShapeTable` (`$3B
 | Address | Name | Size | Meaning |
 |---|---|---|---|
 | `-` | `EndLevel_ram_AnimFrame` | 2 | Victory animation frame; `-1` ends the animation stage. |
-| `$FF0D24` | `ram_FF0D24` | 2 | 5-frame sprite-table swap delay. |
+| `$FF0D24` | `EndLevel_ram_SpriteSwapDelay` | 2 | 5-frame sprite-table swap delay. |
 
 The module reuses the race animation state (`Animation_ram_BaseTile=$2E0`,
 `Race_ram_FrameReady/FrameReady2`, `Race_ram_*SpriteAttributeTable`,
@@ -440,12 +440,12 @@ level/opponents/password. See `docs/analysis/endlevel.md`.
 
 | Address | Name | Size | Meaning |
 |---|---|---|---|
-| `$FF13B2` | `ram_FF13B2` | 2 | Remaining per-call sample budget. |
+| `$FF13B2` | `Uncompress_ram_Budget` | 2 | Remaining per-call sample budget. |
 | `$FF13B8`..`$FF13E2` | channel 1 state | - | Accumulator, data byte, delta, control index, sign/width/run, bit position, pointers, caught-up flag. |
 | `$FF13E4`..`$FF140E` | channel 2 state | - | Same for the second channel/output. |
 | `$FFDC58` | `Track_CurveBuffer` | 0x200 | Decoded/scaled track data (4 x $80-byte chunks). |
 | `$FF1A52`/`$FF1A56` | `RaceTrack_Data2/3` | 4 each | Compressed track streams. |
-| `$FF1A6C` | `ram_FF1A6C` | 4 | Per-track scaling table pointer. |
+| `$FF1A6C` | `Race_ram_TrackScaleTable` | 4 | Per-track scaling table pointer. |
 
 ROM: `off_16AB0` (src/race/race.asm) -> per-track tables; tables `$A054/$A08C/$A094/$A0CC`
 (bit masks/shifts). Race callers scale channel 1 by `signed byte * factor / $10000`
@@ -485,25 +485,25 @@ Known so far:
 
 | Address | Name | Size | Meaning |
 |---|---|---|---|
-| `$FF1E68` | `ram_FF1E68` | 2 | Race progress/timer value compared with `$FF1E82`. |
-| `$FF1E82` | `ram_FF1E82` | 2 | Best/last progress value. |
-| `$FF1E96`, `$FF1E9A`, `$FF1E9E` | `ram_FF1E96/9A/9E` | 4? | Race progress snapshots. |
+| `$FF1E68` | `Race_ram_PlayerProgress` | 2 | Race progress/timer compared with `Race_ram_BestProgress`. |
+| `$FF1E82` | `Race_ram_BestProgress` | 2 | Best/last progress value. |
+| `$FF1E96`, `$FF1E9A`, `$FF1E9E` | `Race_ram_ProgressSnapshotA/B/C` | 4? | Race progress snapshots. |
 | `$FF1B3E` | `ram_FF1B3E` | 2 | Cleared at the start of the top-level flow. |
 | `$FF3692` | `MainMenu_ram_DemoMode` | 2 | Demo/attract flag (named in `src/core/ram_const.asm`). |
 | `$FF3696` | `Race_ram_State` | 2 | Race state / demo selector. |
 | `$FF3698`, `$FF369A` | `ram_FF3698/9A` | 2 | Race/demo flags. |
-| `$FF0910` | `ram_FF0910` | 4 | Next-screen selector for the results dispatcher. |
-| `$FF0918` | `ram_FF0918` | 2 | Compared with 4 to select the end-level screen. |
+| `$FF0910` | `RaceResults_ram_NextFunction` | 4 | Next-screen selector for the results dispatcher. |
+| `$FF0918` | `RaceResults_ram_Outcome` | 2 | Compared with 4 to select the end-level screen. |
 | `$FF3048` | `Race_ram_FrameCounter` | 2 | Race frame counter. |
-| `$FF0406` | `ram_FF0406` | 2 | HInt scroll-table offset; reaching `$90` triggers the engine-audio update. |
-| `$FF369E` | `ram_FF369E` | 2 | `$FFFF` disables the HInt raster effect; 0 enables it. |
+| `$FF0406` | `Race_ram_HIntScrollOffset` | 2 | HInt scroll-table offset; reaching `$90` triggers the engine-audio update. |
+| `$FF369E` | `Race_ram_HIntRasterDisabled` | 2 | `$FFFF` disables the HInt raster effect; 0 enables it. |
 | `$FF05D6` | `ram_MusicEnabled` | 2 | Music-enabled flag used by the HInt audio block. |
 | `$FF1AA2`/`$FF1AA4` | `ram_FF1AA2/A4` | 2 | Divisors for the engine-speed scaling (`divu`). |
 | `$FF1EAA`/`$FF26AA` | `RacePlayerA/26AA` | `$80` | Player A/B (`RacePlayer` candidate; see below). |
-| `$FF1908` | `ram_FF1908` | 4 | Object pointer passed to `Audio_UpdateEngine`. |
+| `$FF1908` | `Race_ram_NearestActor` | 4 | Object pointer passed to `Audio_UpdateEngine`. |
 | `$FF36B6`/`$FF36B8` | `ram_FF36B6/B8` | 2 | Target/current smoothed engine value (rate-limited to ±`$64`). |
 | `$FF36BE`/`$FF36C0` | `ram_FF36BE/C0` | 2 | Second object's target/current smoothed value. |
-| `$FF36C4` | `ram_FF36C4` | 2 | Base value added to the speed computation. |
+| `$FF36C4` | `Race_ram_EngineSpeedBase` | 2 | Base value added to the speed computation. |
 
 Rider/bike sprite builder (`src/screens/rider_sprites.asm`):
 

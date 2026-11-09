@@ -98,7 +98,7 @@ with the window's transparent cells exposing the scrolling bike band.
 ## Input
 
 `GetInput` returns 1 = pressed; the shop uses new-press edges for A/B/C and the D-pad,
-and Start **held** returns to the results (`ram_FF0910 = $5F28` = `RaceResults_Init`).
+and Start **held** returns to the results (`RaceResults_ram_NextFunction = $5F28` = `RaceResults_Init`).
 A -> `HighScore_Init`; B -> `RaceResults_Init`; C -> buy; Right -> next bike; Left ->
 previous bike; the D-pad only acts when `Shop_ScrollPos == $160` (animation finished),
 then shifts the scroll position by `-$D0`/`+$D0`.

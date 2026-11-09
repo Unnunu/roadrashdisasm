@@ -47,11 +47,11 @@ results/shop/end-level dispatcher. It runs the per-frame update function through
 - **Race (`$7E80C`).** `Race_Init`, `Fade_InitFadeIn`, `sr=$2300`, install
   `Fade_GameTickWithInit`, wait; install `Race_GameTick` (`$BA76`). The frame loop
   (`$7E836`) optionally resets demo state, calls `Race_Update`, tracks
-  `ram_FF1E68`/`ram_FF1E82`, and on `Race_ram_GameEnded` returns to the menu (demo) or
+  `Race_ram_PlayerProgress`/`Race_ram_BestProgress`, and on `Race_ram_GameEnded` returns to the menu (demo) or
   enters the results dispatcher.
-- **Results dispatcher (`$7E924`).** Uses `ram_FF0910` to select the next screen:
+- **Results dispatcher (`$7E924`).** Uses `RaceResults_ram_NextFunction` to select the next screen:
   `RaceResults_Init` -> `RaceResults_GameTick`, `HighScore_Init` ->
-  `HighScore_GameTick`, `Shop_Init` -> `Shop_GameTick`, and (when `ram_FF0918 == 4`)
+  `HighScore_GameTick`, `Shop_Init` -> `Shop_GameTick`, and (when `RaceResults_ram_Outcome == 4`)
   `EndLevel_Init` -> `EndLevel_GameTick`. Each runs the fade-in/out pair and loops
   back.
 - After the dispatcher, `Menu_ram_PlayerMode == 3` toggles `Menu_ram_Player` with
@@ -67,9 +67,9 @@ results/shop/end-level dispatcher. It runs the per-frame update function through
 - `MainMenu_ram_DemoMode` — demo/attract mode flag (also `Menu_ram_PlayerMode`,
   `Menu_ram_Player`).
 - `Race_ram_State`, `Race_ram_GameEnded`, `Race_ram_DemoGameEnded`.
-- `ram_FF0910` — results/shop/end-level next-screen selector.
-- `ram_FF0918` — compared with `4` to select the end-level screen.
-- `ram_FF1E68`, `ram_FF1E82`, `ram_FF1E96`, `ram_FF1E9A`, `ram_FF1E9E` — race progress
+- `RaceResults_ram_NextFunction` — results/shop/end-level next-screen selector.
+- `RaceResults_ram_Outcome` — compared with `4` to select the end-level screen.
+- `Race_ram_PlayerProgress`, `Race_ram_BestProgress`, `Race_ram_ProgressSnapshotA`, `Race_ram_ProgressSnapshotB`, `Race_ram_ProgressSnapshotC` — race progress
   / timer values.
 
 ## External calls / dependencies
@@ -104,8 +104,8 @@ results/shop/end-level dispatcher. It runs the per-frame update function through
 - `[hypothesis]` `MainMenu_ram_DemoMode` selects the attract/demo path (menu ->
   high score -> race) rather than the interactive path. Test: watch it at the
   `$7E74C`/`$7E7CC` branches.
-- `[hypothesis]` `ram_FF0918 == 4` selects the end-level screen; the value is a screen
-  id, not a structure offset. Test: break at `$7E9FA` and record `ram_FF0918` for each
+- `[hypothesis]` `RaceResults_ram_Outcome == 4` selects the end-level screen; the value is a screen
+  id, not a structure offset. Test: break at `$7E9FA` and record `RaceResults_ram_Outcome` for each
   post-race screen.
 
 ## Experiments performed
@@ -117,7 +117,7 @@ results/shop/end-level dispatcher. It runs the per-frame update function through
 
 ## Open questions
 
-- [ ] Meaning of `ram_FF0918`, `$FF3692`, `$FF3696`, `$FF369A`.
+- [ ] Meaning of `RaceResults_ram_Outcome`, `$FF3692`, `$FF3696`, `$FF369A`.
 - [ ] What `Race_InitPhysicsConstants`, `TrackData_DecodeNextChunk`, `Race_ComputeStandings`, `Race_ComputeResults` do.
 - [ ] What `Audio_Init` (`$19F66`) starts.
 - [ ] Shrink the raw gap bridge as the region below `$7E6A2` is disassembled.

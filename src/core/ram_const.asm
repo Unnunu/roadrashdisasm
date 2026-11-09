@@ -2,7 +2,7 @@ Fade_ram_Timer equ $FF0300
 Fade_ram_UpdateFunction equ $FF0302
 Fade_ram_CurrentPalette equ $FF0306
 Fade_ram_TargetPalette equ $FF0386
-ram_FF0406 equ $FF0406
+Race_ram_HIntScrollOffset equ $FF0406
 Intro_ram_PlayerAPressedStart equ $FF040A
 Intro_ram_PlayerBPressedStart equ $FF040C
 Intro_ram_TextTimer equ $FF040E
@@ -75,10 +75,10 @@ ram_FF0908 equ $FF0908
 ram_FF090A equ $FF090A
 ram_FF090C equ $FF090C
 ram_FF090E equ $FF090E
-ram_FF0910 equ $FF0910
-ram_FF0914 equ $FF0914
-ram_FF0918 equ $FF0918
-ram_FF091A equ $FF091A
+RaceResults_ram_NextFunction equ $FF0910
+RaceResults_ram_DrawRoutine equ $FF0914
+RaceResults_ram_Outcome equ $FF0918
+RaceResults_ram_Amount equ $FF091A
 RaceResults_ram_CurrentButtons equ $FF091C
 HighScore_ram_CurrentButtons equ $FF094E
 Shop_CurrentBikeId equ $FF0950
@@ -88,7 +88,7 @@ Shop_ImageBike1 equ $FF0956
 Shop_ImageBike2 equ $FF0A9A
 Shop_ImageBike3 equ $FF0BDE
 EndLevel_ram_AnimFrame equ $FF0D22
-ram_FF0D24 equ $FF0D24
+EndLevel_ram_SpriteSwapDelay equ $FF0D24
 ram_FF0D26 equ $FF0D26
 ram_FF0D28 equ $FF0D28
 ram_FF0D2A equ $FF0D2A
@@ -135,7 +135,7 @@ Uncompress_StateD6 equ $FF13A0
 Uncompress_StateD7 equ $FF13A4
 Uncompress_StateMidMatch equ $FF13A8
 Uncompress_StateVram equ $FF13AA
-ram_FF13B2 equ $FF13B2
+Uncompress_ram_Budget equ $FF13B2
 ram_FF13B8 equ $FF13B8
 ram_FF13B9 equ $FF13B9
 ram_FF13BA equ $FF13BA
@@ -177,15 +177,15 @@ ram_FF1414 equ $FF1414
 ram_FF1418 equ $FF1418
 ram_FF141A equ $FF141A
 ram_FF141C equ $FF141C
-ram_FF14B8 equ $FF14B8
-ram_FF14B9 equ $FF14B9
-ram_FF14BA equ $FF14BA
-ram_FF14BC equ $FF14BC
-ram_FF14BE equ $FF14BE
-ram_FF14D8 equ $FF14D8
-ram_FF14DC equ $FF14DC
-ram_FF14E0 equ $FF14E0
-ram_FF14E4 equ $FF14E4
+RaceHud_ram_NameTimer equ $FF14B8
+RaceHud_ram_NameFlags equ $FF14B9
+RaceHud_ram_LastPlace equ $FF14BA
+RaceHud_ram_Rank equ $FF14BC
+RaceHud_ram_TextDescriptor equ $FF14BE
+Race_ram_VdpDmaControl equ $FF14D8
+Race_ram_HIntVScroll equ $FF14DC
+Race_ram_NearestBehindDistance equ $FF14E0
+Race_ram_NearestAheadDistance equ $FF14E4
 RoadMarking_ram_XArray equ $FF14E8
 RoadMarking_ram_WidthArray equ $FF1618
 RoadMarking_ram_X1 equ $FF1748
@@ -235,7 +235,7 @@ ram_FF18FE equ $FF18FE
 ram_FF1900 equ $FF1900
 ram_FF1904 equ $FF1904
 ram_FF1906 equ $FF1906
-ram_FF1908 equ $FF1908
+Race_ram_NearestActor equ $FF1908
 Animation_ram_PosX equ $FF190C
 Animation_ram_PosY equ $FF190E
 ram_FF19C4 equ $FF19C4
@@ -251,8 +251,8 @@ RaceTrack_Data5 equ $FF1A5E
 ram_UpdateFunction equ $FF1A62 ; .l
 LogoEA_ram_Finished equ $FF1A66 ; .b or .w ?
 ram_FF1A68 equ $FF1A68
-ram_FF1A6C equ $FF1A6C
-ram_FF1A70 equ $FF1A70
+Race_ram_TrackScaleTable equ $FF1A6C
+RaceBike_ram_Parameters equ $FF1A70
 ram_FF1A96 equ $FF1A96
 ram_FF1A98 equ $FF1A98
 ram_FF1A9A equ $FF1A9A
@@ -268,7 +268,7 @@ RaceBike_ram_SteeringPower equ $FF1AAE
 RaceBike_ram_MaxSteering equ $FF1AB0
 ram_FF1AB2 equ $FF1AB2
 ram_FF1AB4 equ $FF1AB4
-ram_FF1AB6 equ $FF1AB6
+RaceBike_ram_PhysicsConstants equ $FF1AB6
 ram_FF1ABC equ $FF1ABC
 ram_FF1AC2 equ $FF1AC2
 ram_FF1AC8 equ $FF1AC8
@@ -313,7 +313,7 @@ ram_FF1B18 equ $FF1B18
 Race_CopIndex equ $FF1B1A
 Race_ram_GameEnded equ $FF1B1C
 Race_ram_DemoGameEnded equ $FF1B1E
-ram_FF1B20 equ $FF1B20
+Race_ram_Started equ $FF1B20
 ram_FF1B22 equ $FF1B22
 ram_FF1B24 equ $FF1B24
 Race_ram_BikeDamage equ $FF1B26
@@ -323,10 +323,10 @@ ram_FF1B30 equ $FF1B30
 ram_FF1B32 equ $FF1B32
 ram_FF1B34 equ $FF1B34
 ram_FF1B36 equ $FF1B36
-ram_FF1B38 equ $FF1B38
+Race_ram_LevelIndex equ $FF1B38
 ram_FF1B3A equ $FF1B3A
 ram_FF1B3E equ $FF1B3E
-ram_FF1B40 equ $FF1B40
+Race_ram_PlayerPlace equ $FF1B40
 ram_FF1B42 equ $FF1B42
 ram_FF1B44 equ $FF1B44
 ram_FF1B46 equ $FF1B46
@@ -347,7 +347,7 @@ ram_FF1E5C equ $FF1E5C
 ram_FF1E60 equ $FF1E60
 ram_FF1E64 equ $FF1E64
 ram_FF1E66 equ $FF1E66
-ram_FF1E68 equ $FF1E68
+Race_ram_PlayerProgress equ $FF1E68
 ram_FF1E6A equ $FF1E6A
 ram_FF1E6C equ $FF1E6C
 ram_FF1E6E equ $FF1E6E
@@ -355,20 +355,20 @@ ram_FF1E70 equ $FF1E70
 ram_FF1E76 equ $FF1E76
 ram_FF1E7A equ $FF1E7A
 ram_FF1E7E equ $FF1E7E
-ram_FF1E82 equ $FF1E82
+Race_ram_BestProgress equ $FF1E82
 ram_FF1E86 equ $FF1E86
 ram_FF1E8A equ $FF1E8A
 ram_FF1E8E equ $FF1E8E
 ram_FF1E92 equ $FF1E92
 ram_FF1E94 equ $FF1E94
-ram_FF1E96 equ $FF1E96
-ram_FF1E9A equ $FF1E9A
-ram_FF1E9C equ $FF1E9C
-ram_FF1E9E equ $FF1E9E
+Race_ram_ProgressSnapshotA equ $FF1E96
+Race_ram_ProgressSnapshotB equ $FF1E9A
+Race_ram_ActorDistanceScale equ $FF1E9C
+Race_ram_ProgressSnapshotC equ $FF1E9E
 Race_ram_TimeTicks equ $FF1EA2
 Race_ram_TimeMinutes equ $FF1EA4 ; bcd
 Race_ram_TimeSeconds equ $FF1EA5 ; bcd
-ram_FF1EA6 equ $FF1EA6
+Race_ram_SpawnTimer equ $FF1EA6
 ram_FF1EA8 equ $FF1EA8
 
 RacePlayerA equ $FF1EAA ; struct of size $80
@@ -472,7 +472,7 @@ ram_FF303E equ $FF303E
 ram_FF3040 equ $FF3040
 ram_FF3042 equ $FF3042
 ram_FF3044 equ $FF3044
-ram_FF3046 equ $FF3046
+Race_ram_SpeedDisplay equ $FF3046
 Race_ram_FrameCounter equ $FF3048
 Race_ram_FrameDelay equ $FF304A
 ram_FF304B equ $FF304B
@@ -509,7 +509,7 @@ ram_FF32FE equ $FF32FE
 ram_FF3362 equ $FF3362
 ram_FF33C8 equ $FF33C8
 Race_ram_NumSpriteTiles equ $FF33CA
-ram_FF33CC equ $FF33CC
+Race_ram_RearviewTileRows equ $FF33CC
 ram_FF352C equ $FF352C
 ram_FF368C equ $FF368C
 ram_FF368E equ $FF368E
@@ -520,15 +520,15 @@ Race_ram_State equ $FF3696
 ram_FF3698 equ $FF3698
 ram_FF369A equ $FF369A
 ram_FF369C equ $FF369C
-ram_FF369E equ $FF369E ; .w
+Race_ram_HIntRasterDisabled equ $FF369E ; .w
 ram_FF36A2 equ $FF36A2
 ram_FF36A4 equ $FF36A4
 ram_FF36AA equ $FF36AA
 ram_FF36AC equ $FF36AC
-ram_FF36AE equ $FF36AE
-ram_FF36B0 equ $FF36B0
-ram_FF36B2 equ $FF36B2
-ram_FF36B4 equ $FF36B4
+Race_ram_NearestBehindIndex equ $FF36AE
+Race_ram_NearestBehindSpeed equ $FF36B0
+Race_ram_NearestAheadIndex equ $FF36B2
+Race_ram_NearestAheadSpeed equ $FF36B4
 ram_FF36B6 equ $FF36B6
 ram_FF36B8 equ $FF36B8
 ram_FF36BA equ $FF36BA
@@ -536,7 +536,7 @@ ram_FF36BC equ $FF36BC
 ram_FF36BE equ $FF36BE
 ram_FF36C0 equ $FF36C0
 ram_FF36C2 equ $FF36C2
-ram_FF36C4 equ $FF36C4
+Race_ram_EngineSpeedBase equ $FF36C4
 Race_ram_FrameReady equ $FF36C6
 Race_ram_FrameReady2 equ $FF36C8
 Race_ram_Alpha1 equ $FF36CA
@@ -583,7 +583,7 @@ ram_FFD330 equ $FFD330
 ram_FFD338 equ $FFD338
 ram_FFD33A equ $FFD33A
 ram_FFD33E equ $FFD33E
-ram_FFD340 equ $FFD340
+Race_ram_CameraOffset equ $FFD340
 ram_FFD344 equ $FFD344
 ram_FFD346 equ $FFD346
 Race_ram_NumSprites equ $FFD348

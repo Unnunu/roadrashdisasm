@@ -33,7 +33,7 @@ from the results/high-score screens; Start returns to the results.
 - `GameTick`: DMA; scroll animation; Start held -> results; A/B/C/D-pad edges.
 - `HandleInput`: A high score, B results, C buy/trade-in, Right/Left select (only at
   `ScrollPos == $160`), then redraw name/description/prompts/credits.
-- Bytes: `ram_FF0910` selects the next screen; `ram_UpdateFunction=0` ends the stage.
+- Bytes: `RaceResults_ram_NextFunction` selects the next screen; `ram_UpdateFunction=0` ends the stage.
 
 ## RAM / ROM & structures
 
@@ -65,7 +65,7 @@ Detailed listing/table/purchase logic: `docs/analysis/shop.md`.
 
 ## External calls / dependencies
 
-- Callers: `src/core/top_level.asm`; results/high-score C; the shop sets `ram_FF0910` to
+- Callers: `src/core/top_level.asm`; results/high-score C; the shop sets `RaceResults_ram_NextFunction` to
   HighScore/RaceResults/Shop.
 - Uses `UncompressW/B`, `WriteToVRAM`, `WriteNametable(ToBuffer)`, `EncodeString`,
   `Menu_ShowMessage`, `DmaWriteVRAM`, `DmaWriteCRAM`, `GetInputPlayerA/B`, `Race_FormatNumber`,

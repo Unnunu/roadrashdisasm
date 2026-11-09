@@ -57,9 +57,9 @@ Fade_GameTickWithInit:
                 move.w  4(a2),(a0)
                 VDP_VSRAM_WRITE $0,(a0) ; VSRAM from offset 0
                 move.l  6(a2),(a1)
-                move.w  $A(a2),(ram_FF0406).l
+                move.w  $A(a2),(Race_ram_HIntScrollOffset).l
                 move.l  $C(a2),(a0)
-                move.w  #0,(ram_FF369E).l
+                move.w  #0,(Race_ram_HIntRasterDisabled).l
 Fade_GameTick:
                 subq.w  #1,(Fade_ram_Timer).l
                 bpl.w   .end
