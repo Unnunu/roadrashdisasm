@@ -140,6 +140,20 @@ ROM tables: `$19D32` (level, money>=0, 5x4), `$19DD2` (level, money<0, 5x2),
 offsets, `$7E68E` nametable offsets, `$7E698` palette offsets.
 See `docs/analysis/race_results.md`.
 
+### High score (`highscore.asm`)
+
+| Address | Name | Size | Meaning |
+|---|---|---|---|
+| `$FF05EA` | `HighScore_ram_Table` | 8+140 | Header `(22,16,7,20)` + 7 x 20-char entries. |
+| `$FF05F2` | table text | 140 | First entry; built by `intro.asm`, sorted by `sub_C598`. |
+| `$FF052A`/`$FF052C` | `HighScore_ram_PlayerATableOffset/B` | 2 each | Player row offsets (20*5 / 20*6 initially). |
+| `$FF094E` | `HighScore_ram_CurrentButtons` | 2 | Buttons handled by A/B/C. |
+| `$FF3692` | `MainMenu_ram_DemoMode` | 2 | Cleared on a demo release -> menu; 1 -> demo race. |
+
+The screen draws entries 0..4 (table font `$800`) and the player rows at the offsets
+(regular font `$0`). Assets: title `$A2F5C`, badge `$7EB72`, fonts `$A2BAA`->`$800`,
+`$A2E68`->`$1000`. See `docs/analysis/highscore.md`.
+
 ### Messages (`message.asm`)
 
 | Address | Name | Size | Meaning |
