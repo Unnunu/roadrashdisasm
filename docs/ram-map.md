@@ -121,6 +121,25 @@ ROM: `unk_19A12` = `[5 levels][5 tracks][4 variants]` 8-byte records
 carry an 8-byte interleaved `size/header` prefix; the header gives the name string,
 image/nametable/palette offsets (see `docs/analysis/character.md`).
 
+### Race results (`race_results.asm`)
+
+| Address | Name | Size | Meaning |
+|---|---|---|---|
+| `$FF0526`/`$FF0528` | `ram_FF0526/28` | 2 each | Player A/B outcome (0 = incomplete, >4 = worse than 4th, 4 = level complete). |
+| `$FF0910` | `ram_FF0910` | 4 | Next-screen function pointer (RaceResults/HighScore/Shop). |
+| `$FF0914` | `ram_FF0914` | 4 | Active draw routine pointer (set, not read). |
+| `$FF0918` | `ram_FF0918` | 2 | Copied outcome; `4` selects the end-level screen. |
+| `$FF091A` | `ram_FF091A` | 2 | Fine/repair amount formatted into the bust/repair message. |
+| `$FF04C8` | `ram_FF04C8` | `$40` | 16-long race event/sort buffer; first word `$FFFF` = busted/destroyed. |
+| `$FF1B1A` | `ram_FF1B1A` | 2 | Cop/officer index (1..5); 0 = bike destroyed. |
+| `$FF1414`/`FF1418`/`FF141A` | `ram_FF1414/18/1A` | - | Standings string header/text, height, width. |
+
+ROM tables: `$19D32` (level, money>=0, 5x4), `$19DD2` (level, money<0, 5x2),
+`$19E22` (cop, money>=0, 5x4), `$19EC2` (cop, money<0, 5x2), 8-byte
+`quote_ptr,image_ptr` records. Track images: `$7E670` pointers, `$7E684` image
+offsets, `$7E68E` nametable offsets, `$7E698` palette offsets.
+See `docs/analysis/race_results.md`.
+
 ### Messages (`message.asm`)
 
 | Address | Name | Size | Meaning |

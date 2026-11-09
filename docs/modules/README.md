@@ -17,7 +17,7 @@ row to the table below.
 | `message.asm` | `0x004226` | On-screen messages / button prompts | [message.md](message.md) |
 | `sub_5760.asm` | `0x005760` | Rider/bike sprite chain builder | [sub_5760.md](sub_5760.md) |
 | `character.asm` | `0x0059C4` | Pre-race rider/opponent intro | [character.md](character.md) |
-| `race_results.asm` | `0x005F28` | Post-race results screen | TODO |
+| `race_results.asm` | `0x005F28` | Post-race results / bust / repair | [race_results.md](race_results.md) |
 | `highscore.asm` | `0x006DC0` | High-score screen | TODO |
 | `shop.asm` | `0x0074AA` | Bike shop | TODO |
 | `endlevel.asm` | `0x008342` | End-of-level menu | TODO |
