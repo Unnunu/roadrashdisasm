@@ -1,10 +1,11 @@
 ; *************************************************
 ; race.asm - main gameplay (include split)
 ; ROM range: $A4E2-$16E6F
-; Include order: race_core, race_hud, race_physics, road_marking, race_ai,
-;                animation, race_spawn
+; Include order: combat_const, race_core, race_hud, race_physics, road_marking,
+;                race_ai, animation, race_spawn
 ; *************************************************
 
+    include "combat_const.asm"
     include "race_core.asm"
     include "race_hud.asm"
     include "race_physics.asm"

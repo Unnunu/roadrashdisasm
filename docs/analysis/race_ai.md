@@ -5,7 +5,7 @@
 - **ROM range:** `0x010E00`–`0x014055`
 - **Status:** analyzed (roles/flow); exact AI/collision field semantics partly TODO
 - **Source:** `src/race/race_ai.asm`
-- **Related:** `docs/analysis/race.md`, `docs/analysis/race_ai_road.md`,
+- **Related:** `docs/analysis/combat.md` (fist/AI attack state), `docs/analysis/race.md`, `docs/analysis/race_ai_road.md`,
   `docs/analysis/race_physics.md`, `docs/modules/race_ai.md`, `docs/ram-map.md`
 
 ## Functions

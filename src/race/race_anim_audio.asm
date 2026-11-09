@@ -5580,7 +5580,7 @@ Race_UpdatePlayerAnimation:
 ; Function Race_UpdateNearestTarget
 ; Finds the nearest actor by squared X/Y distance and stores the target state.
 ; In:  ram_FF1A08 actor list; player A
-; Out: ram_FF1904/1908/1AA4/1786
+; Out: ram_FF1904/1908/1AA4/1786; attack state $69/$6B/$6C/$6D/ram_FF1B22
 ; Clobbers: d0-d5/a0-a3
 ; *************************************************
 
@@ -5723,6 +5723,16 @@ Race_UpdateNearestTarget:
 ; =============== S U B R O U T I N E =======================================
 
 
+ ; *************************************************
+; Function sub_162B0 (temporary name)
+; Player attack input: C button starts an attack; Up/Down selects high/low;
+; the nearest actor's Y selects the attack side.
+; In:  a1 - actor; Race_ram_CurrentButtons; Race_ram_NearestActor
+; Out: actor $69 bit4/5/6, $6B bit0; ram_FF1B22; $6C/$6D
+; Clobbers: d0-d1/a0
+; Notes: weapon/armed flag $6B bit1 comes from the actor definition byte2 bit7.
+; *************************************************
+
 sub_162B0:
                 move.b  (Race_ram_CurrentButtons).l,d0
                 btst    #5,d0
@@ -5768,6 +5778,17 @@ sub_162B0:
                 rts
 ; End of function sub_162B0
 
+
+ ; *************************************************
+; Function sub_1634E (temporary name)
+; AI attack/steer input decoder: reads ram_FF1B24 and maps bits to the same
+; $69/$68/$46 fields used by the player attack path.
+; In:  a1 - actor; ram_FF1B24
+; Out: actor $69/$68/$46
+; Clobbers: d0-d2
+; Notes: no callers were found in the current source; ram_FF1B24 has no writer
+; found yet, so this may be dead/unreferenced code.
+; *************************************************
 
 sub_1634E:
                 lea     (RacePlayerA).l,a2
@@ -5865,6 +5886,16 @@ locret_16456:
 ; =============== S U B R O U T I N E =======================================
 
 
+ ; *************************************************
+; Function sub_16458 (temporary name)
+; Combat/action dispatcher: advances the attack/cooldown timer, selects an
+; action handler from the actor graphics record, and applies the nearest-target
+; distance/action rules.
+; In:  a1 - actor; ram_FF1A68; Race_ram_NearestActor
+; Out: actor $69/$5A; calls selected action
+; Clobbers: d0/a4/a6
+; *************************************************
+
 sub_16458:
                 move.l  a4,-(sp)
                 move.w  (Race_ram_FrameDelay).l,d0
@@ -5938,8 +5969,8 @@ locret_1651E:
 
 
  ; *************************************************
-; Function Audio_UpdateEngine0
-; Flags an active engine for the audio driver.
+; Function Audio_UpdateEngine0 (name TBD; likely attack SFX)
+; Sets the attack SFX/state flag when attack phase 1 is active.
 ; In:  a1 - actor $6C/$6B/$69
 ; Out: ram_FF1AD7=$0E
 ; Clobbers: d0
@@ -5963,8 +5994,8 @@ Audio_UpdateEngine0:
 
 
  ; *************************************************
-; Function Audio_UpdateEngineState
-; Advances the engine/gear state and timer using the engine timing tables.
+; Function Audio_UpdateEngineState (name TBD; likely attack state timer)
+; Advances the attack phase/timer using unk_257E2/E8/EE timing tables.
 ; In:  a1 - actor $6B/$69/$6C/$6D; Race_ram_FrameDelay
 ; Out: actor $6C/$6D; ram_FF1906; ram_FF1AD7
 ; Clobbers: d0/a4
@@ -6017,6 +6048,15 @@ Audio_UpdateEngineState:
 ; =============== S U B R O U T I N E =======================================
 
 
+ ; *************************************************
+; Function sub_165D0 (temporary name)
+; AI action: steer toward the lane/road center and apply the speed/collision
+; check via sub_131BE.
+; In:  a1 - actor
+; Out: actor $46/$30 and movement
+; Clobbers: d0/d1/a6
+; *************************************************
+
 sub_165D0:
                 move.b  $72(a1),d0
                 ext.w   d0
@@ -6028,6 +6068,14 @@ sub_165D0:
 
 ; =============== S U B R O U T I N E =======================================
 
+
+ ; *************************************************
+; Function sub_165E0 (temporary name)
+; AI action: steering/brake state plus movement update.
+; In:  a1 - actor; $68 bit5
+; Out: actor $68/$46/$69
+; Clobbers: d0-d1/a6
+; *************************************************
 
 sub_165E0:
                 move.b  $72(a1),d0
@@ -6049,6 +6097,15 @@ sub_165E0:
 ; =============== S U B R O U T I N E =======================================
 
 
+ ; *************************************************
+; Function sub_16612 (temporary name)
+; AI action: run the player/actor collision check, then apply the speed/steer
+; correction (sub_131BE + sub_1333C).
+; In:  a1 - actor; RacePlayerA
+; Out: actor collision/speed fields
+; Clobbers: d0-d1/a2
+; *************************************************
+
 sub_16612:
                 bsr.w   Race_UpdateCollision
                 move.w  d1,-(sp)
@@ -6062,6 +6119,14 @@ sub_16612:
 ; =============== S U B R O U T I N E =======================================
 
 
+ ; *************************************************
+; Function sub_16624 (temporary name)
+; AI action: steering update followed by a collision check.
+; In:  a1 - actor
+; Out: actor fields
+; Clobbers: see callees
+; *************************************************
+
 sub_16624:
                 bsr.s   sub_165E0
                 bsr.w   Race_UpdateCollision
@@ -6071,6 +6136,15 @@ sub_16624:
 
 ; =============== S U B R O U T I N E =======================================
 
+
+ ; *************************************************
+; Function sub_1662C (temporary name)
+; AI action: random choice between collision/attack (sub_16612) and pursuit
+; (sub_1666A).
+; In:  a1 - actor; Rand_GetWord
+; Out: actor fields
+; Clobbers: d0
+; *************************************************
 
 sub_1662C:
                 jsr     (Rand_GetWord).l
@@ -6088,6 +6162,15 @@ sub_1662C:
 
 ; =============== S U B R O U T I N E =======================================
 
+
+ ; *************************************************
+; Function sub_16644 (temporary name)
+; AI action: reacts to the player/nearest actor position; close -> random
+; attack/avoid (sub_1662C), otherwise speed correction.
+; In:  a1 - actor; $FF1EAE
+; Out: actor speed/steer
+; Clobbers: d0/d1
+; *************************************************
 
 sub_16644:
                 move.l  4(a1),d0
@@ -6107,6 +6190,15 @@ sub_16644:
 
 ; =============== S U B R O U T I N E =======================================
 
+
+ ; *************************************************
+; Function sub_1666A (temporary name)
+; AI action: check ram_FF1786/target thresholds; on-foot uses the $5A timer,
+; otherwise pursue/steer or apply a speed correction.
+; In:  a1 - actor; ram_FF1786; ram_FF1A68
+; Out: actor $5A/$46/speed
+; Clobbers: d0/d1/a4
+; *************************************************
 
 sub_1666A:
                 bsr.w   sub_131BE
@@ -6141,6 +6233,15 @@ sub_1666A:
 ; =============== S U B R O U T I N E =======================================
 
 
+ ; *************************************************
+; Function sub_166B0 (temporary name)
+; AI action: if the nearest target is within the graphics-record distance,
+; run the collision/attack action; otherwise steer/speed-correct.
+; In:  a1 - actor; ram_FF1786; ram_FF1A68
+; Out: actor fields
+; Clobbers: d0/d1/a4
+; *************************************************
+
 sub_166B0:
                 move.l  (ram_FF1786).l,d0
                 movea.l (ram_FF1A68).l,a4
@@ -6163,6 +6264,14 @@ sub_166B0:
 ; =============== S U B R O U T I N E =======================================
 
 
+ ; *************************************************
+; Function sub_166DC (temporary name)
+; AI action: evade/steer toward the player using sub_1333C/sub_13292.
+; In:  a1 - actor; RacePlayerA
+; Out: actor movement
+; Clobbers: d0-d2
+; *************************************************
+
 sub_166DC:
                 lea     (RacePlayerA).l,a2
                 move.w  #0,d1
@@ -6174,6 +6283,15 @@ sub_166DC:
 
 ; =============== S U B R O U T I N E =======================================
 
+
+ ; *************************************************
+; Function sub_166F0 (temporary name)
+; Combat/collision response: resolves the target and runs Race_UpdateCollision
+; or the speed/steer correction.
+; In:  a1 - actor; RacePlayerA; ram_FF1A68
+; Out: actor collision/speed fields
+; Clobbers: d0-d3/a2
+; *************************************************
 
 sub_166F0:
                 bclr    #2,$69(a1)
@@ -6206,7 +6324,8 @@ sub_166F0:
 
  ; *************************************************
 ; Function Race_UpdateCollision
-; Player/actor proximity/impact: sets collision/engine/gear flags from $4A/$30.
+; Player/actor proximity/attack setup: uses $4A/$30 and graphics-record ranges
+; to start the attack/collision state and cooldown.
 ; In:  a1 - actor; RacePlayerA; ram_FF1A68; RaceBike_ram_PhysicsConstants/1ABC
 ; Out: actor $5A/$69/$6B/$6C/$6D
 ; Clobbers: d0-d3/a2/a4

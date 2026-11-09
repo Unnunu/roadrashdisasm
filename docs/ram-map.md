@@ -184,6 +184,29 @@ Buffers: `Intro_TitleScrollTable`/`Intro_TitleScrollSpeed` (+$400 SAT),
 `Intro_ram_ImageBuffer`/`Race_ram_ImageBuffer2`, VScroll info
 `ram_FF3FDC/$411C/$425C` with `Race_ram_Alpha1/2/3`, HUD/SAT/HScroll DMA targets.
 
+### Combat / attack state (`race_ai.asm`, `race_anim_audio.asm`)
+
+| Address | Name | Size | Meaning |
+|---|---|---|---|
+| actor `$69` bit4/5/6 | attack flags | 1 | active / side / low attack. |
+| actor `$6B` bit0/bit1 | attack flags | 1 | high attack / armed-special (`WEAPON_1`). |
+| actor `$6C` | attack phase | 1 | 0..3 (windup/hit/recovery hypothesis). |
+| actor `$6D` | attack timer | 1 | countdown from attack timing tables. |
+| actor `$5A` | attack cooldown | 2 | hit/attack recovery timer. |
+| actor `$4A` | attack/collision range | 2 | proximity range used by `Race_UpdateCollision`. |
+| `$FF1B22` | attack sequence active | 1 | Player attack state. |
+| `$FF1B24` | AI combat input | 1 | bits decoded by `sub_1634E`; writer unknown. |
+| `$FF1A68` | combat/graphics record | 4 | Actor graphics record used for ranges/cooldowns. |
+| `$FF1786` | nearest-target distance | 4 | Target distance used by AI actions. |
+| `$FF1AD6`/`$FF1AD7` | SFX IDs | 1 | Passed to `Audio_PlaySfx` (`$0E` on attack phase 1). |
+| `$FF1906` | attack phase-1 flag | 2 | Set by attack state timer. |
+
+`Race_ActorDefinitionTable` byte1 -> `$74` (AI profile), byte2 low7 -> `$75`
+(graphics index), byte2 bit7 -> armed special (`$6B` bit1), byte3 -> `$73`,
+byte4 -> `$77`, byte5 -> `$66` rating. The player definition is unarmed
+(`WEAPON_0`); armed opponents use `WEAPON_1` until weapon visuals are identified.
+See `docs/analysis/combat.md`.
+
 ### Spawn/traffic (`src/race/race.asm`)
 
 | Address | Name | Size | Meaning |

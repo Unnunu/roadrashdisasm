@@ -5,7 +5,7 @@
 - **ROM range:** `0x014056`–`0x01685F`
 - **Status:** analyzed (roles/flow); some animation/collision/audio fields TODO
 - **Source:** `src/race/race_anim_audio.asm`
-- **Related:** `docs/analysis/race.md`, `docs/analysis/race_ai.md`,
+- **Related:** `docs/analysis/combat.md` (attack input/state/actions), `docs/analysis/race.md`, `docs/analysis/race_ai.md`,
   `docs/analysis/race_physics.md`, `docs/modules/race_anim_audio.md`,
   `docs/ram-map.md`
 
@@ -22,8 +22,8 @@
 | `Rand_Init` | `0x15FE8` | Seed the 32-word PRNG state. |
 | `Rand_GetWord` | `0x16034` | Sum-of-two-words PRNG word. |
 | `sub_141...`..`sub_155...` | `0x1406A`+ | Animation/track data helpers (TODO). |
-| `sub_162B0`/`sub_1634E`/`sub_16458` | `0x162B0`+ | Animation/audio helpers (TODO). |
-| `sub_165D0`..`sub_166F0` | `0x165D0`+ | Engine/audio helpers (TODO). |
+| `sub_162B0`/`sub_1634E`/`sub_16458` | `0x162B0`+ | Combat input/dispatch/attack state (see `docs/analysis/combat.md`). |
+| `sub_165D0`..`sub_166F0` | `0x165D0`+ | AI combat/action handlers; names/roles static (see combat.md). |
 
 ## PRNG
 
