@@ -63,3 +63,23 @@ img_MainMenu_Background equ $AE8CE
 unk_AF26C equ $AF26C
 unk_AF902 equ $AF902
 unk_B1506 equ $B1506
+
+; Rider intro portrait images (11 unique in the ROM tail).
+RiderIntro_Portrait_0 equ $AF902
+RiderIntro_Portrait_1 equ $B1EE2
+RiderIntro_Portrait_2 equ $B3546
+RiderIntro_Portrait_3 equ $B48CC
+RiderIntro_Portrait_4 equ $B6056
+RiderIntro_Portrait_5 equ $B73BC
+RiderIntro_Portrait_6 equ $B883A
+RiderIntro_Portrait_7 equ $B9F6C
+RiderIntro_Portrait_8 equ $BB7EC
+RiderIntro_Portrait_9 equ $BD064
+RiderIntro_Portrait_10 equ $BE628
+
+; Results-screen track images (pointed to by unk_7E670).
+RaceResults_TrackImage_0 equ $8E4E6
+RaceResults_TrackImage_1 equ $91396
+RaceResults_TrackImage_2 equ $93FF2
+RaceResults_TrackImage_3 equ $9718A
+RaceResults_TrackImage_4 equ $98C1E

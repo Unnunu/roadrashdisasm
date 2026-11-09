@@ -21,7 +21,11 @@ unk_7E470:
 
 ; unk_7E670: 5 track-image pointers used by race_results.
 unk_7E670:
-    binclude "baserom.md",$7E670,$0014
+    dc.l    RaceResults_TrackImage_0
+    dc.l    RaceResults_TrackImage_1
+    dc.l    RaceResults_TrackImage_2
+    dc.l    RaceResults_TrackImage_3
+    dc.l    RaceResults_TrackImage_4
 
 ; unk_7E684/68E/698: per-track 5-word image/nametable/palette offsets (race_results).
 unk_7E684:
