@@ -26,9 +26,9 @@ to the race and records the controller in `Race_ram_ActiveController`.
 
 1. `Init`: VDP setup (same as main menu), background/gamepad/portrait panel, select
    opponent record, decode name/quote/palette, optional overlay, font, message, DMA.
-2. `GameTick`: DMA the frame buffer, edge-detect pad A then B (newly pressed button
-   exits, setting the active controller), advance the message every 300 frames until
-   the `$FFFFFFFF` terminator, redraw the message, audio tick.
+2. `GameTick`: DMA the frame buffer, detect a **release** edge on pad A then B
+   (`GetInput` returns 1 = pressed; the code uses `~input & previous`), advance the
+   message every 300 frames until the `$FFFFFFFF` terminator, redraw, audio tick.
 
 ## RAM / ROM & structures
 
@@ -78,7 +78,7 @@ Detailed listing, table parse and layout: `docs/analysis/character.md`.
 - `[static]` Flow: main menu -> Character (non-demo) -> race; demo skips it.
 - `[static]` Table/asset formats and 100 opponent records parsed from `baserom.md`.
 - `[static]` Message cycle starts at index 18, advances by 8 every 300 frames, ends at
-  `$FFFFFFFF`; any newly pressed button on pad A/B exits and sets the active controller.
+  `$FFFFFFFF`; releasing a held button on pad A/B exits and sets the active controller.
 
 ## Hypotheses
 

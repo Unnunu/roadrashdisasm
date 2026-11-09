@@ -21,7 +21,7 @@
 the main-menu fade, **only when `MainMenu_ram_DemoMode == 0`** (`0x7E782`); the demo
 branch (`0x7E7CC`) goes to the high-score demo instead. The screen shows the rider you
 will race next: portrait, name, a taunt/quote, and an optional extra overlay, then
-returns to the race when a button is pressed (or after the message timer expires).
+returns to the race when the held button is released (or after the message timer expires).
 
 ## Opponent table (`unk_19A12`, `0x19A12`)
 
@@ -107,9 +107,9 @@ The VDP setup is the same as the main menu: planes A/B `$4000`, window `$7000`
 
 ## `Character_GameTick` (`0x5E66`)
 
-Per frame: DMA the frame buffer to `$7000`; read pad A, then pad B; on a **newly
-pressed** button (`~input & previous raw buttons`) set `Race_ram_ActiveController` to
-0/1 and end the screen. Otherwise decrement `Menu_ram_NextMessageTimer`; every 300
+Per frame: DMA the frame buffer to `$7000`; read pad A, then pad B; on a **release
+edge** (`~input & previous raw buttons`; `GetInput` returns 1 = pressed) set
+`Race_ram_ActiveController` to 0/1 and end the screen. Otherwise decrement `Menu_ram_NextMessageTimer`; every 300
 frames (5 s) advance `Menu_ram_CurrentMessageId` by 8; when the message array entry is
 `$FFFFFFFF`, end. Then `Menu_ShowMessage` and `AudioFunc1`. End stage: `AudioFunc4`,
 clear `ram_UpdateFunction`, `AudioFunc1`.

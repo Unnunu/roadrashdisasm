@@ -366,7 +366,7 @@ Character_GameTick:
                 move.w  #$700,d2
                 jsr     (DmaWriteVRAM).l
 
-; pad A: ~input & previous raw buttons detects a newly pressed button
+; pad A: input is 1=pressed; ~input & previous raw detects a released button
                 move.w  (MainMenu_ram_ButtonsPlayerA).l,(MainMenu_ram_ChangedButtonsPlayerA).l
                 jsr     (GetInputPlayerA).w
                 move.w  d0,(MainMenu_ram_ButtonsPlayerA).l
