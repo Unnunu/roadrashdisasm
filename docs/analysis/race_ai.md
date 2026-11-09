@@ -49,21 +49,58 @@ speed/curve (`Race_ram_TrackParam0`/`Race_ram_TrackParam2`/`Race_ram_TrackParam3
 
 - `unk_12D0A` is a 6-word offset table (`FF60,FFA0,FFE0,0020,0060,00A0` = -$A0..$A0).
 - `unk_12D16` is a 99-entry dword table of actor action code pointers. `unk_259C0`
-  indexes this table indirectly: each entry is a pointer to one of these slots, and
-  the handler does `movea.l (a4),a6; jsr (a6)`.
-- Handlers: `sub_12FE4` (state bits + collision/curve helpers), `sub_13004`
-  (`sub_13422`+`sub_131BE`), `sub_1300E` (target/curve update),
-  `sub_1307C` (variant path), `sub_130D2` (recovery timer `ram_FF1B32`, then
-  `sub_1300E`).
-- `sub_13130` is the shared handler of all 16 `unk_25A44` entries: it compares
-  `|4(a1)-Race_ram_PlayerProgress|` with `$210000`, otherwise computes a Y value from
-  `$46*$12` + `$30`, clamps on-road to `$37..$A9` / off-road to `-$57..-$C9`, and
-  flips `$46` when clamped.
-- The table targets `sub_16458`, `sub_165D0`, `sub_165E0`, `sub_16612`, `sub_16624`,
-  `sub_1662C`, `sub_16644`, `sub_1666A`, `sub_166B0`, `sub_166DC` in
-  `src/race/race_combat.asm`.
-- Code at these entry points is now disassembled in `src/race/race_ai.asm`; exact AI/action
-  semantics and dynamic behavior remain TODO.
+  has 20 pointers indexed by `$74` (definition byte1); each points to a 4-pointer
+  action row. `sub_12EA2` calls `(a4)`; if the actor is the current/nearest target it
+  advances `a4 += 4` first, so the row is `normal -> dispatcher -> two alternatives`.
+- `sub_16458` is the dispatcher: it uses `4(a4)`/`8(a4)`/`C(a4)` to select the
+  action-2/action-3/action-4 handler based on target distance and `$5A` cooldown.
+
+Profile map from the ROM (slot -> actions at `+0/+4/+8/+C`):
+
+| `$74` | Slot | Action 0 (normal) | +4 (dispatcher) | +8 | +C |
+|---|---|---|---|---|---|
+| 0 | `$12D2A` | `sub_1300E` | `sub_1307C` | `sub_1300E` | `sub_1300E` |
+| 1 | `$12D16` | `sub_130D2` | `sub_16458` | `sub_13004` | `sub_165D0` |
+| 2 | `$12D3A` | `sub_1300E` | `sub_16458` | `sub_13004` | `sub_165E0` |
+| 3 | `$12D4E` | `sub_1300E` | `sub_16458` | `sub_13004` | `sub_165E0` |
+| 4 | `$12D62` | `sub_1300E` | `sub_16458` | `sub_13004` | `sub_165E0` |
+| 5 | `$12D76` | `sub_1300E` | `sub_16458` | `sub_13004` | `sub_165E0` |
+| 6 | `$12D8A` | `sub_1300E` | `sub_16458` | `sub_13004` | `sub_165D0` |
+| 7 | `$12D9E` | `sub_1300E` | `sub_16458` | `sub_13004` | `sub_165D0` |
+| 8 | `$12DB2` | `sub_1300E` | `sub_16458` | `sub_13004` | `sub_165D0` |
+| 9 | `$12DC6` | `sub_1300E` | `sub_16458` | `sub_13004` | `sub_165D0` |
+| 10 | `$12DDA` | `sub_1300E` | `sub_16458` | `sub_13004` | `sub_165D0` |
+| 11 | `$12DEE` | `sub_1300E` | `sub_16458` | `sub_13004` | `sub_165D0` |
+| 12 | `$12E02` | `sub_1300E` | `sub_16458` | `sub_12FE4` | `sub_165E0` |
+| 13 | `$12E16` | `sub_1300E` | `sub_16458` | `sub_12FE4` | `sub_165E0` |
+| 14 | `$12E2A` | `sub_1300E` | `sub_16458` | `sub_12FE4` | `sub_165E0` |
+| 15 | `$12E3E` | `sub_1300E` | `sub_16458` | `sub_12FE4` | `sub_165E0` |
+| 16 | `$12E52` | `sub_1300E` | `sub_16458` | `sub_12FE4` | `sub_165D0` |
+| 17 | `$12E66` | `sub_1300E` | `sub_16458` | `sub_12FE4` | `sub_165D0` |
+| 18 | `$12E7A` | `sub_1300E` | `sub_16458` | `sub_12FE4` | `sub_165D0` |
+| 19 | `$12E8E` | `sub_1300E` | `sub_16458` | `sub_12FE4` | `sub_165D0` |
+
+- `[dynamic]` Demo trace at `0x12FD8` (before `jsr (a6)`) observed the normal path
+  for every active actor: player `$74=0` -> `$12D2A`/`sub_1300E`; opponents with
+  `$74=6/8/9` -> `$12D8A/$12DB2/$12DC6` and also `sub_1300E`. The dispatcher/action+C
+  paths were not reached in the untriggered demo; forcing a nearest-target/collision
+  state is the next experiment.
+- Handler roles: `sub_1300E` normal target/curve update; `sub_1307C` variant;
+  `sub_130D2` recovery timer; `sub_12FE4` state/collision + `sub_13A92`;
+  `sub_13004` movement/`sub_131BE`; `sub_16458` dispatcher; `sub_165D0/165E0`
+  combat actions; `sub_16612/16624/1662C/16644/1666A/166B0/166DC/166F0` deeper
+  combat/action handlers (see `docs/analysis/combat.md`).
+
+## Static actor action table (`unk_25A44`)
+
+- 16 entries, each `dc.l handler` + `dc.w speed` + `dc.w Y offset`; all currently
+  point at `sub_13130`.
+- `sub_13106` indexes it by `$74 * 8`; `sub_13130` clamps the actor Y:
+  `|4(a1)-Race_ram_PlayerProgress| >= $210000` clears bit6; otherwise computes
+  `$30 + ($46*$12 >> 8)*FrameDelay`, clamps on-road `$37..$A9` / off-road
+  `-$57..-$C9`, and flips `$46` when clamped.
+- The per-entry speed/offset words are not yet assigned; `$74` selects both the
+  static profile and its speed/offset pair.
 
 ## RAM / fields
 
@@ -85,6 +122,8 @@ combat handlers are in `race_combat.asm`.
   `Race_UpdateStaticActors`.
 - AI tables (`unk_10E3E`/`unk_12B7C`/`unk_13A1A`) and the on-foot rules.
 - Exact actor-action handler semantics (`0x12FE4`..`0x131BE`) and dynamic checks.
+- Trigger the dispatcher/action+C paths by forcing a nearest target/collision; the
+  untriggered demo only selects `sub_1300E`.
 - Next: `src/race/race_combat.asm` (attack/action semantics) and
   `src/race/race_anim_audio.asm` (animations/random/audio).
 

@@ -27,6 +27,9 @@ random and audio live in `src/race/race_anim_audio.asm`; attack/action handlers 
 - `Race_UpdateActorAI` `0x10E66`: main player/opponent AI loop.
 - `Race_HandleInputOnFoot` `0x110AE` / `Race_AnotherInputOnFoot` `0x111FA`: on-foot input.
 - `Race_UpdateStaticActors` `0x12868`: static/police actor AI.
+- `sub_12EA2` `0x12EA2`: profile action selection (`unk_259C0[$74]`).
+- `sub_13106`/`sub_13130` `0x13106`/`0x13130`: static action dispatch/shared Y clamp.
+- `sub_16458` `0x16458`: action-1 dispatcher (target/cooldown).
 - `Race_SetupActorSprite` `0x13746`: actor sprite/field setup.
 - `Race_UpdateBikeLean` `0x13EA0` / `Race_UpdateBikeCurve` `0x13EFA`: lean/curve.
 - `Race_GetCurveSpeedLimit` `0x13FE6`: curve speed limit (`Track_CurveBuffer`, `unk_14056`).
@@ -36,6 +39,6 @@ random and audio live in `src/race/race_anim_audio.asm`; attack/action handlers 
 | Function | Address | Contract | Algorithm | Data | Hardware | Why | Dynamic | Status |
 |----------|---------|----------|-----------|------|----------|-----|---------|--------|
 | actor/input/AI chain | `0x10E00`+ | [~] | [~] | [~] | [ ] | [~] | [~] | partial; `10E66` snapshot |
-| actor action dispatch | `0x12D0A`-`0x131BE` | [x] | [~] | [x] | [x] | [x] | [ ] | analyzed |
+| actor action dispatch | `0x12D0A`-`0x131BE` | [x] | [x] | [x] | [x] | [x] | [~] | static table + demo trace |
 
 Detailed flow: `docs/analysis/race.md`; spawn: `docs/analysis/race_spawn.md`.
