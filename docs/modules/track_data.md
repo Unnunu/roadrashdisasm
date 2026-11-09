@@ -1,10 +1,10 @@
-# Module card: `9FE4.asm`
+# Module card: `track_data.asm`
 
 - **ROM range:** `0x009FE4`–`0x00A4E1` (`race.asm` starts at `0xA4E2`)
 - **Status:** analyzed (algorithm and dynamic stream start confirmed; channel semantics
   partly TODO)
 - **Related:** `docs/architecture.md`, `docs/ram-map.md`,
-  `docs/analysis/9FE4.md`
+  `docs/analysis/track_data.md`
 
 ## Role / purpose
 
@@ -52,7 +52,7 @@ track/level factor.
 | `sub_A0D4` | `0xA0D4` | [x] | [x] | [x] | - | [x] | [ ] | analyzed |
 | `sub_A2DA` | `0xA2DA` | [x] | [x] | [x] | - | [x] | [ ] | analyzed |
 
-Detailed listing: `docs/analysis/9FE4.md`.
+Detailed listing: `docs/analysis/track_data.md`.
 
 ## External calls / dependencies
 

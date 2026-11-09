@@ -1,6 +1,6 @@
 # Module card: `endlevel.asm`
 
-- **ROM range:** `0x008342`–`0x008FB3` (`8FB4.asm` starts at `0x8FB4`)
+- **ROM range:** `0x008342`–`0x008FB3` (`road_render.asm` starts at `0x8FB4`)
 - **Status:** analyzed (static; non-demo only)
 - **Related:** `docs/architecture.md`, `docs/reverse-engineering.md`,
   `docs/hardware.md`, `docs/ram-map.md`, `docs/analysis/endlevel.md`

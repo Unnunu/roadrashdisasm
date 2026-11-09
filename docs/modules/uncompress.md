@@ -1,6 +1,6 @@
 # Module card: `uncompress.asm`
 
-- **ROM range:** `0x009B9E`–`0x009FE3` (`9FE4.asm` starts at `0x9FE4`)
+- **ROM range:** `0x009B9E`–`0x009FE3` (`track_data.asm` starts at `0x9FE4`)
 - **Status:** analyzed; algorithm validated with a Python decoder
 - **Related:** `docs/architecture.md`, `docs/ram-map.md`, `docs/analysis/uncompress.md`
 
@@ -65,7 +65,7 @@ Detailed listing: `docs/analysis/uncompress.md`.
 ## External calls / dependencies
 
 - Used by `logoEA.asm`? (no, LogoEA has its own), `intro.asm`, `menu_main.asm`,
-  `character.asm`, `race_results.asm`, `highscore.asm`, `shop.asm`, `endlevel.asm`,
+  `rider_intro.asm`, `race_results.asm`, `highscore.asm`, `shop.asm`, `endlevel.asm`,
   `race.asm` (asset loaders).
 - `WriteToVRAM` (`race.asm`) consumes the decompressed tile-count header.
 

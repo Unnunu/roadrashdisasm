@@ -142,16 +142,16 @@ tentative until the module card is filled in.
 | `0x002446` | `menu_password.asm` | Password menu | [menu_password.md](modules/menu_password.md) |
 | `0x003400` | `menu_main.asm` | Main menu | [menu_main.md](modules/menu_main.md) |
 | `0x004226` | `message.asm` | On-screen messages / button prompts | [message.md](modules/message.md) |
-| `0x005760` | `sub_5760.asm` | Rider/bike sprite chain builder | [sub_5760.md](modules/sub_5760.md) |
-| `0x0059C4` | `character.asm` | Pre-race rider/opponent intro | [character.md](modules/character.md) |
+| `0x005760` | `rider_sprites.asm` | Rider/bike sprite chain builder | [rider_sprites.md](modules/rider_sprites.md) |
+| `0x0059C4` | `rider_intro.asm` | Pre-race rider/opponent intro | [rider_intro.md](modules/rider_intro.md) |
 | `0x005F28` | `race_results.asm` | Post-race results / bust / repair | [race_results.md](modules/race_results.md) |
 | `0x006DC0` | `highscore.asm` | High-score screen | [highscore.md](modules/highscore.md) |
 | `0x0074AA` | `shop.asm` | Bike shop | [shop.md](modules/shop.md) |
 | `0x008342` | `endlevel.asm` | Level-complete animation / level-up | [endlevel.md](modules/endlevel.md) |
-| `0x008FB4` | `8FB4.asm` | Road/object renderer (partial) | [8FB4.md](modules/8FB4.md) |
-| `0x0098C2` | `98C2.asm` | HUD digit writers / debug overlay | [98C2.md](modules/98C2.md) |
+| `0x008FB4` | `road_render.asm` | Road/object renderer (partial) | [road_render.md](modules/road_render.md) |
+| `0x0098C2` | `race_hud_debug.asm` | HUD digit writers / debug overlay | [race_hud_debug.md](modules/race_hud_debug.md) |
 | `0x009B9E` | `uncompress.asm` | LZSS decompressors (B/W/stream/VRAM) | [uncompress.md](modules/uncompress.md) |
-| `0x009FE4` | `9FE4.asm` | Track/road data decompressor | [9FE4.md](modules/9FE4.md) |
+| `0x009FE4` | `track_data.asm` | Track/road data decompressor | [track_data.md](modules/track_data.md) |
 | `0x00A4E2` | `race.asm` | Main gameplay (top-level analyzed) | [race.md](modules/race.md) |
 | `0x00D278` | `race_hud.asm` | Race HUD (included by `race.asm`) | TODO |
 | `0x00E732` | `road_marking.asm` | Road marking / sprite placement (included by `race.asm`) | TODO |

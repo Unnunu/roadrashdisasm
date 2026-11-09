@@ -1,5 +1,5 @@
 ; *************************************************
-; 98C2.asm - race HUD digit writers, standings and debug readouts
+; race_hud_debug.asm - race HUD digit writers, standings and debug readouts
 ; ROM range: $98C2-$9B9D
 ; Status:    analyzed (no direct callers in the disassembled source)
 ; API:       sub_98C2, RaceDebug_ShowDistanceTravelled, sub_995A/997E/999E/99C2,

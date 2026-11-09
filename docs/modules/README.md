@@ -15,16 +15,16 @@ row to the table below.
 | `menu_password.asm` | `0x002446` | Password menu | [menu_password.md](menu_password.md) |
 | `menu_main.asm` | `0x003400` | Main menu | [menu_main.md](menu_main.md) |
 | `message.asm` | `0x004226` | On-screen messages / button prompts | [message.md](message.md) |
-| `sub_5760.asm` | `0x005760` | Rider/bike sprite chain builder | [sub_5760.md](sub_5760.md) |
-| `character.asm` | `0x0059C4` | Pre-race rider/opponent intro | [character.md](character.md) |
+| `rider_sprites.asm` | `0x005760` | Rider/bike sprite chain builder | [rider_sprites.md](rider_sprites.md) |
+| `rider_intro.asm` | `0x0059C4` | Pre-race rider/opponent intro | [rider_intro.md](rider_intro.md) |
 | `race_results.asm` | `0x005F28` | Post-race results / bust / repair | [race_results.md](race_results.md) |
 | `highscore.asm` | `0x006DC0` | High-score screen | [highscore.md](highscore.md) |
 | `shop.asm` | `0x0074AA` | Bike shop | [shop.md](shop.md) |
 | `endlevel.asm` | `0x008342` | Level-complete animation / level-up | [endlevel.md](endlevel.md) |
-| `8FB4.asm` | `0x008FB4` | Road/object renderer (partial) | [8FB4.md](8FB4.md) |
-| `98C2.asm` | `0x0098C2` | HUD digit writers / debug overlay | [98C2.md](98C2.md) |
+| `road_render.asm` | `0x008FB4` | Road/object renderer (partial) | [road_render.md](road_render.md) |
+| `race_hud_debug.asm` | `0x0098C2` | HUD digit writers / debug overlay | [race_hud_debug.md](race_hud_debug.md) |
 | `uncompress.asm` | `0x009B9E` | LZSS decompressors (B/W/stream/VRAM) | [uncompress.md](uncompress.md) |
-| `9FE4.asm` | `0x009FE4` | Track/road data decompressor | [9FE4.md](9FE4.md) |
+| `track_data.asm` | `0x009FE4` | Track/road data decompressor | [track_data.md](track_data.md) |
 | `race.asm` | `0x00A4E2` | Main gameplay (top-level analyzed) | [race.md](race.md) |
 | `race_hud.asm` | `0x00D278` | Race HUD (included by `race.asm`) | TODO |
 | `road_marking.asm` | `0x00E732` | Road marking / sprite placement (included by `race.asm`) | TODO |

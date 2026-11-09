@@ -1,11 +1,11 @@
-# Analysis: `98C2.asm` (race HUD digit helpers + debug/alternate HUD)
+# Analysis: `race_hud_debug.asm` (race HUD digit helpers + debug/alternate HUD)
 
 - **Module:** number/digit drawing into the race HUD buffers, race-position display,
   and debug readouts of the player struct/race state
 - **ROM range:** `0x0098C2`–`0x009B9D` (`uncompress.asm` starts at `0x9B9E`)
 - **Status:** analyzed (no direct callers in the disassembled source; likely
   debug/alternate HUD or called indirectly)
-- **Source:** `98C2.asm`
+- **Source:** `race_hud_debug.asm`
 - **Related:** `docs/architecture.md`, `docs/ram-map.md`, `docs/hardware.md`
 
 ## Coverage matrix

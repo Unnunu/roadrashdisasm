@@ -51,7 +51,7 @@ marking/animation, and the race outcome. `top_level.asm` calls `Race_Init`, inst
   `+$68` flags (bit1 B, bit2 A, bit7 timer stop), `+$71 Index`.
 - `$FF2FAA`: a **different** player/actor-like struct used by `sub_12868` (`$68` bit6);
   not the same layout as `$FF1EAA`.
-- `$FFD37C`: 0x14-byte road/actor objects (`docs/analysis/8FB4.md`).
+- `$FFD37C`: 0x14-byte road/actor objects (`docs/analysis/road_render.md`).
 - Track: `RaceTrack_Data1..6`, `unk_25EC0`, spawn data `RaceTrack_Data5`, per-level
   thresholds `word_B976/B980`, bike data `unk_25B50/25AC4`.
 - Buffers: `Intro_TitleScrollTable`/`Intro_TitleScrollSpeed` (+$400 SAT),
@@ -59,8 +59,8 @@ marking/animation, and the race outcome. `top_level.asm` calls `Race_Init`, inst
   `Intro_ram_ImageBuffer`/`Race_ram_ImageBuffer2`, VScroll info
   `ram_FF3FDC/$411C/$425C`, HUD/SAT/HScroll DMA.
 - Subsystems: `race_hud.asm` (0xD278), `road_marking.asm` (0xE732),
-  `animation.asm` (0x16860); road/object renderer `8FB4.asm`; track decoder
-  `9FE4.asm`; LZSS `uncompress.asm`.
+  `animation.asm` (0x16860); road/object renderer `road_render.asm`; track decoder
+  `track_data.asm`; LZSS `uncompress.asm`.
 
 ## Coverage matrix
 

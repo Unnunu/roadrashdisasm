@@ -67,13 +67,13 @@ differing byte is reported. `baserom.md` is the only ROM file and is git-ignored
 | `menu_password.asm` | Password menu. |
 | `menu_main.asm` | Main menu. |
 | `message.asm` | On-screen messages / button prompts. |
-| `sub_5760.asm` | Not yet identified routine block. |
-| `character.asm` | Character screen / rider rendering. |
+| `rider_sprites.asm` | Rider/bike sprite chain builder. |
+| `rider_intro.asm` | Pre-race rider/opponent intro. |
 | `race_results.asm` | Post-race results screen. |
 | `highscore.asm` | High-score screen. |
 | `shop.asm` | Bike shop. |
 | `endlevel.asm` | End-of-level menu. |
-| `8FB4.asm`, `98C2.asm`, `9FE4.asm` | Not yet identified routine blocks. |
+| `road_render.asm`, `race_hud_debug.asm`, `track_data.asm` | Road/object renderer; HUD digits/debug; track data decompressor. |
 | `uncompress.asm` | Decompression routines. |
 | `race.asm` | Main gameplay (largest file); includes `race_hud.asm`, `road_marking.asm`, `animation.asm`. |
 | `top_level.asm` | Top-level screen flow at `0x07E6A2` (intro/menu/race/results); generated with `tools/disasm.py`. |

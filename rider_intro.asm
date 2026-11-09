@@ -1,5 +1,5 @@
 ; *************************************************
-; character.asm - pre-race rider/opponent introduction
+; rider_intro.asm - pre-race rider/opponent introduction
 ; ROM range: $59C4-$5F27
 ; Status:    analyzed (static; rendering dynamically TODO)
 ; API:       Character_Init, Character_GameTick

@@ -1,10 +1,10 @@
-# Module card: `character.asm`
+# Module card: `rider_intro.asm`
 
 - **ROM range:** `0x0059C4`–`0x005F27` (`Character_Init` `0x59C4`,
   `Character_GameTick` `0x5E66`)
 - **Status:** analyzed (static; rendering not yet dynamically confirmed)
 - **Related:** `docs/architecture.md`, `docs/reverse-engineering.md`,
-  `docs/hardware.md`, `docs/ram-map.md`, `docs/analysis/character.md`
+  `docs/hardware.md`, `docs/ram-map.md`, `docs/analysis/rider_intro.md`
 
 ## Role / purpose
 
@@ -53,7 +53,7 @@ to the race and records the controller in `Race_ram_ActiveController`.
 | `Character_GameTick` | `0x5E66` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
 | `unk_19A12` | `0x19A12` | [x] | [x] | [x] | - | [x] | - | parsed |
 
-Detailed listing, table parse and layout: `docs/analysis/character.md`.
+Detailed listing, table parse and layout: `docs/analysis/rider_intro.md`.
 
 ## External calls / dependencies
 

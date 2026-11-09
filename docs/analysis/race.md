@@ -7,7 +7,7 @@
 - **Status:** partially analyzed (top-level flow, init/assets, input/loop, buffer
   rotation, initial struct inventory; actor/physics/AI and sub-module internals TODO)
 - **Related:** `docs/architecture.md`, `docs/ram-map.md`, `docs/hardware.md`,
-  `docs/analysis/8FB4.md`, `docs/analysis/9FE4.md`, `docs/analysis/uncompress.md`
+  `docs/analysis/road_render.md`, `docs/analysis/track_data.md`, `docs/analysis/uncompress.md`
 
 ## Coverage matrix (top level)
 
@@ -129,7 +129,7 @@ This is the double/quad buffering that avoids tearing.
 
 - `Race_InitTrack`: `CurrentTrackId*2` -> `unk_25EC0` -> the track record;
   `RaceTrack_Data1` = per-level word, `Data2/3` = the track-data decoder streams
-  (`9FE4.asm`), `Data4/5/6` = object/spawn/gfx data; initial time/position/state.
+  (`track_data.asm`), `Data4/5/6` = object/spawn/gfx data; initial time/position/state.
 - `sub_B6C4`/`sub_B72A`: object/actor pointer tables and their initial screen data.
 - `sub_B770`: bike physics/steering/engine constants.
 - `sub_B840`: per-track parameters from `unk_1471A`.
@@ -139,7 +139,7 @@ This is the double/quad buffering that avoids tearing.
   split by per-level thresholds `word_B976`/`word_B980` and the `off_B98A` color
   table into `ram_FFD7D4` and `ram_FFDBD8` (object lists).
 - `Race_CreateActors` (`0xCAD0`): builds the actor/object records (the `$14`-byte
-  `ram_FFD37C` array used by `8FB4.asm`).
+  `ram_FFD37C` array used by `road_render.asm`).
 
 ## RAM / structures (initial inventory)
 
@@ -150,7 +150,7 @@ Player/bike structures:
 | `$FF1EAA` | `$80` | Player A gameplay state (`RacePlayer` candidate). |
 | `$FF26AA` | `$80` | Player B gameplay state (`$FF1EAA + $800`). |
 | `$FF2FAA` | ? | Another actor/player-like struct used by `sub_12868` (`$68` bit6); **not** the same struct as `$FF1EAA`. |
-| `$FFD37C` | `$14`/entry | Road/actor object array (fields in `docs/analysis/8FB4.md`). |
+| `$FFD37C` | `$14`/entry | Road/actor object array (fields in `docs/analysis/road_render.md`). |
 
 `RacePlayer` offsets observed in the top-level (more in the physics/AI chain):
 

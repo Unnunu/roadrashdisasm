@@ -1,12 +1,12 @@
-# Analysis: `8FB4.asm` (race road/object renderer)
+# Analysis: `road_render.asm` (race road/object renderer)
 
 - **Module:** race road-strip/tile renderer and visible-object sprite renderer
-- **ROM range:** `0x008FB4`–`0x0098C1` (`98C2.asm` starts at `0x98C2`)
+- **ROM range:** `0x008FB4`–`0x0098C1` (`race_hud_debug.asm` starts at `0x98C2`)
 - **Status:** partially analyzed: object list/records, call graph and road-strip
   structure confirmed; the exact shape/projection math is TODO
-- **Source:** `8FB4.asm`
+- **Source:** `road_render.asm`
 - **Related:** `docs/architecture.md`, `docs/hardware.md`, `docs/ram-map.md`,
-  `docs/analysis/sub_5760.md`
+  `docs/analysis/rider_sprites.md`
 
 ## Coverage matrix
 
@@ -39,7 +39,7 @@ race.asm (0x1809)
         sub_91F0       ; right/road edge interpolation
         sub_9306       ; write road tile columns
         sub_93D2       ; clear remaining edge tiles
-        sub_5760       ; rider/bike SAT chain builder (docs/analysis/sub_5760.md)
+        sub_5760       ; rider/bike SAT chain builder (docs/analysis/rider_sprites.md)
       sub_978C/97BC/9836 ; shape/edge projection helpers
 ```
 

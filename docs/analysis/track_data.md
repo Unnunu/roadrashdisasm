@@ -1,12 +1,12 @@
-# Analysis: `9FE4.asm` (track/road data decompressor)
+# Analysis: `track_data.asm` (track/road data decompressor)
 
 - **Module:** two-channel delta/bit-packed decoder for the track (road curve/height)
   data, with a resumable per-call budget
 - **ROM range:** `0x009FE4`–`0x00A4E1` (`race.asm` starts at `0xA4E2`)
 - **Status:** analyzed (algorithm + dynamic start/streams confirmed; channel semantics
   partly TODO)
-- **Source:** `9FE4.asm`
-- **Related:** `docs/architecture.md`, `docs/ram-map.md`, `docs/analysis/8FB4.md`
+- **Source:** `track_data.asm`
+- **Related:** `docs/architecture.md`, `docs/ram-map.md`, `docs/analysis/road_render.md`
 
 ## Coverage matrix
 

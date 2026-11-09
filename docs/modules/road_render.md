@@ -1,10 +1,10 @@
-# Module card: `8FB4.asm`
+# Module card: `road_render.asm`
 
-- **ROM range:** `0x008FB4`–`0x0098C1` (`98C2.asm` starts at `0x98C2`)
+- **ROM range:** `0x008FB4`–`0x0098C1` (`race_hud_debug.asm` starts at `0x98C2`)
 - **Status:** partially analyzed (object list/records, call graph and dynamic samples
   confirmed; shape/projection math TODO)
 - **Related:** `docs/architecture.md`, `docs/reverse-engineering.md`,
-  `docs/hardware.md`, `docs/ram-map.md`, `docs/analysis/8FB4.md`
+  `docs/hardware.md`, `docs/ram-map.md`, `docs/analysis/road_render.md`
 
 ## Role / purpose
 
@@ -60,7 +60,7 @@ copy the chain into the SAT with the x offset/clipping, then the second shape.
 | `sub_9306`/`sub_93D2` | `0x9306`/`0x93D2` | [x] | [~] | [x] | [x] | [x] | - | partial |
 | `sub_978C`/`sub_97BC`/`sub_9836` | - | [x] | [~] | [x] | - | [x] | - | partial |
 
-Detailed listing and dynamic samples: `docs/analysis/8FB4.md`.
+Detailed listing and dynamic samples: `docs/analysis/road_render.md`.
 
 ## External calls / dependencies
 

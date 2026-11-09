@@ -2,7 +2,7 @@
 
 - **Module:** level-complete sequence: victory animation, then the level-up character
   screen (increments the player level and rebuilds the opponents)
-- **ROM range:** `0x008342`–`0x008FB3` (`8FB4.asm` starts at `0x8FB4`)
+- **ROM range:** `0x008342`–`0x008FB3` (`road_render.asm` starts at `0x8FB4`)
 - **Status:** analyzed statically (non-demo only; no capture)
 - **Source:** `endlevel.asm`
 - **Related:** `docs/architecture.md`, `docs/hardware.md`, `docs/ram-map.md`
@@ -65,7 +65,7 @@ opponents and regenerates the password, and returns to the main menu.
 
 ## Level-up character screen
 
-- Same portrait layout as `character.asm`: panel `unk_7EA66` at (2,5) 12x14, portrait
+- Same portrait layout as `rider_intro.asm`: panel `unk_7EA66` at (2,5) 12x14, portrait
   at (3,6) 10x12, name at (3,19), quote at (16,y/2) with stride 128.
 - Rider table `unk_19F12` (`0x19F12`): 5 levels x 2 variants (8-byte
   `quote_ptr,image_ptr` records, same asset format). Level 1-5 variants include the

@@ -68,7 +68,7 @@ index 28 (`unk_52CE`: complete every course in 4th place or better); 4 -> index 
 - Panel `unk_7EA66` -> `$B000`, 12x14 at (2,5), base `$580`.
 - Select the cop portrait from `unk_19E22` (money >= 0, 5x4 variants) or `unk_19EC2`
   (money < 0, 5x2), index `ram_FF1B1A-1`, random variant (`&$18` / `&8`).
-- Same asset format as `character.asm`: 8-byte interleaved size/header prefix; header
+- Same asset format as `rider_intro.asm`: 8-byte interleaved size/header prefix; header
   gives name string, image/nametable/palette offsets. Draw 10x12 at (3,6), name at
   (3,19), quote at (16,y/2) with stride 128.
 - Message: `unk_56AC` "Caught by the cops / Your fine -" with `ram_FF091A` formatted by

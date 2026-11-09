@@ -45,7 +45,7 @@ open the shop (C), or inspect the cash/password (B).
   unread; `Menu_ram_PlayerLevel` for fine/repair/congratulations.
 - Result portrait tables: `$19D32` (level, money>=0, 5x4), `$19DD2` (level, money<0,
   5x2), `$19E22` (cop, money>=0, 5x4), `$19EC2` (cop, money<0, 5x2); 8-byte records
-  `quote_ptr, image_ptr` (same asset format as `character.asm`).
+  `quote_ptr, image_ptr` (same asset format as `rider_intro.asm`).
 - Track images: `$7E670` pointers, `$7E684` image offsets, `$7E68E` nametable offsets,
   `$7E698` palette offsets.
 - Messages: groups 21 (`unk_5276`), 28 (`unk_52CE`), 35 (`ram_FF089A`/`unk_533A`) plus

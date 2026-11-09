@@ -1,9 +1,9 @@
-# Analysis: `sub_5760.asm` (animated rider/bike sprite builder)
+# Analysis: `rider_sprites.asm` (animated rider/bike sprite builder)
 
 - **Module / routine:** builds a linked rider/bike sprite chain in the race SAT
-- **ROM range:** `0x005760`–`0x0059C3` (`character.asm` starts at `0x59C4`)
+- **ROM range:** `0x005760`–`0x0059C3` (`rider_intro.asm` starts at `0x59C4`)
 - **Status:** analyzed statically; confirmed dynamically in the demo race
-- **Source:** `sub_5760.asm`
+- **Source:** `rider_sprites.asm`
 - **Related:** `docs/architecture.md`, `docs/hardware.md`, `docs/ram-map.md`
 
 ## Coverage matrix
@@ -16,7 +16,7 @@
 
 ## Role
 
-Called from `8FB4.asm` (`bsr.w sub_5760`) to build the next chunk of the rider/bike
+Called from `road_render.asm` (`bsr.w sub_5760`) to build the next chunk of the rider/bike
 sprite chain in the **sprite attribute table** (`Race_ram_CurrentSpriteAttributeTable`,
 `$FF38AC`). It writes linked SAT entries `Y, size/link, tile/priority, X`, advances the
 animation tile cursor and sprite index, and handles a second ("shadow"/overlay) layer.
@@ -121,6 +121,6 @@ the linked rider/bike sprite chain and maintains the animation tile/sprite indic
 - `[hypothesis]` The entries are the rider + bike sprites with a shadow/reflection layer;
   `ram_FF133A` selects the shadow/overlay.
 - `[hypothesis]` The `d0/d1` inputs are the animation direction/size derived by
-  `8FB4.asm`.
+  `road_render.asm`.
 - `[ ]` Map the `unk_5944` records to sprite sizes/tile steps with the graphics.
-- `[ ]` Confirm the caller `8FB4.asm` contract (next module).
+- `[ ]` Confirm the caller `road_render.asm` contract (next module).

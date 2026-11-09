@@ -1,9 +1,9 @@
-# Analysis: `character.asm` (pre-race rider/opponent intro)
+# Analysis: `rider_intro.asm` (pre-race rider/opponent intro)
 
 - **Module:** rider/opponent introduction screen shown between the main menu and the race
 - **ROM range:** `0x0059C4`–`0x005F27` (`Character_Init` `0x59C4`, `Character_GameTick` `0x5E66`)
 - **Status:** analyzed statically; rendering not yet confirmed dynamically (demo skips it)
-- **Source:** `character.asm`
+- **Source:** `rider_intro.asm`
 - **Related:** `docs/architecture.md`, `docs/hardware.md`, `docs/ram-map.md`
 
 ## Coverage matrix

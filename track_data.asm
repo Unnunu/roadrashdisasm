@@ -1,5 +1,5 @@
 ; *************************************************
-; 9FE4.asm - track/road data decompressor (two-channel delta/bit-packed)
+; track_data.asm - track/road data decompressor (two-channel delta/bit-packed)
 ; ROM range: $9FE4-$A4E1
 ; Status:    analyzed (stream start captured dynamically; channel semantics TODO)
 ; API:       sub_9FE4 (start), sub_A04A (per-call chunk), sub_A0D4/A2DA (channels)

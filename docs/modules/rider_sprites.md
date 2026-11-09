@@ -1,15 +1,15 @@
-# Module card: `sub_5760.asm`
+# Module card: `rider_sprites.asm`
 
 - **ROM range:** `0x005760`–`0x0059C3` (routines) + `0x005944`–`0x0059C3` (table
-  `unk_5944`); `character.asm` starts at `0x59C4`
+  `unk_5944`); `rider_intro.asm` starts at `0x59C4`
 - **Status:** analyzed (static + dynamic)
 - **Related:** `docs/architecture.md`, `docs/reverse-engineering.md`,
-  `docs/hardware.md`, `docs/ram-map.md`, `docs/analysis/sub_5760.md`
+  `docs/hardware.md`, `docs/ram-map.md`, `docs/analysis/rider_sprites.md`
 
 ## Role / purpose
 
 Builds a linked **rider/bike sprite chain** in the race sprite attribute table (SAT).
-It is called by `8FB4.asm` (`bsr.w sub_5760`) each time the animation needs a new chunk
+It is called by `road_render.asm` (`bsr.w sub_5760`) each time the animation needs a new chunk
 of sprites, writes `Y, size/link, tile/priority, X` entries, advances the animation tile
 cursor / sprite index, and additionally emits a shadow/overlay layer.
 
@@ -17,7 +17,7 @@ cursor / sprite index, and additionally emits a shadow/overlay layer.
 
 | Symbol | Address | Called by | Description |
 |--------|---------|-----------|-------------|
-| `sub_5760` | `0x5760` | `8FB4.asm:82` | Build sprite chain chunk. |
+| `sub_5760` | `0x5760` | `road_render.asm:82` | Build sprite chain chunk. |
 | `sub_593E` | `0x593E` | — (no direct caller in source) | Wrapper `bsr.w sub_5760; rts`. |
 
 ## Control flow / state machine
@@ -51,11 +51,11 @@ cursor / sprite index, and additionally emits a shadow/overlay layer.
 | `sub_593E` | `0x593E` | [x] | [x] | - | - | [x] | - | analyzed |
 | `unk_5944` | `0x5944` | [x] | [x] | [x] | [x] | [x] | - | analyzed |
 
-Detailed listing and field hypotheses: `docs/analysis/sub_5760.md`.
+Detailed listing and field hypotheses: `docs/analysis/rider_sprites.md`.
 
 ## External calls / dependencies
 
-- Caller: `8FB4.asm` (race object/animation update; analyzed later).
+- Caller: `road_render.asm` (race object/animation update; analyzed later).
 - Reads/writes the shared animation state used by `animation.asm`, `road_marking.asm`,
   `race_hud.asm`.
 
@@ -77,8 +77,8 @@ Detailed listing and field hypotheses: `docs/analysis/sub_5760.md`.
 
 - `[hypothesis]` Entries are rider + bike sprites with a shadow/reflection layer. Test:
   map the SAT entries to the graphics in BlastEm.
-- `[hypothesis]` `d0/d1` inputs are the animation direction/size from `8FB4.asm`. Test:
-  analyze `8FB4.asm` and break at `$5760` entry.
+- `[hypothesis]` `d0/d1` inputs are the animation direction/size from `road_render.asm`. Test:
+  analyze `road_render.asm` and break at `$5760` entry.
 
 ## Rename proposals (apply only on request)
 

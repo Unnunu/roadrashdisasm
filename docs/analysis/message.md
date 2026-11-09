@@ -2,7 +2,7 @@
 
 - **Module / routine:** message/tooltip system, blinking controller-button prompts, shared
   strings and data tables
-- **ROM range:** `0x004226`–`0x00575F` (`sub_5760.asm` starts at `0x5760`)
+- **ROM range:** `0x004226`–`0x00575F` (`rider_sprites.asm` starts at `0x5760`)
 - **Status:** analyzed (message system and strings; shared data tables partly TODO)
 - **Source:** `message.asm`
 - **Related:** `docs/architecture.md`, `docs/hardware.md`, `docs/ram-map.md`

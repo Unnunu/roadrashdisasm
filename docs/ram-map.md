@@ -104,7 +104,7 @@ The player state used by the password system: `Menu_ram_Player` `$FF0508`, level
 | `$FFB62C` | `Menu_ram_FrameBuffer` | `$E00` | 64x28 window/text frame buffer (DMA to `$7000`). |
 | `$FF8364` | `Race_ram_ImageBuffer2` | TODO | Race badge/card nametable staging. |
 
-### Character intro (`character.asm`)
+### Character intro (`rider_intro.asm`)
 
 | Address | Name | Size | Meaning |
 |---|---|---|---|
@@ -119,7 +119,7 @@ The player state used by the password system: `Menu_ram_Player` `$FF0508`, level
 ROM: `unk_19A12` = `[5 levels][5 tracks][4 variants]` 8-byte records
 (`quote_ptr,image_ptr`), index `base+variant+(level-1)*$A0+track*$10`. Image assets
 carry an 8-byte interleaved `size/header` prefix; the header gives the name string,
-image/nametable/palette offsets (see `docs/analysis/character.md`).
+image/nametable/palette offsets (see `docs/analysis/rider_intro.md`).
 
 ### Player/bike and race state (`race.asm`)
 
@@ -206,7 +206,7 @@ ROM: `Shop_BikeDescriptions` `$81D2`, `Shop_dPrices` `$8312`, `Shop_BikeImageTab
 current price/2; money -= price - current/2; regenerate the password. See
 `docs/analysis/shop.md`.
 
-### HUD digits/debug (`98C2.asm`)
+### HUD digits/debug (`race_hud_debug.asm`)
 
 | Address | Name | Size | Meaning |
 |---|---|---|---|
@@ -218,9 +218,9 @@ current price/2; money -= price - current/2; regenerate the password. See
 Digit HUD: `d1` packed row/column -> offset `row*128+column*2`; tile `$5C0+digit`, bit15
 priority, `d2` palette/priority. Buffers `Race_ram_CurrentHudBuffer`/`NextHudBuffer`.
 `sub_F11C` (`race.asm`) formats distance/POSZ values. No direct callers; likely debug/
-alternate HUD. See `docs/analysis/98C2.md`.
+alternate HUD. See `docs/analysis/race_hud_debug.md`.
 
-### Road/object renderer (`8FB4.asm`)
+### Road/object renderer (`road_render.asm`)
 
 | Address | Name | Size | Meaning |
 |---|---|---|---|
@@ -238,7 +238,7 @@ alternate HUD. See `docs/analysis/98C2.md`.
 | `$FF136A` | horizon | 2 | Road horizon/limit. |
 
 SAT is double-buffered: `$FF479C`/`$FF4E1C`. Shape table `unk_3BF1A` (`$3BF1A`) points
-to shape data in the gap. See `docs/analysis/8FB4.md`; the exact projection math is TODO.
+to shape data in the gap. See `docs/analysis/road_render.md`; the exact projection math is TODO.
 
 ### End level (`endlevel.asm`)
 
@@ -254,7 +254,7 @@ buffers. Level-up rider table `$19F12` (5 levels x 2), frame counts `$8C8C`,
 animation script `$8DC2`, tiles `$80000`, window image `$7F400`. `sub_8946` advances the
 level/opponents/password. See `docs/analysis/endlevel.md`.
 
-### Track data decoder (`9FE4.asm`)
+### Track data decoder (`track_data.asm`)
 
 | Address | Name | Size | Meaning |
 |---|---|---|---|
@@ -267,7 +267,7 @@ level/opponents/password. See `docs/analysis/endlevel.md`.
 
 ROM: `off_16AB0` (race.asm) -> per-track tables; tables `$A054/$A08C/$A094/$A0CC`
 (bit masks/shifts). Race callers scale channel 1 by `signed byte * factor / $10000`
-(128 samples at level start, 64-sample chunks afterwards). See `docs/analysis/9FE4.md`.
+(128 samples at level start, 64-sample chunks afterwards). See `docs/analysis/track_data.md`.
 
 ### Decompressor (`uncompress.asm`)
 
@@ -323,7 +323,7 @@ Known so far:
 | `$FF36BE`/`$FF36C0` | `ram_FF36BE/C0` | 2 | Second object's target/current smoothed value. |
 | `$FF36C4` | `ram_FF36C4` | 2 | Base value added to the speed computation. |
 
-Rider/bike sprite builder (`sub_5760.asm`):
+Rider/bike sprite builder (`rider_sprites.asm`):
 
 | Address | Name | Size | Meaning |
 |---|---|---|---|

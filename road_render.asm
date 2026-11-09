@@ -1,5 +1,5 @@
 ; *************************************************
-; 8FB4.asm - race road/object renderer
+; road_render.asm - race road/object renderer
 ; ROM range: $8FB4-$98C1
 ; Status:    partially analyzed (object list/records confirmed; shape math TODO)
 ; API:       sub_942A (called from race.asm), sub_9484, sub_8FB4, helpers

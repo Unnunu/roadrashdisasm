@@ -1,9 +1,9 @@
-# Module card: `98C2.asm`
+# Module card: `race_hud_debug.asm`
 
 - **ROM range:** `0x0098C2`–`0x009B9D` (`uncompress.asm` starts at `0x9B9E`)
 - **Status:** analyzed (no direct callers; likely debug/alternate HUD or indirect)
 - **Related:** `docs/architecture.md`, `docs/ram-map.md`, `docs/hardware.md`,
-  `docs/analysis/98C2.md`
+  `docs/analysis/race_hud_debug.md`
 
 ## Role / purpose
 
@@ -62,7 +62,7 @@ is in `race_hud.asm`.
 | `sub_9AB4` | `0x9AB4` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
 | `sub_9AD4`/`sub_9AF4`/`sub_9B34` | `0x9AD4`/`0x9AF4`/`0x9B34` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
 
-Detailed listing: `docs/analysis/98C2.md`.
+Detailed listing: `docs/analysis/race_hud_debug.md`.
 
 ## Hacks / bugs / quirks
 

@@ -1,14 +1,14 @@
 ; *************************************************
-; sub_5760.asm - rider/bike sprite chain builder
+; rider_sprites.asm - rider/bike sprite chain builder
 ; ROM range: $5760-$59C3
 ; Status:    analyzed (static + demo dynamic)
-; API:       sub_5760 (called by 8FB4.asm), sub_593E wrapper
+; API:       sub_5760 (called by road_render.asm), sub_593E wrapper
 ; *************************************************
 
 ; *************************************************
 ; Function sub_5760
 ; Builds a linked chunk of rider/bike SAT entries and advances the animation cursors.
-; In:  d0, d1 - strip/direction geometry from the caller (8FB4.asm)
+; In:  d0, d1 - strip/direction geometry from the caller (road_render.asm)
 ; Out: SAT entries at Race_ram_CurrentSpriteAttributeTable;
 ;      Animation_ram_SpriteIndex / Animation_ram_TileIndex
 ; Clobbers: d0-d7, a0, a1

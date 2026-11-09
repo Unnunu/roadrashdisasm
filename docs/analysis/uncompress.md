@@ -2,10 +2,10 @@
 
 - **Module:** LZSS decompression: byte format, word format, interruptible streaming,
   and direct-to-VRAM
-- **ROM range:** `0x009B9E`–`0x009FE3` (`9FE4.asm` starts at `0x9FE4`)
+- **ROM range:** `0x009B9E`–`0x009FE3` (`track_data.asm` starts at `0x9FE4`)
 - **Status:** analyzed; algorithm validated with a Python decoder against the assets
 - **Source:** `uncompress.asm`
-- **Related:** `docs/architecture.md`, `docs/ram-map.md`, `docs/analysis/8FB4.md`,
+- **Related:** `docs/architecture.md`, `docs/ram-map.md`, `docs/analysis/road_render.md`,
   `docs/coding-style.md` (asset formats), `race.asm` `WriteToVRAM`
 
 ## Coverage matrix
