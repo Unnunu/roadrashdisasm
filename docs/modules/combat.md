@@ -3,7 +3,7 @@
 - **ROM range:** `0x01611A`–`0x01685F` (`src/race/animation.asm` starts at `0x16860`)
 - **Status:** static map + dynamic input/height tests; naming and AI/armed tests pending
 - **Files:** `src/race/race_combat.asm`; action table in `src/race/race_ai.asm`
-  (`unk_12D16`); temporary enum in `src/race/combat_const.asm`
+  (`Race_ActorActionTable`); temporary enum in `src/race/combat_const.asm`
 - **Related:** `docs/analysis/combat.md`, `docs/analysis/race_ai.md`,
   `docs/analysis/race_anim_audio.md`, `docs/analysis/race_physics.md`,
   `docs/analysis/race_actors.md`, `docs/ram-map.md`
@@ -23,7 +23,7 @@ placeholder pending weapon identification).
 | `Race_UpdateNearestTarget` | `0x1611A` | [x] | [~] | [x] | [x] | [x] | [ ] | static |
 | `sub_162B0` attack input | `0x162B0` | [x] | [~] | [x] | [x] | [x] | [~] | dynamic (input/height) |
 | `sub_1634E` AI input | `0x1634E` | [~] | [~] | [~] | [x] | [~] | [ ] | unreferenced |
-| `sub_16458` dispatcher | `0x16458` | [x] | [~] | [x] | [x] | [x] | [ ] | static |
+| `Race_DispatchActorAction` dispatcher | `0x16458` | [x] | [~] | [x] | [x] | [x] | [ ] | static |
 | `Audio_UpdateEngine0/State` | `0x16520`/`0x16548` | [x] | [~] | [x] | [x] | [~] | [ ] | name TBD |
 | action handlers | `0x165D0`–`0x166F0` | [~] | [~] | [x] | [x] | [~] | [ ] | static |
 | `Race_UpdateCollision` | `0x16732` | [x] | [~] | [x] | [x] | [x] | [ ] | static |

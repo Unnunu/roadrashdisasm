@@ -57,13 +57,13 @@ despite the current names; rename only after dynamic confirmation.
 
 ## Combat/AI action handlers
 
-`unk_12D16` (`0x12D16`) is a 99-entry action-handler table; `unk_259C0` selects
-slots via the actor `$74` profile; `unk_25A44` is the 16-entry static-actor table.
+`Race_ActorActionTable` (`0x12D16`) is a 99-entry action-handler table; `Race_ActorProfileTable` selects
+slots via the actor `$74` profile; `Race_StaticActionTable` is the 16-entry static-actor table.
 The combat/action routines in `race_combat.asm`:
 
 | Function | Role (static hypothesis) |
 |---|---|
-| `sub_16458` | Dispatch: attack/cooldown, nearest-target action selection. |
+| `Race_DispatchActorAction` | Dispatch: attack/cooldown, nearest-target action selection. |
 | `sub_165D0` | Steer/road-center + collision/speed check (`sub_131BE`). |
 | `sub_165E0` | Steering/brake state + movement/curve update. |
 | `sub_16612` | Collision check + speed/steer correction. |

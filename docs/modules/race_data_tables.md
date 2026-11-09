@@ -29,6 +29,6 @@ end-level rider table, the race physics/engine constants and the actor/AI data t
 | `unk_25812` | `$25812` | `$44` | [~] | - | [x] | - | [~] | [ ] | partial |
 | `unk_259B6/259C0` | `$259B6`+ | `$5A` | [~] | - | [x] | - | [~] | [ ] | partial |
 | `unk_25A10` | `$25A10` | `$34` | [x] | - | [x] | - | [x] | [ ] | analyzed |
-| `unk_25A44/25AC4/25B50/25B70` | `$25A44`+ | `$4DC` | [~] | - | [x] | - | [~] | [ ] | partial |
+| `Race_StaticActionTable/25AC4/25B50/25B70` | `$25A44`+ | `$4DC` | [~] | - | [x] | - | [~] | [ ] | partial |
 
 Detailed analysis: `docs/analysis/race_data_tables.md`.

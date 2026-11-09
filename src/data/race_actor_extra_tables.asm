@@ -24,14 +24,14 @@ ActorActionSlot_12E52 equ $12E52
 ActorActionSlot_12E66 equ $12E66
 ActorActionSlot_12E7A equ $12E7A
 ActorActionSlot_12E8E equ $12E8E
-; Common handler called by unk_25A44 entries (undiscovered code).
-ActorAI_Handler_13130 equ $13130
+; Common handler called by Race_StaticActionTable entries (undiscovered code).
+Race_ClampActorYAddr equ $13130
 
 ; unk_259B6: $A bytes used by race_core.asm.
 unk_259B6:
     dc.w    $0002,$0003,$0003,$0003,$0004
 
-unk_259C0:
+Race_ActorProfileTable:
     dc.l    ActorActionSlot_12D2A
     dc.l    ActorActionSlot_12D16
     dc.l    ActorActionSlot_12D3A
@@ -69,38 +69,38 @@ unk_25A10:
     dc.l    ActorBikeRecord_19
     dc.l    ActorBikeRecord_17
 
-unk_25A44:
-    dc.l    ActorAI_Handler_13130
+Race_StaticActionTable:
+    dc.l    Race_ClampActorYAddr
     dc.w    $1770,$0008
-    dc.l    ActorAI_Handler_13130
+    dc.l    Race_ClampActorYAddr
     dc.w    $1B58,$0010
-    dc.l    ActorAI_Handler_13130
+    dc.l    Race_ClampActorYAddr
     dc.w    $1964,$000C
-    dc.l    ActorAI_Handler_13130
+    dc.l    Race_ClampActorYAddr
     dc.w    $1770,$FFF8
-    dc.l    ActorAI_Handler_13130
+    dc.l    Race_ClampActorYAddr
     dc.w    $1B58,$FFEF
-    dc.l    ActorAI_Handler_13130
+    dc.l    Race_ClampActorYAddr
     dc.w    $1770,$0008
-    dc.l    ActorAI_Handler_13130
+    dc.l    Race_ClampActorYAddr
     dc.w    $1B58,$0010
-    dc.l    ActorAI_Handler_13130
+    dc.l    Race_ClampActorYAddr
     dc.w    $1964,$000C
-    dc.l    ActorAI_Handler_13130
+    dc.l    Race_ClampActorYAddr
     dc.w    $1770,$FFF8
-    dc.l    ActorAI_Handler_13130
+    dc.l    Race_ClampActorYAddr
     dc.w    $1964,$FFEF
-    dc.l    ActorAI_Handler_13130
+    dc.l    Race_ClampActorYAddr
     dc.w    $1770,$0008
-    dc.l    ActorAI_Handler_13130
+    dc.l    Race_ClampActorYAddr
     dc.w    $1B58,$0010
-    dc.l    ActorAI_Handler_13130
+    dc.l    Race_ClampActorYAddr
     dc.w    $1964,$000C
-    dc.l    ActorAI_Handler_13130
+    dc.l    Race_ClampActorYAddr
     dc.w    $1770,$FFF8
-    dc.l    ActorAI_Handler_13130
+    dc.l    Race_ClampActorYAddr
     dc.w    $1B58,$FFEF
-    dc.l    ActorAI_Handler_13130
+    dc.l    Race_ClampActorYAddr
     dc.w    $1770,$FFEF
 
 unk_25AC4:

@@ -314,7 +314,7 @@ locret_16456:
 
 
  ; *************************************************
-; Function sub_16458 (temporary name)
+; Function Race_DispatchActorAction (temporary name)
 ; Combat/action dispatcher: advances the attack/cooldown timer, selects an
 ; action handler from the actor graphics record, and applies the nearest-target
 ; distance/action rules.
@@ -323,7 +323,7 @@ locret_16456:
 ; Clobbers: d0/a4/a6
 ; *************************************************
 
-sub_16458:
+Race_DispatchActorAction:
                 move.l  a4,-(sp)
                 move.w  (Race_ram_FrameDelay).l,d0
                 sub.w   d0,$5A(a1)
@@ -390,7 +390,7 @@ loc_1651C:
                 jsr     (a6)
 locret_1651E:
                 rts
-; End of function sub_16458
+; End of function Race_DispatchActorAction
 
 ; =============== S U B R O U T I N E =======================================
 

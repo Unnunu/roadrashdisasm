@@ -45,9 +45,9 @@ bridge.
 | Label | Address | Size | Layout |
 |---|---|---|---|
 | `unk_259B6` | `$259B6` | `$A` | 5 words (race_core). |
-| `unk_259C0` | `$259C0` | `$50` | 40 words (race_ai). |
+| `Race_ActorProfileTable` | `$259C0` | `$50` | 40 words (race_ai). |
 | `unk_25A10` | `$25A10` | `$34` | 13 actor-data pointers. |
-| `unk_25A44` | `$25A44` | `$80` | 64 bytes/32 words (race_ai). |
+| `Race_StaticActionTable` | `$25A44` | `$80` | 64 bytes/32 words (race_ai). |
 | `unk_25AC4` | `$25AC4` | `$8C` | 70 words (race_core). |
 | `unk_25B50` | `$25B50` | `$20` | 16 words (race_core). |
 | `unk_25B70` | `$25B70` | `$350` | 424 words (race_core). |
@@ -59,7 +59,7 @@ records/streams are now in `src/data/race_track_data.asm` (see `docs/analysis/ra
 ## Open questions
 
 - Exact engine-timing semantics of `unk_257E2/E8/EE` (audio deferred).
-- Field meanings of `unk_25812`, `unk_259C0`, `unk_25A44`, `unk_25AC4`, `unk_25B50`,
+- Field meanings of `unk_25812`, `Race_ActorProfileTable`, `Race_StaticActionTable`, `unk_25AC4`, `unk_25B50`,
   `unk_25B70`.
 - Whether `unk_25A10` target tables contain actor definitions or graphics records.
 - Dynamic checks for the intro/results selection and engine audio.

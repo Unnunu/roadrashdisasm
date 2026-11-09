@@ -128,8 +128,8 @@ This is the double/quad buffering that avoids tearing.
       `sub_128E0`/`sub_12974`.
    8. `sub_138CE`, `sub_1281E`, `sub_11C44`, `sub_11CC8`, `sub_1218C`,
       `sub_123A8` — traffic/actor collision/action helpers.
-   9. `Race_UpdateNearestOpponent` (`0xE5EE`), `sub_12EA2` (`0x12EA2`),
-      `sub_13106` — standings/action dispatch.
+   9. `Race_UpdateNearestOpponent` (`0xE5EE`), `Race_UpdateActorActions` (`0x12EA2`),
+      `Race_UpdateStaticActions` — standings/action dispatch.
    10. Compute `Race_ram_PlayerXDifference` from PlayerA `+$04` and
        `ram_FF1F2E`; call `Race_UpdateNearestTarget` (`0x1611A`).
 5. **Camera:** `Race_UpdateCamera` (`0xDE9E`).
@@ -240,7 +240,7 @@ Actors/player structures:
 | Animations/audio | `Race_UpdateLeanCurve`, `Race_UpdatePlayerAnimation`, `Rand_Init` `0x15FE8`/`Rand_GetWord` `0x16034` (`src/race/race_anim_audio.asm`) |
 | Combat | `Race_UpdateNearestTarget` `0x1611A`, `sub_162B0`, action handlers, `Race_UpdateCollision` `0x16732` (`src/race/race_combat.asm`) |
 | Camera/scroll/rearview | `Race_UpdateCamera`, `Race_BuildVScrollInfo`/`HScrollTable`, `Race_DrawRearviewMirror`, `Race_DrawRoadMarkingHud`, `Race_UpdateNearestOpponent` (`src/race/race_physics.asm`) |
-| Physics/AI | `Race_UpdateSpeedDisplay`, `Race_SpawnTick`, `Race_UpdateBikeLean`..`sub_13106` (TODO) |
+| Physics/AI | `Race_UpdateSpeedDisplay`, `Race_SpawnTick`, `Race_UpdateBikeLean`..`Race_UpdateStaticActions` (TODO) |
 | Road/render | `PiecewiseLinearInterpolation`, `Road_FillProfileTables`, `sub_FD96/FB1E/F40C`, `sub_109B6/FC0E`, `Road_BuildVisibleList`, `Road_DrawObjects` (`road_render`), `RoadMarking_Draw` |
 | HUD | `RaceHud_Draw` (`src/race/race_hud.asm`) |
 | Animation | `UpdateAnimation(2)` (`src/race/animation.asm`), `RiderSprites_Build` |

@@ -23,7 +23,7 @@
 | `sub_1434A`/`sub_14486`/`sub_14CEC` | `0x1434A`+ | Impact/damage helpers shared with combat. |
 
 Combat/target/collision functions (`Race_UpdateNearestTarget`, `sub_162B0`,
-`sub_1634E`, `sub_16458`, `Audio_UpdateEngine*`, action handlers,
+`sub_1634E`, `Race_DispatchActorAction`, `Audio_UpdateEngine*`, action handlers,
 `Race_UpdateCollision`) are now in `src/race/race_combat.asm`; see
 `docs/analysis/combat.md`.
 

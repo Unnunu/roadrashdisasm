@@ -1896,8 +1896,8 @@ Race_Update:
                 jsr     (sub_1218C).l
                 jsr     (sub_123A8).l
                 jsr     (Race_UpdateNearestOpponent).l
-                jsr     (sub_12EA2).l
-                jsr     (sub_13106).l
+                jsr     (Race_UpdateActorActions).l
+                jsr     (Race_UpdateStaticActions).l
                 move.w  (RacePlayerA + RaceActor_X).l,d0
                 sub.w   (ram_FF1F2E).l,d0
                 move.w  d0,(Race_ram_PlayerXDifference).l

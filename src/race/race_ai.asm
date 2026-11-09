@@ -3321,34 +3321,34 @@ unk_12D0A:
     dc.w    $FF60,$FFA0,$FFE0,$0020,$0060,$00A0
 
 ; inner dispatch table: 99 code pointers (ActorActionSlot_* index into it)
-unk_12D16:
-    dc.l    sub_130D2,sub_16458,sub_13004,sub_165D0
+Race_ActorActionTable:
+    dc.l    sub_130D2,Race_DispatchActorAction,sub_13004,sub_165D0
     dc.l    sub_166DC,sub_1300E,sub_1307C,sub_1300E
-    dc.l    sub_1300E,sub_1300E,sub_16458,sub_13004
-    dc.l    sub_165E0,sub_16624,sub_1300E,sub_16458
+    dc.l    sub_1300E,sub_1300E,Race_DispatchActorAction,sub_13004
+    dc.l    sub_165E0,sub_16624,sub_1300E,Race_DispatchActorAction
     dc.l    sub_13004,sub_165E0,sub_1666A,sub_1300E
-    dc.l    sub_16458,sub_13004,sub_165E0,sub_16612
-    dc.l    sub_1300E,sub_16458,sub_13004,sub_165E0
-    dc.l    sub_166B0,sub_1300E,sub_16458,sub_13004
-    dc.l    sub_165D0,sub_16624,sub_1300E,sub_16458
+    dc.l    Race_DispatchActorAction,sub_13004,sub_165E0,sub_16612
+    dc.l    sub_1300E,Race_DispatchActorAction,sub_13004,sub_165E0
+    dc.l    sub_166B0,sub_1300E,Race_DispatchActorAction,sub_13004
+    dc.l    sub_165D0,sub_16624,sub_1300E,Race_DispatchActorAction
     dc.l    sub_13004,sub_165D0,sub_1666A,sub_1300E
-    dc.l    sub_16458,sub_13004,sub_165D0,sub_16612
-    dc.l    sub_1300E,sub_16458,sub_13004,sub_165D0
-    dc.l    sub_166B0,sub_1300E,sub_16458,sub_13004
-    dc.l    sub_165D0,sub_1662C,sub_1300E,sub_16458
+    dc.l    Race_DispatchActorAction,sub_13004,sub_165D0,sub_16612
+    dc.l    sub_1300E,Race_DispatchActorAction,sub_13004,sub_165D0
+    dc.l    sub_166B0,sub_1300E,Race_DispatchActorAction,sub_13004
+    dc.l    sub_165D0,sub_1662C,sub_1300E,Race_DispatchActorAction
     dc.l    sub_13004,sub_165D0,sub_16644,sub_1300E
-    dc.l    sub_16458,sub_12FE4,sub_165E0,sub_16624
-    dc.l    sub_1300E,sub_16458,sub_12FE4,sub_165E0
-    dc.l    sub_1666A,sub_1300E,sub_16458,sub_12FE4
-    dc.l    sub_165E0,sub_16612,sub_1300E,sub_16458
+    dc.l    Race_DispatchActorAction,sub_12FE4,sub_165E0,sub_16624
+    dc.l    sub_1300E,Race_DispatchActorAction,sub_12FE4,sub_165E0
+    dc.l    sub_1666A,sub_1300E,Race_DispatchActorAction,sub_12FE4
+    dc.l    sub_165E0,sub_16612,sub_1300E,Race_DispatchActorAction
     dc.l    sub_12FE4,sub_165E0,sub_166B0,sub_1300E
-    dc.l    sub_16458,sub_12FE4,sub_165D0,sub_16624
-    dc.l    sub_1300E,sub_16458,sub_12FE4,sub_165D0
-    dc.l    sub_1666A,sub_1300E,sub_16458,sub_12FE4
-    dc.l    sub_165D0,sub_16612,sub_1300E,sub_16458
+    dc.l    Race_DispatchActorAction,sub_12FE4,sub_165D0,sub_16624
+    dc.l    sub_1300E,Race_DispatchActorAction,sub_12FE4,sub_165D0
+    dc.l    sub_1666A,sub_1300E,Race_DispatchActorAction,sub_12FE4
+    dc.l    sub_165D0,sub_16612,sub_1300E,Race_DispatchActorAction
     dc.l    sub_12FE4,sub_165D0,sub_166B0
 
-sub_12EA2:
+Race_UpdateActorActions:
                 move.w  #0,(ram_FF1A98).l
                 lea     (ram_FF1A08).l,a0
                 tst.w   (MainMenu_ram_DemoMode).l
@@ -3410,7 +3410,7 @@ sub_12EA2:
                 move.b  $74(a1),d2
                 ext.w   d2
                 asl.w   #2,d2
-                lea     (unk_259C0).l,a4
+                lea     (Race_ActorProfileTable).l,a4
                 movea.l (a4,d2.w),a4
                 cmpa.l  #RacePlayerA,a1
                 beq.w   .loc_12FD8
@@ -3447,7 +3447,7 @@ sub_12EA2:
 
 .locret_12FE2:
                 rts
-; End of function sub_12EA2
+; End of function Race_UpdateActorActions
  ; *****
 ; Function sub_12FE4
 ; Actor action handler: updates $68 state bits and calls sub_13422/sub_13A92.
@@ -3539,7 +3539,7 @@ loc_13104:
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_13106:
+Race_UpdateStaticActions:
                 lea     (Race_StaticActorList).l,a0
 
 .loc_1310C:
@@ -3549,7 +3549,7 @@ sub_13106:
                 move.b  $74(a1),d0
                 ext.w   d0
                 asl.w   #3,d0
-                lea     (unk_25A44).l,a2
+                lea     (Race_StaticActionTable).l,a2
                 movea.l (a2,d0.w),a3
                 jsr     (a3)
                 bra.s   .loc_1310C
@@ -3557,8 +3557,8 @@ sub_13106:
 
 .locret_1312E:
                 rts
-; End of function sub_13106
-sub_13130:
+; End of function Race_UpdateStaticActions
+Race_ClampActorY:
                 move.l      $4(a1),d0
                 sub.l       (Race_ram_PlayerProgress).l,d0
                 bpl.w       loc_13140
@@ -4459,7 +4459,7 @@ sub_138CE:
                 lsr.w   #4,d0
                 move.b  d0,$74(a2)
                 ext.w   d0
-                lea     (unk_25A44).l,a3
+                lea     (Race_StaticActionTable).l,a3
                 asl.w   #3,d0
                 move.w  4(a3,d0.w),$12(a2)
                 move.w  6(a3,d0.w),$46(a2)
