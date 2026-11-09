@@ -29,8 +29,11 @@ actor definition tables. This is the code executed around the `race_hud` module.
 |----------|---------|----------|-----------|------|----------|-----|---------|--------|
 | `Race_Init`/loaders | `0xA4E2`+ | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
 | `Race_GameTick`/`Update` | `0xBA76`/`0xC00C` | [x] | [~] | [x] | [x] | [x] | [ ] | partial |
-| `Race_CreateActors` | `0xCAD0` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
+| `Race_CreateActors` | `0xCAD0` | [x] | [x] | [x] | [x] | [x] | [~] | analyzed; init dump `0xB72A` |
 | `Race_ComputeResults` | `0xC3F8` | [x] | [~] | [x] | - | [x] | [ ] | partial |
 | actor definitions | `0xCCDA` | [x] | [x] | [x] | - | [x] | - | parsed |
 
 Detailed flow/structures: `docs/analysis/race.md`; actors: `docs/analysis/race_actors.md`.
+
+Dynamic actor init was captured before/after `Race_InitActorPositions` (`0xB72A`,
+`0xA544`); see `docs/analysis/race_actors.md` for the field matrix and dump names.

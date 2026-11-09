@@ -140,30 +140,54 @@ image/nametable/palette offsets (see `docs/analysis/rider_intro.md`).
 
 ### Actors/player and race state (`src/race/race.asm`)
 
-The top-level `src/race/race.asm` analysis is in `docs/analysis/race.md`; the actor tables and
-definitions are in `docs/analysis/race_actors.md`. Initial field inventory:
+The top-level `src/race/race.asm` analysis is in `docs/analysis/race.md`; the actor tables,
+definitions, lifecycle and dynamic field matrix are in `docs/analysis/race_actors.md`.
+Dynamic snapshots `[dynamic]` (2026-11-09): active list = player A + 7 opponents
+(`$FF232A`..`$FF262A`), free list = 7 pointers; PlayerA Speed `$EE`, acceleration
+`$22`, frame distance `$682`; `Race_ram_FrameDelay=7`.
 
 | Offset | Size | Field | Evidence |
 |---|---|---|---|
-| `+$02` | word | `PosZ` | 98C2/endlevel debug, main HInt |
-| `+$04` | word | `PosXHigh` | `Race_Update`, 98C2 |
-| `+$06` | word | `PosXLow` | 98C2 |
-| `+$12` | word | `Speed` | `Race_Update` (`Race_UpdateSpeedDisplay`), main HInt |
-| `+$16` | byte | `ActorType` | actor definition byte0 |
-| `+$5C`/`+$5E`/`+$60` | word | actor graphics/sprite fields | `Race_ActorGraphicsTable` |
-| `+$66` | word | `ActorRating` (definition byte5*100) | `Race_CreateActors` |
+| `+$00` | word | screen/draw Y copy (initialized equal to `+$1A/+$30`) | `[dynamic]` |
+| `+$02` | word | `PosZ` | 98C2/endlevel debug, HInt |
+| `+$04` | long | current X (`PosX`); `+$06` is its low word | `[dynamic]`; `move.l 4(a1)` |
+| `+$06` | word | `PosX` low word | same |
+| `+$12` | word | `Speed` | `[dynamic]`; HUD/HInt |
+| `+$14` | word | acceleration per frame | `[confirmed]`; `Race_UpdateActorAI` |
+| `+$16` | word | `ActorType` (definition byte0) | `[dynamic]` 2/3/4 |
 | `+$18` | word | `Gear` | 98C2/gear |
-| `+$30` | word | `PosY` | 98C2, main HInt |
-| `+$66` | word | `Unk66` (copied from `+$56`; divisor use) | `STRUCT_OFFSET_66` code uses |
-| `+$68` | byte | flags: bit1 = B, bit2 = A, bit7 = timer stop | `Race_GetInput`, `Race_UpdateTime` |
-| `+$73`/`+$74`/`+$75`/`+$77` | byte | actor definition bytes 3/1/2/4 | `Race_CreateActors` |
-| `+$71` | byte | `Index` | `RaceActor_Index` |
+| `+$1A` | word | draw/screen Y; initial copy of `+$30` | `[dynamic]` |
+| `+$1E` | long | spawn/start X (unchanged while `+$04` advances) | `[dynamic]`/spawn |
+| `+$26` | long | frame distance = `Speed * FrameDelay` | `[confirmed]` |
+| `+$2A` | word | screen/road Y offset (TODO) | `[dynamic]` `-$08` |
+| `+$30` | word | `PosY` | `[dynamic]`; HUD/HInt |
+| `+$4A` / `+$4C` / `+$4E` | word | collision/sprite extents (TODO) | `[dynamic]` `$0D` |
+| `+$56` | word | sentinel/timer; normal actors `$FFFF` | `[dynamic]` |
+| `+$5A` | word | attack/impact cooldown | combat |
+| `+$5C` / `+$5E` / `+$60` | word | tile base / sprite graphics fields | `[dynamic]`/graphics table |
+| `+$66` | word | rating/skill; also spawn speed seed and recycle distance | `[dynamic]` lifecycle |
+| `+$68` | byte | flags; bit6 = active/update marker | `[dynamic]` active `$42`, inactive `$00` |
+| `+$69` | byte | state/attack flags; bit4/5/6 attack, bit1 steering | combat + AI |
+| `+$6B` | byte | bit0 high attack, bit1 armed/special | combat |
+| `+$6C` / `+$6D` | byte | attack phase / timer | combat |
+| `+$6E` / `+$6F` | byte | animation state/frame (`$FF` normal) | `[dynamic]` |
+| `+$71` | byte | `Index` | `[dynamic]` |
+| `+$72` | byte | animation frame/index (`Race_SetupActorSprite`) | `[dynamic]` |
+| `+$73` / `+$74` / `+$75` / `+$77` | byte | definition bytes 3/1/2/4; `+$74` AI profile, `+$75` graphics | `[confirmed]` |
+| `+$78` | byte | unknown animation/state flag | `[dynamic]` |
+
+Raw offset references to `a0` in `Race_BuildVScrollInfo` are VScroll-buffer fields,
+not actor fields (`$1E/$2A/$4A/$4E/$56/$66/$68/$6E/$70/$72`); verify the base
+structure before assigning an actor meaning.
 
 Actor instances (`$80` each): `RacePlayerA`/`RacePlayerB` (`$FF1EAA`/`$FF26AA`),
 15 opponents `$FF1F2A`..`$FF262A` (`Race_ActorList`), static actors
 `$FF2EAA`/`$FF2F2A` (type `$10`); `$FF2FAA` is a further actor-like instance used by
-`Race_UpdateStaticActors` (`$68` bit6), role TODO. `Road_ObjectArray` (`$FFD37C`) is the separate
-0x14-byte road object array (`src/race/road_render.asm`).
+`Race_UpdateStaticActors` (`$68` bit6), zero except `$71=$12` in the demo snapshots.
+After `Race_UpdateStaticActors` the static slots use a phase-specific layout
+(`$16=0`, `$30=$8000`), so do not apply normal actor names blindly.
+`Road_ObjectArray` (`$FFD37C`) is the separate 0x14-byte road object array
+(`src/race/road_render.asm`).
 
 Actor tables: `Race_ActorList` `$25856` (16 actor pointers + sentinel),
 `Race_ActorListMid` `$2585E`, `Race_StaticActorList` `$2589A`,

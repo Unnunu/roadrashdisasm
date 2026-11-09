@@ -168,20 +168,32 @@ Actors/player structures:
 
 | Offset | Size | Name/status | Evidence |
 |---|---|---|---|
+| `+$00` | word | screen/draw Y copy (initialized equal to `+$1A/+$30`) | dynamic snapshot |
 | `+$02` | word | `PosZ` | 98C2/endlevel debug, main HInt |
-| `+$04` | word | `PosXHigh` | `Race_Update`, 98C2 |
-| `+$06` | word | `PosXLow` | 98C2 |
-| `+$12` | word | `Speed` | `Race_Update` (`Race_UpdateSpeedDisplay`), main HInt |
-| `+$16` | byte | `ActorType` | actor definition byte0 |
-| `+$5C`/`+$5E`/`+$60` | word | actor graphics/sprite fields | `Race_ActorGraphicsTable` |
-| `+$66` | word | `ActorRating`/speed (definition byte5*100; `Race_ApplyActorRating`) | `Race_CreateActors` |
-| `+$73`/`+$74`/`+$75`/`+$77` | byte | actor definition bytes 3/1/2/4 | `Race_CreateActors` |
+| `+$04` | long | current X (`PosX`); `+$06` is its low word | dynamic; `move.l 4(a1)` |
+| `+$06` | word | `PosX` low word | dynamic |
+| `+$12` | word | `Speed` | dynamic; `Race_UpdateSpeedDisplay` |
+| `+$14` | word | acceleration per frame | confirmed; `Race_UpdateActorAI` |
+| `+$16` | word | `ActorType` | actor definition byte0; dynamic 2/3/4 |
 | `+$18` | word | `Gear` | 98C2, shop/gear |
-| `+$30` | word | `PosY` | 98C2, main HInt |
-| `+$66` | word | `Unk66` (TODO; copied from `+$56`, used as a divisor) | `STRUCT_OFFSET_66` code uses, `move.w $56(a0),$66(a0)` |
-| `+$68` | byte | flags: bit1 = B held, bit2 = A held, bit7 = timer stop | `Race_GetInput`, `Race_UpdateTime` |
-| `+$69`,`+$6B`,... | byte | unknown state/flags | physics chain (TODO) |
-| `+$71` | byte | `Index` | current `RaceActor_Index` |
+| `+$1A` | word | draw/screen Y | dynamic |
+| `+$1E` | long | spawn/start X | dynamic; spawn/init |
+| `+$26` | long | frame distance = `Speed * FrameDelay` | confirmed |
+| `+$2A` | word | screen/road Y offset | dynamic `-$08`; TODO |
+| `+$30` | word | `PosY` | dynamic; HUD/HInt |
+| `+$4A` / `+$4C` / `+$4E` | word | collision/sprite extents | dynamic `$0D`; TODO |
+| `+$56` | word | sentinel/timer; normal actors `$FFFF` | dynamic |
+| `+$5C`/`+$5E`/`+$60` | word | actor graphics/sprite fields | `Race_ActorGraphicsTable`; dynamic |
+| `+$66` | word | rating/skill; also speed seed and recycle distance | `Race_CreateActors`/spawn; dynamic lifecycle |
+| `+$68` | byte | flags; bit6 active/update marker | dynamic active `$42`; AI |
+| `+$69` | byte | state/attack flags; bit4/5/6 attack, bit1 steering | combat/AI |
+| `+$6B` | byte | bit0 high attack, bit1 armed/special | combat |
+| `+$6C` / `+$6D` | byte | attack phase/timer | combat |
+| `+$6E` / `+$6F` | byte | animation state/frame (`$FF` normal) | dynamic |
+| `+$71` | byte | `Index` | current `RaceActor_Index`; dynamic |
+| `+$72` | byte | animation frame/index | `Race_SetupActorSprite`; dynamic |
+| `+$73`/`+$74`/`+$75`/`+$77` | byte | actor definition bytes 3/1/2/4 | `Race_CreateActors` |
+| `+$78` | byte | unknown animation/state flag | dynamic |
 
 **Important:** the flat `STRUCT_OFFSET_*` symbols are IDA-derived and ambiguous:
 - `STRUCT_OFFSET_66` in `dc.b` animation data was an IDA mistake; the 43 bytes are
@@ -215,10 +227,11 @@ Actors/player structures:
 
 ## Open questions / next steps
 
-1. Trace the `a1` bases in the physics/AI chain and map the actor struct fields
-   (see `docs/analysis/race_actors.md`; `RacePlayer`/`RaceActor`, `$FF2FAA`).
-2. Analyze the actor/physics functions (`Race_UpdateSpeedDisplay`, `Race_SpawnTick`, `sub_13xxx`,
-   `sub_Dxxx`, `sub_Exxx`) and the object list.
+1. Actor model: dynamic snapshots now confirm active/free split (8+7), `$12/$14/$26`,
+   `$1E` spawn X, `$68` bit6 active marker; remaining steering/off-road/static/2P
+   fields are listed in `docs/analysis/race_actors.md`.
+2. Analyze the actor/physics functions (`Race_UpdateSpeedDisplay`, `Race_SpawnTick`,
+   `sub_13xxx`, `sub_Dxxx`, `sub_Exxx`) and the object list.
 3. `src/race/race_hud.asm`, `src/race/road_marking.asm`, `src/race/animation.asm` data tables/scripts + dynamic checks.
 4. The race outcome (`Race_ComputeResults`/`Race_SortResults`/`Race_UpdateHighScoreTable`) and the standings.
 5. Only after the field layout is confirmed: define the AS `STRUCT`s, convert the

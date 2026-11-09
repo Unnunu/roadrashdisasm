@@ -67,8 +67,10 @@ speed/curve (`Race_ram_TrackParam0`/`Race_ram_TrackParam2`/`Race_ram_TrackParam3
 
 ## RAM / fields
 
-Actor fields used here: `$12` Speed, `$14`, `$16` type, `$22`/`$26` movement,
-`$30`/`$36/$38` Y/road, `$3E/$40/$42` lean, `$56`, `$68` bits, `$69` bits, `$6E`,
+Actor fields used here: `$12` Speed, `$14` acceleration (`Speed += $14 * FrameDelay`
+after the speed/on-foot gates), `$16` type, `$1E` spawn X, `$22`, `$26` frame
+distance = `Speed * FrameDelay`, `$30`/`$36/$38` Y/road, `$3E/$40/$42` lean, `$56`,
+`$68` flags (bit6 active/update marker confirmed in the demo), `$69` flags, `$6E`,
 `$71` index, `$73`, `$75`, `$78`. Data: `unk_258AE`/`unk_25A10` actor data,
 `unk_10E3E`, `unk_12B7C`, `unk_12D0A`, `unk_13A1A`, `Track_CurveBuffer`,
 `Race_ram_TrackParam0`/`Race_ram_TrackParam2`/`Race_ram_TrackParam3`, `word_14742`, `Race_ram_PlayerProgress`/`Race_ram_BestProgress`/`Race_ram_ProgressSnapshotB`, `Race_ram_FrameDelay`/
@@ -77,8 +79,10 @@ combat handlers are in `race_combat.asm`.
 
 ## Open questions
 
-- Exact field semantics `$14/$36/$38/$3E/$40/$42` and the collision helpers.
-- Static/police actor role and the `$FF2FAA` actor.
+- Remaining field semantics `$22/$36/$38/$3E/$40/$42` and the collision helpers;
+  `$14` acceleration and `$26` frame distance are confirmed.
+- Static/police actor role and the `$FF2FAA` actor; static layout changes after
+  `Race_UpdateStaticActors`.
 - AI tables (`unk_10E3E`/`unk_12B7C`/`unk_13A1A`) and the on-foot rules.
 - Exact actor-action handler semantics (`0x12FE4`..`0x131BE`) and dynamic checks.
 - Next: `src/race/race_combat.asm` (attack/action semantics) and

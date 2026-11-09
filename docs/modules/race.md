@@ -156,7 +156,8 @@ Detailed top-level flow: `docs/analysis/race.md`; actors: `docs/analysis/race_ac
 
 - `[static]` Top-level init order, warm-up frames, main loop, buffer rotation.
 - `[static]` Input/steering/pause and the player `$68` bit1/bit2/bit7 meanings in the
-  top-level.
+  top-level. `[dynamic]` active opponents also show `$68=$42` (bit1+bit6), so the
+  bit1 meaning must be reconciled before renaming it.
 - `[static]` Track record/streams/spawn/bike data initialization.
 - `[static]` Race outcome fields (`ram_FF0526/28`, `Race_EventBuffer`, `RaceResults_ram_Outcome`).
 - `[static]` Actor tables: 76 definitions, 16-pointer rider list (player A + 15
@@ -164,14 +165,22 @@ Detailed top-level flow: `docs/analysis/race.md`; actors: `docs/analysis/race_ac
 - `[static]` Spawn flow: `Race_SpawnTick` -> opponent (ahead, x+$200000) or traffic
   (behind, x-$100000), active/free lists, distance checks, rating from the opponent
   definition; speed display `Race_ram_SpeedDisplay`.
+- `[dynamic]` Actor list split: active count 8 = player A + 7 opponents
+  (`$FF232A`..`$FF262A`); 7 opponent free slots; nearest target `$FF232A`.
+- `[confirmed]` Actor fields: `$12` Speed, `$14` acceleration, `$26` =
+  `Speed * Race_ram_FrameDelay` (FrameDelay 7), `$1E` fixed at spawn X while `$04`
+  advances, `$66` rating/lifecycle value, `$68` bit6 active/update marker,
+  `$6B` bit1 armed. See `docs/analysis/race_actors.md`.
 
 ## Hypotheses / next steps
 
 - `[hypothesis]` `ram_FF2FAA` is a further actor-like instance (not in the static
-  list); trace `Race_UpdateStaticActors`.
-- TODO: actor fields `+$66/+$73/+$74/+$75/+$77/+$5C/+$5E/+$60`, player B, 8+7 split.
-- TODO: initial active/free list counts and `ram_FF1A08`/`ram_FF1A0C` overlap. Test:
-  break at `Race_SpawnTick` in a race and dump the lists.
+  list); it is zero except `$71=$12` in the demo snapshots.
+- TODO: static group `$FF2EAA/$FF2F2A` uses a phase-specific layout after
+  `Race_UpdateStaticActors` (`$16` becomes 0, `$30=$8000`); analyze that updater.
+- TODO: actor fields `$22/$24/$2A/$32/$36-$3C/$3E-$42/$46/$4A-$4E/$56/$68/$69`
+  under steering/off-road/2P tests.
+- TODO: player B (`$FF26AA`) is zero in the demo; verify in 2P mode.
 - TODO: trace the `a1` bases and map the player/actor structures field by field.
 - TODO: actor/physics/AI functions; `race_hud`/`road_marking`/`animation` data/scripts and dynamic checks.
 - Only after the field layout is confirmed: AS `STRUCT`s, convert confirmed uses,
