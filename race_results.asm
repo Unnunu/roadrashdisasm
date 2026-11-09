@@ -1,5 +1,19 @@
 ; *************************************************
+; race_results.asm - post-race results / bust / repair screens
+; ROM range: $5F28-$6DBF
+; Status:    analyzed (static; demo skips the screen)
+; API:       RaceResults_Init, RaceResults_GameTick, RaceResults_HandleInput
+; *************************************************
+
+; *************************************************
 ; Function RaceResults_Init
+; Builds the post-race screen: outcome flags, VDP setup, one of the normal/busted/
+; repair layouts, cash/password box, congratulations text, audio.
+; In:  ram_FF0526/28 (outcome), ram_FF04C8 (event buffer), ram_FF1B1A (cop index),
+;      ram_FF091A (fine/repair), Menu_ram_Money/PlayerLevel
+; Out: Menu_ram_FrameBuffer -> VRAM $7000; VRAM $0/$8000/$9000/$A000/$B000/$C000
+; Clobbers: d0-d7, a0-a3
+; Notes: message group 21 = course incomplete, 28 = worse than 4th, 35 = level clear.
 ; *************************************************
 
 RaceResults_Init:
@@ -12,11 +26,13 @@ RaceResults_Init:
                 move.w  #$3F,(Message_ram_ButtonBlinkPeriod).l
                 move.w  #1500,(Menu_ram_NextMessageTimer).l
                 move.l  #0,(ram_FF0910).l
+; outcome: 0 = incomplete, >4 = worse than 4th, 4 = level complete
                 move.w  (ram_FF0526).l,(ram_FF0918).l ; player A
                 tst.w   (Menu_ram_Player).l
                 beq.w   .loc_5F90
                 move.w  (ram_FF0528).l,(ram_FF0918).l ; player B
 .loc_5F90:
+; pick the message group for this outcome
                 tst.w   (ram_FF0918).l
                 beq.w   .loc_5FBE
                 cmpi.w  #4,(ram_FF0918).l
@@ -64,7 +80,7 @@ RaceResults_Init:
 .loopClearDefault:
                 move.l  #0,(a0)
                 dbf     d0,.loopClearDefault
-; load background image
+; background to VRAM $8000 (same asset as the main menu)
                 lea     (img_MainMenu_Background).l,a3
                 lea     (Intro_ram_ImageBuffer).l,a1
                 jsr     (UncompressW).l
@@ -82,7 +98,7 @@ RaceResults_Init:
                 move.w  #128,d6 ; plane width
                 lea     (Intro_ram_ImageBuffer + $4E8).l,a0
                 jsr     (WriteNametable).w
-; load gamepad image
+; gamepad diagram on the plane at (2,22); the button icons are in this tile set
                 lea     (img_Gamepad).l,a3
                 lea     (Intro_ram_ImageBuffer).l,a1
                 jsr     (UncompressB).l
@@ -107,7 +123,7 @@ RaceResults_Init:
 .clearFB:
                 move.l  d1,(a0)+
                 dbf     d0,.clearFB
-; load font
+; font at VRAM $0 (name/cash/password and messages)
                 lea     (img_Intro_Font).l,a3
                 lea     (Intro_ram_ImageBuffer).l,a1
                 jsr     (UncompressW).l
@@ -116,6 +132,7 @@ RaceResults_Init:
                 lea     (Intro_ram_ImageBuffer).l,a0
                 jsr     (WriteToVRAM).l
 
+; $FFFF in the event buffer means busted/bike destroyed; otherwise normal standings
                 cmpi.w  #$FFFF,(ram_FF04C8).l
                 beq.w   .loc_616E
                 bsr.w   sub_62CE
@@ -123,6 +140,7 @@ RaceResults_Init:
 .loc_616E:
                 move.l  #10,d0
                 jsr     (AudioFunc3).l
+; cop index != 0 -> caught by the cops; 0 -> bike destroyed/repair
                 tst.w   (ram_FF1B1A).l
                 beq.w   .loc_618C
                 bsr.w   sub_647E
@@ -136,6 +154,7 @@ RaceResults_Init:
                 move.w  #$700,d2
                 jsr     (DmaWriteVRAM).l
 
+; repurpose the status box string as a 12x5 cash/password field at (14,22)
                 lea     (MenuPassword_StrPasswordStatus).l,a0
                 move.w  #22,(a0)+ ; y
                 move.w  #14,(a0)+ ; x
@@ -171,6 +190,7 @@ RaceResults_Init:
                 bpl.w   .loc_6244
                 subq.w  #2,(ram_FF0682).l
 .loc_6244:
+; format the money (negative money adjusts the field width)
                 jsr     (sub_C6C4).l
                 movea.l (sp)+,a0
                 move.l  #'    ',(a0)
@@ -183,7 +203,7 @@ RaceResults_Init:
 .loopWritePassword:
                 move.b  (a2)+,(a0)+
                 dbf     d0,.loopWritePassword
-; congratulations message
+; copy the congratulations text and patch in the current level digit
                 lea     (unk_533A).w,a0
                 lea     (ram_FF089A).l,a1
                 move.w  4(a0),d0
@@ -211,11 +231,15 @@ RaceResults_Init:
 
 ; *************************************************
 ; Function sub_62CE
+; Normal race results: title, track image/palette, top finishers, player row highlight.
+; In:  ram_FF1414/18/1A standings, Menu_ram_PlayerAPlaces/BPlaces, CurrentTrackId
+; Out: Menu_ram_FrameBuffer standings, VRAM $9000/$B000, global palette
+; Clobbers: d0-d6, a0-a3
 ; *************************************************
 
 sub_62CE:
                 move.l  #sub_62CE,(ram_FF0914).l
-; load "race results" title image
+; load the "race results" title image
                 lea     (unk_AF26C).l,a3
                 lea     (Intro_ram_ImageBuffer).l,a1
                 jsr     (UncompressW).l
@@ -233,7 +257,7 @@ sub_62CE:
                 move.w  #128,d6 ; plane width
                 lea     (Intro_ram_ImageBuffer + $588).l,a0
                 jsr     (WriteNametable).w
-; load end race image for current map
+; track image and palette for the current track (tables just before top_level)
                 lea     (unk_7E670).l,a3
                 move.w  (Menu_ram_CurrentTrackId).l,d0
                 asl.w   #1,d0
@@ -286,7 +310,7 @@ sub_62CE:
 .copyPal3:
                 move.l  (a0)+,(a1)+
                 dbf     d0,.copyPal3
-; draw top 3 players in current race
+; draw the finishers; the player's row uses palette 2, the others palette 3
                 lea     (ram_FF1414).l,a0
                 lea     (Intro_ram_ImageBuffer).l,a1
                 bsr.w   EncodeString
@@ -335,7 +359,11 @@ sub_62CE:
 ; End of function sub_62CE
 
 ; *************************************************
-; Function sub_62CE
+; Function sub_647E
+; Caught-by-cops layout: title, panel, cop portrait/quote by ram_FF1B1A, fine or GAME OVER.
+; In:  ram_FF1B1A (cop index), Menu_ram_MoneyPlayerA/B, ram_FF091A (fine)
+; Out: Menu_ram_FrameBuffer portrait/name/quote/message; VRAM $9000/$B000/$C000
+; Clobbers: d0-d7, a0-a3
 ; *************************************************
 
 sub_647E:
@@ -370,6 +398,7 @@ sub_647E:
                 lea     (Menu_ram_FrameBuffer).l,a1
                 lea     (Intro_ram_ImageBuffer + $168).l,a0
                 jsr     (WriteNametableToBuffer).w
+; negative money selects the shorter "GAME OVER" table
                 move.l  (Menu_ram_MoneyPlayerA).l,d1
                 tst.w   (Menu_ram_Player).l
                 beq.w   .loc_6534
@@ -377,6 +406,7 @@ sub_647E:
 .loc_6534:
                 tst.l   d1
                 bpl.w   .loc_6560
+; cop portraits: money<0 table (5x2), else money>=0 table (5x4)
                 lea     (unk_19EC2).l,a0
                 move.l  a0,-(sp)
                 jsr     (Rand_GetWord).l
@@ -517,6 +547,7 @@ sub_647E:
                 lea     (Intro_ram_ImageBuffer).l,a0
                 lea     (Menu_ram_FrameBuffer).l,a1
                 bsr.w   WriteNametableToBuffer
+; message: fine text or "Can't afford bail / GAME OVER"
                 lea     (unk_56D8).w,a0
                 movea.l (sp)+,a1
                 cmpa.l  #unk_19EC2,a1
@@ -556,7 +587,11 @@ sub_647E:
 ; End of function sub_647E
 
 ; *************************************************
-; Function sub_62CE
+; Function sub_67AC
+; Bike-repair layout: panel, portrait/quote by player level, repair cost or GAME OVER.
+; In:  Menu_ram_PlayerLevel, Menu_ram_MoneyPlayerA/B, ram_FF091A (repair cost)
+; Out: Menu_ram_FrameBuffer portrait/name/quote/message; VRAM $B000/$C000
+; Clobbers: d0-d7, a0-a3
 ; *************************************************
 
 sub_67AC:
@@ -576,6 +611,7 @@ sub_67AC:
                 lea     (Menu_ram_FrameBuffer).l,a1
                 lea     (Intro_ram_ImageBuffer + $168).l,a0
                 jsr     (WriteNametableToBuffer).w
+; negative money selects the shorter "GAME OVER" table
                 move.l  (Menu_ram_MoneyPlayerA).l,d1
                 tst.w   (Menu_ram_Player).l
                 beq.w   .loc_6818
@@ -583,6 +619,7 @@ sub_67AC:
 .loc_6818:
                 tst.l   d1
                 bpl.w   .loc_6844
+; level portraits: money<0 table (5x2), else money>=0 table (5x4)
                 lea     (unk_19DD2).l,a0
                 move.l  a0,-(sp)
                 jsr     (Rand_GetWord).l
@@ -723,6 +760,7 @@ sub_67AC:
                 lea     (Intro_ram_ImageBuffer).l,a0
                 lea     (Menu_ram_FrameBuffer).l,a1
                 bsr.w   WriteNametableToBuffer
+; message: repair text or "No money for repairs / GAME OVER"
                 lea     (unk_5730).w,a0
                 movea.l (sp)+,a1
                 cmpa.l  #unk_19DD2,a1
@@ -763,6 +801,11 @@ sub_67AC:
 
 ; *************************************************
 ; Function RaceResults_GameTick
+; Per-frame update: DMA, Start exits, A -> high score, C -> shop, B -> cash box;
+; cycle the outcome messages; end when a next-screen pointer is set.
+; In:  pad input, ram_FF0918, Menu_ram_CurrentMessageId/NextMessageTimer
+; Out: ram_FF0910 (next screen), ram_UpdateFunction=0 at end stage
+; Clobbers: d0/d1/a0
 ; *************************************************
 
 RaceResults_GameTick:
@@ -772,6 +815,7 @@ RaceResults_GameTick:
                 move.w  #$700,d2
                 jsr     (DmaWriteVRAM).l
 
+; Start is checked while held (GetInput returns 1 = pressed)
                 move.w  (MainMenu_ram_ButtonsPlayerA).l,(MainMenu_ram_ChangedButtonsPlayerA).l
                 jsr     (GetInputPlayerA).w
                 move.w  d0,(MainMenu_ram_ButtonsPlayerA).l
@@ -784,6 +828,7 @@ RaceResults_GameTick:
                 eor.w   d0,(MainMenu_ram_ChangedButtonsPlayerB).l
                 andi.w  #$80,d0
                 bne.w   .endStage ; if start pressed
+; A/B/C use the new-press edge: (previous xor current) & current
                 move.w  (MainMenu_ram_ChangedButtonsPlayerB).l,d0
                 beq.w   .loc_6B0C
                 and.w   (MainMenu_ram_ButtonsPlayerB).l,d0
@@ -798,6 +843,7 @@ RaceResults_GameTick:
                 move.l  #MainMenu_ram_ButtonsPlayerA,(Menu_ram_CurrentButtonsPtr).l
                 jsr     (RaceResults_HandleInput).l
 .showMessage:
+; cycle the message every 300 frames; reset to the group start at the terminator
                 subq.w  #1,(Menu_ram_MessageBlinkTimer).l
                 subq.w  #1,(Menu_ram_NextMessageTimer).l
                 bpl.w   .loc_6BA8
@@ -836,7 +882,10 @@ RaceResults_GameTick:
 
 ; *************************************************
 ; Function RaceResults_HandleInput
-; d0 - current buttons state (SACBRLDU)
+; Handles A (high score), B (show cash/password for 25 s) and C (shop).
+; In:  d0 - current buttons (SACBRLDU; 1 = pressed)
+; Out: ram_FF0910 and the message timers/IDs on action
+; Clobbers: -
 ; *************************************************
 
 RaceResults_HandleInput:
@@ -869,11 +918,14 @@ RaceResults_HandleInput:
                 rts
 ; End of function RaceResults_HandleInput
 
-; not sure this function belongs to this file
-
+; unused by this module (the shop has its own Shop_DrawString); kept for the
+; byte-exact layout.
 ; *************************************************
 ; Function DrawString
-; a0 - string
+; Encodes and draws a string into the 64-wide frame buffer, palette 3.
+; In:  a0 - string header + text
+; Out: Menu_ram_FrameBuffer
+; Clobbers: d0-d4/d6/a0/a1
 ; *************************************************
 
 DrawString:
@@ -894,6 +946,7 @@ DrawString:
                 rts
 ; End of function DrawString
 
+; unreferenced data (dead/legacy strings); kept for byte-exact layout
 unk_6C94:
     dc.w 22,16,5,20
     dc.b " To go to the next  "
