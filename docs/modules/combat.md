@@ -18,7 +18,7 @@ bit7 are armed/special (`WEAPON_1` placeholder pending weapon identification).
 
 | Function | Address | Contract | Algorithm | Data | Hardware | Why | Dynamic | Status |
 |---|---|---|---|---|---|---|---|---|
-| `sub_162B0` attack input | `0x162B0` | [x] | [~] | [x] | [x] | [x] | [ ] | static |
+| `sub_162B0` attack input | `0x162B0` | [x] | [~] | [x] | [x] | [x] | [~] | dynamic (input/height) |
 | `Race_UpdateNearestTarget` | `0x1611A` | [x] | [~] | [x] | [x] | [x] | [ ] | static |
 | `sub_1634E` AI input | `0x1634E` | [~] | [~] | [~] | [x] | [~] | [ ] | unreferenced |
 | `Race_UpdateCollision` | `0x16732` | [x] | [~] | [x] | [x] | [x] | [ ] | static |

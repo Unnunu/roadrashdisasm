@@ -126,6 +126,29 @@ This confirms the attack path and the `$6C/$6D` phase/timer fields. `$69` bit5
 (attack side) is set/cleared after the Y comparison, so it must be captured after
 stepping to `0x16346`. Up/Down comparisons and AI handlers are still pending.
 
+## Dynamic test 2 (height input)
+
+Native console at `0x1634C` after the attack input:
+
+| Buttons | `$69` | `$6B` | `$6C` | `$6D` | `$5A` | nearest |
+|---|---|---|---|---|---|---|
+| C alone (`$20`) | `$10` | `$00` | 0 | 1 | 0 | `$FF232A` |
+| C+Up (`$21`) | `$10` | `$01` | 0 | 1 | 0 | `$FF232A` |
+| C+Down (`$22`) | `$52` | `$00` | 0 | `$0A` | 0 | `$FFFFFFFF` |
+
+Conclusions:
+
+- `$69` bit4 (`$10`) = attack active.
+- `$6B` bit0 (`$01`) = high attack; set only with Up.
+- `$69` bit6 (`$40`) = low attack; set with Down, which also selects the
+  `ram_FF1ABC` timing (`$6D = $0A`).
+- `$69` bit1 (`$02`) in the C+Down trace is a steering/state bit set elsewhere
+  (`race_ai` writes `$69` bit1), not an attack-height bit.
+- `$69` bit5 (side) is set/cleared after the nearest-Y comparison; a positive
+  side test (player above target) is still pending.
+- `$5A` remains 0 at the input frame; phase/timer progression still needs frame
+  stepping.
+
 ## Open questions / next experiments
 
 - Confirm attack phase semantics (`$6C` 0..3), high/low/side bits, `$5A`.
