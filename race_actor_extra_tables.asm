@@ -3,16 +3,55 @@
 ; ROM range: $259B6-$25EBF; included from main.asm after race_actor_tables.asm.
 ; *************************************************
 
+; Target labels for the actor action dispatch table (code/data).
+ActorActionSlot_12D16 equ $12D16
+ActorActionSlot_12D2A equ $12D2A
+ActorActionSlot_12D3A equ $12D3A
+ActorActionSlot_12D4E equ $12D4E
+ActorActionSlot_12D62 equ $12D62
+ActorActionSlot_12D76 equ $12D76
+ActorActionSlot_12D8A equ $12D8A
+ActorActionSlot_12D9E equ $12D9E
+ActorActionSlot_12DB2 equ $12DB2
+ActorActionSlot_12DC6 equ $12DC6
+ActorActionSlot_12DDA equ $12DDA
+ActorActionSlot_12DEE equ $12DEE
+ActorActionSlot_12E02 equ $12E02
+ActorActionSlot_12E16 equ $12E16
+ActorActionSlot_12E2A equ $12E2A
+ActorActionSlot_12E3E equ $12E3E
+ActorActionSlot_12E52 equ $12E52
+ActorActionSlot_12E66 equ $12E66
+ActorActionSlot_12E7A equ $12E7A
+ActorActionSlot_12E8E equ $12E8E
+; Common handler called by unk_25A44 entries (undiscovered code).
+ActorAI_Handler_13130 equ $13130
+
 ; unk_259B6: $A bytes used by race_core.asm.
 unk_259B6:
     dc.w    $0002,$0003,$0003,$0003,$0004
 
 unk_259C0:
-    dc.w    $0001,$2D2A,$0001,$2D16,$0001,$2D3A,$0001,$2D4E
-    dc.w    $0001,$2D62,$0001,$2D76,$0001,$2D8A,$0001,$2D9E
-    dc.w    $0001,$2DB2,$0001,$2DC6,$0001,$2DDA,$0001,$2DEE
-    dc.w    $0001,$2E02,$0001,$2E16,$0001,$2E2A,$0001,$2E3E
-    dc.w    $0001,$2E52,$0001,$2E66,$0001,$2E7A,$0001,$2E8E
+    dc.l    ActorActionSlot_12D2A
+    dc.l    ActorActionSlot_12D16
+    dc.l    ActorActionSlot_12D3A
+    dc.l    ActorActionSlot_12D4E
+    dc.l    ActorActionSlot_12D62
+    dc.l    ActorActionSlot_12D76
+    dc.l    ActorActionSlot_12D8A
+    dc.l    ActorActionSlot_12D9E
+    dc.l    ActorActionSlot_12DB2
+    dc.l    ActorActionSlot_12DC6
+    dc.l    ActorActionSlot_12DDA
+    dc.l    ActorActionSlot_12DEE
+    dc.l    ActorActionSlot_12E02
+    dc.l    ActorActionSlot_12E16
+    dc.l    ActorActionSlot_12E2A
+    dc.l    ActorActionSlot_12E3E
+    dc.l    ActorActionSlot_12E52
+    dc.l    ActorActionSlot_12E66
+    dc.l    ActorActionSlot_12E7A
+    dc.l    ActorActionSlot_12E8E
 
 ; unk_25A10: 13-pointer actor-data table (Race_UpdateNearestTarget and AI).
 unk_25A10:
@@ -22,14 +61,38 @@ unk_25A10:
     dc.l    $00025E06
 
 unk_25A44:
-    dc.w    $0001,$3130,$1770,$0008,$0001,$3130,$1B58,$0010
-    dc.w    $0001,$3130,$1964,$000C,$0001,$3130,$1770,$FFF8
-    dc.w    $0001,$3130,$1B58,$FFEF,$0001,$3130,$1770,$0008
-    dc.w    $0001,$3130,$1B58,$0010,$0001,$3130,$1964,$000C
-    dc.w    $0001,$3130,$1770,$FFF8,$0001,$3130,$1964,$FFEF
-    dc.w    $0001,$3130,$1770,$0008,$0001,$3130,$1B58,$0010
-    dc.w    $0001,$3130,$1964,$000C,$0001,$3130,$1770,$FFF8
-    dc.w    $0001,$3130,$1B58,$FFEF,$0001,$3130,$1770,$FFEF
+    dc.l    ActorAI_Handler_13130
+    dc.w    $1770,$0008
+    dc.l    ActorAI_Handler_13130
+    dc.w    $1B58,$0010
+    dc.l    ActorAI_Handler_13130
+    dc.w    $1964,$000C
+    dc.l    ActorAI_Handler_13130
+    dc.w    $1770,$FFF8
+    dc.l    ActorAI_Handler_13130
+    dc.w    $1B58,$FFEF
+    dc.l    ActorAI_Handler_13130
+    dc.w    $1770,$0008
+    dc.l    ActorAI_Handler_13130
+    dc.w    $1B58,$0010
+    dc.l    ActorAI_Handler_13130
+    dc.w    $1964,$000C
+    dc.l    ActorAI_Handler_13130
+    dc.w    $1770,$FFF8
+    dc.l    ActorAI_Handler_13130
+    dc.w    $1964,$FFEF
+    dc.l    ActorAI_Handler_13130
+    dc.w    $1770,$0008
+    dc.l    ActorAI_Handler_13130
+    dc.w    $1B58,$0010
+    dc.l    ActorAI_Handler_13130
+    dc.w    $1964,$000C
+    dc.l    ActorAI_Handler_13130
+    dc.w    $1770,$FFF8
+    dc.l    ActorAI_Handler_13130
+    dc.w    $1B58,$FFEF
+    dc.l    ActorAI_Handler_13130
+    dc.w    $1770,$FFEF
 
 unk_25AC4:
     dc.w    $01D0,$8000,$0018,$0030,$0600,$00C0,$0100,$0000
