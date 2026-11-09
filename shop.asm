@@ -1,5 +1,17 @@
 ; *************************************************
+; shop.asm - bike shop (select, buy, trade in)
+; ROM range: $74AA-$8341
+; Status:    analyzed (static; shop is non-demo)
+; API:       Shop_Init, Shop_GameTick, Shop_HandleInput
+; *************************************************
+
+; *************************************************
 ; Function Shop_Init
+; Builds the shop: VDP/scroll tables, background/selection/gamepad/arrows, bike
+; images and palettes, fonts, credits/price, bike name, description, prompts, DMA.
+; In:  Menu_ram_Player, MoneyPlayerA/B, BikeIdPlayerA/B
+; Out: Menu_ram_FrameBuffer -> VRAM $7000; VRAM $0/$8000-$E000; palette/CRAM
+; Clobbers: d0-d7, a0-a3
 ; *************************************************
 
 Shop_Init:
@@ -38,7 +50,7 @@ Shop_Init:
                 VDP_VRAM_WRITE $6000,(a0) ; write sprite table
                 move.l  #0,(VdpData).l ; clear first entry
                 move.l  #0,(VdpData).l
-; write scroll table for background
+; H-scroll table $6400: 7 static strips, 9 scrolling strips (the bike band), 12 static
                 move.w  #$8F20,(a0) ; Auto-increment: $20
                 VDP_VRAM_WRITE $6402,(a0)
                 move.w  #$160,(Shop_ScrollPos).l
@@ -81,7 +93,7 @@ Shop_Init:
 .loopClearAB:
                 move.l  d1,(a0)
                 dbf     d0,.loopClearAB
-; load background image
+; background tiles to VRAM $8000, drawn into the window frame buffer
                 lea     (img_MainMenu_Background).l,a3
                 lea     (Intro_ram_ImageBuffer).l,a1
                 jsr     (UncompressW).l
@@ -99,7 +111,7 @@ Shop_Init:
                 lea     (Menu_ram_FrameBuffer).l,a1 ; destination
                 lea     (Intro_ram_ImageBuffer + $4E8).l,a0 ; source
                 bsr.w   WriteNametableToBuffer
-; load bike selection background
+; selection background to VRAM $9000, 40x14 at (0,4)
                 lea     (img_MainMenu_RaceSelectionBackground).l,a3
                 lea     (Intro_ram_ImageBuffer).l,a1
                 jsr     (UncompressB).l
@@ -135,7 +147,7 @@ Shop_Init:
                 move.w  #128,d6 ; plane width
                 lea     (Intro_ram_ImageBuffer + $B48).l,a0
                 bsr.w   WriteNametable
-; load left arrows image
+; left/right arrow images on the plane at (0,4)/(36,4), high priority
                 lea     (unk_9E784).l,a3
                 lea     (Intro_ram_ImageBuffer).l,a1
                 jsr     (UncompressW).l
@@ -190,7 +202,7 @@ Shop_Init:
 .copyPal3:
                 move.l  (a0)+,(a1)+
                 dbf     d0,.copyPal3
-; load bike 1 image
+; three base bike images; their 18x9 maps go into the Shop_ImageBike RAM buffers
                 lea     (unk_9EA1E).l,a3
                 lea     (Intro_ram_ImageBuffer).l,a1
                 jsr     (UncompressW).l
@@ -244,7 +256,7 @@ Shop_Init:
                 lea     (Intro_ram_ImageBuffer + $E48).l,a0
                 lea     (Shop_ImageBike3).l,a1
                 bsr.w   WriteNametableToBuffer
-; draw bikes
+; draw the bike lineup: centre palette = selected bike, other bikes = previous bike
                 lea     (Shop_dBikePalettes).l,a0
                 move.w  (Shop_CurrentBikeId).l,d0
                 asl.w   #5,d0
@@ -257,6 +269,7 @@ Shop_Init:
                 adda.w  d0,a1
                 move.w  (Shop_CurrentBikeId).l,d0 ; previous bike palette, used for all other bikes
                 bsr.w   Shop_DrawBikes
+; CREDITS/PRICE labels at (3,18)/(31,18), palette 3
 ; draw text 'CREDITS'
                 lea     (Menu_ram_FrameBuffer + 2*(18*64 + 3)).l,a0 ; get offset to cell x = 3, y = 18
                 move.w  (dStringCodeTable + 2 * 'C').w,(a0)
@@ -317,7 +330,10 @@ Shop_Init:
 
 ; *************************************************
 ; Function Shop_DrawBikeName
-; d0 - bike id
+; Encodes the selected bike's name/power/weight string and draws it at (13,18).
+; In:  d0 - bike id
+; Out: Menu_ram_FrameBuffer
+; Clobbers: d0-d4/d6/a0/a1
 ; *************************************************
 
 Shop_DrawBikeName:
@@ -342,7 +358,10 @@ Shop_DrawBikeName:
 
 ; *************************************************
 ; Function Shop_ShowBikeDescription
-; d0 - bike id
+; Selects the message-array bike description (index 51+bikeId) for 10 s.
+; In:  d0 - bike id
+; Out: Menu_ram_CurrentMessageId/MessageBlinkTimer/NextMessageTimer
+; Clobbers: d0
 ; *************************************************
 
 Shop_ShowBikeDescription:
@@ -356,6 +375,11 @@ Shop_ShowBikeDescription:
 
 ; *************************************************
 ; Function Shop_GameTick
+; Per-frame update: DMA, H-scroll animation, Start -> results, A/B/C/D-pad edges,
+; message cycle. Ends when ram_FF0910 is set.
+; In:  pad input; Shop_ScrollPos; message timers
+; Out: ram_FF0910 (next screen); ram_UpdateFunction=0 at end stage
+; Clobbers: d0/d1/a0
 ; *************************************************
 
 Shop_GameTick:
@@ -365,6 +389,7 @@ Shop_GameTick:
                 move.w  #$700,d2
                 bsr.w   DmaWriteVRAM
 
+; animate the scrolling band and refresh the bike palettes while it moves
                 bsr.w   Shop_UpdateScroll
                 move.w  (Shop_ScrollPos).l,d0
                 subi.w  #$160,d0
@@ -374,6 +399,7 @@ Shop_GameTick:
                 move.w  #$40,d2
                 jsr     (DmaWriteCRAM).l
 .loc_7A30:
+; Start is checked while held (GetInput returns 1 = pressed)
                 move.w  (MainMenu_ram_ButtonsPlayerA).l,(MainMenu_ram_ChangedButtonsPlayerA).l
                 jsr     (GetInputPlayerA).w
                 move.w  d0,(MainMenu_ram_ButtonsPlayerA).l
@@ -400,6 +426,7 @@ Shop_GameTick:
                 move.l  #MainMenu_ram_ButtonsPlayerA,(Menu_ram_CurrentButtonsPtr).l
                 jsr     (Shop_HandleInput).l
 .loc_7ABC:
+; bike description for 10 s, then the group-60 prompts every 5 s
                 subq.w  #1,(Menu_ram_MessageBlinkTimer).l
                 subq.w  #1,(Menu_ram_NextMessageTimer).l
                 bpl.w   .loc_7B16
@@ -433,6 +460,10 @@ Shop_GameTick:
 
 ; *************************************************
 ; Function Shop_HandleInput
+; A -> high score, B -> results, C -> buy/trade in, Right/Left -> select bike.
+; In:  d0 - current buttons (1 = pressed)
+; Out: ram_FF0910, money/bike id/password on purchase; redraw + scroll on select
+; Clobbers: d0-d3/a0/a1
 ; *************************************************
 
 Shop_HandleInput:
@@ -455,6 +486,7 @@ Shop_HandleInput:
                 bsr.w   sub_7EA2
                 bra.w   .loc_7C64
 .loc_7BAC:
+; net price = selected price - half the current bike's trade-in value
                 lea     (Shop_dPrices).l,a0
                 move.w  (Menu_ram_BikeIdPlayerA).l,d0
                 asl.w   #1,d0
@@ -470,6 +502,7 @@ Shop_HandleInput:
                 bsr.w   sub_7F02
                 bra.w   .loc_7C64
 .loc_7BE4:
+; buy: pay the net price, set the bike id and regenerate the password
                 sub.l   d0,(Menu_ram_MoneyPlayerA).l
                 move.w  (Shop_CurrentBikeId).l,(Menu_ram_BikeIdPlayerA).l
                 bra.w   .loc_7C5C
@@ -502,6 +535,7 @@ Shop_HandleInput:
                 bsr.w   Shop_DrawCreditsAndPrice
                 jsr     (MenuPassword_CreatePassword).w
 .loc_7C64:
+; Right: next bike, only when the scroll animation is at rest ($160)
                 btst    #3,(ram_FF0952).l
                 beq.w   .loc_7CE0
                 move.w  (Shop_ScrollPos).l,d0
@@ -528,6 +562,7 @@ Shop_HandleInput:
                 bsr.w   Shop_DrawCreditsAndPrice
                 subi.w  #$D0,(Shop_ScrollPos).l
 .loc_7CE0:
+; Left: previous bike, same rest condition
                 btst    #2,(ram_FF0952).l
                 beq.w   .locret_7D5C
                 move.w  (Shop_ScrollPos).l,d0
@@ -559,6 +594,11 @@ Shop_HandleInput:
 
 ; *************************************************
 ; Function Shop_DrawCreditsAndPrice
+; Draws credits (money + trade-in) and the selected bike price at y=19; palette 2
+; when the credits are insufficient, "(its yours)" when the bike is owned.
+; In:  Menu_ram_Player, Money/BikeId, Shop_CurrentBikeId, Shop_dPrices
+; Out: Menu_ram_FrameBuffer
+; Clobbers: d0-d4/a0/a1
 ; *************************************************
 
 Shop_DrawCreditsAndPrice:
@@ -635,6 +675,10 @@ Shop_DrawCreditsAndPrice:
 
 ; *************************************************
 ; Function Shop_DrawString
+; Encodes/draws a string with the caller's palette word (d4) at the header position.
+; In:  a0 - string; d4 - base tile/palette word
+; Out: Menu_ram_FrameBuffer
+; Clobbers: d0-d4/d6/a0/a1
 ; *************************************************
 
 Shop_DrawString:
@@ -655,6 +699,10 @@ Shop_DrawString:
 
 ; *************************************************
 ; Function sub_7EA2
+; Builds "You already own a ..." (unk_51C6 + bike name) in ram_FF089A (id 59).
+; In:  Shop_CurrentBikeId
+; Out: ram_FF089A; message id 59; 5 s timer
+; Clobbers: d0/d1/a0/a1
 ; *************************************************
 
 sub_7EA2:
@@ -691,6 +739,10 @@ sub_7EA2:
 
 ; *************************************************
 ; Function sub_7F02
+; Builds "You need more credit to buy a ..." (unk_520A + bike name) in ram_FF089A.
+; In:  Shop_CurrentBikeId
+; Out: ram_FF089A; message id 59; 5 s timer
+; Clobbers: d0/d1/a0/a1
 ; *************************************************
 
 sub_7F02:
@@ -727,6 +779,11 @@ sub_7F02:
 
 ; *************************************************
 ; Function Shop_PrepareMessages
+; Builds the "Press C to buy" prompt with the current bike name and the left/right
+; bike-name prompts for the D-pad.
+; In:  Shop_CurrentBikeId
+; Out: Shop_StrBuyNewBike, ram_FF07C2, ram_FF082E
+; Clobbers: d0/d1/a0/a1
 ; *************************************************
 
 Shop_PrepareMessages:
@@ -818,9 +875,11 @@ Shop_PrepareMessages:
 
 ; *************************************************
 ; Function Shop_DrawBikes
-; d0 - current bike index
-; a0 - current bike def
-; a1 - other bikes def
+; Writes palette lines 2/3 from the current/previous bike palettes and draws the
+; previous/current/next bikes on the plane.
+; In:  d0 - current bike index; a0 - current palette; a1 - previous palette
+; Out: CRAM palette lines 2/3; plane bike images at x=3/29/55/81/107, y=7
+; Clobbers: d0-d6/a0-a2
 ; *************************************************
 
 Shop_DrawBikes:
@@ -927,6 +986,11 @@ Shop_DrawBikes:
 
 ; *************************************************
 ; Function Shop_UpdateScroll
+; Moves Shop_ScrollPos back to $160 at up to 8 px/frame and rewrites the 9-strip
+; centre scroll table at $64E2.
+; In:  Shop_ScrollPos
+; Out: Shop_ScrollPos; VDP H-scroll table
+; Clobbers: d0/d1/a0/a1
 ; *************************************************
 
 Shop_UpdateScroll:
@@ -961,6 +1025,7 @@ Shop_UpdateScroll:
                 rts
 ; End of function Shop_UpdateScroll
 
+; eight bike name/power/weight strings (selected by bike id)
 Shop_BikeDescriptions:
     dc.l Shop_StrShuriken400
     dc.l Shop_StrPanda600
@@ -1004,6 +1069,7 @@ Shop_StrDiablo1000:
     dc.b "  Diablo 1000 "
     dc.b "150 HP 450 lbs"
 
+; bike prices in dollars (indexed by bike id)
 Shop_dPrices:
     dc.w 400
     dc.w 500
@@ -1014,6 +1080,7 @@ Shop_dPrices:
     dc.w 2000
     dc.w 2500
 
+; bike id -> one of the three 18x9 image maps
 Shop_BikeImageTable:
     dc.l Shop_ImageBike3
     dc.l Shop_ImageBike3
