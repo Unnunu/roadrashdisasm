@@ -14,7 +14,7 @@ road-marking module. Called from `Race_GameTick`/`Race_Update` in `race_core.asm
 | Symbol | Address | Called by | Description |
 |--------|---------|-----------|-------------|
 | `DmaWriteVRAM` | `0xD8FA` | `Race_GameTick` | DMA a RAM block to VRAM. |
-| `sub_D9DA`..`sub_E5EE` | `0xD9DA`–`0xE5EE` | `Race_Update` | Actor/road/physics helpers (TODO). |
+| `Race_DrawRearviewMirror`..`Race_UpdateNearestOpponent` | `0xD9DA`–`0xE5EE` | `Race_Update` | Actor/road/physics helpers (TODO). |
 
 ## Coverage matrix
 

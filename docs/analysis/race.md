@@ -115,16 +115,16 @@ This is the double/quad buffering that avoids tearing.
    (`ram_FF1B20`): the player/opponent update chain (`sub_160E2`, `sub_13EA0`,
    `sub_1383E`, `sub_13A92`, `sub_10E66`, `sub_13E94`, `sub_10DBE`, `sub_10DDA`,
    `sub_13BF4`, `sub_12868`, `sub_128E0`, `sub_12974`, `sub_138CE`, `sub_1281E`,
-   `sub_11C44`, `sub_11CC8`, `sub_1218C`, `sub_123A8`, `sub_E5EE`, `sub_12EA2`,
+   `sub_11C44`, `sub_11CC8`, `sub_1218C`, `sub_123A8`, `Race_UpdateNearestOpponent`, `sub_12EA2`,
    `sub_13106`), the player/opponent x difference `ram_FF3036`, `sub_1611A`.
-4. Render prep: `sub_DE9E`; if the frame is not ready: `sub_EDD0`, the
+4. Render prep: `Race_UpdateCamera`; if the frame is not ready: `sub_EDD0`, the
    `PiecewiseLinearInterpolation` calls for the road arrays (`Road_ram_XLeftArray`,
    `Road_ram_MarkingXArray`, `Road_ram_XRightArray`), `Road_FillProfileTables`,
-   `sub_E004`, `sub_FD96`, `sub_FB1E`, `sub_F40C`, the visible-object list
+   `Race_BuildVScrollInfo`, `sub_FD96`, `sub_FB1E`, `sub_F40C`, the visible-object list
    (`ram_FF1B50`/`1C50`/`1D50` via `sub_109B6`/`sub_FC0E`/`Road_BuildVisibleList`),
-   `sub_14E38`, `sub_DD84`, `sub_EC90`; reset the sprite chain indices;
+   `sub_14E38`, `Race_DrawRoadMarkingHud`, `sub_EC90`; reset the sprite chain indices;
    `RaceHud_Draw`, `Road_DrawObjects` (road/object renderer), `RoadMarking_Draw`; store the
-   sprite count/tile count; `sub_D9DA`, `sub_E494`; `Race_FinishFrame`.
+   sprite count/tile count; `Race_DrawRearviewMirror`, `Race_BuildHScrollTable`; `Race_FinishFrame`.
 5. The road/actor/physics chain is where the `RacePlayer` and actor structures are
    read/written; it is the next analysis target.
 
@@ -201,6 +201,7 @@ Actors/player structures:
 | Time | `Race_UpdateTime` `0xBA02`, `Race_ResetFrameTimers` `0xB9AE` |
 | Track/actors | `Race_InitTrack` `0xB016`, `Race_InitActorLists/Positions/PhysicsConstants/LoadTrackParams/SpawnOpponents`, `Race_CreateActors` `0xCAD0`; `Race_ActorList/DefinitionTable/GraphicsTable/StaticActorList` |
 | Spawn/traffic | `Race_SpawnTick` `0x16AF6`, `Race_SpawnOpponent/Traffic`, active/free lists, `Race_UpdateSpeedDisplay`/`Race_FormatDecimal` |
+| Camera/scroll/rearview | `Race_UpdateCamera`, `Race_BuildVScrollInfo`/`HScrollTable`, `Race_DrawRearviewMirror`, `Race_DrawRoadMarkingHud`, `Race_UpdateNearestOpponent` (`race_physics.asm`) |
 | Physics/AI | `Race_UpdateSpeedDisplay`, `Race_SpawnTick`, `sub_13EA0`..`sub_13106` (TODO) |
 | Road/render | `PiecewiseLinearInterpolation`, `Road_FillProfileTables`, `sub_FD96/FB1E/F40C`, `sub_109B6/FC0E`, `Road_BuildVisibleList`, `Road_DrawObjects` (`road_render`), `RoadMarking_Draw` |
 | HUD | `RaceHud_Draw` (`race_hud.asm`) |

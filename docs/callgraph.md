@@ -192,7 +192,7 @@ flowchart LR
 | `Race_ClearHudCorners` | `0x0AB78` | `Race_Init` | - |
 | `Race_FillHudTile` | `0x0AB9A` | `Race_ClearFrameBuffers` | - |
 | `Race_LoadHUD` | `0x0ABBA` | `Race_Init` | `EncodeString`, `UncompressW`, `WriteNametable`, `WriteNametableToBuffer`, `WriteToVRAM` |
-| `Race_LoadRoadImage` | `0x0ADFC` | `Race_Init` | `UncompressW`, `WriteToVRAM`, `sub_D9DA` |
+| `Race_LoadRoadImage` | `0x0ADFC` | `Race_Init` | `Race_DrawRearviewMirror`, `UncompressW`, `WriteToVRAM` |
 | `Race_LoadFonts` | `0x0AF40` | `Race_Init` | `UncompressW`, `WriteToVRAM` |
 | `WriteToVRAM` | `0x0AFF2` | `EndLevel_Init`, `EndLevel_InitVictoryCharacter`, `HighScore_Init`, `Intro_Init`, `Menu_Init`, `RaceResults_DrawBusted`, `RaceResults_DrawRepair`, `RaceResults_DrawStandings`, `RaceResults_Init`, `Race_DrawTopHud`, `Race_LoadFonts`, `Race_LoadHUD`, `Race_LoadMoreTrackGfx`, `Race_LoadRoadImage`, `Race_LoatTrackGfx`, `RiderIntro_Init`, `Shop_Init` | - |
 | `Race_InitTrack` | `0x0B016` | `Race_Init` | - |
@@ -210,7 +210,7 @@ flowchart LR
 | `Race_FinishFrame` | `0x0BD24` | `EndLevel_UpdateAnimation`, `Race_Update` | - |
 | `Race_GetInputDemo` | `0x0BE2C` | `Race_GameTick` | `GetInputPlayerA`, `GetInputPlayerB` |
 | `Race_GetInput` | `0x0BE56` | `Race_GameTick` | `AudioFunc18`, `AudioFunc4`, `GetInputPlayerA`, `GetInputPlayerB` |
-| `Race_Update` | `0x0C00C` | `Race_Init`, `TopLevel_Init` | `PiecewiseLinearInterpolation`, `RaceHud_Draw`, `Race_FinishFrame`, `Race_SpawnTick`, `Race_UpdateSpeedDisplay`, `RoadMarking_Draw`, `Road_BuildVisibleList`, `Road_DrawObjects`, `Road_FillProfileTables`, `sub_109B6`, `sub_10DBE`, `sub_10DDA`, `sub_10E66`, `sub_11C44`, `sub_11CC8`, `sub_1218C`, `sub_123A8`, `sub_1281E`, `sub_12868`, `sub_128E0`, `sub_12974`, `sub_12EA2`, `sub_13106`, `sub_1383E`, `sub_138CE`, `sub_13A92`, `sub_13BF4`, `sub_13E94`, `sub_13EA0`, `sub_14E38`, `sub_160E2`, `sub_1611A`, `sub_D9DA`, `sub_DD84`, `sub_DE9E`, `sub_E004`, `sub_E494`, `sub_E5EE`, `sub_EC90`, `sub_EDD0`, `sub_F40C`, `sub_FB1E`, `sub_FC0E`, `sub_FD96` |
+| `Race_Update` | `0x0C00C` | `Race_Init`, `TopLevel_Init` | `PiecewiseLinearInterpolation`, `RaceHud_Draw`, `Race_BuildHScrollTable`, `Race_BuildVScrollInfo`, `Race_DrawRearviewMirror`, `Race_DrawRoadMarkingHud`, `Race_FinishFrame`, `Race_SpawnTick`, `Race_UpdateCamera`, `Race_UpdateNearestOpponent`, `Race_UpdateSpeedDisplay`, `RoadMarking_Draw`, `Road_BuildVisibleList`, `Road_DrawObjects`, `Road_FillProfileTables`, `sub_109B6`, `sub_10DBE`, `sub_10DDA`, `sub_10E66`, `sub_11C44`, `sub_11CC8`, `sub_1218C`, `sub_123A8`, `sub_1281E`, `sub_12868`, `sub_128E0`, `sub_12974`, `sub_12EA2`, `sub_13106`, `sub_1383E`, `sub_138CE`, `sub_13A92`, `sub_13BF4`, `sub_13E94`, `sub_13EA0`, `sub_14E38`, `sub_160E2`, `sub_1611A`, `sub_EC90`, `sub_EDD0`, `sub_F40C`, `sub_FB1E`, `sub_FC0E`, `sub_FD96` |
 | `Race_SortResults` | `0x0C378` | `Race_ComputeResults` | - |
 | `Race_ComputeResults` | `0x0C3F8` | `TopLevel_Init` | `MenuPassword_CreatePassword`, `Race_BuildStandings`, `Race_SortResults`, `Race_UpdateHighScoreTable` |
 | `Race_UpdateHighScoreTable` | `0x0C598` | `Race_ComputeResults` | `Race_FormatMoney` |
@@ -235,14 +235,14 @@ flowchart LR
 | `RaceHud_DrawNumber2Digits` | `0x0D850` | `RaceHud_DrawPlace`, `RaceHud_DrawTime` | - |
 | `DmaWriteVRAM` | `0x0D8FA` | `EndLevel_GameTick`, `EndLevel_GameTickVictoryCharacter`, `EndLevel_Init`, `HighScore_GameTick`, `HighScore_Init`, `Intro_GameTick`, `Intro_Init`, `MainMenu_GameTick`, `MenuPassword_GameTick`, `Menu_Init`, `RaceResults_GameTick`, `RaceResults_Init`, `Race_GameTick`, `Race_WriteSpriteTiles`, `RiderIntro_GameTick`, `RiderIntro_Init`, `Shop_GameTick`, `Shop_Init` | - |
 | `DmaWriteCRAM` | `0x0D96A` | `EndLevel_InitVictoryCharacter`, `FadeWithFunction_GameTick`, `Fade_GameTick`, `Race_GameTick`, `Shop_GameTick` | - |
-| `sub_D9DA` | `0x0D9DA` | `Race_LoadRoadImage`, `Race_Update` | `sub_DA3E` |
-| `sub_DA3E` | `0x0DA3E` | `sub_D9DA` | - |
-| `sub_DAE2` | `0x0DAE2` | `sub_F40C` | `sub_102E4` |
-| `sub_DD84` | `0x0DD84` | `Race_Update` | - |
-| `sub_DE9E` | `0x0DE9E` | `Race_Update` | - |
-| `sub_E004` | `0x0E004` | `Race_Update` | - |
-| `sub_E494` | `0x0E494` | `Race_Update` | - |
-| `sub_E5EE` | `0x0E5EE` | `Race_Update` | - |
+| `Race_DrawRearviewMirror` | `0x0D9DA` | `Race_LoadRoadImage`, `Race_Update` | `Race_DrawMirrorRoad` |
+| `Race_DrawMirrorRoad` | `0x0DA3E` | `Race_DrawRearviewMirror` | - |
+| `Race_ProjectActorSprite` | `0x0DAE2` | `sub_F40C` | `sub_102E4` |
+| `Race_DrawRoadMarkingHud` | `0x0DD84` | `Race_Update` | - |
+| `Race_UpdateCamera` | `0x0DE9E` | `Race_Update` | - |
+| `Race_BuildVScrollInfo` | `0x0E004` | `Race_Update` | - |
+| `Race_BuildHScrollTable` | `0x0E494` | `Race_Update` | - |
+| `Race_UpdateNearestOpponent` | `0x0E5EE` | `Race_Update` | - |
 | `RoadMarking_Draw` | `0x0E75E` | `Race_Update` | `RoadMarking_ClearSpriteTiles`, `RoadMarking_CreateSprite`, `RoadMarking_FindUnprocessedLine`, `RoadMarking_GetMarkingsSizes`, `RoadMarking_SetSpriteGeometry` |
 | `RoadMarking_FindUnprocessedLine` | `0x0E7B0` | `RoadMarking_Draw` | - |
 | `RoadMarking_GetMarkingsSizes` | `0x0E7DA` | `RoadMarking_Draw` | - |
@@ -258,7 +258,7 @@ flowchart LR
 | `Race_FormatDecimal` | `0x0F11C` | `RaceDebug_ShowDistanceTravelled`, `RaceDebug_ShowFrameDelay`, `RaceDebug_ShowPosZ`, `Race_UpdateSpeedDisplay`, `sub_999E` | - |
 | `PiecewiseLinearInterpolation` | `0x0F180` | `Race_Update` | `FillLinearInterpArray` |
 | `FillLinearInterpArray` | `0x0F1AE` | `PiecewiseLinearInterpolation` | - |
-| `sub_F40C` | `0x0F40C` | `Race_Update` | `sub_100D0`, `sub_10256`, `sub_10294`, `sub_108DA`, `sub_15014`, `sub_DAE2`, `sub_F842`, `sub_F90E`, `sub_F9C4`, `sub_FA98`, `sub_FE3A`, `sub_FF7E` |
+| `sub_F40C` | `0x0F40C` | `Race_Update` | `Race_ProjectActorSprite`, `sub_100D0`, `sub_10256`, `sub_10294`, `sub_108DA`, `sub_15014`, `sub_F842`, `sub_F90E`, `sub_F9C4`, `sub_FA98`, `sub_FE3A`, `sub_FF7E` |
 | `sub_F842` | `0x0F842` | `sub_F40C` | `sub_FE3A` |
 | `sub_F90E` | `0x0F90E` | `sub_F40C` | `sub_FE3A` |
 | `sub_F9C4` | `0x0F9C4` | `sub_F40C` | `sub_FE3A` |
@@ -273,7 +273,7 @@ flowchart LR
 | `sub_1022E` | `0x1022E` | `sub_100D0` | - |
 | `sub_10256` | `0x10256` | `sub_F40C` | - |
 | `sub_10294` | `0x10294` | `sub_F40C` | - |
-| `sub_102E4` | `0x102E4` | `sub_DAE2` | - |
+| `sub_102E4` | `0x102E4` | `Race_ProjectActorSprite` | - |
 | `sub_1030A` | `0x1030A` | `sub_100D0` | `sub_100D0`, `sub_10384`, `sub_10762` |
 | `sub_10384` | `0x10384` | `sub_1030A` | `sub_100D0`, `sub_104E6` |
 | `sub_104E6` | `0x104E6` | `sub_10384` | - |

@@ -188,6 +188,29 @@ Buffers: `Intro_TitleScrollTable`/`Intro_TitleScrollSpeed` (+$400 SAT),
 (`x-$100000`), with active/free lists and distance checks; `Race_UpdateSpeedDisplay`
 + `Race_FormatDecimal` produce `ram_FF3046`. See `docs/analysis/race_spawn.md`.
 
+### Camera/HInt/rearview (`race_physics.asm`)
+
+| Address | Name | Size | Meaning |
+|---|---|---|---|
+| `ram_FF14D8` | `ram_FF14D8` | 2 | VDP DMA control word. |
+| `ram_FF14DC` | `ram_FF14DC` | 4 | HInt vertical scroll accumulator. |
+| `ram_FF14E0`/`E4` | `ram_FF14E0/E4` | 4 each | Nearest behind/ahead actor distances. |
+| `ram_FF30EA`/`EE`/`F2`/`F6`/`FA`/`FE` | HInt HScroll layers | 4 each | Sky/road/ground scroll values. |
+| `ram_FF3274` | `ram_FF3274` | 2 | Horizon/VScroll base. |
+| `ram_FFD340` | `ram_FFD340` | 4 | Camera offset subtracted from the player X. |
+| `ram_FF1E54`/`56`/`60`/`64`/`68`/`76`/`7A`/`7E`/`86` | camera/road state | 2/4 each | Camera position, progress, curve accumulators. |
+| `ram_FF36AE`/`B2` | nearest actor indices | 2 each | Ahead/behind actor index (or `$FFFF`). |
+| `ram_FF36B0`/`B4` | engine-audio values | 2 each | Nearest-opponent audio speeds. |
+| `ram_FF1B40` | `ram_FF1B40` | 2 | Nearest/rank count. |
+| `ram_FF33CC` | `ram_FF33CC` | - | Road tile rows for the rearview mirror. |
+| `ram_FF3238` | `ram_FF3238` | - | Road marking widths; `RoadMarking_ram_WidthArray`/`ram_FF3A9C` X. |
+
+`Race_BuildVScrollInfo`/`Race_BuildHScrollTable` produce the per-frame
+`Race_ram_CurrentVScrollInfo`/`CurrentHScrollTable` data for the HInt in `main.asm`;
+`Race_DrawRearviewMirror`/`Race_DrawRoadMarkingHud` draw the mirror/marking in the HUD;
+`Race_UpdateNearestOpponent` produces the nearest-opponent/engine-audio values.
+See `docs/analysis/race_physics.md`.
+
 ### Race results (`race_results.asm`)
 
 | Address | Name | Size | Meaning |

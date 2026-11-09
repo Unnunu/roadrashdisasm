@@ -1093,7 +1093,7 @@ sub_F40C:
                 bpl.w   .loc_F556
                 cmp.w   #$FFF0,d0
                 bmi.w   .loc_F69C
-                bsr.w   sub_DAE2
+                bsr.w   Race_ProjectActorSprite
                 bra.w   .loc_F69C
 
 
@@ -1273,7 +1273,7 @@ sub_F40C:
                 bpl.w   .loc_F758
                 cmp.w   #$FFF0,d0
                 bmi.w   .loc_F838
-                bsr.w   sub_DAE2
+                bsr.w   Race_ProjectActorSprite
                 bra.w   .loc_F838
 .loc_F758:
                 move.w  #0,$A(a0)

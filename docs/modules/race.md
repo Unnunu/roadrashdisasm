@@ -20,7 +20,7 @@ marking/animation, and the race outcome. `top_level.asm` calls `Race_Init`, inst
 |---|---|---|---|
 | `race_core.asm` | `$A4E2-$D277` | Top-level/init/results/actor data | [race_core.md](race_core.md) |
 | `race_hud.asm` | `$D278-$D8F9` | Race HUD | [race_hud.md](race_hud.md) |
-| `race_physics.asm` | `$D8FA-$E731` | DmaWriteVRAM + actor/physics/AI | [race_physics.md](race_physics.md) |
+| `race_physics.asm` | `$D8FA-$E731` | DMA, camera, HInt scroll, rearview/marking, nearest opponent | [race_physics.md](race_physics.md) |
 | `road_marking.asm` | `$E732-$EB33` | Road marking / sprite placement | [road_marking.md](road_marking.md) |
 | `race_ai.asm` | `$EB34-$1685F` | Main gameplay/AI/physics | [race_ai.md](race_ai.md) |
 | `animation.asm` | `$16860-$169AF` | Sprite animation | [animation.md](animation.md) |

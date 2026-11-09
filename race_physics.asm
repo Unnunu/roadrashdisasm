@@ -82,7 +82,15 @@ DmaWriteCRAM:
 ; =============== S U B R O U T I N E =======================================
 ; draw road in rearview mirrors
 
-sub_D9DA:
+; *************************************************
+; Function Race_DrawRearviewMirror
+; Draws the road in the rearview mirror (HUD row 25) from the player position.
+; In:  player A PosX/PosY; ram_FF33CC road rows
+; Out: Race_ram_CurrentHudBuffer mirror rows
+; Clobbers: d0-d2/a0-a2
+; *************************************************
+
+Race_DrawRearviewMirror:
                 movea.l (Global_ram_PalettePtr).l,a2
                 move.l  $78(a2),d1
                 move.w  $7C(a2),d1
@@ -101,7 +109,7 @@ sub_D9DA:
                 subq.w  #1,d1
 .loc_DA14:
                 move.w  #0,d0
-                bsr.w   sub_DA3E
+                bsr.w   Race_DrawMirrorRoad
                 move.w  (RacePlayerA + STRUCT_OFFSET_POSY).l,d0
                 addi.w  #$10,d0
                 ext.l   d0
@@ -111,15 +119,23 @@ sub_D9DA:
                 subq.w  #1,d1
 .loc_DA34:
                 move.w  #$20,d0 ; ' '
-                bsr.w   sub_DA3E
+                bsr.w   Race_DrawMirrorRoad
                 rts
-; End of function sub_D9DA
+; End of function Race_DrawRearviewMirror
 
 
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_DA3E:
+; *************************************************
+; Function Race_DrawMirrorRoad
+; Copies one mirror road strip with palette/priority correction.
+; In:  d0 - HUD x offset; d1 - road row offset; a1 - HUD buffer
+; Out: HUD mirror rows
+; Clobbers: d0-d2/a0/a1
+; *************************************************
+
+Race_DrawMirrorRoad:
                 movea.l (Race_ram_CurrentHudBuffer).l,a1
                 adda.l  #$C80,a1 ; x = 0, y = 25
                 asl.w   #1,d0
@@ -176,13 +192,21 @@ sub_DA3E:
                 adda.l  #$70,a1 ; 'p'
                 dbf     d0,.loc_DACE
                 rts
-; End of function sub_DA3E
+; End of function Race_DrawMirrorRoad
 
 
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_DAE2:
+; *************************************************
+; Function Race_ProjectActorSprite
+; Projects an actor position vs the player progress into sprite Y/X fields.
+; In:  a1 - actor; ram_FF1E68 progress
+; Out: actor/sprite fields; ram_FF1B50 list
+; Clobbers: d0-d2/a0/a3
+; *************************************************
+
+Race_ProjectActorSprite:
                 move.l  4(a1),d2
                 sub.l   (ram_FF1E68).l,d2
                 neg.l   d2
@@ -318,14 +342,14 @@ sub_DAE2:
 
 .locret_DC7E:
                 rts
-; End of function sub_DAE2
+; End of function Race_ProjectActorSprite
 
 
                 dc.b   8
                 dc.b   8
                 dc.b   0
                 dc.b   6
-unk_DC84:
+Race_RoadMarkingDataA:
     dc.l $BBBBBBAB
     dc.l $BABBBABB
     dc.l $BBABBBBA
@@ -506,7 +530,7 @@ unk_DC84:
                 dc.b $AB
                 dc.b $BB
                 dc.b $BB
-unk_DD44:       dc.b $BB
+Race_RoadMarkingDataB:       dc.b $BB
                 dc.b $BB
                 dc.b $BB
                 dc.b $BB
@@ -574,7 +598,15 @@ unk_DD44:       dc.b $BB
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_DD84:
+; *************************************************
+; Function Race_DrawRoadMarkingHud
+; Draws road markings/mirror from the width/position arrays and marking data A/B.
+; In:  ram_FF3238 widths, player progress, ram_FF1B30/2E
+; Out: HUD marking rows/arrays
+; Clobbers: d0-d7/a0-a5
+; *************************************************
+
+Race_DrawRoadMarkingHud:
                 move.w  #$98,d0
                 move.w  (ram_FF1B30).l,d4
                 move.w  (ram_FF1E68).l,d6
@@ -595,10 +627,10 @@ sub_DD84:
                 move.w  (a0)+,d5
                 cmp.w   d5,d0
                 ble.w   .loc_DE22
-                lea     (unk_DC84).l,a4
+                lea     (Race_RoadMarkingDataA).l,a4
                 btst    #0,d6
                 beq.w   .loc_DDEA
-                lea     (unk_DD44).l,a4
+                lea     (Race_RoadMarkingDataB).l,a4
 .loc_DDEA:
                 tst.w   d7
                 bgt.w   .loc_DE36
@@ -613,7 +645,7 @@ sub_DD84:
                 move.l  (a4,d1.w),-(a1)
                 subq.w  #2,a3
                 subq.w  #2,a5
-                cmpa.l  #unk_DC84,a4
+                cmpa.l  #Race_RoadMarkingDataA,a4
                 beq.w   .loc_DE16
                 move.w  #0,(a3)
 .loc_DE16:
@@ -670,13 +702,22 @@ sub_DD84:
                 cmp.w   d5,d0
                 bgt.s   .loc_DE78
                 bra.s   .loc_DE22
-; End of function sub_DD84
+; End of function Race_DrawRoadMarkingHud
 
 
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_DE9E:
+; *************************************************
+; Function Race_UpdateCamera
+; Updates the camera offset/road position and integrates the track curve over the
+; player X movement.
+; In:  player A $68/6E/PosX/PosY/32; Track_CurveBuffer
+; Out: ram_FFD340/ram_FF1E54/56/60/64/68/76/7A/7E/86
+; Clobbers: d0-d4/a0
+; *************************************************
+
+Race_UpdateCamera:
                 btst    #4,(RacePlayerA + STRUCT_OFFSET_68).l
                 beq.w   .loc_DF0A
                 tst.w   (Race_ram_State).l
@@ -771,13 +812,21 @@ sub_DE9E:
                 add.w   d4,(ram_FF1E56).l
 .locret_E002:
                 rts
-; End of function sub_DE9E
+; End of function Race_UpdateCamera
 
 
 ; =============== S U B R O U T I N E =======================================
 ; black screen if commented out
 
-sub_E004:
+; *************************************************
+; Function Race_BuildVScrollInfo
+; Builds the HInt VScroll/raster layer info (sky/horizon/road) for the current frame.
+; In:  Race_ram_CurrentVScrollInfo/Alpha, ram_FF3274
+; Out: VScroll info buffer
+; Clobbers: d0/d1/a0/a1
+; *************************************************
+
+Race_BuildVScrollInfo:
                 movea.l (Race_ram_CurrentVScrollInfo).l,a0
 
                 move.w  #$8AFF,$80(a0) ; H-Int counter : 255
@@ -1091,13 +1140,21 @@ sub_E004:
                 sub.l   d6,(ram_FF30FE).l
                 addi.l  #$10000,(ram_FF14DC).l
                 rts
-; End of function sub_E004
+; End of function Race_BuildVScrollInfo
 
 
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_E494:
+; *************************************************
+; Function Race_BuildHScrollTable
+; Builds the HInt HScroll table from the VScroll/alpha state.
+; In:  Race_ram_CurrentVScrollInfo/CurrentHScrollTable/Alpha
+; Out: HScroll table; ram_FF30EA/EE/F2/F6/FA/FE
+; Clobbers: d0/d1/a0-a3
+; *************************************************
+
+Race_BuildHScrollTable:
                 movea.l (Race_ram_CurrentVScrollInfo).l,a0
                 movea.l (Race_ram_CurrentHScrollTable).l,a1
                 movea.l (Race_ram_CurrentAlpha).l,a2
@@ -1214,13 +1271,21 @@ sub_E494:
                 move.l  d1,(a3)+
                 dbf     d0,.loc_E5E6
                 rts
-; End of function sub_E494
+; End of function Race_BuildHScrollTable
 
 
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_E5EE:
+; *************************************************
+; Function Race_UpdateNearestOpponent
+; Finds the nearest ahead/behind actor and derives the engine-audio values.
+; In:  ram_FF1A08 actor list; player/actor positions
+; Out: ram_FF14E0/E4, ram_FF36AE/B2/B0/B4, ram_FF1B40
+; Clobbers: d0-d4/a0-a4
+; *************************************************
+
+Race_UpdateNearestOpponent:
                 movem.l d0-d3/a0-a4,-(sp)
                 btst    #7,(RacePlayerA + STRUCT_OFFSET_68).l
                 bne.w   .loc_E72C
@@ -1330,5 +1395,5 @@ sub_E5EE:
 .loc_E72C:
                 movem.l (sp)+,d0-d3/a0-a4
                 rts
-; End of function sub_E5EE
+; End of function Race_UpdateNearestOpponent
 

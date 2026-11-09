@@ -711,7 +711,7 @@ Race_LoadHUD:
 
 ; *************************************************
 ; Function Race_LoadRoadImage
-; Loads the road image, builds the pre-scaled road tile rows and calls sub_D9DA.
+; Loads the road image, builds the pre-scaled road tile rows and calls Race_DrawRearviewMirror.
 ; In:  unk_9DDCC
 ; Out: VRAM $F880/$7800/$7900; ram_FF33CC tiles
 ; Clobbers: d0-d6/a0/a1/a3
@@ -818,7 +818,7 @@ Race_LoadRoadImage:
                 move.l  d1,(a0)
                 move.l  d1,(a0)
                 move.l  d1,(a0)
-                jsr     (sub_D9DA).l
+                jsr     (Race_DrawRearviewMirror).l
                 rts
 ; End of function Race_LoadRoadImage
 
@@ -1895,7 +1895,7 @@ Race_Update:
                 jsr     (sub_11CC8).l
                 jsr     (sub_1218C).l
                 jsr     (sub_123A8).l
-                jsr     (sub_E5EE).l
+                jsr     (Race_UpdateNearestOpponent).l
                 jsr     (sub_12EA2).l
                 jsr     (sub_13106).l
                 move.w  (RacePlayerA + STRUCT_OFFSET_POSX_HIGH).l,d0
@@ -1903,7 +1903,7 @@ Race_Update:
                 move.w  d0,(ram_FF3036).l
                 jsr     (sub_1611A).l
 .loc_C15A:
-                jsr     (sub_DE9E).l
+                jsr     (Race_UpdateCamera).l
                 movea.l (Race_ram_CurrentFrameReady).l,a0
                 tst.w   (a0)
                 bne.w   .return
@@ -1937,7 +1937,7 @@ Race_Update:
                 jsr     (PiecewiseLinearInterpolation).l
 
                 jsr     (Road_FillProfileTables).l
-                jsr     (sub_E004).l
+                jsr     (Race_BuildVScrollInfo).l
                 move.w  #0,(ram_FFDE72).l
                 jsr     (sub_FD96).l
                 jsr     (sub_FB1E).l
@@ -1959,7 +1959,7 @@ Race_Update:
                 jsr     (Road_BuildVisibleList).l
 
                 jsr     (sub_14E38).l
-                jsr     (sub_DD84).l
+                jsr     (Race_DrawRoadMarkingHud).l
                 jsr     (sub_EC90).l
 
                 clr.w   (Animation_ram_SpriteIndex).l
@@ -1985,8 +1985,8 @@ Race_Update:
 .loc_C2E0:
                 movea.l (Race_ram_CurrentSpriteSizePtr).l,a0
                 move.w  d0,(a0)
-                jsr     (sub_D9DA).l
-                jsr     (sub_E494).l
+                jsr     (Race_DrawRearviewMirror).l
+                jsr     (Race_BuildHScrollTable).l
                 jsr     (Race_FinishFrame).l
 .return:
                 rts
