@@ -100,6 +100,10 @@ an unreferenced debug/alternate AI path. This needs dynamic confirmation.
 Applied in R3a: `Race_UpdatePlayerAttack` (`sub_162B0`) and
 `Race_ScaleImpactDamage` (`sub_1434A`).
 
+`[dynamic]` Forced dispatcher trace exercised the live handlers: profile `6`
+entered `sub_16624`/`sub_165E0` (action4), profile `8`
+`sub_13004`/`sub_16612`, and profile `9` `sub_166B0`/`sub_16612`.
+
 ## Actor profiles / weapons
 
 `Race_ActorDefinitionTable` (76 x 16 bytes):

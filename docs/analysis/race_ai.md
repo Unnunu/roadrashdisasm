@@ -128,6 +128,11 @@ Action 4 (`a4+$10`, used by `Race_DispatchActorAction`'s final fallback) by prof
   non-player target selected `0x164A2` (action2), setting `NearestActor=a1` and
   `$5A=1` selected `0x16510` (action3), and setting `$69` bit4 selected
   `0x16518` (action4).
+- `[dynamic]` A handler-entry trace with forced speed showed the profile paths in
+  action: profile `6` entered `16624`/`165E0`, profile `8` entered
+  `13004`/`16612`, and profile `9` entered `166B0`/`16612`. This matches the
+  profile/action4 table and confirms that action2/3/4 are live code, not just
+  unreachable table entries.
 - `Race_DispatchActorAction` is entered only after `Race_UpdateActorActions` selects slot+4. In normal demo
   profiles `6/8/9` stay on `sub_1300E`; forcing PlayerA Speed to `$3000` makes the
   dispatcher reachable.
