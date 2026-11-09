@@ -130,6 +130,19 @@ entered `sub_16624`/`sub_165E0` (action4), profile `8`
 This is the positional punch/knockback path. `BikeDamage` remains the crash/impact
 counter updated by the impact helpers above.
 
+### Dynamic test 5 (pair collision, headless)
+
+At `Race_UpdateActorPairCollision` entry the pair X/Y and attacker attack/phase
+bits were forced; at `0x1280A`:
+
+| Case | `$50` attacker | `$52` attacker | `$69` attacker | `$50` defender | `$52` defender |
+|---|---|---|---|---|---|
+| armed | `$0028` | `$0042` | `$91` (bit7 set) | `$0000` | `$0041` |
+| unarmed | `$0019` | `$0033` | `$91` (bit7 set) | `$0000` | `$0032` |
+
+This confirms the armed reach `$28` vs unarmed `$19`, the penetration `$52`, and
+the contact bit7 on the actual pair-collision path. `BikeDamage` still remains 0.
+
 ## Actor profiles / weapons
 
 `Race_ActorDefinitionTable` (76 x 16 bytes):
