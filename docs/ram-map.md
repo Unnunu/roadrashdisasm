@@ -63,7 +63,28 @@ is analyzed:
   `BikeIdPlayerA/B`, `Player`, `PlayerMode`, `NextMessageTimer`,
   `MessageBlinkTimer`, `CurrentMessageId`, `TempString`, `FrameBuffer`,
   `FrameBuffer2` (`$FFC4AC`, size `$E00`), `DemoMode`.
-- `MenuPassword_ram_*` — name/password string pointers and buffers (`$FF041A`…).
+### Password menu (`menu_password.asm`)
+
+| Address | Name | Size | Meaning |
+|---|---|---|---|
+| `$FF041A` | `MenuPassword_ram_StrPlayerNamePtr` | 4 | Pointer to the active name string. |
+| `$FF041E` | `MenuPassword_ram_StrPlayerPasswordPtr` | 4 | Pointer to the active password string. |
+| `$FF0422` | `MenuPassword_ram_CursorY` | 2 | Cursor row (9 name, 15/16 password). |
+| `$FF0424` | `MenuPassword_ram_CursorX` | 2 | Cursor column. |
+| `$FF0426` | `MenuPassword_ram_HoldTimer` | 2 | Hold-repeat delay (30 then 8). |
+| `$FF0428` | `MenuPassword_ram_HeldButtons` | 2 | Held button for repeat. |
+| `$FF042A` | `MenuPassword_ram_StrPlayerAPassword` | `$20` | Player A password string (header + 24 chars). |
+| `$FF044A` | `MenuPassword_ram_StrPlayerBPassword` | `$20` | Player B password string. |
+| `$FF04A4` | `MenuPassword_ram_StrPlayerAName` | `$12` | Player A name string (header + 10 chars). |
+| `$FF04B6` | `MenuPassword_ram_StrPlayerBName` | `$12` | Player B name string. |
+| `$FF05C6` | `MenuPassword_ram_CurrentButtons` | 2 | Buttons being processed. |
+| `$FF067E` | `MenuPassword_StrPasswordStatus` | TODO | Password status message string. |
+
+The player state used by the password system: `Menu_ram_Player` `$FF0508`, levels
+`$FF050C/$FF050E`, money `$FF0518/$FF051C`, progress `$FF0510/$FF0514`, extra bits
+`$FF0522/$FF0524`, places `$FF052E/$FF0538`, opponents `$FF0546/$FF0566`, bike ids
+`$FF0542/$FF0544`.
+
 - `MainMenu_ram_*` — buttons/changed buttons per player, `DemoMode`.
 - `Character_ram_*`, `RaceResults_ram_*`, `HighScore_ram_*`, `Shop_ram_*`,
   `EndLevel_ram_*` — TODO.
