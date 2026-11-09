@@ -53,10 +53,13 @@ returns to the race when the held button is released (or after the message timer
 - The region is now a normal source file in `src/screens/rider_intro_quotes.asm`:
   each record has a decimal `dc.w y,x,height,width` header and one `dc.b` line per
   text row (`width` characters), matching the on-screen row layout.
-- 42 gaps remain between records (44 bytes total): 40 are 1-byte even-address
-  alignment, one is a 4-byte gap at `$1731A-$1731D`, and one is zero-length in the
-  current segmentation. They are preserved as `QuoteGap_*` `dc.b` blocks; the
-  4-byte gap needs a separate explanation.
+- 40 one-byte gaps are handled by `align 2,0` after each record (they are just
+  2-byte alignment).
+- `RaceQuote_172D0` is the exception: the header says `width=22`, but the text was
+  authored as three lines of 23 characters. The source is split at 23 and the three
+  extra spaces are folded into the last line; the renderer uses 22, so the game
+  displays different line breaks than this source. The trailing `$00` is kept as
+  `QuoteGap_1731D`. This is an original authoring bug, preserved byte-exactly.
 - The 11 unique image pointers are `$AF902-$BE628` (ROM tail after the current
   `$7EA65` build coverage), so the portraits are not part of the current image yet.
 
