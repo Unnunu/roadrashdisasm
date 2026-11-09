@@ -40,7 +40,10 @@ placeholder until the visual/weapon mapping is confirmed).
 | `$6C` | attack phase (0..3) |
 | `$6D` | attack timing/countdown |
 | `$5A` | attack/hit cooldown |
-| `$4A` | attack/collision range |
+| `$4A` | attack/collision X extent |
+| `$4C`/`$4E` | side/Y extents from `Race_GetCollisionExtent` |
+| `$50` | attack reach/knockback value (armed `$28`, unarmed `$19`, defender `$1A`) |
+| `$52` | overlap/penetration amount |
 | `ram_FF1B22` | player attack sequence active |
 | `ram_FF1B24` | AI attack/steer input bits (writer unknown) |
 | `ram_FF1A68` | current actor graphics/combat record pointer |
@@ -100,9 +103,32 @@ an unreferenced debug/alternate AI path. This needs dynamic confirmation.
 Applied in R3a: `Race_UpdatePlayerAttack` (`sub_162B0`) and
 `Race_ScaleImpactDamage` (`sub_1434A`).
 
+Applied in R3b: `Race_UpdateActorPairCollision` (`sub_124E2`),
+`Race_GetCollisionExtent` (`sub_12A88`), `Race_GetActorCollisionExtent`
+(`sub_12A9C`), `Race_GetStaticCollisionExtent` (`sub_12AF8`),
+`Race_GetAttackerReach` (`sub_12B0C`), `Race_GetDefenderReach` (`sub_12B24`).
+
 `[dynamic]` Forced dispatcher trace exercised the live handlers: profile `6`
 entered `sub_16624`/`sub_165E0` (action4), profile `8`
 `sub_13004`/`sub_16612`, and profile `9` `sub_166B0`/`sub_16612`.
+
+## Pair collision / knockback
+
+`Race_UpdateActorPairCollision` (`0x124E2`) is the actor-pair collision routine, not the single-actor
+`Race_UpdateCollision`:
+
+- previous X (`$1E`) chooses ahead/behind and sets `$69` bit0;
+- `$1A` Y chooses above/below and sets `$69` bit1;
+- `$4A/$4C/$4E` extents come from `Race_GetCollisionExtent` (`$4A` uses the `unk_12B7C` table
+  for normal actors; static actors use `$37`/`$60`);
+- if the attacker has `$69` bit4 and `$6C == 1`, the matching side/low bits select
+  `Race_GetAttackerReach`: **armed `$6B` bit1 -> `$28`, unarmed -> `$19`**; the defender path
+  `Race_GetDefenderReach` returns `$1A`;
+- the result goes to `$50`, `$52` gets the overlap, and `$69` bit7 marks contact;
+  no `BikeDamage` is added here.
+
+This is the positional punch/knockback path. `BikeDamage` remains the crash/impact
+counter updated by the impact helpers above.
 
 ## Actor profiles / weapons
 

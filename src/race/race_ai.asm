@@ -1780,10 +1780,10 @@ sub_11CC8:
                 move.w  8(a1),d1
                 move.w  $C(a1),d2
                 move.w  #0,d3
-                bsr.w   sub_12A9C
+                bsr.w   Race_GetActorCollisionExtent
                 move.w  d0,$4C(a1)
                 move.w  #1,d3
-                bsr.w   sub_12A9C
+                bsr.w   Race_GetActorCollisionExtent
                 move.w  d0,$4E(a1)
                 bclr    #4,$68(a1)
                 tst.b   $6E(a1)
@@ -1803,7 +1803,7 @@ sub_11CC8:
                 beq.w   .loc_11E8C
                 btst    #6,$68(a2)
                 beq.s   .loc_11D44
-                bsr.w   sub_124E2
+                bsr.w   Race_UpdateActorPairCollision
                 btst    #4,$68(a1)
                 bne.w   .loc_11D92
                 cmpa.l  #ram_FF1F2A,a2
@@ -1815,7 +1815,7 @@ sub_11CC8:
                 asl.w   #2,d0
                 lea     (unk_258AE).l,a3
                 movea.l (a3,d0.w),a2
-                bsr.w   sub_124E2
+                bsr.w   Race_UpdateActorPairCollision
                 btst    #4,$68(a1)
                 beq.s   .loc_11D44
 
@@ -1905,7 +1905,7 @@ sub_11CC8:
                 beq.w   .loc_11EF4
                 cmpi.w  #$FFFF,$56(a2)
                 bne.s   .loc_11EAC
-                bsr.w   sub_124E2
+                bsr.w   Race_UpdateActorPairCollision
                 btst    #4,$68(a1)
                 beq.s   .loc_11EAC
                 bsr.w   sub_14486
@@ -1925,7 +1925,7 @@ sub_11CC8:
                 lea     (ram_FF2FAA).l,a2
                 btst    #6,$68(a2)
                 beq.w   .loc_11F58
-                bsr.w   sub_124E2
+                bsr.w   Race_UpdateActorPairCollision
                 btst    #4,$68(a1)
                 beq.w   .loc_11F58
                 bsr.w   sub_14486
@@ -2194,7 +2194,7 @@ sub_1218C:
                 move.w  #1,(ram_FF1768).l
 
 .loc_121FE:
-                bsr.w   sub_124E2
+                bsr.w   Race_UpdateActorPairCollision
                 btst    #4,$68(a1)
                 bne.w   .loc_12234
                 tst.b   $6E(a2)
@@ -2206,7 +2206,7 @@ sub_1218C:
                 ext.w   d0
                 asl.w   #2,d0
                 movea.l (a3,d0.w),a2
-                bsr.w   sub_124E2
+                bsr.w   Race_UpdateActorPairCollision
                 btst    #4,$68(a1)
                 beq.s   .loc_121DA
 
@@ -2248,7 +2248,7 @@ sub_1218C:
                 lea     (ram_FF2FAA).l,a2
                 btst    #6,$68(a2)
                 beq.w   .loc_122FA
-                bsr.w   sub_124E2
+                bsr.w   Race_UpdateActorPairCollision
                 btst    #4,$68(a1)
                 beq.w   .loc_122FA
                 move.w  4(a2),d0
@@ -2279,7 +2279,7 @@ sub_1218C:
                 beq.w   .loc_12384
                 cmpi.w  #$FFFF,$56(a2)
                 bne.s   .loc_1231A
-                bsr.w   sub_124E2
+                bsr.w   Race_UpdateActorPairCollision
                 btst    #4,$68(a1)
                 beq.s   .loc_1231A
                 move.w  4(a2),d0
@@ -2334,7 +2334,7 @@ sub_123A8:
                 move.l  #$6000,(ram_FF3038).l
                 move.w  #$37,(ram_FF303C).l ; '7'
                 move.w  #$40,(ram_FF303E).l ; '@'
-                bsr.w   sub_124E2
+                bsr.w   Race_UpdateActorPairCollision
                 btst    #4,$68(a1)
                 beq.w   .locret_12412
                 move.l  4(a1),d0
@@ -2433,7 +2433,7 @@ sub_12414:
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_124E2:
+Race_UpdateActorPairCollision:
                 move.w  #0,(ram_FF1766).l
                 move.w  #0,(ram_FF1B16).l
                 move.l  $1E(a1),d0
@@ -2466,7 +2466,7 @@ sub_124E2:
                 move.w  #0,d3
                 move.b  $71(a1),d4
                 move.w  #0,$50(a1)
-                bsr.w   sub_12A88
+                bsr.w   Race_GetCollisionExtent
                 move.w  d0,$4A(a1)
                 move.w  d0,$4C(a1)
                 cmpa.l  #RacePlayerB,a2
@@ -2479,13 +2479,13 @@ sub_124E2:
                 beq.w   .loc_125B0
                 btst    #6,$69(a1)
                 bne.w   .loc_125A8
-                bsr.w   sub_12B0C
+                bsr.w   Race_GetAttackerReach
                 move.w  d0,$50(a1)
                 bra.w   .loc_125B0
 
 
 .loc_125A8:
-                bsr.w   sub_12B24
+                bsr.w   Race_GetDefenderReach
                 move.w  d0,$50(a1)
 
 .loc_125B0:
@@ -2494,7 +2494,7 @@ sub_124E2:
                 move.w  #1,d3
                 move.b  $71(a2),d4
                 move.w  #0,$50(a2)
-                bsr.w   sub_12A88
+                bsr.w   Race_GetCollisionExtent
                 move.w  d0,$4A(a2)
                 move.w  d0,$4E(a2)
                 btst    #4,$69(a2)
@@ -2505,13 +2505,13 @@ sub_124E2:
                 bne.w   .loc_1260E
                 btst    #6,$69(a2)
                 bne.w   .loc_12606
-                bsr.w   sub_12B0C
+                bsr.w   Race_GetAttackerReach
                 move.w  d0,$50(a2)
                 bra.w   .loc_1260E
 
 
 .loc_12606:
-                bsr.w   sub_12B24
+                bsr.w   Race_GetDefenderReach
                 move.w  d0,$50(a2)
 
 .loc_1260E:
@@ -2565,7 +2565,7 @@ sub_124E2:
                 move.w  #1,d3
                 move.b  $71(a1),d4
                 move.w  #0,$50(a1)
-                bsr.w   sub_12A88
+                bsr.w   Race_GetCollisionExtent
                 move.w  d0,$4A(a1)
                 move.w  d0,$4E(a1)
                 cmpa.l  #RacePlayerB,a2
@@ -2578,13 +2578,13 @@ sub_124E2:
                 bne.w   .loc_12706
                 btst    #6,$69(a1)
                 bne.w   .loc_126FE
-                bsr.w   sub_12B0C
+                bsr.w   Race_GetAttackerReach
                 move.w  d0,$50(a1)
                 bra.w   .loc_12706
 
 
 .loc_126FE:
-                bsr.w   sub_12B24
+                bsr.w   Race_GetDefenderReach
                 move.w  d0,$50(a1)
 
 .loc_12706:
@@ -2593,7 +2593,7 @@ sub_124E2:
                 move.w  #0,d3
                 move.b  $71(a2),d4
                 move.w  #0,$50(a2)
-                bsr.w   sub_12A88
+                bsr.w   Race_GetCollisionExtent
                 move.w  d0,$4A(a2)
                 move.w  d0,$4C(a2)
                 btst    #4,$69(a2)
@@ -2604,13 +2604,13 @@ sub_124E2:
                 beq.w   .loc_12764
                 btst    #6,$69(a2)
                 bne.w   .loc_1275C
-                bsr.w   sub_12B0C
+                bsr.w   Race_GetAttackerReach
                 move.w  d0,$50(a2)
                 bra.w   .loc_12764
 
 
 .loc_1275C:
-                bsr.w   sub_12B24
+                bsr.w   Race_GetDefenderReach
                 move.w  d0,$50(a2)
 
 .loc_12764:
@@ -2670,7 +2670,7 @@ sub_124E2:
                 bclr    #7,$69(a1)
                 bclr    #7,$69(a2)
                 rts
-; End of function sub_124E2
+; End of function Race_UpdateActorPairCollision
 
 
 ; =============== S U B R O U T I N E =======================================
@@ -2922,23 +2922,23 @@ sub_12974:
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_12A88:
+Race_GetCollisionExtent:
                 cmp.b   #$10,d4
                 bpl.w   .loc_12A96
-                bsr.w   sub_12A9C
+                bsr.w   Race_GetActorCollisionExtent
                 rts
 
 
 .loc_12A96:
-                bsr.w   sub_12AF8
+                bsr.w   Race_GetStaticCollisionExtent
                 rts
-; End of function sub_12A88
+; End of function Race_GetCollisionExtent
 
 
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_12A9C:
+Race_GetActorCollisionExtent:
                 movem.l d1-d3,-(sp)
                 lea     (unk_12B7C).l,a6
                 asr.w   #3,d2
@@ -2977,13 +2977,13 @@ sub_12A9C:
                 ext.w   d0
                 movem.l (sp)+,d1-d3
                 rts
-; End of function sub_12A9C
+; End of function Race_GetActorCollisionExtent
 
 
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_12AF8:
+Race_GetStaticCollisionExtent:
                 cmp.b   #$12,d4
                 bpl.w   .loc_12B06
                 move.w  #$37,d0 ; '7'
@@ -2993,13 +2993,13 @@ sub_12AF8:
 .loc_12B06:
                 move.w  #$60,d0 ; '`'
                 rts
-; End of function sub_12AF8
+; End of function Race_GetStaticCollisionExtent
 
 
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_12B0C:
+Race_GetAttackerReach:
                 btst    #1,$6B(a1)
                 beq.w   .loc_12B1E
                 move.w  #$28,d0 ; '('
@@ -3011,16 +3011,16 @@ sub_12B0C:
 
 .locret_12B22:
                 rts
-; End of function sub_12B0C
+; End of function Race_GetAttackerReach
 
 
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_12B24:
+Race_GetDefenderReach:
                 move.w  #$1A,d0
                 rts
-; End of function sub_12B24
+; End of function Race_GetDefenderReach
 
 
                 dc.b $48 ; H

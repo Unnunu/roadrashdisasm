@@ -303,21 +303,21 @@ flowchart LR
 | `sub_11940` | `0x11940` | `Race_HandleInputOnFoot`, `Race_UpdateActorAI`, `Race_UpdateStaticActors`, `sub_1180C` | `sub_115C6` |
 | `sub_11B7A` | `0x11B7A` | `Race_UpdateActorAI` | `Race_ScaleImpactDamage`, `sub_11906`, `sub_15538` |
 | `sub_11C44` | `0x11C44` | `Race_Update` | - |
-| `sub_11CC8` | `0x11CC8` | `Race_Update` | `sub_11906`, `sub_12070`, `sub_12414`, `sub_124E2`, `sub_12A9C`, `sub_1438E`, `sub_14486`, `sub_1487C` |
+| `sub_11CC8` | `0x11CC8` | `Race_Update` | `Race_GetActorCollisionExtent`, `Race_UpdateActorPairCollision`, `sub_11906`, `sub_12070`, `sub_12414`, `sub_1438E`, `sub_14486`, `sub_1487C` |
 | `sub_12070` | `0x12070` | `sub_11CC8`, `sub_1218C` | - |
-| `sub_1218C` | `0x1218C` | `Race_Update` | `sub_11906`, `sub_12070`, `sub_124E2`, `sub_1438E`, `sub_14486`, `sub_1487C` |
-| `sub_123A8` | `0x123A8` | `Race_Update` | `sub_124E2` |
+| `sub_1218C` | `0x1218C` | `Race_Update` | `Race_UpdateActorPairCollision`, `sub_11906`, `sub_12070`, `sub_1438E`, `sub_14486`, `sub_1487C` |
+| `sub_123A8` | `0x123A8` | `Race_Update` | `Race_UpdateActorPairCollision` |
 | `sub_12414` | `0x12414` | `sub_11CC8` | - |
-| `sub_124E2` | `0x124E2` | `sub_11CC8`, `sub_1218C`, `sub_123A8` | `sub_12A88`, `sub_12B0C`, `sub_12B24` |
+| `Race_UpdateActorPairCollision` | `0x124E2` | `sub_11CC8`, `sub_1218C`, `sub_123A8` | `Race_GetAttackerReach`, `Race_GetCollisionExtent`, `Race_GetDefenderReach` |
 | `sub_1281E` | `0x1281E` | `Race_Update` | - |
 | `Race_UpdateStaticActors` | `0x12868` | `Race_Update` | `sub_113A4`, `sub_116E2`, `sub_11940`, `sub_12C9A`, `sub_137E4`, `sub_13DE0` |
 | `sub_128E0` | `0x128E0` | `Race_Update` | `Rand_GetWord` |
 | `sub_12974` | `0x12974` | `Race_Update` | - |
-| `sub_12A88` | `0x12A88` | `sub_124E2` | `sub_12A9C`, `sub_12AF8` |
-| `sub_12A9C` | `0x12A9C` | `sub_11CC8`, `sub_12A88` | - |
-| `sub_12AF8` | `0x12AF8` | `sub_12A88` | - |
-| `sub_12B0C` | `0x12B0C` | `sub_124E2` | - |
-| `sub_12B24` | `0x12B24` | `sub_124E2` | - |
+| `Race_GetCollisionExtent` | `0x12A88` | `Race_UpdateActorPairCollision` | `Race_GetActorCollisionExtent`, `Race_GetStaticCollisionExtent` |
+| `Race_GetActorCollisionExtent` | `0x12A9C` | `Race_GetCollisionExtent`, `sub_11CC8` | - |
+| `Race_GetStaticCollisionExtent` | `0x12AF8` | `Race_GetCollisionExtent` | - |
+| `Race_GetAttackerReach` | `0x12B0C` | `Race_UpdateActorPairCollision` | - |
+| `Race_GetDefenderReach` | `0x12B24` | `Race_UpdateActorPairCollision` | - |
 | `sub_12BD2` | `0x12BD2` | `Race_UpdateActorAI`, `sub_1103A` | `sub_11906`, `sub_12CCE`, `sub_15538`, `sub_1555C` |
 | `sub_12C9A` | `0x12C9A` | `Race_UpdateStaticActors` | - |
 | `sub_12CCE` | `0x12CCE` | `sub_12BD2` | - |

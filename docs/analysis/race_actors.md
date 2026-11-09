@@ -180,7 +180,7 @@ lists.
 | `$69` | 2 | steering active | `[dynamic]` forced steering `$04`/`$07` |
 | `$69` | 3 | on-foot direction/stance | `[static]` `Race_HandleInputOnFoot`; medium |
 | `$69` | 4/5/6 | attack active/side/low | `[confirmed]` combat tests |
-| `$69` | 7 | direction/curve state | `[static]` AI `sub_124E2`; TODO |
+| `$69` | 7 | direction/curve state | `[static]` AI `Race_UpdateActorPairCollision`; TODO |
 
 `$FF2FAA` is aliased by `$FF2FAA+$71 = $FF301B`; `Race_CreateActors` writes
 `$12` there, so it is the **third static-like actor slot** (indices `$10/$11` are the
