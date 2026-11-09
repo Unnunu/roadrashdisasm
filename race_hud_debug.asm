@@ -57,13 +57,13 @@ RaceHud_DrawStandings:
 ; *************************************************
 ; Function RaceDebug_ShowDistanceTravelled
 ; Shows the player's POSX_HIGH (formatted by sub_F11C) at HUD cell $1A13.
-; In:  player struct ram_FF1EAA
+; In:  player struct RacePlayerA
 ; Out: Race_ram_CurrentHudBuffer
 ; Clobbers: d0/d1/d2/a0
 ; *************************************************
 
 RaceDebug_ShowDistanceTravelled:
-                move.w  (ram_FF1EAA + STRUCT_OFFSET_POSX_HIGH).l,d0
+                move.w  (RacePlayerA + STRUCT_OFFSET_POSX_HIGH).l,d0
                 jsr     (sub_F11C).l
                 move.w  d1,d0
                 move.w  #$1A13,d1
@@ -77,13 +77,13 @@ RaceDebug_ShowDistanceTravelled:
 ; *************************************************
 ; Function RaceDebug_ShowPosZ
 ; Debug: shows the player POSZ (formatted) at HUD cell $1508.
-; In:  player struct ram_FF1EAA
+; In:  player struct RacePlayerA
 ; Out: Race_ram_CurrentHudBuffer
 ; Clobbers: d0/d1/d2/a0
 ; *************************************************
 
 RaceDebug_ShowPosZ:
-                move.w  (ram_FF1EAA + STRUCT_OFFSET_POSZ).l,d0
+                move.w  (RacePlayerA + STRUCT_OFFSET_POSZ).l,d0
                 jsr     (sub_F11C).l
                 move.w  d1,d0
                 move.w  #$1508,d1
@@ -138,7 +138,7 @@ sub_999E:
 ; Function RaceDebug_ShowState
 ; Debug panel: shows ram_FF1786, NumSprites, ram_FF1B3E, player +$68, POSY, POSZ,
 ; POSX_HIGH and POSX_LOW&$FF00 at fixed HUD cells.
-; In:  player struct ram_FF1EAA, race state
+; In:  player struct RacePlayerA, race state
 ; Out: Race_ram_CurrentHudBuffer
 ; Clobbers: d0/d1/d2/a0
 ; *************************************************
@@ -162,31 +162,31 @@ RaceDebug_ShowState:
                 movea.l (Race_ram_CurrentHudBuffer).l,a0
                 jsr     (RaceHud_WriteDigit4).l
 
-                move.w  (ram_FF1EAA + STRUCT_OFFSET_68).l,d0
+                move.w  (RacePlayerA + STRUCT_OFFSET_68).l,d0
                 move.w  #$1418,d1
                 move.w  #0,d2
                 movea.l (Race_ram_CurrentHudBuffer).l,a0
                 jsr     (RaceHud_WriteDigit4).l
 
-                move.w  (ram_FF1EAA + STRUCT_OFFSET_POSY).l,d0
+                move.w  (RacePlayerA + STRUCT_OFFSET_POSY).l,d0
                 move.w  #$1A08,d1
                 move.w  #0,d2
                 movea.l (Race_ram_CurrentHudBuffer).l,a0
                 jsr     (RaceHud_WriteDigit4).l
 
-                move.w  (ram_FF1EAA + STRUCT_OFFSET_POSZ).l,d0
+                move.w  (RacePlayerA + STRUCT_OFFSET_POSZ).l,d0
                 move.w  #$1A10,d1
                 move.w  #0,d2
                 movea.l (Race_ram_CurrentHudBuffer).l,a0
                 jsr     (RaceHud_WriteDigit4).l
 
-                move.w  (ram_FF1EAA + STRUCT_OFFSET_POSX_HIGH).l,d0
+                move.w  (RacePlayerA + STRUCT_OFFSET_POSX_HIGH).l,d0
                 move.w  #$1A17,d1
                 move.w  #0,d2
                 movea.l (Race_ram_CurrentHudBuffer).l,a0
                 jsr     (RaceHud_WriteDigit4).l
 
-                move.w (ram_FF1EAA + STRUCT_OFFSET_POSX_LOW).l,d0
+                move.w (RacePlayerA + STRUCT_OFFSET_POSX_LOW).l,d0
                 andi.w  #$FF00,d0
                 move.w  #$1A1C,d1
                 move.w  #0,d2
@@ -217,13 +217,13 @@ sub_9A98:
 ; *************************************************
 ; Function RaceHud_DrawGear
 ; Gear indicator: writes player GEAR + $5C1 at HUD cell $1716.
-; In:  player struct ram_FF1EAA
+; In:  player struct RacePlayerA
 ; Out: Race_ram_CurrentHudBuffer
 ; Clobbers: d0/d1/d2/a0
 ; *************************************************
 
 RaceHud_DrawGear:
-                move.w  (ram_FF1EAA + STRUCT_OFFSET_GEAR).l,d0
+                move.w  (RacePlayerA + STRUCT_OFFSET_GEAR).l,d0
                 addi.w  #$5C1,d0
                 move.w  #$1716,d1
                 move.w  #0,d2

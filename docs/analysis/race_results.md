@@ -24,11 +24,11 @@ After a race the top-level flow (`top_level.asm` `0x7E8F4`) runs `sub_EFA4` and
 `Race_ComputeResults` (race outcome/fines), then loops through
 `RaceResults_Init`/`RaceResults_GameTick`. The screen shows one of:
 
-- **Normal results** (`ram_FF04C8 != $FFFF`): "race results" title, the track image,
+- **Normal results** (`Race_EventBuffer != $FFFF`): "race results" title, the track image,
   the top finishers, and the player's row highlighted.
-- **Caught by cops** (`ram_FF04C8 == $FFFF`, `ram_FF1B1A != 0`): a police-officer
+- **Caught by cops** (`Race_EventBuffer == $FFFF`, `Race_CopIndex != 0`): a police-officer
   portrait/quote and the fine, or GAME OVER if the player cannot pay.
-- **Bike repair** (`ram_FF04C8 == $FFFF`, `ram_FF1B1A == 0`): a rider/mechanic
+- **Bike repair** (`Race_EventBuffer == $FFFF`, `Race_CopIndex == 0`): a rider/mechanic
   portrait and the repair cost, or GAME OVER if the player cannot pay.
 
 Start exits (top-level: outcome 4 -> EndLevel screen, otherwise back to the menu);
@@ -40,8 +40,8 @@ A opens the high-score table; C opens the bike shop; B shows the cash/password b
 |---|---|
 | `ram_FF0526`/`ram_FF0528` | Player A/B race outcome; copied to `ram_FF0918`. |
 | `ram_FF0918` | 0 = a course not completed; >4 = a course worse than 4th; 4 = all five courses in 1st-4th (level complete). |
-| `ram_FF04C8` | 16-long race sort/event buffer; first word `$FFFF` = busted or bike destroyed. |
-| `ram_FF1B1A` | Cop/officer index (1..5) when busted; 0 = bike destroyed. |
+| `Race_EventBuffer` | 16-long race sort/event buffer; first word `$FFFF` = busted or bike destroyed. |
+| `Race_CopIndex` | Cop/officer index (1..5) when busted; 0 = bike destroyed. |
 | `ram_FF091A` | Fine/repair amount: cop fine = `PlayerLevel * $14`; repair = 10% of the bike price (`Shop_dPrices`), deducted from money. |
 | `ram_FF1414`/`FF1418`/`FF141A` | Standings string header/text, height, width (built by `race.asm`). |
 | `Menu_ram_PlayerLevel` | Level (1..5) for the fine, repair and congratulations text. |
@@ -67,7 +67,7 @@ index 28 (`unk_52CE`: complete every course in 4th place or better); 4 -> index 
 - Title `unk_7ED66` -> `$9000`, 0x15x2 at (0xA,1), base `$480`.
 - Panel `unk_7EA66` -> `$B000`, 12x14 at (2,5), base `$580`.
 - Select the cop portrait from `RaceResults_CopTablePos` (money >= 0, 5x4 variants) or `RaceResults_CopTableNeg`
-  (money < 0, 5x2), index `ram_FF1B1A-1`, random variant (`&$18` / `&8`).
+  (money < 0, 5x2), index `Race_CopIndex-1`, random variant (`&$18` / `&8`).
 - Same asset format as `rider_intro.asm`: 8-byte interleaved size/header prefix; header
   gives name string, image/nametable/palette offsets. Draw 10x12 at (3,6), name at
   (3,19), quote at (16,y/2) with stride 128.
@@ -149,14 +149,3 @@ contents and the flag logic are parsed statically from `baserom.md` and `race.as
 To confirm visually: finish a non-demo race in the native console and inspect the
 standings/police/repair screens.
 
-## Rename proposals (apply only on request)
-
-| Current | Proposed | Evidence | Confidence |
-|---------|----------|----------|------------|
-| `RaceResults_DrawStandings` | `RaceResults_DrawStandings` | title + track + standings | high |
-| `RaceResults_DrawBusted` | `RaceResults_DrawBusted` | cop table + "Caught by the cops" | high |
-| `RaceResults_DrawRepair` | `RaceResults_DrawRepair` | level table + "bike needs repairs" | high |
-| `unk_19D32` | `RaceResults_LevelTable` | level-indexed portraits | high |
-| `RaceResults_CopTablePos` | `RaceResults_CopTable` | cop-indexed portraits | high |
-| `ram_FF04C8` | `Race_EventBuffer` | 16-long sort/bust buffer | medium |
-| `ram_FF1B1A` | `Race_CopIndex` | busted cop index | medium |

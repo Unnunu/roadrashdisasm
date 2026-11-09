@@ -101,7 +101,6 @@ parameters inside `HorizontalInterrupt`/`Audio_UpdateEngine` are deferred with t
 
 | Current | Proposed | Evidence | Confidence |
 |---------|----------|----------|------------|
-| `Boot_CheckRomChecksum` | `RomChecksum_Verify` | ROM checksum routine | high |
 | `start` | `softReset` | warm-reset entry | medium |
 | `defaults` | `bootDefaults` | packed init table | medium |
 

@@ -91,14 +91,6 @@ Detailed listing: `docs/analysis/uncompress.md`.
 - `[hypothesis]` Streaming is used for race/road data across frames; test: find
   `UncompressStreamStart/9DC2` callers in the gap.
 
-## Rename proposals (apply only on request)
-
-| Current | Proposed | Evidence | Confidence |
-|---------|----------|----------|------------|
-| `UncompressStreamStart` | `UncompressStreamStart` | saves state, starts decode | high |
-| `UncompressStreamContinue` | `UncompressStreamContinue` | restores state, resumes | high |
-| `Uncompress_StateA0`..`$FF13A8` | `Uncompress_State` | decoder state block | high |
-
 ## Experiments performed
 
 | Goal | Setup / breakpoint | Observed | Conclusion |

@@ -230,11 +230,11 @@ Message_BlinkButtonStart:
 
 
 ; *************************************************
-; Function sub_445E
+; Function Message_DrawDirPadVert
 ; Draws the vertical part of the directional-pad icon (4x2 tiles at 3,24).
 ; *************************************************
 
-sub_445E:
+Message_DrawDirPadVert:
                 bsr.w   Message_Clear
                 move.w  (Message_ram_ButtonBlinkCounter).l,d0
                 move.w  (Message_ram_ButtonBlinkPeriod).l,d1
@@ -266,15 +266,15 @@ loc_4486:
                 lea     (Menu_ram_FrameBuffer).l,a1
                 bsr.w   WriteNametableToBuffer
                 rts
-; End of function sub_445E
+; End of function Message_DrawDirPadVert
 
 
 ; *************************************************
-; Function sub_44D6
+; Function Message_DrawDirPadRight
 ; Draws the right half of the directional-pad icon (2x4 tiles at 4,23).
 ; *************************************************
 
-sub_44D6:
+Message_DrawDirPadRight:
                 bsr.w   Message_Clear
                 move.w  (Message_ram_ButtonBlinkCounter).l,d0
                 move.w  (Message_ram_ButtonBlinkPeriod).l,d1
@@ -306,11 +306,11 @@ loc_44FE:
                 lea     (Menu_ram_FrameBuffer).l,a1
                 bsr.w   WriteNametableToBuffer
                 rts
-; End of function sub_44D6
+; End of function Message_DrawDirPadRight
 
 ; *************************************************
 ; Function Message_BlinkDirectionalPad
-; Blinks the directional-pad icon (sub_445E + sub_44D6).
+; Blinks the directional-pad icon (Message_DrawDirPadVert + Message_DrawDirPadRight).
 ; *************************************************
 
 Message_BlinkDirectionalPad:
@@ -406,8 +406,8 @@ Message_MsgArray:
 
     dc.l ram_FF089A,Message_ShowEmpty ; index 59
     dc.l unk_53A6,Message_ShowEmpty
-    dc.l ram_FF07C2,sub_445E
-    dc.l ram_FF082E,sub_445E
+    dc.l ram_FF07C2,Message_DrawDirPadVert
+    dc.l ram_FF082E,Message_DrawDirPadVert
     dc.l Shop_StrBuyNewBike,Message_BlinkButtonC
     dc.l unk_4FFA,Message_BlinkButtonStart
     dc.l unk_4F4A,Message_BlinkButtonA
@@ -457,7 +457,7 @@ StrMusicOff:
     dc.b "                    "
     dc.b "        OFF         "
 
-unk_49E8: ; race-name/tooltip pointers (indexed by track id * 2 bytes)
+Menu_dRaceNameTable: ; race-name/tooltip pointers (indexed by track id * 2 bytes)
     dc.l unk_49FC,unk_4AE8,unk_4AD4,unk_4B40,unk_4BAC
 
 unk_49FC:

@@ -20,18 +20,18 @@
 ## Role & callers
 
 `race.asm` `TrackData_InitLevel` (level start) and `TrackData_DecodeNextChunk` (as the race progresses) call this
-decoder to expand the level's track data into `ram_FFDC58` and scale it by the track/
+decoder to expand the level's track data into `Track_CurveBuffer` and scale it by the track/
 level factor.
 
 - `TrackData_InitLevel`:
   - `Menu_ram_CurrentTrackId*2` -> `off_16AB0` -> `ram_FF1A6C` (per-track factor table
     pointer).
-  - `a2 = RaceTrack_Data2`, `a3 = RaceTrack_Data3`, `a1 = ram_FFDC58`, `d1 = $7F`
+  - `a2 = RaceTrack_Data2`, `a3 = RaceTrack_Data3`, `a1 = Track_CurveBuffer`, `d1 = $7F`
     (128 values) -> `TrackData_StartDecode`.
   - Then scale the first channel: factor `d2 = ram_FF1A6C[PlayerLevel-1]`; each signed
-    byte `ram_FFDC58[2*i] * d2 / $10000` (mulu/swap with sign), 128 entries.
+    byte `Track_CurveBuffer[2*i] * d2 / $10000` (mulu/swap with sign), 128 entries.
 - `TrackData_DecodeNextChunk` (called from `top_level.asm` when the race progress crosses a chunk):
-  chunk `(d0+1)&3`, destination `ram_FFDC58 + chunk*$80`, `d1=$3F` (64 values) ->
+  chunk `(d0+1)&3`, destination `Track_CurveBuffer + chunk*$80`, `d1=$3F` (64 values) ->
   `TrackData_DecodeChunk`; scale the 64 first-channel entries the same way.
 
 ## Stream format
@@ -83,7 +83,7 @@ lengths; the data streams are bit-packed in the ROM gap.
 
 ## Output buffer
 
-`ram_FFDC58` (`$FFDC58`), 4 chunks of `$80` bytes (the initial call fills two chunks,
+`Track_CurveBuffer` (`$FFDC58`), 4 chunks of `$80` bytes (the initial call fills two chunks,
 the per-progress calls fill the next 64-entry chunks). The first channel byte is
 scaled by the track/level factor; the second channel byte is left unscaled by the race
 caller. The exact meaning of the two channels (e.g. curve/height vs. a second
@@ -103,9 +103,5 @@ derivative/flag) is **TODO**; the first channel is the signed value scaled per l
 
 | Current | Proposed | Evidence | Confidence |
 |---------|----------|----------|------------|
-| `TrackData_StartDecode` | `TrackData_StartDecode` | initializes streams/output | high |
-| `TrackData_DecodeChunk` | `TrackData_DecodeChunk` | per-call budget, both channels | high |
-| `TrackData_DecodeChannel1`/`TrackData_DecodeChannel2` | `TrackData_DecodeChannel1/2` | two interleaved outputs | high |
-| `TrackData_BitMasks`/`A08C`/`A094`/`A0CC` | `TrackData_BitMasks/ShiftTables` | bit extraction | high |
-| `ram_FFDC58` | `Track_CurveBuffer` | decoded/scaled track data | medium |
 | `RaceTrack_Data2/3` | `Track_DataStream1/2` | decoder sources | medium |
+

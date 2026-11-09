@@ -92,9 +92,6 @@ Detailed listing, table parse and layout: `docs/analysis/rider_intro.md`.
 
 | Current | Proposed | Evidence | Confidence |
 |---------|----------|----------|------------|
-| `RiderIntro_Init` | `RiderIntro_Init` | pre-race opponent intro | high |
-| `RiderIntro_GameTick` | `RiderIntro_GameTick` | same | high |
-| `RiderIntro_RecordTable` | `RiderIntro_RecordTable` | [level][track][variant] records | high |
 | `unk_AF902` | `RiderIntro_NatashaImage` | parsed name | medium |
 | `unk_B1506` | `RiderIntro_NatashaBike` | conditional overlay | low |
 

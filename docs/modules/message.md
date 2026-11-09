@@ -21,7 +21,7 @@ descriptions).
 | `Message_ShowEmpty` | `0x4226` | `Menu_ShowMessage` | Fill the message field with spaces. |
 | `Message_Clear` | `0x426A` | blink functions | Fill the field with the black/default tile. |
 | `Message_BlinkButtonA/B/AB/C/Start` | `0x42AA`… | `Menu_ShowMessage` | Blink and draw the corresponding gamepad button tiles. |
-| `Message_BlinkDirectionalPad` | `0x454E` | `Menu_ShowMessage` | Blink and draw the dpad icon (`sub_445E`+`sub_44D6`). |
+| `Message_BlinkDirectionalPad` | `0x454E` | `Menu_ShowMessage` | Blink and draw the dpad icon (`Message_DrawDirPadVert`+`Message_DrawDirPadRight`). |
 | `Message_MsgArray` | `0x457E` | `Menu_ShowMessage` | 8-byte entries: text pointer + show function. |
 
 ## Message field / VDP context
@@ -57,7 +57,7 @@ frames / off 32. `Message_ram_ButtonBlinkCounter` ($FF05E6) and
   `StrPressCToSelectOtherPlayer` `0x4800`, `StrUseDirPadToMoveCursor` `0x4844`,
   `StrOnePlayerModeSelected` `0x4888`, `StrTwoPlayerModeSelected` `0x48F4`,
   `StrMusicOn` `0x4960`, `StrMusicOff` `0x49A4`.
-- `unk_49E8` race-name/tooltip pointers (used by `sub_3B56` in `menu_main`).
+- `Menu_dRaceNameTable` race-name/tooltip pointers (used by `Menu_BuildRaceTooltip` in `menu_main`).
 - `unk_4C18` demo high-score table (used by `intro.asm`).
 - `unk_4CA4`…`unk_4DDC` main-menu tooltips, `unk_4E20` ".. password invalid ..",
   `unk_4E78`/`unk_4EE4`/`word_4EEE` password labels, `unk_4F4A`…`unk_5668`
@@ -73,15 +73,8 @@ frames / off 32. `Message_ram_ButtonBlinkCounter` ($FF05E6) and
 
 ## Hypotheses / open questions
 
-- `[hypothesis]` `unk_49E8`/`unk_25EC0` form the race-name + distance/record tooltip.
+- `[hypothesis]` `Menu_dRaceNameTable`/`unk_25EC0` form the race-name + distance/record tooltip.
 - `[ ]` Confirm the dpad icon layout and blink cadence visually.
 - `[ ]` Document the shop/high-score tables with those modules.
 - `[ ]` Dynamic checks on password/shop screens.
 
-## Rename proposals (apply only on request)
-
-| Current | Proposed | Evidence | Confidence |
-|---------|----------|----------|------------|
-| `sub_445E` | `Message_DrawDirPadVert` | vertical dpad tiles | medium |
-| `sub_44D6` | `Message_DrawDirPadRight` | right dpad tiles | medium |
-| `unk_49E8` | `Menu_dRaceNameTable` | 5 race-name pointers | high |

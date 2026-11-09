@@ -28,7 +28,7 @@ open the shop (C), or inspect the cash/password (B).
 
 1. `Init`: set timers; copy `ram_FF0526/28` -> `ram_FF0918`; choose message group
    21/28/35; VDP setup; background/gamepad/font; choose layout:
-   `RaceResults_DrawStandings` if `ram_FF04C8 != $FFFF`, else cops (`ram_FF1B1A != 0`) or repair.
+   `RaceResults_DrawStandings` if `Race_EventBuffer != $FFFF`, else cops (`Race_CopIndex != 0`) or repair.
    DMA; fill the cash/password box; patch the congratulations level; audio.
 2. `GameTick`: DMA; Start held exits; A -> high score, C -> shop, B -> show
    cash/password for 25 s; advance the message every 300 frames and loop at the group
@@ -38,8 +38,8 @@ open the shop (C), or inspect the cash/password (B).
 
 - `ram_FF0526/28` per-player outcome -> `ram_FF0918`: 0 = course not completed, >4 =
   4th place not reached, 4 = level complete (EndLevel).
-- `ram_FF04C8` 16-long event/sort buffer; first word `$FFFF` = busted/destroyed.
-- `ram_FF1B1A` cop index (1..5) or 0 = bike destroyed; `ram_FF091A` fine/repair.
+- `Race_EventBuffer` 16-long event/sort buffer; first word `$FFFF` = busted/destroyed.
+- `Race_CopIndex` cop index (1..5) or 0 = bike destroyed; `ram_FF091A` fine/repair.
 - `ram_FF1414/18/1A` standings string header/text, height, width.
 - `ram_FF0910` next-screen pointer (HighScore/Shop/RaceResults); `ram_FF0914` set but
   unread; `Menu_ram_PlayerLevel` for fine/repair/congratulations.
@@ -95,18 +95,6 @@ Detailed listing and table parse: `docs/analysis/race_results.md`.
   tied to the bust index/level. Test: finish a non-demo race busted/broken and inspect.
 - `[hypothesis]` The `$19D32`/`$19E22` names are the repair/cop characters; the images
   are shared with the pre-race intro. Test: render the records.
-
-## Rename proposals (apply only on request)
-
-| Current | Proposed | Evidence | Confidence |
-|---------|----------|----------|------------|
-| `RaceResults_DrawStandings` | `RaceResults_DrawStandings` | title + track + standings | high |
-| `RaceResults_DrawBusted` | `RaceResults_DrawBusted` | cop table + "Caught by the cops" | high |
-| `RaceResults_DrawRepair` | `RaceResults_DrawRepair` | level table + repair text | high |
-| `unk_19D32` | `RaceResults_LevelTable` | level-indexed portraits | high |
-| `RaceResults_CopTablePos` | `RaceResults_CopTable` | cop-indexed portraits | high |
-| `ram_FF04C8` | `Race_EventBuffer` | 16-long sort/bust buffer | medium |
-| `ram_FF1B1A` | `Race_CopIndex` | busted cop index | medium |
 
 ## Experiments performed
 

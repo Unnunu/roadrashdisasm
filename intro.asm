@@ -89,11 +89,11 @@ Intro_Init:
                 lea     (Intro_ram_ImageBuffer).l,a0
                 jsr     (WriteToVRAM).l
 ; load first string
-                movea.l (Intro_dStringTable).l,a0
+                movea.l (Intro_dCreditStringTable).l,a0
                 lea     (Intro_ram_ImageBuffer).l,a1
                 jsr     (EncodeString).l
 ; print string
-                movea.l (Intro_dStringTable).l,a0
+                movea.l (Intro_dCreditStringTable).l,a0
                 move.w  6(a0),d0 ; width
                 move.w  4(a0),d1 ; height
                 move.w  2(a0),d2 ; x
@@ -186,8 +186,8 @@ Intro_Init:
                 move.w  #1,(Menu_ram_PlayerLevel).l
                 move.w  #0,(ram_FF0520).l
                 move.w  #0,(Menu_ram_Player).l
-                bsr.w   sub_1A2C
-                bsr.w   sub_1B48
+                bsr.w   Intro_InitPlayerA
+                bsr.w   Intro_InitPlayerB
                 move.w  #$3F,(Message_ram_ButtonBlinkPeriod).l
                 jsr     (Rand_Init).l
                 jsr     (sub_16088).l
@@ -196,10 +196,10 @@ Intro_Init:
 ; End of function Intro_Init
 
 ; *************************************************
-; Function sub_1A2C
+; Function Intro_InitPlayerA
 ; *************************************************
 
-sub_1A2C:
+Intro_InitPlayerA:
                 move.w  #(20*5),(HighScore_ram_PlayerATableOffset).l
                 cmpi.w  #(20*5),(HighScore_ram_PlayerBTableOffset).l
                 bne.w   .loc_1A48
@@ -258,13 +258,13 @@ sub_1A2C:
                 move.w  #$D,(a0)+
                 move.w  #$E,(a0)+
                 rts
-; End of function sub_1A2C
+; End of function Intro_InitPlayerA
 
 ; *************************************************
-; Function sub_1B48
+; Function Intro_InitPlayerB
 ; *************************************************
 
-sub_1B48:
+Intro_InitPlayerB:
                 move.w  #(20*5),(HighScore_ram_PlayerBTableOffset).l
                 cmpi.w  #(20*5),(HighScore_ram_PlayerATableOffset).l
                 bne.w   .loc_1B64
@@ -324,7 +324,7 @@ sub_1B48:
                 move.w  #$D,(a0)+
                 move.w  #$E,(a0)+
                 rts
-; End of function sub_1B48
+; End of function Intro_InitPlayerB
 
 ; *************************************************
 ; Function Intro_GameTick
@@ -361,7 +361,7 @@ Intro_GameTick:
                 bpl.w   .updateScroll ; jump if text doesn't change
                 addq.w  #4,(Intro_ram_CurrentStringOffset).l
                 move.w  (Intro_ram_CurrentStringOffset).l,d0
-                lea     (Intro_dStringTable).l,a0
+                lea     (Intro_dCreditStringTable).l,a0
                 movea.l (a0,d0.w),a0 ; get String
                 cmpa.l  #$FFFFFFFF,a0 ; last entry is reached
                 beq.w   .endStage
@@ -369,7 +369,7 @@ Intro_GameTick:
                 jsr     (EncodeString).l
 ; write next text
                 move.w  (Intro_ram_CurrentStringOffset).l,d0
-                lea     (Intro_dStringTable).l,a0
+                lea     (Intro_dCreditStringTable).l,a0
                 movea.l (a0,d0.w),a0
                 move.w  6(a0),d0 ; width
                 move.w  4(a0),d1 ; height
@@ -445,7 +445,7 @@ Intro_GameTick:
                 bra.s   .end
 ; End of function Intro_GameTick
 
-Intro_dStringTable:
+Intro_dCreditStringTable:
                 dc.l Intro_String1
                 dc.l Intro_String2
                 dc.l Intro_String3

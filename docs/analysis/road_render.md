@@ -149,15 +149,3 @@ rendering each object and restores them on overflow.
 - TODO: exact shape-byte format, the `$C0/$200` constants and the interpolation;
   map the 16 demo objects to their race roles (player/opponents/props).
 
-## Rename proposals (apply only on request)
-
-| Current | Proposed | Evidence | Confidence |
-|---------|----------|----------|------------|
-| `Road_DrawObjects` | `Road_DrawObjects` | visible-list renderer from race.asm | high |
-| `Road_DrawObject` | `Road_DrawObject` | one 0x14-byte object record | high |
-| `Road_DrawStrip` | `Road_DrawStrip` | road strip/tile + sprite chain | high |
-| `Road_WriteTileColumns` | `Road_WriteTiles` | tile columns | high |
-| `Road_ClearEdgeTiles` | `Road_ClearEdgeTiles` | clears edge tiles | high |
-| `Road_VisibleObjectList` | `Road_VisibleObjectList` | object index list | medium |
-| `Road_ObjectArray` | `Road_ObjectArray` | 0x14-byte records | medium |
-| `Road_ShapeTable` | `Road_ShapeTable` | shape pointer table | medium |

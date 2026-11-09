@@ -80,14 +80,6 @@ Detailed listing and field hypotheses: `docs/analysis/rider_sprites.md`.
 - `[hypothesis]` `d0/d1` inputs are the animation direction/size from `road_render.asm`. Test:
   analyze `road_render.asm` and break at `$5760` entry.
 
-## Rename proposals (apply only on request)
-
-| Current | Proposed | Evidence | Confidence |
-|---------|----------|----------|------------|
-| `RiderSprites_Build` | `Animation_BuildRiderSprites` | writes SAT chain, called by `8FB4` | medium |
-| `RiderSprites_BuildAlt` | `Animation_BuildRiderSprites_Alt` | wrapper around `RiderSprites_Build` | low |
-| `RiderSprites_StripTable` | `RiderSpriteStripTable` | per-strip SAT adjustments | medium |
-
 ## Experiments performed
 
 | Goal | Setup / breakpoint | Observed | Conclusion |

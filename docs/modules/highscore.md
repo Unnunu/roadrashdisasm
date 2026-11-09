@@ -35,13 +35,13 @@ play A/B/C select high score/results/shop and a release returns to the results.
 
 - `HighScore_ram_Table` (`$FF05EA`): header `(22,16,7,20)` + 7 x 20-char entries; text
   starts at `$FF05F2`; built by `intro.asm` from `unk_4C18`, updated/sorted by
-  `Race_UpdateHighScoreTable` (race.asm) and `sub_1A2C` (intro.asm).
+  `Race_UpdateHighScoreTable` (race.asm) and `Intro_InitPlayerA` (intro.asm).
 - `HighScore_ram_PlayerATableOffset/B` (`$FF052A/$FF052C`): player row offsets (20*5,
   20*6 initially; can move after sorting).
 - `HighScore_ram_CurrentButtons` (`$FF094E`); `MainMenu_ram_DemoMode` (`$FF3692`);
   `ram_FF0910` next-screen pointer; `Menu_ram_CurrentMessageId/NextMessageTimer`.
-- Assets: `unk_A2F5C` title -> `$9000`, `unk_7EB72` badge -> `$B000`,
-  `unk_A2BAA` table font -> `$800`, `unk_A2E68` -> `$1000` (use TODO),
+- Assets: `ImgHighScoreTitle` title -> `$9000`, `ImgHighScoreBadge` badge -> `$B000`,
+  `FontHighScoreTable` table font -> `$800`, `unk_A2E68` -> `$1000` (use TODO),
   `img_Intro_Font` -> `$0`, background -> `$8000`, gamepad -> `$A000`.
 
 ## Coverage matrix
@@ -87,9 +87,6 @@ Detailed listing/table: `docs/analysis/highscore.md`.
 
 | Current | Proposed | Evidence | Confidence |
 |---------|----------|----------|------------|
-| `unk_A2F5C` | `ImgHighScoreTitle` | title image | medium |
-| `unk_7EB72` | `ImgHighScoreBadge` | yellow badge | medium |
-| `unk_A2BAA` | `FontHighScoreTable` | table font at `$800` | medium |
 | `unk_A2E68` | `FontHighScoreExtra` | loaded at `$1000`, use TODO | low |
 
 ## Experiments performed

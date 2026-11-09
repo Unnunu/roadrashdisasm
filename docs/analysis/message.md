@@ -20,8 +20,8 @@
 | `Message_BlinkButtonsAB` | `0x4362` | [x] | [x] | [x] | [x] | [x] | - | analyzed |
 | `Message_BlinkButtonC` | `0x4392` | [x] | [x] | [x] | [x] | [x] | - | analyzed |
 | `Message_BlinkButtonStart` | `0x43F6` | [x] | [x] | [x] | [x] | [x] | - | analyzed |
-| `sub_445E` | `0x445E` | [x] | [x] | [x] | [x] | [x] | - | analyzed |
-| `sub_44D6` | `0x44D6` | [x] | [x] | [x] | [x] | [x] | - | analyzed |
+| `Message_DrawDirPadVert` | `0x445E` | [x] | [x] | [x] | [x] | [x] | - | analyzed |
+| `Message_DrawDirPadRight` | `0x44D6` | [x] | [x] | [x] | [x] | [x] | - | analyzed |
 | `Message_BlinkDirectionalPad` | `0x454E` | [x] | [x] | [x] | [x] | [x] | - | analyzed |
 | `Message_MsgArray` | `0x457E` | [x] | [x] | [x] | - | [x] | - | analyzed |
 
@@ -70,7 +70,7 @@ Entries are 8 bytes: `dc.l text_pointer,show_function`. The index is
 | 48-49 | `unk_4E78` (empty), `StrPressStartToExit` (Start) | | high-score/exit |
 | 50 | end | | |
 | 51-58 | `unk_53FE`..`unk_5668` | `Message_ShowEmpty` | bike descriptions (shop) |
-| 59-66 | `ram_FF089A`, `unk_53A6`, `ram_FF07C2`+`sub_445E`, `ram_FF082E`+`sub_445E`, `Shop_StrBuyNewBike`+C, Start/A/B | | shop tooltips |
+| 59-66 | `ram_FF089A`, `unk_53A6`, `ram_FF07C2`+`Message_DrawDirPadVert`, `ram_FF082E`+`Message_DrawDirPadVert`, `Shop_StrBuyNewBike`+C, Start/A/B | | shop tooltips |
 | 67 | end | | |
 
 The tooltip texts are `dc.w y,x,height,width` + character data (`Str…`); the array also
@@ -89,8 +89,8 @@ Every blink function:
    - B: tiles 5/6 at (11,24), 1×2.
    - C: tiles 7/8 at (12,24), 1×2.
    - Start: tiles 9/$A/$B at (9,23), 3×1.
-   - Directional pad: `sub_445E` (tiles 0/$2FF/$2FF/2/1/$2FF/$2FF/3 at 3,24, width 4,
-     height 2) + `sub_44D6` (tiles $C/$D/$2FF/$2FF/$2FF/$2FF/$E/$F at 4,23, width 2,
+   - Directional pad: `Message_DrawDirPadVert` (tiles 0/$2FF/$2FF/2/1/$2FF/$2FF/3 at 3,24, width 4,
+     height 2) + `Message_DrawDirPadRight` (tiles $C/$D/$2FF/$2FF/$2FF/$2FF/$E/$F at 4,23, width 2,
      height 4), combined by `Message_BlinkDirectionalPad`.
    - `Message_BlinkButtonsAB` = A + B.
 4. The text (if any) is drawn by `Menu_ShowMessage` after the show function.
@@ -111,8 +111,8 @@ The blink period (`Message_ram_ButtonBlinkPeriod`, `$FF05E8`) is set by the scre
   `StrPressCToSelectOtherPlayer` `0x4800`, `StrUseDirPadToMoveCursor` `0x4844`,
   `StrOnePlayerModeSelected` `0x4888`, `StrTwoPlayerModeSelected` `0x48F4`,
   `StrMusicOn` `0x4960`, `StrMusicOff` `0x49A4`.
-- `unk_49E8` (5 race-name/tooltip pointers -> `unk_49FC`, `unk_4AE8` (at `0x4A68`),
-  `unk_4AD4`, `unk_4B40`, `unk_4BAC`); used by `sub_3B56` for the race tooltip.
+- `Menu_dRaceNameTable` (5 race-name/tooltip pointers -> `unk_49FC`, `unk_4AE8` (at `0x4A68`),
+  `unk_4AD4`, `unk_4B40`, `unk_4BAC`); used by `Menu_BuildRaceTooltip` for the race tooltip.
 - `unk_4C18` demo high-score table (used by `Intro_Init`).
 - `unk_4CA4`…`unk_4DDC` main-menu tooltip texts; `unk_4E20` ".. password invalid ..";
   `unk_4E78`, `unk_4EE4`, `word_4EEE` password labels/status; `unk_4F4A`…`unk_5668`
@@ -121,7 +121,7 @@ The blink period (`Message_ram_ButtonBlinkPeriod`, `$FF05E8`) is set by the scre
   used as message text pointers.
 
 Some of these tables belong to the shop/high-score/race modules; their detailed layout
-will be documented with those modules. `unk_49E8`'s label `unk_4AE8` is a legacy name
+will be documented with those modules. `Menu_dRaceNameTable`'s label `unk_4AE8` is a legacy name
 (the string is at `0x4A68`).
 
 ## Verified facts
@@ -138,16 +138,9 @@ will be documented with those modules. `unk_49E8`'s label `unk_4AE8` is a legacy
 
 ## Hypotheses / open questions
 
-- `[hypothesis]` The exact `unk_49E8` race-name strings and `unk_25EC0` value table feed
-  the race distance/record tooltip (`sub_3B56`).
+- `[hypothesis]` The exact `Menu_dRaceNameTable` race-name strings and `unk_25EC0` value table feed
+  the race distance/record tooltip (`Menu_BuildRaceTooltip`).
 - `[ ]` Confirm the dpad icon layout and the blink cadence visually.
 - `[ ]` Document the shop/high-score data tables with those modules.
 - `[ ]` Verify the message rows/blink on the password and shop screens in BlastEm.
 
-## Rename proposals (apply only on request)
-
-| Current | Proposed | Evidence | Confidence |
-|---------|----------|----------|------------|
-| `sub_445E` | `Message_DrawDirPadVert` | vertical dpad tiles | medium |
-| `sub_44D6` | `Message_DrawDirPadRight` | right dpad tiles | medium |
-| `unk_49E8` | `Menu_dRaceNameTable` | 5 race-name pointers | high |

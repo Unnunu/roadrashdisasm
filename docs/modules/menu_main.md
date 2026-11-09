@@ -20,11 +20,11 @@ password screen (C) and to the race (Start release).
 | `MainMenu_GameTick` | `0x3802` | `ram_UpdateFunction` | Per-frame DMA, input, start/demo handling, tooltips. |
 | `MainMenu_HandleInput` | `0x3BE2` | GameTick | Player mode/music/track/password selection. |
 | `WriteNametableToBuffer` | `0x37AA` | this module | Copy a nametable rectangle into a 64-wide buffer. |
-| `WriteNametableToBufferMasked` | `0x37D2` | race cards | Same, but only where the destination equals the mask tile. |
+| `Menu_WriteNametableMasked` | `0x37D2` | race cards | Same, but only where the destination equals the mask tile. |
 | `Menu_DrawPlayerInfo` | `0x39AE` | init/input | Player A/B name + level + selection border. |
 | `Menu_DrawRaceSelection` | `0x3F18` | init/input | Race badge + five race cards. |
 | `Menu_DrawRaceCard` | `0x408E` | race selection | Card tilemap + place text, masked write. |
-| `sub_3B56` | `0x3B56` | input | Race name/distance tooltip string (`Menu_ram_TempString`). |
+| `Menu_BuildRaceTooltip` | `0x3B56` | input | Race name/distance tooltip string (`Menu_ram_TempString`). |
 | `Menu_ShowMessage` | `0x417C` | init/tick | Tooltip text/image with blink. |
 
 ## VDP configuration (`Menu_Init`)
@@ -75,7 +75,7 @@ reg92 $1C   WindowY 28 cells (window covers the screen)
 - `Menu_DrawRaceCard`: copies a 12-wide x6-high card nametable from `Race_ram_ImageBuffer2+$120`,
   writes "1st/2nd/3rd/Nth" (or nothing for place 0), then writes it with the mask
   `$7FF` (only opaque/black tiles are replaced).
-- `sub_3B56`: race name + decimal distance/record from `unk_49E8`/`unk_25EC0`.
+- `Menu_BuildRaceTooltip`: race name + decimal distance/record from `Menu_dRaceNameTable`/`unk_25EC0`.
 - `Menu_ShowMessage`: `Message_MsgArray` text/show-function pointers, blink timer,
   `Message_Clear`/`Message_ShowEmpty`.
 
@@ -97,7 +97,7 @@ reg92 $1C   WindowY 28 cells (window covers the screen)
 
 - `UncompressW`/`UncompressB`, `WriteToVRAM`, `DmaWriteVRAM`,
   `EncodeString`/`WriteNametable`, `WriteNametableToBuffer`, `Menu_ShowMessage`,
-  `Menu_DrawRaceSelection`, `Menu_DrawPlayerInfo`, `sub_2B2E`, `MenuPassword_GameTick`,
+  `Menu_DrawRaceSelection`, `Menu_DrawPlayerInfo`, `MenuPassword_SelectCurrentTrack`, `MenuPassword_GameTick`,
   `Fade_ram_UpdateFunction`, `AudioFunc1/3/4`, `Rand_GetWord`, `sub_160B0/CC`.
 
 ## Hacks / bugs / quirks
@@ -123,14 +123,8 @@ See `docs/analysis/menu_main.md` for the full matrix.
 
 ## Hypotheses / open questions
 
-- `[hypothesis]` `sub_3B56` builds the race name + distance/record tooltip.
+- `[hypothesis]` `Menu_BuildRaceTooltip` builds the race name + distance/record tooltip.
 - `[ ]` Confirm the card layout/stride and five positions visually.
 - `[ ]` Confirm the full-screen window and the demo path in BlastEm.
-- `[ ]` `unk_49E8`/`unk_25EC0`/`word_4EEE` live in the gap; data-map/disassemble later.
+- `[ ]` `Menu_dRaceNameTable`/`unk_25EC0`/`word_4EEE` live in the gap; data-map/disassemble later.
 
-## Rename proposals (apply only on request)
-
-| Current | Proposed | Evidence | Confidence |
-|---------|----------|----------|------------|
-| `sub_3B56` | `Menu_BuildRaceTooltip` | race name/distance string | high |
-| `WriteNametableToBufferMasked` | `Menu_WriteNametableMasked` | masked card write | high |

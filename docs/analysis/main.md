@@ -265,10 +265,10 @@ budget.
    - reset `ram_FF0406 = 0`;
    - if `ram_MusicEnabled != 0`, skip to `AudioFunc1`;
    - if `Race_ram_State != 0`, call `AudioFunc8`/`AudioFunc11` and skip;
-   - otherwise compute a speed/engine parameter from `ram_FF1EAA` (struct offset `$14`
+   - otherwise compute a speed/engine parameter from `RacePlayerA` (struct offset `$14`
      × `Race_ram_FrameCounter` + `STRUCT_OFFSET_SPEED`, scaled by `ram_FF1AA2` and
      `$3800`), smooth it into `ram_FF36B8` with a ±`$64` rate limit, derive `d1`
-     (`>>5 + 2`, min 0), handle player B's struct `ram_FF26AA` (distance to
+     (`>>5 + 2`, min 0), handle player B's struct `RacePlayerB` (distance to
      `ram_FF1E68`), call `AudioFunc8`, `Audio_UpdateEngine` (with `ram_FF1908`) and
      `AudioFunc11`.
 10. Set `ram_FF369E = $FFFF`; if `ram_FF0406 > 0`, set it back to 0 (re-enable the
@@ -361,7 +361,6 @@ exception the game freezes.
 
 | Current | Proposed | Evidence | Confidence |
 |---------|----------|----------|------------|
-| `Boot_CheckRomChecksum` | `RomChecksum_Verify` | routine sums the ROM and compares `$FE407B8A` | high |
 | `start` | `softReset` | warm-reset branch target | medium |
 | `defaults` | `bootDefaults` | packed init table | medium |
 

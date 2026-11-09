@@ -89,19 +89,6 @@ Detailed listing and dynamic samples: `docs/analysis/road_render.md`.
 - `[hypothesis]` `Road_InterpolateRightEdgeAlt` is an unused early version of `Road_InterpolateRightEdge`.
 - TODO: exact shape-byte format and projection constants (`$C0/$200`).
 
-## Rename proposals (apply only on request)
-
-| Current | Proposed | Evidence | Confidence |
-|---------|----------|----------|------------|
-| `Road_DrawObjects` | `Road_DrawObjects` | visible-list renderer | high |
-| `Road_DrawObject` | `Road_DrawObject` | one object record | high |
-| `Road_DrawStrip` | `Road_DrawStrip` | road strip/tile + sprites | high |
-| `Road_WriteTileColumns` | `Road_WriteTiles` | tile columns | high |
-| `Road_ClearEdgeTiles` | `Road_ClearEdgeTiles` | clears edge tiles | high |
-| `Road_VisibleObjectList` | `Road_VisibleObjectList` | object index list | medium |
-| `Road_ObjectArray` | `Road_ObjectArray` | 0x14-byte records | medium |
-| `Road_ShapeTable` | `Road_ShapeTable` | shape pointer table | medium |
-
 ## Experiments performed
 
 | Goal | Setup / breakpoint | Observed | Conclusion |

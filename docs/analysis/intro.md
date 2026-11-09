@@ -11,8 +11,8 @@
 | Function | Address | Contract | Algorithm | Data | Hardware | Why | Dynamic | Status |
 |----------|---------|----------|-----------|------|----------|-----|---------|--------|
 | `Intro_Init` | `0x1704` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
-| `sub_1A2C` (player A init) | `0x1A2C` | [x] | [x] | [x] | - | [x] | [ ] | analyzed |
-| `sub_1B48` (player B init) | `0x1B48` | [x] | [x] | [x] | - | [x] | [ ] | analyzed |
+| `Intro_InitPlayerA` (player A init) | `0x1A2C` | [x] | [x] | [x] | - | [x] | [ ] | analyzed |
+| `Intro_InitPlayerB` (player B init) | `0x1B48` | [x] | [x] | [x] | - | [x] | [ ] | analyzed |
 | `Intro_GameTick` | `0x1C64` | [x] | [x] | [x] | [x] | [x] | [x] | analyzed |
 | `EncodeString` | `0x2288` | [x] | [x] | [x] | - | [x] | - | analyzed |
 | `DecodeString` | `0x22B2` | [x] | [x] | [x] | - | [x] | - | analyzed |
@@ -55,7 +55,7 @@ The source comment on `$8004` ("Display gen enabled") is again misleading; displ
 
 ## Text strings / timing
 
-`Intro_dStringTable` (at `0x1E0C`) is an array of `dc.l` pointers, terminated by
+`Intro_dCreditStringTable` (at `0x1E0C`) is an array of `dc.l` pointers, terminated by
 `$FFFFFFFF`. Each string starts with four words `y, x, height, width`, followed by
 `height*width` characters. The table contains:
 
@@ -116,9 +116,9 @@ the next frame without Start ends the stage). `.endStage` clears `ram_UpdateFunc
   manipulation converts the linear VRAM address into the VDP command word format
   (`$40000000 | (address bits)`); the row stride is `planeWidth * 2` bytes.
 
-## Initial game state (`sub_1A2C` / `sub_1B48`)
+## Initial game state (`Intro_InitPlayerA` / `Intro_InitPlayerB`)
 
-`Intro_Init` calls `sub_1A2C` (player A) and `sub_1B48` (player B), which initialize the
+`Intro_Init` calls `Intro_InitPlayerA` (player A) and `Intro_InitPlayerB` (player B), which initialize the
 persistent player/menu/high-score state:
 
 - choose `HighScore_ram_PlayerATableOffset`/`B` (20*5 or 20*6 depending on the other
@@ -141,7 +141,7 @@ persistent player/menu/high-score state:
   180 frames; Start is edge-detected (press then release) to end the stage.
 - `[static]` `EncodeString`/`DecodeString` use the font code tables;
   `WriteNametable` builds the VDP command from x/y/plane-width/tile-base.
-- `[static]` `sub_1A2C`/`sub_1B48` initialize player/menu/high-score state, including
+- `[static]` `Intro_InitPlayerA`/`Intro_InitPlayerB` initialize player/menu/high-score state, including
   names, passwords, level, money, bike, places and opponents.
 - `[dynamic]` `Intro_GameTick` is installed as `ram_UpdateFunction` (`0x1C64`); the text
   timer starts at 180 and the H-scroll line 150 value decreases by 12.0 per frame.
@@ -163,7 +163,5 @@ persistent player/menu/high-score state:
 
 | Current | Proposed | Evidence | Confidence |
 |---------|----------|----------|------------|
-| `sub_1A2C` | `Intro_InitPlayerA` | initializes player A state | high |
-| `sub_1B48` | `Intro_InitPlayerB` | initializes player B state | high |
-| `Intro_dStringTable` | `Intro_dCreditStringTable` | credits/strings | high |
 | `Intro_TitleScrollTable` | `Intro_ram_HScrollTable` | H-scroll per line | medium |
+

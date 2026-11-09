@@ -115,7 +115,7 @@ Detailed top-level flow, subsystem map and initial struct inventory:
 - `[static]` Input/steering/pause and the player `$68` bit1/bit2/bit7 meanings in the
   top-level.
 - `[static]` Track record/streams/spawn/bike data initialization.
-- `[static]` Race outcome fields (`ram_FF0526/28`, `ram_FF04C8`, `ram_FF0918`).
+- `[static]` Race outcome fields (`ram_FF0526/28`, `Race_EventBuffer`, `ram_FF0918`).
 
 ## Hypotheses / next steps
 
@@ -131,11 +131,10 @@ Detailed top-level flow, subsystem map and initial struct inventory:
 |---------|----------|----------|------------|
 | `$FF1EAA`/`$FF26AA` | `RacePlayerA/B` (base equates) | two `$80` instances | medium |
 | `$FF2FAA` struct | `RaceActor`/`RacePlayerVisual` | separate `$68` bit6 | low |
-| `Road_ObjectArray` | `Road_ObjectArray` | 0x14-byte objects | high |
 
 ## Experiments performed
 
 | Goal | Setup / breakpoint | Observed | Conclusion |
 |------|--------------------|----------|------------|
-| Demo race renderer | GDB demo, `0x942A`/`0x8FB4` | object list/road strip | `8FB4` card |
-| Track decoder | GDB demo, `0x9FE4` | stream pointers/lengths | `9FE4` card |
+| Demo race renderer | GDB demo, `0x942A`/`0x8FB4` | object list/road strip | `road_render` card |
+| Track decoder | GDB demo, `0x9FE4` | stream pointers/lengths | `track_data` card |

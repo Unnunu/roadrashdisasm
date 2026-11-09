@@ -546,7 +546,7 @@ HorizontalInterrupt:
                 jsr     (AudioFunc11).l
                 bra.w   .loc_162C
 .loc_154E:
-                lea     (ram_FF1EAA).l,a1
+                lea     (RacePlayerA).l,a1
                 move.w  #0,d0
                 tst.b   STRUCT_OFFSET_6E(a1)
                 bpl.w   .loc_1590
@@ -567,7 +567,7 @@ HorizontalInterrupt:
 .loc_1590:
                 add.w   (ram_FF36C4).l,d0
                 move.w  d0,(ram_FF36B6).l
-                lea     (ram_FF1EAA).l,a1
+                lea     (RacePlayerA).l,a1
                 move.w  (ram_FF36B6).l,d0
                 sub.w   (ram_FF36B8).l,d0
                 move.w  d0,d1
@@ -591,7 +591,7 @@ HorizontalInterrupt:
 .loc_15E8:
                 tst.b   STRUCT_OFFSET_6E(a1)
                 bmi.w   .loc_1616
-                lea     (ram_FF26AA).l,a1
+                lea     (RacePlayerB).l,a1
                 move.l  (ram_FF1E68).l,d1
                 sub.l   4(a1),d1
                 bpl.w   .loc_1606

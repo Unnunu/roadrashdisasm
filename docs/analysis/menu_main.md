@@ -14,10 +14,10 @@
 |----------|---------|----------|-----------|------|----------|-----|---------|--------|
 | `Menu_Init` | `0x3400` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
 | `WriteNametableToBuffer` | `0x37AA` | [x] | [x] | [x] | - | [x] | - | analyzed |
-| `WriteNametableToBufferMasked` | `0x37D2` | [x] | [x] | [x] | - | [x] | - | analyzed |
+| `Menu_WriteNametableMasked` | `0x37D2` | [x] | [x] | [x] | - | [x] | - | analyzed |
 | `MainMenu_GameTick` | `0x3802` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
 | `Menu_DrawPlayerInfo` | `0x39AE` | [x] | [x] | [x] | [x] | [x] | - | analyzed |
-| `sub_3B56` | `0x3B56` | [x] | [x] | [x] | - | [x] | - | analyzed (semantics hypothesis) |
+| `Menu_BuildRaceTooltip` | `0x3B56` | [x] | [x] | [x] | - | [x] | - | analyzed (semantics hypothesis) |
 | `MainMenu_HandleInput` | `0x3BE2` | [x] | [x] | [x] | [x] | [x] | - | analyzed |
 | `Menu_DrawRaceSelection` | `0x3F18` | [x] | [x] | [x] | [x] | [x] | - | analyzed |
 | `Menu_DrawRaceCard` | `0x408E` | [x] | [x] | [x] | [x] | [x] | - | analyzed (layout TODO) |
@@ -78,7 +78,7 @@ row 4 (`$7000 + $200`), matching `menu_password.asm`.
 1. Reset menu state (demo/frame counter/buttons/messages); set the default tooltip
    (message `8*6`, "Press A to start race").
 2. If the selected player's money is negative, reinitialize that player via
-   `sub_1A2C`/`sub_1B48`.
+   `Intro_InitPlayerA`/`Intro_InitPlayerB`.
 3. Program the VDP (above); clear sprites, VSRAM, the default tile; fill the A/B
    nametable with the black default tile.
 4. Decompress/upload the background, race-selection background, password border, gamepad,
@@ -86,7 +86,7 @@ row 4 (`$7000 + $200`), matching `menu_password.asm`.
    at rows 0-27, race selection rows 4-17, gamepad rows 22-27, race badges/cards in
    `Race_ram_ImageBuffer2`).
 5. Copy the 4 palette lines from the background image into `Global_ram_Palette`.
-6. Clear the frame buffer, `Menu_ShowMessage`, `sub_2B2E`, `Menu_DrawRaceSelection`,
+6. Clear the frame buffer, `Menu_ShowMessage`, `MenuPassword_SelectCurrentTrack`, `Menu_DrawRaceSelection`,
    `Menu_DrawPlayerInfo`; DMA the frame buffer to `$7000`; start music (`AudioFunc3`).
 
 ## Per-frame flow (`MainMenu_GameTick`, `0x3802`)
@@ -123,7 +123,7 @@ C (password entry):
   (`FadeWithFunction_GameTick`), it goes through `Fade_ram_UpdateFunction` so the fade
   completes first.
 
-## Drawing (`Menu_DrawPlayerInfo`, `Menu_DrawRaceSelection`, `Menu_DrawRaceCard`, `sub_3B56`)
+## Drawing (`Menu_DrawPlayerInfo`, `Menu_DrawRaceSelection`, `Menu_DrawRaceCard`, `Menu_BuildRaceTooltip`)
 
 - Note: `WriteNametableToBuffer`/`Masked` take `d0 = width`, `d1 = height` (the source
   headers had them swapped; fixed).
@@ -135,9 +135,9 @@ C (password entry):
   array and the current track id (0,2,4,6,8).
 - `Menu_DrawRaceCard`: copies a 12-wide x6-high card nametable from `Race_ram_ImageBuffer2+$120`,
   writes "1st/2nd/3rd/Nth" into the bottom middle, then writes it with
-  `WriteNametableToBufferMasked` (mask `$7FF` = black) so only the card's opaque pixels
+  `Menu_WriteNametableMasked` (mask `$7FF` = black) so only the card's opaque pixels
   replace the background.
-- `sub_3B56`: copies the selected race name from `unk_49E8` into `Menu_ram_TempString`,
+- `Menu_BuildRaceTooltip`: copies the selected race name from `Menu_dRaceNameTable` into `Menu_ram_TempString`,
   then formats a value from `unk_25EC0` (per race/level) as a decimal with a `.` — likely
   the race distance/record tooltip (message `8*4`).
 - `Menu_ShowMessage`: looks up the message text and show-function pointers in
@@ -160,10 +160,10 @@ C (password entry):
 
 ## Hypotheses / open questions
 
-- `[hypothesis]` `sub_3B56` produces the selected race's name + distance/record tooltip
-  (message 8*4); the `unk_49E8`/`unk_25EC0` tables are in the not-yet-disassembled gap.
+- `[hypothesis]` `Menu_BuildRaceTooltip` produces the selected race's name + distance/record tooltip
+  (message 8*4); the `Menu_dRaceNameTable`/`unk_25EC0` tables are in the not-yet-disassembled gap.
 - `[hypothesis]` The window is full-screen because WindowX=0/WindowY=28; the exact VDP
   window region should be confirmed with a VDP viewer.
 - `[ ]` Confirm the exact race-card layout/stride and the five card positions visually.
 - `[ ]` Confirm the demo path (30 s no input) in BlastEm.
-- `[ ]` `unk_49E8`, `unk_25EC0`, `word_4EEE` are in the gap; disassemble/data-map later.
+- `[ ]` `Menu_dRaceNameTable`, `unk_25EC0`, `word_4EEE` are in the gap; disassemble/data-map later.

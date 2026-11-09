@@ -13,10 +13,10 @@
 |----------|---------|----------|-----------|------|----------|-----|---------|--------|
 | `MenuPassword_GameTick` | `0x24CC` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
 | `MenuPassword_HandleInput` | `0x2710` | [x] | [x] | [x] | [x] | [x] | - | analyzed |
-| `sub_2A1E` | `0x2A1E` | [x] | [x] | [x] | - | [x] | - | analyzed |
+| `MenuPassword_UpdateStatus` | `0x2A1E` | [x] | [x] | [x] | - | [x] | - | analyzed |
 | `MenuPassword_SetCursorPos` | `0x2B18` | [x] | [x] | [x] | [x] | [x] | - | analyzed |
-| `sub_2B2E` | `0x2B2E` | [x] | [x] | [x] | - | [x] | - | analyzed |
-| `sub_2BEE` | `0x2BEE` | [x] | [x] | [x] | [x] | [x] | - | analyzed |
+| `MenuPassword_SelectCurrentTrack` | `0x2B2E` | [x] | [x] | [x] | - | [x] | - | analyzed |
+| `MenuPassword_SwapPlayerBlocks` | `0x2BEE` | [x] | [x] | [x] | [x] | [x] | - | analyzed |
 | `MenuPassword_ValidatePassword` | `0x2C32` | [x] | [x] | [x] | - | [x] | [x] | analyzed (Python) |
 | `MenuPassword_ParsePassword` | `0x2D1E` | [x] | [x] | [x] | - | [x] | - | analyzed |
 | `MenuPassword_CreatePassword` | `0x2F3A` | [x] | [x] | [x] | - | [x] | [x] | analyzed (Python) |
@@ -49,7 +49,7 @@
   bit is set (released) -> `.endStage`. The password screen exits on Start **release**.
 - Draw/restore the cursor, handle newly pressed buttons, hold-repeat (30-frame delay,
   then every 8 frames), blink the message/tooltip, `Menu_ShowMessage`, `AudioFunc1`.
-- `.endStage`: `sub_2A1E` (validate/parse + status), `Menu_DrawPlayerInfo`, clear the
+- `.endStage`: `MenuPassword_UpdateStatus` (validate/parse + status), `Menu_DrawPlayerInfo`, clear the
   `FrameBuffer + $280` region with `$67FF67FF`, `Menu_DrawRaceSelection`, redraw player
   info, install `MainMenu_GameTick`.
 
@@ -132,13 +132,13 @@ For player A/B (selected by `d0`), a valid password is applied to:
 
 ## Other functions
 
-- `sub_2A1E` (`0x2A1E`): builds the status string (`MenuPassword_StrPasswordStatus`
+- `MenuPassword_UpdateStatus` (`0x2A1E`): builds the status string (`MenuPassword_StrPasswordStatus`
   `$FF067E`, template `unk_2468`/`unk_4E20`), calls `ValidatePassword`; if valid writes
-  "NEW", calls `ParsePassword` and `sub_2B2E`; writes the level digit; on invalid, the
+  "NEW", calls `ParsePassword` and `MenuPassword_SelectCurrentTrack`; writes the level digit; on invalid, the
   template remains.
-- `sub_2B2E` (`0x2B2E`): selects `Menu_ram_CurrentTrackId` from the player's 5 race
+- `MenuPassword_SelectCurrentTrack` (`0x2B2E`): selects `Menu_ram_CurrentTrackId` from the player's 5 race
   places (iterates the places array, tracks the maximum/worst place; track ids 0,2,4,6,8).
-- `sub_2BEE` (`0x2BEE`): swaps the player A/B name/password display blocks in
+- `MenuPassword_SwapPlayerBlocks` (`0x2BEE`): swaps the player A/B name/password display blocks in
   `FrameBuffer + $280` (14 rows x 8 longs) when switching players with C.
 - `MenuPassword_DrawNamesAndPasswords` (`0x3306`): encodes and draws all four strings
   (A/B name and password) into the frame buffer with `WriteNametableToBuffer`.
@@ -159,10 +159,10 @@ For player A/B (selected by `d0`), a valid password is applied to:
 
 - `[hypothesis]` `ram_FF0510`/`ram_FF0514` are a 20-bit progress/points value; the two
   `ram_FF0522/24` bits are an extra bike/upgrade selector. Names/meaning TODO.
-- `[hypothesis]` `sub_2B2E` chooses the race with the worst recorded place (max place)
+- `[hypothesis]` `MenuPassword_SelectCurrentTrack` chooses the race with the worst recorded place (max place)
   as the current track; confirm with menu/race behavior.
 - `[ ]` Confirm the sample password in BlastEm (enter it in the password menu).
-- `[ ]` Confirm the exact cursor visual (high-byte palette toggle) and the `sub_2BEE`
+- `[ ]` Confirm the exact cursor visual (high-byte palette toggle) and the `MenuPassword_SwapPlayerBlocks`
   block swap.
 - `[x]` The main-menu VDP setup is now known: window `$7000`, password rows 4-27 at
   `$7200` (see `docs/analysis/menu_main.md`).
@@ -171,7 +171,5 @@ For player A/B (selected by `d0`), a valid password is applied to:
 
 | Current | Proposed | Evidence | Confidence |
 |---------|----------|----------|------------|
-| `sub_2A1E` | `MenuPassword_UpdateStatus` | status/validate/parse | high |
-| `sub_2B2E` | `MenuPassword_SelectCurrentTrack` | places -> track id | high |
-| `sub_2BEE` | `MenuPassword_SwapPlayerBlocks` | A/B display swap | high |
 | `MenuPassword_ValidatePassword` | `MenuPassword_VerifyChecksum` | checksum checks | high |
+

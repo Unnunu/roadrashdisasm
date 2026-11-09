@@ -144,7 +144,7 @@ MenuPassword_GameTick:
                 jsr     (AudioFunc1).l
                 rts
 .endStage:
-                jsr     (sub_2A1E).l
+                jsr     (MenuPassword_UpdateStatus).l
                 jsr     (Menu_DrawPlayerInfo).l
                 move.l  #$67FF67FF,d0
                 lea     (Menu_ram_FrameBuffer + $280).l,a0
@@ -241,20 +241,20 @@ MenuPassword_HandleInput:
                 btst    #5,(MenuPassword_ram_CurrentButtons).l
                 beq.w   .checkRight
 ; C pressed
-                jsr     (sub_2A1E).l
+                jsr     (MenuPassword_UpdateStatus).l
                 cmpi.l  #MenuPassword_ram_StrPlayerAPassword,(MenuPassword_ram_StrPlayerPasswordPtr).l
                 bne.w   .loc_2830
                 move.l  #MenuPassword_ram_StrPlayerBName,(MenuPassword_ram_StrPlayerNamePtr).l
                 move.l  #MenuPassword_ram_StrPlayerBPassword,(MenuPassword_ram_StrPlayerPasswordPtr).l
                 move.w  #$FFFF,d0
-                jsr     (sub_2BEE).l
+                jsr     (MenuPassword_SwapPlayerBlocks).l
                 jsr     (MenuPassword_DrawNamesAndPasswords).l
                 bra.w   .checkRight
 .loc_2830:
                 move.l  #MenuPassword_ram_StrPlayerAName,(MenuPassword_ram_StrPlayerNamePtr).l
                 move.l  #MenuPassword_ram_StrPlayerAPassword,(MenuPassword_ram_StrPlayerPasswordPtr).l
                 move.w  #0,d0
-                jsr     (sub_2BEE).l
+                jsr     (MenuPassword_SwapPlayerBlocks).l
                 jsr     (MenuPassword_DrawNamesAndPasswords).l
 
 .checkRight:
@@ -360,15 +360,15 @@ MenuPassword_HandleInput:
 ; End of function MenuPassword_HandleInput
 
 ; *************************************************
-; Function sub_2A1E
+; Function MenuPassword_UpdateStatus
 ; Updates the password status message, validates and applies the password.
 ; In:  active player name/password strings
 ; Out: status string/level/message
 ; Clobbers: d0-d2/a0-a2
-; Notes: calls ValidatePassword, ParsePassword and sub_2B2E on success.
+; Notes: calls ValidatePassword, ParsePassword and MenuPassword_SelectCurrentTrack on success.
 ; *************************************************
 
-sub_2A1E:
+MenuPassword_UpdateStatus:
                 move.w  #30,(Menu_ram_MessageBlinkTimer).l
                 move.w  #240,(Menu_ram_NextMessageTimer).l
                 move.w  #(8*5),(Menu_ram_CurrentMessageId).l ; show password status message (valid / invalid)
@@ -424,7 +424,7 @@ sub_2A1E:
                 sne     d0
                 lea     (Intro_ram_ImageBuffer).l,a0
                 jsr     (MenuPassword_ParsePassword).l
-                jsr     (sub_2B2E).l
+                jsr     (MenuPassword_SelectCurrentTrack).l
 
 .loc_2AEC:
                 move.w  (Menu_ram_PlayerALevel).l,d1
@@ -439,7 +439,7 @@ sub_2A1E:
                 subq.w  #2,d0
                 add.b   d1,(a0,d0.w)
                 rts
-; End of function sub_2A1E
+; End of function MenuPassword_UpdateStatus
 
 ; *************************************************
 ; Function MenuPassword_SetCursorPos
@@ -462,7 +462,7 @@ MenuPassword_SetCursorPos:
 ; End of function MenuPassword_SetCursorPos
 
 ; *************************************************
-; Function sub_2B2E
+; Function MenuPassword_SelectCurrentTrack
 ; Selects the current track from the player's race places.
 ; In:  Menu_ram_Player (A/B), Menu_ram_PlayerA/BPlaces
 ; Out: d0 - Menu_ram_CurrentTrackId (0,2,4,6,8)
@@ -470,7 +470,7 @@ MenuPassword_SetCursorPos:
 ; Notes: iterates the 5 places; the exact max-place rule is a hypothesis.
 ; *************************************************
 
-sub_2B2E:
+MenuPassword_SelectCurrentTrack:
                 lea     (Menu_ram_PlayerAPlaces).l,a0
                 tst.w   (Menu_ram_Player).l
                 beq.w   .loc_2B44
@@ -522,10 +522,10 @@ sub_2B2E:
 .loc_2BE6:
                 move.w  (Menu_ram_CurrentTrackId).l,d0
                 rts
-; End of function sub_2B2E
+; End of function MenuPassword_SelectCurrentTrack
 
 ; *************************************************
-; Function sub_2BEE
+; Function MenuPassword_SwapPlayerBlocks
 ; Swaps the player A/B name/password display blocks in the frame buffer.
 ; In:  d0 - 0 = player A, non-zero = player B
 ; Out: -
@@ -533,7 +533,7 @@ sub_2B2E:
 ; Notes: swaps 14 rows x 8 longs at FrameBuffer+$280.
 ; *************************************************
 
-sub_2BEE:
+MenuPassword_SwapPlayerBlocks:
                 lea     (Menu_ram_FrameBuffer + $280).l,a0
                 movea.l a0,a1
                 adda.w  #$2C,a0
@@ -563,7 +563,7 @@ sub_2BEE:
 
 .locret_2C30:
                 rts
-; End of function sub_2BEE
+; End of function MenuPassword_SwapPlayerBlocks
 
 ; *************************************************
 ; Function MenuPassword_ValidatePassword

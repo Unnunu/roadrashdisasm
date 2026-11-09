@@ -9,7 +9,7 @@
 ; Function RaceResults_Init
 ; Builds the post-race screen: outcome flags, VDP setup, one of the normal/busted/
 ; repair layouts, cash/password box, congratulations text, audio.
-; In:  ram_FF0526/28 (outcome), ram_FF04C8 (event buffer), ram_FF1B1A (cop index),
+; In:  ram_FF0526/28 (outcome), Race_EventBuffer (event buffer), Race_CopIndex (cop index),
 ;      ram_FF091A (fine/repair), Menu_ram_Money/PlayerLevel
 ; Out: Menu_ram_FrameBuffer -> VRAM $7000; VRAM $0/$8000/$9000/$A000/$B000/$C000
 ; Clobbers: d0-d7, a0-a3
@@ -133,7 +133,7 @@ RaceResults_Init:
                 jsr     (WriteToVRAM).l
 
 ; $FFFF in the event buffer means busted/bike destroyed; otherwise normal standings
-                cmpi.w  #$FFFF,(ram_FF04C8).l
+                cmpi.w  #$FFFF,(Race_EventBuffer).l
                 beq.w   .loc_616E
                 bsr.w   RaceResults_DrawStandings
                 bra.w   .loc_6190
@@ -141,7 +141,7 @@ RaceResults_Init:
                 move.l  #10,d0
                 jsr     (AudioFunc3).l
 ; cop index != 0 -> caught by the cops; 0 -> bike destroyed/repair
-                tst.w   (ram_FF1B1A).l
+                tst.w   (Race_CopIndex).l
                 beq.w   .loc_618C
                 bsr.w   RaceResults_DrawBusted
                 bra.w   .loc_6190
@@ -219,7 +219,7 @@ RaceResults_Init:
 .loc_62A4:
                 subq.w  #6,a1
                 add.b   d0,(a1)
-                cmpi.w  #$FFFF,(ram_FF04C8).l
+                cmpi.w  #$FFFF,(Race_EventBuffer).l
                 beq.w   .return
                 jsr     (AudioFunc4).l
                 move.l  #9,d0
@@ -360,8 +360,8 @@ RaceResults_DrawStandings:
 
 ; *************************************************
 ; Function RaceResults_DrawBusted
-; Caught-by-cops layout: title, panel, cop portrait/quote by ram_FF1B1A, fine or GAME OVER.
-; In:  ram_FF1B1A (cop index), Menu_ram_MoneyPlayerA/B, ram_FF091A (fine)
+; Caught-by-cops layout: title, panel, cop portrait/quote by Race_CopIndex, fine or GAME OVER.
+; In:  Race_CopIndex (cop index), Menu_ram_MoneyPlayerA/B, ram_FF091A (fine)
 ; Out: Menu_ram_FrameBuffer portrait/name/quote/message; VRAM $9000/$B000/$C000
 ; Clobbers: d0-d7, a0-a3
 ; *************************************************
@@ -412,7 +412,7 @@ RaceResults_DrawBusted:
                 jsr     (Rand_GetWord).l
                 and.w   ($8).w,d0
                 adda.w  d0,a0
-                move.w  (ram_FF1B1A).l,d0
+                move.w  (Race_CopIndex).l,d0
                 subq.w  #1,d0
                 mulu.w  #$10,d0
                 adda.w  d0,a0
@@ -423,7 +423,7 @@ RaceResults_DrawBusted:
                 jsr     (Rand_GetWord).l
                 andi.w  #$18,d0
                 adda.w  d0,a0
-                move.w  (ram_FF1B1A).l,d0
+                move.w  (Race_CopIndex).l,d0
                 subq.w  #1,d0
                 mulu.w  #$20,d0
                 adda.w  d0,a0

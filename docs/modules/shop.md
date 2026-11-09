@@ -100,17 +100,6 @@ uses palette 2 when insufficient, otherwise palette 3.
   Test: capture the shop VRAM/window in BlastEm.
 - `[hypothesis]` The eight palette variants are the bike colours. Test: render them.
 
-## Rename proposals (apply only on request)
-
-| Current | Proposed | Evidence | Confidence |
-|---------|----------|----------|------------|
-| `Shop_ShowAlreadyOwned` | `Shop_ShowAlreadyOwned` | "You already own a ..." | high |
-| `Shop_ShowCannotAfford` | `Shop_ShowCannotAfford` | "You need more credit ..." | high |
-| `Shop_ram_CurrentButtons` | `Shop_ram_CurrentButtons` | button state | high |
-| `Shop_BikePalettes` | `Shop_BikePalettes` | 8 palettes | high |
-| `ImgShopBike1`/`ImgShopBike2`/`ImgShopBike3` | `ImgShopBike1/2/3` | bike images | medium |
-| `ImgShopArrowLeft`/`ImgShopArrowRight` | `ImgShopArrowLeft/Right` | arrows | medium |
-
 ## Experiments performed
 
 | Goal | Setup / breakpoint | Observed | Conclusion |

@@ -20,7 +20,7 @@ MenuPassword_ram_StrPlayerBPassword equ $FF044A ; size $20
 Menu_ram_StrPlayerName equ $FF046A ; size 8 + 50
 MenuPassword_ram_StrPlayerAName equ $FF04A4 ;  size 8 + 10
 MenuPassword_ram_StrPlayerBName equ $FF04B6 ;  size 8 + 10
-ram_FF04C8 equ $FF04C8 ; size $40
+Race_EventBuffer equ $FF04C8 ; size $40
 Menu_ram_Player equ $FF0508 ; 0 if Player A else 0xFFFF
 Menu_ram_PlayerLevel equ $FF050A
 Menu_ram_PlayerALevel equ $FF050C
@@ -310,7 +310,7 @@ ram_FF1B12 equ $FF1B12
 ram_FF1B14 equ $FF1B14
 ram_FF1B16 equ $FF1B16
 ram_FF1B18 equ $FF1B18
-ram_FF1B1A equ $FF1B1A
+Race_CopIndex equ $FF1B1A
 Race_ram_GameEnded equ $FF1B1C
 Race_ram_DemoGameEnded equ $FF1B1E
 ram_FF1B20 equ $FF1B20
@@ -371,7 +371,7 @@ Race_ram_TimeSeconds equ $FF1EA5 ; bcd
 ram_FF1EA6 equ $FF1EA6
 ram_FF1EA8 equ $FF1EA8
 
-ram_FF1EAA equ $FF1EAA ; struct of size $80
+RacePlayerA equ $FF1EAA ; struct of size $80
 STRUCT_OFFSET_POSZ equ $2
 STRUCT_OFFSET_POSX_HIGH equ $4
 STRUCT_OFFSET_POSX_LOW equ $6
@@ -419,7 +419,7 @@ ram_FF1F2A equ $FF1F2A
 ram_FF1F2E equ $FF1F2E
 ram_FF2421 equ $FF2421
 
-ram_FF26AA equ $FF26AA
+RacePlayerB equ $FF26AA
 ram_FF2EAA equ $FF2EAA
 ram_FF2EAE equ $FF2EAE
 ram_FF2EBC equ $FF2EBC
@@ -588,7 +588,7 @@ ram_FFD7D0 equ $FFD7D0
 ram_FFD7D4 equ $FFD7D4
 ram_FFDBD4 equ $FFDBD4
 ram_FFDBD8 equ $FFDBD8
-ram_FFDC58 equ $FFDC58
+Track_CurveBuffer equ $FFDC58
 ram_FFDD56 equ $FFDD56
 Race_ram_NextSpriteTileArray equ $FFDE58
 Race_ram_SpriteDestination equ $FFDE5C

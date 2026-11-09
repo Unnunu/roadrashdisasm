@@ -21,7 +21,7 @@ player/menu/high-score state used by the rest of the game.
 | `EncodeString` | `0x2288` | menus/intro | Encode text into font tile indices. |
 | `DecodeString` | `0x22B2` | menus | Reverse of `EncodeString`. |
 | `WriteNametable` | `0x2402` | menus/intro | Write a rectangular nametable region to VRAM. |
-| `sub_1A2C` / `sub_1B48` | `0x1A2C` / `0x1B48` | `Intro_Init` | Initialize player A/B menu/high-score state. |
+| `Intro_InitPlayerA` / `Intro_InitPlayerB` | `0x1A2C` / `0x1B48` | `Intro_Init` | Initialize player A/B menu/high-score state. |
 
 ## Control flow / state machine
 
@@ -32,7 +32,7 @@ player/menu/high-score state used by the rest of the game.
   DMA the H-scroll table, set up audio/random/menu state.
 - **GameTick:** DMA the H-scroll table to `$7000`; read pads A/B and edge-detect Start
   (press then release); decrement the text timer (180 frames = 3 s); advance through
-  `Intro_dStringTable`; when the last `$FFFFFFFF` entry is reached or Start is pressed,
+  `Intro_dCreditStringTable`; when the last `$FFFFFFFF` entry is reached or Start is pressed,
   clear `ram_UpdateFunction` and return. Otherwise update the title/credits scroll
   (acceleration/deceleration, recoil/out-of-screen logic).
 
@@ -62,10 +62,10 @@ reg90 $03   128x32 planes
   `Intro_ram_ImageBuffer` (`$FF509C`).
 - `Intro_TitleScrollTable` `$FF439C` and `Intro_TitleScrollSpeed` `$FF4A1C` (per-line
   H-scroll values/speeds, size `$400 + $280`).
-- `Intro_dStringTable` (`0x1E0C`): 13 `dc.l` pointers + `$FFFFFFFF`; each string has
+- `Intro_dCreditStringTable` (`0x1E0C`): 13 `dc.l` pointers + `$FFFFFFFF`; each string has
   `y,x,height,width` then characters.
 - `dStringCodeTable`/`dStringDecodeTable`: font character mapping.
-- Player/menu/high-score state initialized by `sub_1A2C`/`sub_1B48` (names, passwords,
+- Player/menu/high-score state initialized by `Intro_InitPlayerA`/`Intro_InitPlayerB` (names, passwords,
   level 1, money 100, bike 0, places 0, opponents `$4B,0..$E`, high-score tables).
 
 ## External calls / dependencies
@@ -98,7 +98,7 @@ See `docs/analysis/intro.md` for the full matrix.
   (press then release) to end the stage.
 - `[static]` `EncodeString`/`DecodeString` use the font code tables; `WriteNametable`
   builds the VDP command from x/y/plane width/tile base.
-- `[static]` `sub_1A2C`/`sub_1B48` initialize the player/menu/high-score state.
+- `[static]` `Intro_InitPlayerA`/`Intro_InitPlayerB` initialize the player/menu/high-score state.
 - `[dynamic]` `Intro_GameTick` (`0x1C64`) is the update function; the text timer starts
   at 180; H-scroll line 150 decreases by 12.0 per frame.
 
@@ -113,7 +113,5 @@ See `docs/analysis/intro.md` for the full matrix.
 
 | Current | Proposed | Evidence | Confidence |
 |---------|----------|----------|------------|
-| `sub_1A2C` | `Intro_InitPlayerA` | player A state init | high |
-| `sub_1B48` | `Intro_InitPlayerB` | player B state init | high |
-| `Intro_dStringTable` | `Intro_dCreditStringTable` | credits | high |
 | `Intro_TitleScrollTable` | `Intro_ram_HScrollTable` | per-line H-scroll | medium |
+

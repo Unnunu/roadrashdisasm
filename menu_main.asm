@@ -25,12 +25,12 @@ Menu_Init:
                 bne.w   .playerB ; jump if player B selected
                 tst.l   (Menu_ram_MoneyPlayerA).l
                 bpl.w   .loc_3494
-                jsr     (sub_1A2C).w
+                jsr     (Intro_InitPlayerA).w
                 bra.w   .loc_3494
 .playerB:
                 tst.l   (Menu_ram_MoneyPlayerB).l
                 bpl.w   .loc_3494
-                jsr     (sub_1B48).w
+                jsr     (Intro_InitPlayerB).w
 
 .loc_3494:
                 lea     (VdpCtrl).l,a0
@@ -222,7 +222,7 @@ Menu_Init:
                 jsr     (WriteToVRAM).l
 
                 jsr     (Menu_ShowMessage).l
-                jsr     (sub_2B2E).w
+                jsr     (MenuPassword_SelectCurrentTrack).w
                 move.w  (Menu_ram_CurrentTrackId).l,d0
                 jsr     (Menu_DrawRaceSelection).l
                 jsr     (Menu_DrawPlayerInfo).l
@@ -280,7 +280,7 @@ WriteNametableToBuffer:
 ; End of function WriteNametableToBuffer
 
 ; *************************************************
-; Function WriteNametableToBufferMasked
+; Function Menu_WriteNametableMasked
 ; Like WriteNametableToBuffer, but writes only where the destination word equals the
 ; mask tile (used for the race cards: only black/default tiles are replaced).
 ; d0 - width in cells
@@ -294,7 +294,7 @@ WriteNametableToBuffer:
 ; a1 - destination buffer
 ; *************************************************
 
-WriteNametableToBufferMasked:
+Menu_WriteNametableMasked:
                 asl.w   #1,d6
                 mulu.w  d6,d3
                 sub.w   d0,d6
@@ -318,7 +318,7 @@ WriteNametableToBufferMasked:
                 adda.w  d6,a1
                 dbf     d1,.loc_37E6
                 rts
-; End of function WriteNametableToBufferMasked
+; End of function Menu_WriteNametableMasked
 
 ; *************************************************
 ; Function MainMenu_GameTick
@@ -562,18 +562,18 @@ Menu_DrawPlayerInfo:
 ; End of function Menu_DrawPlayerInfo
 
 ; *************************************************
-; Function sub_3B56
+; Function Menu_BuildRaceTooltip
 ; Builds the selected race's tooltip (name + decimal distance/record) in TempString.
 ; In:  d0 - current track id
 ; Out: Menu_ram_TempString filled
 ; Clobbers: d0/d1/a0-a1
-; Notes: uses unk_49E8 (race names) and unk_25EC0 (per-level values); exact fields TODO.
+; Notes: uses Menu_dRaceNameTable (race names) and unk_25EC0 (per-level values); exact fields TODO.
 ; *************************************************
 
-sub_3B56:
+Menu_BuildRaceTooltip:
                 move.w  d0,d1
                 asl.w   #1,d1
-                lea     (unk_49E8).l,a0
+                lea     (Menu_dRaceNameTable).l,a0
                 movea.l (a0,d1.w),a0
                 lea     (Menu_ram_TempString).l,a1
                 move.w  4(a0),d1
@@ -619,7 +619,7 @@ sub_3B56:
                 swap    d1
                 bne.s   .loc_3BCE
                 rts
-; End of function sub_3B56
+; End of function Menu_BuildRaceTooltip
 
 ; *************************************************
 ; Function MainMenu_HandleInput
@@ -647,7 +647,7 @@ MainMenu_HandleInput:
                 move.w  #1,(Menu_ram_PlayerMode).l ; set player A mode
                 move.w  #(8*0),(Menu_ram_CurrentMessageId).l ; one player mode selected
                 move.w  #0,(Menu_ram_Player).l
-                jsr     (sub_2B2E).w
+                jsr     (MenuPassword_SelectCurrentTrack).w
                 move.w  (Menu_ram_CurrentTrackId).l,d0
                 jsr     (Menu_DrawRaceSelection).l
                 bra.w   .loc_3C74
@@ -655,7 +655,7 @@ MainMenu_HandleInput:
                 move.w  #2,(Menu_ram_PlayerMode).l ; set player B mode
                 move.w  #(8*0),(Menu_ram_CurrentMessageId).l ; one player mode selected
                 move.w  #$FFFF,(Menu_ram_Player).l
-                jsr     (sub_2B2E).w
+                jsr     (MenuPassword_SelectCurrentTrack).w
                 move.w  (Menu_ram_CurrentTrackId).l,d0
                 jsr     (Menu_DrawRaceSelection).l
 .loc_3C74:
@@ -692,7 +692,7 @@ MainMenu_HandleInput:
                 move.w  d0,(Menu_ram_CurrentTrackId).l
                 jsr     (Menu_DrawRaceSelection).l
                 move.w  (Menu_ram_CurrentTrackId).l,d0
-                bsr.w   sub_3B56
+                bsr.w   Menu_BuildRaceTooltip
                 move.w  #(8*4),(Menu_ram_CurrentMessageId).l
                 move.w  #30,(Menu_ram_MessageBlinkTimer).l
                 move.w  #240,(Menu_ram_NextMessageTimer).l
@@ -711,7 +711,7 @@ MainMenu_HandleInput:
                 move.w  d0,(Menu_ram_CurrentTrackId).l
                 jsr     (Menu_DrawRaceSelection).l
                 move.w  (Menu_ram_CurrentTrackId).l,d0
-                bsr.w   sub_3B56
+                bsr.w   Menu_BuildRaceTooltip
                 move.w  #(8*4),(Menu_ram_CurrentMessageId).l
                 move.w  #30,(Menu_ram_MessageBlinkTimer).l
                 move.w  #240,(Menu_ram_NextMessageTimer).l
@@ -980,7 +980,7 @@ Menu_DrawRaceCard:
                 move.w  #64,d6 ; plane width
                 lea     (Intro_ram_ImageBuffer).l,a0 ; source
                 lea     (Menu_ram_FrameBuffer).l,a1 ; destination
-                jsr     (WriteNametableToBufferMasked).w ; write only on black/default tiles
+                jsr     (Menu_WriteNametableMasked).w ; write only on black/default tiles
                 rts
 ; End of function Menu_DrawRaceCard
 

@@ -171,7 +171,7 @@ Player/bike structures:
 - `STRUCT_OFFSET_66` in `dc.b` animation data was an IDA mistake; the 43 bytes are
   now literal `$66` (`race: drop ida offset symbol from animation data`).
 - `$68(a1)` with `a1=ram_FF2FAA` (`sub_12868`) is a **different structure** than
-  `ram_FF1EAA+$68`; a global flat offset symbol hides this.
+  `RacePlayerA+$68`; a global flat offset symbol hides this.
 - The `a1` bases in the physics chain must be traced before assigning fields; no AS
   struct definitions will be created from the flat names.
 
@@ -209,4 +209,4 @@ Player/bike structures:
 |---------|----------|----------|------------|
 | `RacePlayer` (candidate) | `RacePlayer` | two `$80` instances at `$FF1EAA`/`$FF26AA` | medium |
 | `$FF2FAA` struct | `RaceActor`/`RacePlayerVisual` | separate `$68` bit6 struct | low |
-| `Road_ObjectArray` | `Road_ObjectArray` | 0x14-byte object records | high |
+

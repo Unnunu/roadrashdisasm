@@ -29,7 +29,7 @@ characters, switches players, validates the entered password, applies it to the 
   A/B and edge-detect Start (exit on **release**); draw/restore the cursor; handle newly
   pressed buttons and hold-repeat; blink the status/tooltip; `Menu_ShowMessage`,
   `AudioFunc1`.
-- **Start release -> endStage:** `sub_2A1E` (validate/parse/status), draw player info and
+- **Start release -> endStage:** `MenuPassword_UpdateStatus` (validate/parse/status), draw player info and
   race selection, install `MainMenu_GameTick`.
 - **Editing:** A = previous character, B = next character, C = switch player A/B,
   directions move the cursor (special cases for the name row/password rows). Hold-repeat
@@ -111,13 +111,6 @@ See `docs/analysis/menu_password.md` for the full matrix.
 - `[hypothesis]` `ram_FF0510`/`14` is a 20-bit progress/points value and `ram_FF0522/24`
   an extra bike/upgrade selector.
 - `[ ]` Confirm the sample password in BlastEm.
-- `[ ]` Confirm `sub_2B2E` selects the worst-place track and the `sub_2BEE` block swap.
+- `[ ]` Confirm `MenuPassword_SelectCurrentTrack` selects the worst-place track and the `MenuPassword_SwapPlayerBlocks` block swap.
 - `[ ]` Main-menu VDP setup (`menu_main.asm`) remains TODO.
 
-## Rename proposals (apply only on request)
-
-| Current | Proposed | Evidence | Confidence |
-|---------|----------|----------|------------|
-| `sub_2A1E` | `MenuPassword_UpdateStatus` | status/validate/parse | high |
-| `sub_2B2E` | `MenuPassword_SelectCurrentTrack` | places -> track id | high |
-| `sub_2BEE` | `MenuPassword_SwapPlayerBlocks` | A/B display swap | high |

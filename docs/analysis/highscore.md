@@ -51,7 +51,7 @@ background palette (at `ImageBuffer+$4E4`) is copied to the global palette.
 - The initial table is built by `intro.asm` from `unk_4C18` (message.asm): Fang,
   Helldog, Lubster, Natasha, Sergio, Player A, Player B with their money.
 - `HighScore_ram_PlayerATableOffset/B` (20*5 / 20*6 initially) point at the player rows;
-  `Race_UpdateHighScoreTable` in `race.asm` and `sub_1A2C` in `intro.asm` update/sort them.
+  `Race_UpdateHighScoreTable` in `race.asm` and `Intro_InitPlayerA` in `intro.asm` update/sort them.
 - The screen encodes the table with `EncodeString`; the five top rows use the table font
   at `$800` and draw entries 0..4; the player rows use the regular font at `$0` and draw
   the entries at the player offsets. After sorting, a qualified player can appear both
@@ -62,9 +62,9 @@ background palette (at `ImageBuffer+$4E4`) is copied to the global palette.
 1. Timers: next message 600 (10 s), pad state cleared, message blink `$FFFF`, button
    period `$3F`, message id `8*42`, `ram_FF0910 = 0`.
 2. VDP; clear sprite table (16 bytes), VSRAM, default tile; background to `$8000`;
-   title `unk_A2F5C` to `$9000`; background palette; gamepad to `$A000`.
-3. Badge `unk_7EB72` to `$B000`, drawn five times on the plane.
-4. Fonts: `img_Intro_Font` -> `$0`, `unk_A2BAA` -> `$800` (table font), `unk_A2E68` ->
+   title `ImgHighScoreTitle` to `$9000`; background palette; gamepad to `$A000`.
+3. Badge `ImgHighScoreBadge` to `$B000`, drawn five times on the plane.
+4. Fonts: `img_Intro_Font` -> `$0`, `FontHighScoreTable` -> `$800` (table font), `unk_A2E68` ->
    `$1000` (loaded; its use is not visible in this screen).
 5. Clear 22 frame-buffer lines to `$7FF`, six lines to spaces; encode the table; draw
    the 5 top rows and the two player rows; DMA to `$7000`.
@@ -118,7 +118,5 @@ results screen (A) in the native console.
 | `HighScore_Init` | `HighScore_Init` | already meaningful | high |
 | `HighScore_GameTick` | `HighScore_GameTick` | already meaningful | high |
 | `HighScore_GameTick_Demo` | `HighScore_GameTick_Demo` | already meaningful | high |
-| `unk_A2F5C` | `ImgHighScoreTitle` | title image | medium |
-| `unk_7EB72` | `ImgHighScoreBadge` | yellow badge | medium |
-| `unk_A2BAA` | `FontHighScoreTable` | table font at `$800` | medium |
 | `unk_A2E68` | `FontHighScoreExtra` | loaded at `$1000`, use TODO | low |
+

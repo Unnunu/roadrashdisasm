@@ -19,7 +19,7 @@ RaceHud_Draw:
 
 
 RaceHud_DrawSpeedArrow:
-                move.w  (ram_FF1EAA + STRUCT_OFFSET_SPEED).l,d0
+                move.w  (RacePlayerA + STRUCT_OFFSET_SPEED).l,d0
                 cmp.w   #14500,d0
                 bcs.w   .loc_D2B4
                 move.w  #31,d0
@@ -43,7 +43,7 @@ RaceHud_DrawSpeedArrow:
 
 RaceHud_DrawRPMArrow:
                 lea     (ram_FF1A70).l,a0
-                move.w  (ram_FF1EAA + STRUCT_OFFSET_GEAR).l,d1
+                move.w  (RacePlayerA + STRUCT_OFFSET_GEAR).l,d1
                 asl.w   #1,d1
                 move.w  $E(a0,d1.w),d1
                 ext.l   d1
@@ -51,7 +51,7 @@ RaceHud_DrawRPMArrow:
                 lsr.l   #8,d1
                 lsr.l   #6,d1
                 move.w  d1,(ram_FF1AA2).l
-                move.w  (ram_FF1EAA + STRUCT_OFFSET_SPEED).l,d0
+                move.w  (RacePlayerA + STRUCT_OFFSET_SPEED).l,d0
                 ext.l   d0
                 swap    d0
                 divu.w  d1,d0
@@ -75,7 +75,7 @@ RaceHud_DrawRPMArrow:
 RaceHud_DrawOdometer:
                 movea.l (Race_ram_CurrentHudBuffer).l,a1
                 adda.w  #$E00,a1
-                move.l  (ram_FF1EAA + STRUCT_OFFSET_POSX_HIGH).l,d1
+                move.l  (RacePlayerA + STRUCT_OFFSET_POSX_HIGH).l,d1
                 move.l  d1,d0
                 clr.w   d0
                 swap    d0
@@ -239,7 +239,7 @@ RaceHud_DrawStamina:
                 move.l  d0,8(a0)
                 move.l  d0,$C(a0)
                 move.l  d0,$10(a0)
-                move.w  (ram_FF1EAA + STRUCT_OFFSET_5C).l,d1
+                move.w  (RacePlayerA + STRUCT_OFFSET_5C).l,d1
                 lsr.w   #5,d1
                 cmp.w   #$51,d1 ; 'Q'
                 bcs.w   .loc_D502

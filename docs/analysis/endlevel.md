@@ -40,8 +40,8 @@ opponents and regenerates the password, and returns to the main menu.
 | Sprite attribute table | `$1000` |
 | H-scroll table | `$2000` |
 | Background image | tiles at `$1280`, plane map base tile `$94` |
-| Victory animation tiles | `unk_80000` -> `$5C00` (`Animation_ram_BaseTile=$2E0`) |
-| Window image | `unk_7F400` -> `$2020`, 40x14 at (0,4) |
+| Victory animation tiles | `EndLevel_AnimationTiles` -> `$5C00` (`Animation_ram_BaseTile=$2E0`) |
+| Window image | `EndLevel_WindowImage` -> `$2020`, 40x14 at (0,4) |
 | Font | `$0` |
 | Character panel | `unk_7EA66` -> `$9000`, portrait `$C000` |
 
@@ -49,7 +49,7 @@ opponents and regenerates the password, and returns to the main menu.
 
 - `EndLevel_Init` points the race animation state at endlevel buffers:
   `Intro_ram_ImageBuffer`, `Intro_TitleScrollTable` (+`$400` sprite table),
-  `Race_ram_FrameReady`; base tile `$2E0`; script `unk_8BF12` decompressed to the
+  `Race_ram_FrameReady`; base tile `$2E0`; script `EndLevel_AnimationData` decompressed to the
   image buffer.
 - `EndLevel_UpdateAnimation`: per level frame counts `EndLevel_FrameCounts` = `35,54,81,91,123`
   (`Menu_ram_PlayerLevel-1`); calls `UpdateAnimation2` with the script `EndLevel_AnimationScript`
@@ -126,16 +126,3 @@ in `race_results.asm` (`$6C94`..). Likely dead/legacy text. `[static]`
 The demo skips the end-level branch; reach it by completing all five courses in 4th
 place or better in the native console. The tables/flow above are static.
 
-## Rename proposals (apply only on request)
-
-| Current | Proposed | Evidence | Confidence |
-|---------|----------|----------|------------|
-| `EndLevel_AdvanceLevel` | `EndLevel_AdvanceLevel` | level/opponents/password update | high |
-| `EndLevel_InitVictoryCharacter` | `EndLevel_InitVictoryCharacter` | level-up rider screen | high |
-| `EndLevel_GameTickVictoryCharacter` | `EndLevel_GameTickVictoryCharacter` | same | high |
-| `EndLevel_LevelRiderTable` | `EndLevel_LevelRiderTable` | 5 levels x 2 riders | high |
-| `EndLevel_FrameCounts` | `EndLevel_FrameCounts` | per-level frame counts | high |
-| `EndLevel_AnimationScript` | `EndLevel_AnimationScript` | animation data | high |
-| `unk_80000` | `EndLevel_AnimationTiles` | tile set at `$5C00` | medium |
-| `unk_7F400` | `EndLevel_WindowImage` | window image | medium |
-| `unk_8BF12` | `EndLevel_AnimationData` | decompressed at init | medium |

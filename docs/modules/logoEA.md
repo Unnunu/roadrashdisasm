@@ -21,7 +21,7 @@ the intro/menus; `doStart` polls `LogoEA_ram_Finished` to leave the logo.
 | `LogoEA_GameTick` | `0x0366` | `ram_UpdateFunction` during the logo | Calls `LogoEA_Update`. |
 | `LogoEA_Update` | `0x0406` | `LogoEA_GameTick` | Text H-scroll wave, figure animation, sprite updates. |
 | `LogoEA_SetupGfx` | `0x0A08` | `LogoEA_Init` | Builds figure tiles, uploads sprites, decompresses text, writes text nametable. |
-| `LogoEA_Uncompress` | `0x0C3C` | `LogoEA_SetupGfx` | LZSS-style decompressor (4 KiB ring buffer, 8-bit control mask). |
+| `LogoEA_DecompressLZ` | `0x0C3C` | `LogoEA_SetupGfx` | LZSS-style decompressor (4 KiB ring buffer, 8-bit control mask). |
 
 ## Control flow / state machine
 
@@ -104,13 +104,6 @@ address and the exact wave visuals need dynamic confirmation).
   placement is the intended text position. Confirm with the VRAM/plane viewer.
 - `[hypothesis]` The shared-plane + per-line alternating scroll is the intended ghost/wave
   text effect.
-
-## Rename proposals (apply only on request)
-
-| Current | Proposed | Evidence | Confidence |
-|---------|----------|----------|------------|
-| `LogoEA_Uncompress` | `LogoEA_DecompressLZ` | LZSS-style loop | high |
-| `logoEA_WriteNametableEntry` | `LogoEA_WriteNametablePair` | writes two words | high |
 
 ## Open questions
 

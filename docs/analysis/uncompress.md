@@ -55,7 +55,7 @@
 - Builds the VDP control word from `a1` (`asl #2/lsr #2/ori #$4000/swap`), then
   decompresses the word format directly to `VdpData`, assembling 4 bytes in
   `Uncompress_StateVram` and writing a long every 4 bytes; flushes the trailing partial long.
-- Used by the endlevel animation tiles (`unk_80000` -> `$5C00`).
+- Used by the endlevel animation tiles (`EndLevel_AnimationTiles` -> `$5C00`).
 
 ## Streaming (interruptible) variants
 
@@ -88,7 +88,7 @@ frames.
   The high word `$0808` appears to be a format marker; the exact header semantics and
   the gamepad's over-copy (the low word exceeds the tiles that fit in 0xC20 bytes) are
   TODO.
-- `LogoEA_Uncompress` (logoEA.asm) is a separate decompressor with its own ring buffer.
+- `LogoEA_DecompressLZ` (logoEA.asm) is a separate decompressor with its own ring buffer.
 
 ## Quirks / notes
 
@@ -103,7 +103,5 @@ frames.
 
 | Current | Proposed | Evidence | Confidence |
 |---------|----------|----------|------------|
-| `UncompressStreamStart` | `UncompressStreamStart` | saves state, starts decode | high |
-| `UncompressStreamContinue` | `UncompressStreamContinue` | restores state, resumes | high |
-| `Uncompress_StateA0`..`$FF13A8` | `Uncompress_State` | decoder state block | high |
 | `Road_ram_XLeftArray` | (keep) | doubles as LZ ring | medium |
+

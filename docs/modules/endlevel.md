@@ -42,7 +42,7 @@ of a level are finished in 1st-4th (`ram_FF0918 == 4`).
 - `EndLevel_LevelRiderTable` (`0x19F12`): 5 levels x 2 `quote_ptr,image_ptr` records (rival + Natasha);
   index `(level-1)*$10 + (Rand & 8)`.
 - `EndLevel_FrameCounts` frame counts (35,54,81,91,123); `EndLevel_AnimationScript` animation script;
-  `unk_80000` tiles; `unk_7F400` window image; `unk_8BF12` animation data.
+  `EndLevel_AnimationTiles` tiles; `EndLevel_WindowImage` window image; `EndLevel_AnimationData` animation data.
 - `EndLevel_AdvanceLevel`: clear outcome/places, level++, clamp 5, rebuild
   `Menu_ram_PlayerA/BOpponents` (`$4B` + 15 words `(level-1)*$F+0..14`), regenerate the
   password.
@@ -90,16 +90,6 @@ Detailed listing: `docs/analysis/endlevel.md`.
   render the records.
 - `[hypothesis]` The 5-frame DMA/swap creates the victory animation at 12 fps; test:
   capture the animation timing.
-
-## Rename proposals (apply only on request)
-
-| Current | Proposed | Evidence | Confidence |
-|---------|----------|----------|------------|
-| `EndLevel_AdvanceLevel` | `EndLevel_AdvanceLevel` | level/opponents/password update | high |
-| `EndLevel_InitVictoryCharacter` | `EndLevel_InitVictoryCharacter` | level-up rider screen | high |
-| `EndLevel_LevelRiderTable` | `EndLevel_LevelRiderTable` | 5 levels x 2 riders | high |
-| `EndLevel_FrameCounts` | `EndLevel_FrameCounts` | per-level frame counts | high |
-| `EndLevel_AnimationScript` | `EndLevel_AnimationScript` | animation data | high |
 
 ## Experiments performed
 

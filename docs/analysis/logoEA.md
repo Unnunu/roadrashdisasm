@@ -27,8 +27,8 @@
 | `LogoEA_DrawCircle` | `0x089A` | [x] | [x] | [x] | [x] | [x] | - | analyzed |
 | `LogoEA_Init` | `0x093E` | [x] | [x] | [x] | [x] | [x] | [x] | analyzed |
 | `LogoEA_SetupGfx` | `0x0A08` | [x] | [x] | [x] | [x] | [x] | - | analyzed |
-| `logoEA_WriteNametableEntry` | `0x0C32` | [x] | [x] | [x] | [x] | [x] | - | analyzed |
-| `LogoEA_Uncompress` | `0x0C3C` | [x] | [x] | [x] | - | [x] | - | analyzed |
+| `LogoEA_WriteNametablePair` | `0x0C32` | [x] | [x] | [x] | [x] | [x] | - | analyzed |
+| `LogoEA_DecompressLZ` | `0x0C3C` | [x] | [x] | [x] | - | [x] | - | analyzed |
 
 ## RAM map (overlay/scratch)
 
@@ -163,8 +163,8 @@ The square, triangle and circle are generated as 4bpp tiles in RAM and uploaded 
 
 - `LogoEA_SetupGfx` reads the compressed asset `LogoEA_Image_ElectronicArts`:
   - first two bytes = little-endian size (`b1<<8 | b0`), then it skips 4 bytes and calls
-    `LogoEA_Uncompress` with `a3` = data, `a1` = `ImageEAUncompressed`, `d2` = size.
-- `LogoEA_Uncompress` is an **LZSS-style** decompressor:
+    `LogoEA_DecompressLZ` with `a3` = data, `a1` = `ImageEAUncompressed`, `d2` = size.
+- `LogoEA_DecompressLZ` is an **LZSS-style** decompressor:
   - 4 KiB ring buffer initialized to `$20` (space), 12-bit index `d7 = $FEE`.
   - control byte bitmask (8 bits, LSB first): 1 = literal byte, 0 = back-reference.
   - back-reference: two bytes → 12-bit offset `d4 = byte1 | ((byte2 & $F0) << 4)` and
@@ -218,7 +218,6 @@ The square, triangle and circle are generated as 4bpp tiles in RAM and uploaded 
 
 | Current | Proposed | Evidence | Confidence |
 |---------|----------|----------|------------|
-| `LogoEA_Uncompress` | `LogoEA_DecompressLZ` | LZSS-style loop | high |
-| `logoEA_WriteNametableEntry` | `LogoEA_WriteNametablePair` | writes two words | high |
 | `LogoEA_dFigureStripThickness` | `LogoEA_dStripThickness` | used for all three figures | medium |
 | `logoEA_dCircleProfile` | `LogoEA_dCircleProfile` | spelling | medium |
+

@@ -43,7 +43,7 @@ is in `race_hud.asm`.
   base `$5C0` (VRAM `$B800`), bit 15 priority.
 - Standings: `ram_FF1AE0` pointer list, `ram_FF1AE4` value/timer, `ram_FF1AE6` current
   index.
-- Debug values: `ram_FF1EAA + STRUCT_OFFSET_*` (`POSZ/POSX_HIGH/POSX_LOW/POSY/GEAR/
+- Debug values: `RacePlayerA + STRUCT_OFFSET_*` (`POSZ/POSX_HIGH/POSX_LOW/POSY/GEAR/
   +$68`), `Race_ram_NumSprites`, `ram_FF1B3E`, `ram_FF3046/304C`, `ram_FF1786`,
   `Race_ram_FrameDelay`.
 - `sub_F11C` (`race.asm` `0xF11C`) number formatter.
@@ -82,12 +82,3 @@ Detailed listing: `docs/analysis/race_hud_debug.md`.
 - `[hypothesis]` These functions are a debug overlay or an alternate HUD not used in
   the release; test: search for indirect references in the gap.
 
-## Rename proposals (apply only on request)
-
-| Current | Proposed | Evidence | Confidence |
-|---------|----------|----------|------------|
-| `RaceHud_DrawStandings` | `RaceHud_DrawStandings` | racer list/current row | medium |
-| `RaceHud_WriteDigit1`/`RaceHud_WriteDigit2`/`RaceHud_WriteDigit4` | `RaceHud_WriteDigit1/2/4` | HUD digit writers | high |
-| `RaceDebug_ShowPosZ` | `RaceDebug_ShowPosZ` | POSZ readout | high |
-| `RaceDebug_ShowState` | `RaceDebug_ShowState` | multi-value debug panel | high |
-| `RaceHud_DrawGear` | `RaceHud_DrawGear` | gear indicator | medium |

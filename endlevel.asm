@@ -102,7 +102,7 @@ EndLevel_Init:
                 lea     (Intro_ram_ImageBuffer + $4E8).l,a0
                 jsr     (WriteNametable).w
 ; victory animation tile set directly to VRAM $5C00 (base tile $2E0)
-                lea     (unk_80000).l,a3
+                lea     (EndLevel_AnimationTiles).l,a3
                 movea.l #$5C00,a1
                 jsr     (UncompressToVRAM).l
 ; clear first 22 lines in frame buffer
@@ -122,7 +122,7 @@ EndLevel_Init:
                 dbf     d0,.loc_859A
 
 ; window image (40x14) at $2020, drawn into the window frame buffer
-                lea     (unk_7F400).l,a3
+                lea     (EndLevel_WindowImage).l,a3
                 lea     (Intro_ram_ImageBuffer).l,a1
                 jsr     (UncompressB).l
 
@@ -176,7 +176,7 @@ EndLevel_Init:
                 move.w  #$700,d2
                 bsr.w   DmaWriteVRAM
 ; animation data decompressed; the per-frame script is EndLevel_AnimationScript
-                lea     (unk_8BF12).l,a3
+                lea     (EndLevel_AnimationData).l,a3
                 lea     (Intro_ram_ImageBuffer).l,a1
                 jsr     (UncompressW).l
 

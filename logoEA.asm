@@ -885,7 +885,7 @@ LogoEA_SetupGfx:
                 asl.w   #8,d2
                 move.b  (a3),d2
                 addq.w  #4,a3
-                bsr.w   LogoEA_Uncompress
+                bsr.w   LogoEA_DecompressLZ
                 lea     (LogoEA_ram_ImageEAUncompressed).w,a1
                 move.w  (a1)+,d0 ; number of tiles = 65, 7 extra tiles for 'TM' and something else
                 move.w  (a1)+,d1 ; height in tiles = 2
@@ -923,11 +923,11 @@ LogoEA_SetupGfx:
                 dbf     d1,.loopHeight
 
                 move.w  #$7044,(a4) ; TM entry, address $B044 (retained high bits)
-                bsr.s   logoEA_WriteNametableEntry
+                bsr.s   LogoEA_WriteNametablePair
                 move.w  #$7144,(a4) ; entry at $B144
-                bsr.s   logoEA_WriteNametableEntry
+                bsr.s   LogoEA_WriteNametablePair
                 move.w  #$710C,(a4) ; entry at $B10C
-                bsr.s   logoEA_WriteNametableEntry
+                bsr.s   LogoEA_WriteNametablePair
                 move.w  #$7136,(a4) ; entry at $B136
                 move.w  d4,(a5)
                 move.w  #$E2,(LogoEA_ram_TextTimer).w ; text animation length = 226 frames
@@ -935,25 +935,25 @@ LogoEA_SetupGfx:
 ; End of function LogoEA_SetupGfx
 
 ; *************************************************
-; Function logoEA_WriteNametableEntry
+; Function LogoEA_WriteNametablePair
 ; *************************************************
 
-logoEA_WriteNametableEntry:
+LogoEA_WriteNametablePair:
                 move.w  d4,(a5)
                 addq.w  #1,d4
                 move.w  d4,(a5)
                 addq.w  #1,d4
                 rts
-; End of function logoEA_WriteNametableEntry
+; End of function LogoEA_WriteNametablePair
 
 ; *************************************************
-; Function LogoEA_Uncompress
+; Function LogoEA_DecompressLZ
 ; a1 - destination buffer
 ; a3 - source buffer
 ; d2 - size
 ; *************************************************
 
-LogoEA_Uncompress:
+LogoEA_DecompressLZ:
                 movem.l d0-d7/a0-a6,-(sp)
                 lea     (LogoEA_ram_UncompressTempBuffer).w,a2 ; buffer of size $1000 for decoded data
 ; fill temp buffer with $20
@@ -1020,7 +1020,7 @@ LogoEA_Uncompress:
 .end:
                 movem.l (sp)+,d0-d7/a0-a6
                 rts
-; End of function LogoEA_Uncompress
+; End of function LogoEA_DecompressLZ
 
 LogoEA_dFigureStripThickness:
     dc.b    1,1,2,2,3,3,4,4,6

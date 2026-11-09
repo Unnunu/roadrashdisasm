@@ -74,7 +74,7 @@ HighScore_Init:
                 lea     (Intro_ram_ImageBuffer + $4E8).l,a0 ; source
                 jsr     (WriteNametable).w
 ; "High Score" title image to VRAM $9000
-                lea     (unk_A2F5C).l,a3
+                lea     (ImgHighScoreTitle).l,a3
                 lea     (Intro_ram_ImageBuffer).l,a1
                 jsr     (UncompressW).l
 ; write to VRAM address $9000
@@ -133,7 +133,7 @@ HighScore_Init:
                 lea     (Intro_ram_ImageBuffer + $B48).l,a0
                 jsr     (WriteNametable).w
 ; yellow badge image; drawn in the five top-score slots
-                lea     (unk_7EB72).l,a3
+                lea     (ImgHighScoreBadge).l,a3
                 lea     (Intro_ram_ImageBuffer).l,a1
                 jsr     (UncompressB).l
 ; write to VRAM address $B000
@@ -199,7 +199,7 @@ HighScore_Init:
                 lea     (Intro_ram_ImageBuffer).l,a0
                 jsr     (WriteToVRAM).l
 ; table font at VRAM $800
-                lea     (unk_A2BAA).l,a3
+                lea     (FontHighScoreTable).l,a3
                 lea     (Intro_ram_ImageBuffer).l,a1
                 jsr     (UncompressW).l
 ; write to VRAM address $800

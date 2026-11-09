@@ -133,15 +133,3 @@ The shop is not shown in the demo; reach it from the results screen (C) in the n
 console. The static analysis covers the layout, tables and purchase logic; the visual
 scroll/transparency is pending.
 
-## Rename proposals (apply only on request)
-
-| Current | Proposed | Evidence | Confidence |
-|---------|----------|----------|------------|
-| `Shop_ShowAlreadyOwned` | `Shop_ShowAlreadyOwned` | builds "You already own a ..." | high |
-| `Shop_ShowCannotAfford` | `Shop_ShowCannotAfford` | builds "You need more credit ..." | high |
-| `Shop_ram_CurrentButtons` | `Shop_ram_CurrentButtons` | button state in `HandleInput` | high |
-| `Shop_BikePalettes` | `Shop_BikePalettes` | 8 palettes | high |
-| `ImgShopBike1` | `ImgShopBike1` | bike image 1 | medium |
-| `ImgShopBike2` | `ImgShopBike2` | bike image 2 | medium |
-| `ImgShopBike3` | `ImgShopBike3` | bike image 3 | medium |
-| `ImgShopArrowLeft`/`ImgShopArrowRight` | `ImgShopArrowLeft/Right` | arrow images | medium |

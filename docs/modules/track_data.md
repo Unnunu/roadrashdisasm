@@ -9,7 +9,7 @@
 ## Role / purpose
 
 Two-channel delta/bit-packed decoder for the track (road curve/height) data. The race
-decodes the level data in chunks into `ram_FFDC58` and scales the first channel by the
+decodes the level data in chunks into `Track_CurveBuffer` and scales the first channel by the
 track/level factor.
 
 ## Entry points & API
@@ -35,7 +35,7 @@ track/level factor.
 
 ## RAM / ROM & structures
 
-- Sources `RaceTrack_Data2/3` (`$FF1A52/$FF1A56`); output `ram_FFDC58` (`$FFDC58`),
+- Sources `RaceTrack_Data2/3` (`$FF1A52/$FF1A56`); output `Track_CurveBuffer` (`$FFDC58`),
   4 x `$80`-byte chunks.
 - Channel 1 state `ram_FF13B2/13B8..13E2`; channel 2 `ram_FF13E4..140E`.
 - Scale: `Menu_ram_CurrentTrackId` -> `off_16AB0` -> `ram_FF1A6C` (per-track table);
@@ -77,15 +77,6 @@ Detailed listing: `docs/analysis/track_data.md`.
 - `[hypothesis]` Channel 1 is the road height/curve and channel 2 a second
   derivative/flag; test: decode a track and compare with the road renderer.
 - TODO: exact meaning of the two channels and the 4-chunk buffer timing.
-
-## Rename proposals (apply only on request)
-
-| Current | Proposed | Evidence | Confidence |
-|---------|----------|----------|------------|
-| `TrackData_StartDecode` | `TrackData_StartDecode` | initializes streams/output | high |
-| `TrackData_DecodeChunk` | `TrackData_DecodeChunk` | per-call budget | high |
-| `TrackData_DecodeChannel1`/`TrackData_DecodeChannel2` | `TrackData_DecodeChannel1/2` | interleaved outputs | high |
-| `ram_FFDC58` | `Track_CurveBuffer` | decoded/scaled track data | medium |
 
 ## Experiments performed
 

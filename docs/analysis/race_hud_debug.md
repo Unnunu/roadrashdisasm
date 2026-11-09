@@ -84,13 +84,3 @@ overlay.
 - HUD buffers are double-buffered (`CurrentHudBuffer`/`NextHudBuffer`); `RaceHud_DrawStandings`
   writes to the next buffer while the debug readouts use the current one. `[static]`
 
-## Rename proposals (apply only on request)
-
-| Current | Proposed | Evidence | Confidence |
-|---------|----------|----------|------------|
-| `RaceHud_DrawStandings` | `RaceHud_DrawStandings` | racer list/current row | medium |
-| `RaceHud_WriteDigit1`/`RaceHud_WriteDigit2`/`RaceHud_WriteDigit4` | `RaceHud_WriteDigit1/2/4` | HUD digit writers | high |
-| `sub_9936` | `RaceDebug_ShowPosX` | POSX_HIGH readout (already named) | medium |
-| `RaceDebug_ShowPosZ` | `RaceDebug_ShowPosZ` | POSZ readout | high |
-| `RaceDebug_ShowState` | `RaceDebug_ShowState` | multi-value debug panel | high |
-| `RaceHud_DrawGear` | `RaceHud_DrawGear` | gear indicator | medium |

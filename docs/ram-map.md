@@ -164,8 +164,8 @@ Buffers: `Intro_TitleScrollTable`/`Intro_TitleScrollSpeed` (+$400 SAT),
 | `$FF0914` | `ram_FF0914` | 4 | Active draw routine pointer (set, not read). |
 | `$FF0918` | `ram_FF0918` | 2 | Copied outcome; `4` selects the end-level screen. |
 | `$FF091A` | `ram_FF091A` | 2 | Fine/repair amount formatted into the bust/repair message. |
-| `$FF04C8` | `ram_FF04C8` | `$40` | 16-long race event/sort buffer; first word `$FFFF` = busted/destroyed. |
-| `$FF1B1A` | `ram_FF1B1A` | 2 | Cop/officer index (1..5); 0 = bike destroyed. |
+| `$FF04C8` | `Race_EventBuffer` | `$40` | 16-long race event/sort buffer; first word `$FFFF` = busted/destroyed. |
+| `$FF1B1A` | `Race_CopIndex` | 2 | Cop/officer index (1..5); 0 = bike destroyed. |
 | `$FF1414`/`FF1418`/`FF141A` | `ram_FF1414/18/1A` | - | Standings string header/text, height, width. |
 
 ROM tables: `$19D32` (level, money>=0, 5x4), `$19DD2` (level, money<0, 5x2),
@@ -261,7 +261,7 @@ level/opponents/password. See `docs/analysis/endlevel.md`.
 | `$FF13B2` | `ram_FF13B2` | 2 | Remaining per-call sample budget. |
 | `$FF13B8`..`$FF13E2` | channel 1 state | - | Accumulator, data byte, delta, control index, sign/width/run, bit position, pointers, caught-up flag. |
 | `$FF13E4`..`$FF140E` | channel 2 state | - | Same for the second channel/output. |
-| `$FFDC58` | `ram_FFDC58` | 0x200 | Decoded/scaled track data (4 x $80-byte chunks). |
+| `$FFDC58` | `Track_CurveBuffer` | 0x200 | Decoded/scaled track data (4 x $80-byte chunks). |
 | `$FF1A52`/`$FF1A56` | `RaceTrack_Data2/3` | 4 each | Compressed track streams. |
 | `$FF1A6C` | `ram_FF1A6C` | 4 | Per-track scaling table pointer. |
 
@@ -317,7 +317,7 @@ Known so far:
 | `$FF369E` | `ram_FF369E` | 2 | `$FFFF` disables the HInt raster effect; 0 enables it. |
 | `$FF05D6` | `ram_MusicEnabled` | 2 | Music-enabled flag used by the HInt audio block. |
 | `$FF1AA2`/`$FF1AA4` | `ram_FF1AA2/A4` | 2 | Divisors for the engine-speed scaling (`divu`). |
-| `$FF1EAA`/`$FF26AA` | `ram_FF1EAA/26AA` | `$80` | Player A/B (`RacePlayer` candidate; see below). |
+| `$FF1EAA`/`$FF26AA` | `RacePlayerA/26AA` | `$80` | Player A/B (`RacePlayer` candidate; see below). |
 | `$FF1908` | `ram_FF1908` | 4 | Object pointer passed to `Audio_UpdateEngine`. |
 | `$FF36B6`/`$FF36B8` | `ram_FF36B6/B8` | 2 | Target/current smoothed engine value (rate-limited to ±`$64`). |
 | `$FF36BE`/`$FF36C0` | `ram_FF36BE/C0` | 2 | Second object's target/current smoothed value. |

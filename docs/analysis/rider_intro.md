@@ -145,9 +145,7 @@ path), then inspect VRAM `$7000`/the portrait palette. Rendering/positions above
 
 | Current | Proposed | Evidence | Confidence |
 |---------|----------|----------|------------|
-| `RiderIntro_Init` | `RiderIntro_Init` | pre-race opponent intro | high |
-| `RiderIntro_GameTick` | `RiderIntro_GameTick` | same | high |
-| `RiderIntro_RecordTable` | `RiderIntro_RecordTable` | [level][track][variant] records | high |
 | `unk_AF902` | `RiderIntro_NatashaImage` | name parsed from header | medium |
 | `unk_B1506` | `RiderIntro_NatashaBike` | overlay when extra != 0 | low |
 | `ram_FF0520` | `Menu_ram_PlayerExtra` | password "extra" field | medium |
+
