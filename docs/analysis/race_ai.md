@@ -21,6 +21,9 @@
 | `sub_11C44`/`sub_11CC8`/`sub_12070`/`sub_1218C`/`sub_123A8`/`sub_12414`/`sub_124E2` | `0x11C44`+ | Opponent/AI logic. |
 | `sub_1281E`/`Race_UpdateStaticActors`/`sub_128E0`/`sub_12974` | `0x1281E`+ | Static/police actor AI. |
 | `sub_12...`/`sub_13...` | `0x12A88`+ | Road/actor movement, collision helpers. |
+| `unk_12D0A`/`unk_12D16` | `0x12D0A`/`0x12D16` | 6-word offset table + 99-entry actor action code-pointer table. |
+| `sub_12FE4`/`sub_13004`/`sub_1300E`/`sub_1307C`/`sub_130D2` | `0x12FE4`+ | Actor action handlers (state/curve/recovery). |
+| `sub_13130` | `0x13130` | Y clamp + `$46` sign flip (shared `unk_25A44` handler). |
 | `Race_SetupActorSprite` | `0x13746` | Actor sprite/field setup (spawn). |
 | `Race_UpdateBikeLean` | `0x13EA0` | Steering/lean from Speed/Steering. |
 | `Race_UpdateBikeCurve` | `0x13EFA` | Bike curve/lean `$3E/$40` from speed/steering. |
@@ -42,6 +45,26 @@ walked from `Race_StaticActorList` by `Race_UpdateStaticActors`
 speed/curve (`ram_FF302E/3032/3034`, `word_14742`). `Race_GetCurveSpeedLimit` reads
 `Track_CurveBuffer` and the `unk_14056` table to clamp the actor speed
 
+## Actor action dispatch (`0x12D0A-0x131BE`)
+
+- `unk_12D0A` is a 6-word offset table (`FF60,FFA0,FFE0,0020,0060,00A0` = -$A0..$A0).
+- `unk_12D16` is a 99-entry dword table of actor action code pointers. `unk_259C0`
+  indexes this table indirectly: each entry is a pointer to one of these slots, and
+  the handler does `movea.l (a4),a6; jsr (a6)`.
+- Handlers: `sub_12FE4` (state bits + collision/curve helpers), `sub_13004`
+  (`sub_13422`+`sub_131BE`), `sub_1300E` (target/curve update),
+  `sub_1307C` (variant path), `sub_130D2` (recovery timer `ram_FF1B32`, then
+  `sub_1300E`).
+- `sub_13130` is the shared handler of all 16 `unk_25A44` entries: it compares
+  `|4(a1)-ram_FF1E68|` with `$210000`, otherwise computes a Y value from
+  `$46*$12` + `$30`, clamps on-road to `$37..$A9` / off-road to `-$57..-$C9`, and
+  flips `$46` when clamped.
+- The table targets `sub_16458`, `sub_165D0`, `sub_165E0`, `sub_16612`, `sub_16624`,
+  `sub_1662C`, `sub_16644`, `sub_1666A`, `sub_166B0`, `sub_166DC` in
+  `race_anim_audio.asm`.
+- Code at these entry points is now disassembled in `race_ai.asm`; exact AI/action
+  semantics and dynamic behavior remain TODO.
+
 ## RAM / fields
 
 Actor fields used here: `$12` Speed, `$14`, `$16` type, `$22`/`$26` movement,
@@ -55,7 +78,8 @@ Actor fields used here: `$12` Speed, `$14`, `$16` type, `$22`/`$26` movement,
 
 - Exact field semantics `$14/$36/$38/$3E/$40/$42` and the collision helpers.
 - Static/police actor role and the `$FF2FAA` actor.
-- AI tables (`unk_10E3E`/`unk_12B7C`/`unk_12D0A`/`unk_13A1A`) and the on-foot rules.
+- AI tables (`unk_10E3E`/`unk_12B7C`/`unk_13A1A`) and the on-foot rules.
+- Exact actor-action handler semantics (`0x12FE4`..`0x131BE`) and dynamic checks.
 - Next: `race_anim_audio.asm` (animations/random/audio).
 
 ## Rename proposals

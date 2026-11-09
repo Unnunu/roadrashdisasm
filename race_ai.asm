@@ -3317,417 +3317,36 @@ sub_12CCE:
 ; End of function sub_12CCE
 
 
-unk_12D0A:      dc.b $FF
-                dc.b $60 ; `
-                dc.b $FF
-                dc.b $A0
-                dc.b $FF
-                dc.b $E0
-                dc.b   0
-                dc.b $20
-                dc.b   0
-                dc.b $60 ; `
-                dc.b   0
-                dc.b $A0
-                dc.b   0
-                dc.b   1
-                dc.b $30 ; 0
-                dc.b $D2
-                dc.b   0
-                dc.b   1
-                dc.b $64 ; d
-                dc.b $58 ; X
-                dc.b   0
-                dc.b   1
-                dc.b $30 ; 0
-                dc.b   4
-                dc.b   0
-                dc.b   1
-                dc.b $65 ; e
-                dc.b $D0
-                dc.b   0
-                dc.b   1
-                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
-                dc.b $DC
-                dc.b   0
-                dc.b   1
-                dc.b $30 ; 0
-                dc.b  $E
-                dc.b   0
-                dc.b   1
-                dc.b $30 ; 0
-                dc.b $7C ; |
-                dc.b   0
-                dc.b   1
-                dc.b $30 ; 0
-                dc.b  $E
-                dc.b   0
-                dc.b   1
-                dc.b $30 ; 0
-                dc.b  $E
-                dc.b   0
-                dc.b   1
-                dc.b $30 ; 0
-                dc.b  $E
-                dc.b   0
-                dc.b   1
-                dc.b $64 ; d
-                dc.b $58 ; X
-                dc.b   0
-                dc.b   1
-                dc.b $30 ; 0
-                dc.b   4
-                dc.b   0
-                dc.b   1
-                dc.b $65 ; e
-                dc.b $E0
-                dc.b   0
-                dc.b   1
-                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
-                dc.b $24 ; $
-                dc.b   0
-                dc.b   1
-                dc.b $30 ; 0
-                dc.b  $E
-                dc.b   0
-                dc.b   1
-                dc.b $64 ; d
-                dc.b $58 ; X
-                dc.b   0
-                dc.b   1
-                dc.b $30 ; 0
-                dc.b   4
-                dc.b   0
-                dc.b   1
-                dc.b $65 ; e
-                dc.b $E0
-                dc.b   0
-                dc.b   1
-                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
-                dc.b $6A ; j
-                dc.b   0
-                dc.b   1
-                dc.b $30 ; 0
-                dc.b  $E
-                dc.b   0
-                dc.b   1
-                dc.b $64 ; d
-                dc.b $58 ; X
-                dc.b   0
-                dc.b   1
-                dc.b $30 ; 0
-                dc.b   4
-                dc.b   0
-                dc.b   1
-                dc.b $65 ; e
-                dc.b $E0
-                dc.b   0
-                dc.b   1
-                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
-                dc.b $12
-                dc.b   0
-                dc.b   1
-                dc.b $30 ; 0
-                dc.b  $E
-                dc.b   0
-                dc.b   1
-                dc.b $64 ; d
-                dc.b $58 ; X
-                dc.b   0
-                dc.b   1
-                dc.b $30 ; 0
-                dc.b   4
-                dc.b   0
-                dc.b   1
-                dc.b $65 ; e
-                dc.b $E0
-                dc.b   0
-                dc.b   1
-                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
-                dc.b $B0
-                dc.b   0
-                dc.b   1
-                dc.b $30 ; 0
-                dc.b  $E
-                dc.b   0
-                dc.b   1
-                dc.b $64 ; d
-                dc.b $58 ; X
-                dc.b   0
-                dc.b   1
-                dc.b $30 ; 0
-                dc.b   4
-                dc.b   0
-                dc.b   1
-                dc.b $65 ; e
-                dc.b $D0
-                dc.b   0
-                dc.b   1
-                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
-                dc.b $24 ; $
-                dc.b   0
-                dc.b   1
-                dc.b $30 ; 0
-                dc.b  $E
-                dc.b   0
-                dc.b   1
-                dc.b $64 ; d
-                dc.b $58 ; X
-                dc.b   0
-                dc.b   1
-                dc.b $30 ; 0
-                dc.b   4
-                dc.b   0
-                dc.b   1
-                dc.b $65 ; e
-                dc.b $D0
-                dc.b   0
-                dc.b   1
-                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
-                dc.b $6A ; j
-                dc.b   0
-                dc.b   1
-                dc.b $30 ; 0
-                dc.b  $E
-                dc.b   0
-                dc.b   1
-                dc.b $64 ; d
-                dc.b $58 ; X
-                dc.b   0
-                dc.b   1
-                dc.b $30 ; 0
-                dc.b   4
-                dc.b   0
-                dc.b   1
-                dc.b $65 ; e
-                dc.b $D0
-                dc.b   0
-                dc.b   1
-                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
-                dc.b $12
-                dc.b   0
-                dc.b   1
-                dc.b $30 ; 0
-                dc.b  $E
-                dc.b   0
-                dc.b   1
-                dc.b $64 ; d
-                dc.b $58 ; X
-                dc.b   0
-                dc.b   1
-                dc.b $30 ; 0
-                dc.b   4
-                dc.b   0
-                dc.b   1
-                dc.b $65 ; e
-                dc.b $D0
-                dc.b   0
-                dc.b   1
-                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
-                dc.b $B0
-                dc.b   0
-                dc.b   1
-                dc.b $30 ; 0
-                dc.b  $E
-                dc.b   0
-                dc.b   1
-                dc.b $64 ; d
-                dc.b $58 ; X
-                dc.b   0
-                dc.b   1
-                dc.b $30 ; 0
-                dc.b   4
-                dc.b   0
-                dc.b   1
-                dc.b $65 ; e
-                dc.b $D0
-                dc.b   0
-                dc.b   1
-                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
-                dc.b $2C ; ,
-                dc.b   0
-                dc.b   1
-                dc.b $30 ; 0
-                dc.b  $E
-                dc.b   0
-                dc.b   1
-                dc.b $64 ; d
-                dc.b $58 ; X
-                dc.b   0
-                dc.b   1
-                dc.b $30 ; 0
-                dc.b   4
-                dc.b   0
-                dc.b   1
-                dc.b $65 ; e
-                dc.b $D0
-                dc.b   0
-                dc.b   1
-                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
-                dc.b $44 ; D
-                dc.b   0
-                dc.b   1
-                dc.b $30 ; 0
-                dc.b  $E
-                dc.b   0
-                dc.b   1
-                dc.b $64 ; d
-                dc.b $58 ; X
-                dc.b   0
-                dc.b   1
-                dc.b $2F ; /
-                dc.b $E4
-                dc.b   0
-                dc.b   1
-                dc.b $65 ; e
-                dc.b $E0
-                dc.b   0
-                dc.b   1
-                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
-                dc.b $24 ; $
-                dc.b   0
-                dc.b   1
-                dc.b $30 ; 0
-                dc.b  $E
-                dc.b   0
-                dc.b   1
-                dc.b $64 ; d
-                dc.b $58 ; X
-                dc.b   0
-                dc.b   1
-                dc.b $2F ; /
-                dc.b $E4
-                dc.b   0
-                dc.b   1
-                dc.b $65 ; e
-                dc.b $E0
-                dc.b   0
-                dc.b   1
-                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
-                dc.b $6A ; j
-                dc.b   0
-                dc.b   1
-                dc.b $30 ; 0
-                dc.b  $E
-                dc.b   0
-                dc.b   1
-                dc.b $64 ; d
-                dc.b $58 ; X
-                dc.b   0
-                dc.b   1
-                dc.b $2F ; /
-                dc.b $E4
-                dc.b   0
-                dc.b   1
-                dc.b $65 ; e
-                dc.b $E0
-                dc.b   0
-                dc.b   1
-                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
-                dc.b $12
-                dc.b   0
-                dc.b   1
-                dc.b $30 ; 0
-                dc.b  $E
-                dc.b   0
-                dc.b   1
-                dc.b $64 ; d
-                dc.b $58 ; X
-                dc.b   0
-                dc.b   1
-                dc.b $2F ; /
-                dc.b $E4
-                dc.b   0
-                dc.b   1
-                dc.b $65 ; e
-                dc.b $E0
-                dc.b   0
-                dc.b   1
-                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
-                dc.b $B0
-                dc.b   0
-                dc.b   1
-                dc.b $30 ; 0
-                dc.b  $E
-                dc.b   0
-                dc.b   1
-                dc.b $64 ; d
-                dc.b $58 ; X
-                dc.b   0
-                dc.b   1
-                dc.b $2F ; /
-                dc.b $E4
-                dc.b   0
-                dc.b   1
-                dc.b $65 ; e
-                dc.b $D0
-                dc.b   0
-                dc.b   1
-                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
-                dc.b $24 ; $
-                dc.b   0
-                dc.b   1
-                dc.b $30 ; 0
-                dc.b  $E
-                dc.b   0
-                dc.b   1
-                dc.b $64 ; d
-                dc.b $58 ; X
-                dc.b   0
-                dc.b   1
-                dc.b $2F ; /
-                dc.b $E4
-                dc.b   0
-                dc.b   1
-                dc.b $65 ; e
-                dc.b $D0
-                dc.b   0
-                dc.b   1
-                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
-                dc.b $6A ; j
-                dc.b   0
-                dc.b   1
-                dc.b $30 ; 0
-                dc.b  $E
-                dc.b   0
-                dc.b   1
-                dc.b $64 ; d
-                dc.b $58 ; X
-                dc.b   0
-                dc.b   1
-                dc.b $2F ; /
-                dc.b $E4
-                dc.b   0
-                dc.b   1
-                dc.b $65 ; e
-                dc.b $D0
-                dc.b   0
-                dc.b   1
-                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
-                dc.b $12
-                dc.b   0
-                dc.b   1
-                dc.b $30 ; 0
-                dc.b  $E
-                dc.b   0
-                dc.b   1
-                dc.b $64 ; d
-                dc.b $58 ; X
-                dc.b   0
-                dc.b   1
-                dc.b $2F ; /
-                dc.b $E4
-                dc.b   0
-                dc.b   1
-                dc.b $65 ; e
-                dc.b $D0
-                dc.b   0
-                dc.b   1
-                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
-                dc.b $B0
+unk_12D0A:
+    dc.w    $FF60,$FFA0,$FFE0,$0020,$0060,$00A0
 
-; =============== S U B R O U T I N E =======================================
-
+; inner dispatch table: 99 code pointers (ActorActionSlot_* index into it)
+unk_12D16:
+    dc.l    sub_130D2,sub_16458,sub_13004,sub_165D0
+    dc.l    sub_166DC,sub_1300E,sub_1307C,sub_1300E
+    dc.l    sub_1300E,sub_1300E,sub_16458,sub_13004
+    dc.l    sub_165E0,sub_16624,sub_1300E,sub_16458
+    dc.l    sub_13004,sub_165E0,sub_1666A,sub_1300E
+    dc.l    sub_16458,sub_13004,sub_165E0,sub_16612
+    dc.l    sub_1300E,sub_16458,sub_13004,sub_165E0
+    dc.l    sub_166B0,sub_1300E,sub_16458,sub_13004
+    dc.l    sub_165D0,sub_16624,sub_1300E,sub_16458
+    dc.l    sub_13004,sub_165D0,sub_1666A,sub_1300E
+    dc.l    sub_16458,sub_13004,sub_165D0,sub_16612
+    dc.l    sub_1300E,sub_16458,sub_13004,sub_165D0
+    dc.l    sub_166B0,sub_1300E,sub_16458,sub_13004
+    dc.l    sub_165D0,sub_1662C,sub_1300E,sub_16458
+    dc.l    sub_13004,sub_165D0,sub_16644,sub_1300E
+    dc.l    sub_16458,sub_12FE4,sub_165E0,sub_16624
+    dc.l    sub_1300E,sub_16458,sub_12FE4,sub_165E0
+    dc.l    sub_1666A,sub_1300E,sub_16458,sub_12FE4
+    dc.l    sub_165E0,sub_16612,sub_1300E,sub_16458
+    dc.l    sub_12FE4,sub_165E0,sub_166B0,sub_1300E
+    dc.l    sub_16458,sub_12FE4,sub_165D0,sub_16624
+    dc.l    sub_1300E,sub_16458,sub_12FE4,sub_165D0
+    dc.l    sub_1666A,sub_1300E,sub_16458,sub_12FE4
+    dc.l    sub_165D0,sub_16612,sub_1300E,sub_16458
+    dc.l    sub_12FE4,sub_165D0,sub_166B0
 
 sub_12EA2:
                 move.w  #0,(ram_FF1A98).l
@@ -3829,298 +3448,93 @@ sub_12EA2:
 .locret_12FE2:
                 rts
 ; End of function sub_12EA2
+ ; *****
+; Function sub_12FE4
+; Actor action handler: updates $68 state bits and calls sub_13422/sub_13A92.
+; In:  a1 - actor
+; Out: actor $68 bits
+; Clobbers: see callees
+; *****
 
-
-                dc.b $61 ; a
-                dc.b   0
-                dc.b   4
-                dc.b $3C ; <
-                dc.b   8
-                dc.b $29 ; )
-                dc.b   0
-                dc.b   5
-                dc.b   0
-                dc.b $68 ; h
-                dc.b $67 ; g
-                dc.b   0
-                dc.b   0
-                dc.b  $E
-                dc.b   8
-                dc.b $E9
-                dc.b   0
-                dc.b   2
-                dc.b   0
-                dc.b $68 ; h
-                dc.b   8
-                dc.b $A9
-                dc.b   0
-                dc.b   1
-                dc.b   0
-                dc.b $68 ; h
-                dc.b $61 ; a
-                dc.b   0
-                dc.b  $A
-                dc.b $92
-                dc.b $4E ; N
-                dc.b $75 ; u
-                dc.b $61 ; a
-                dc.b   0
-                dc.b   4
-                dc.b $1C
-                dc.b $61 ; a
-                dc.b   0
-                dc.b   1
-                dc.b $B4
-                dc.b $4E ; N
-                dc.b $75 ; u
-                dc.b   8
-                dc.b $A9
-                dc.b   0
-                dc.b   4
-                dc.b   0
-                dc.b $69 ; i
-                dc.b   8
-                dc.b $A9
-                dc.b   0
-                dc.b   2
-                dc.b   0
-                dc.b $69 ; i
-                dc.b $10
-                dc.b $29 ; )
-                dc.b   0
-                dc.b $72 ; r
-                dc.b $48 ; H
-                dc.b $80
-                dc.b $61 ; a
-                dc.b   0
-                dc.b   5
-                dc.b $D4
-                dc.b $B5
-                dc.b $FC
-                dc.b $FF
-                dc.b $FF
-                dc.b $FF
-                dc.b $FF
-                dc.b $67 ; g
-                dc.b   0
-                dc.b   0
-                dc.b  $A
-                dc.b $61 ; a
-                dc.b   0
-                dc.b   3
-                dc.b $F2
-                dc.b $60 ; `
-                dc.b   0
-                dc.b   0
-                dc.b $20
-                dc.b $61 ; a
-                dc.b   0
-                dc.b  $D
-                dc.b  $C
-                dc.b $4A ; J
-                dc.b $79 ; y
-                dc.b   0
-                dc.b $FF
-                dc.b $18
-                dc.b $A4
-                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
-                dc.b   0
-                dc.b   0
-                dc.b $12
-                dc.b   8
-                dc.b $E9
-                dc.b   0
-                dc.b   1
-                dc.b   0
-                dc.b $68 ; h
-                dc.b   8
-                dc.b $A9
-                dc.b   0
-                dc.b   2
-                dc.b   0
-                dc.b $68 ; h
-                dc.b $61 ; a
-                dc.b   0
-                dc.b   7
-                dc.b $FA
-                dc.b   8
-                dc.b $29 ; )
-                dc.b   0
-                dc.b   5
-                dc.b   0
-                dc.b $68 ; h
-                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
-                dc.b   0
-                dc.b   0
-                dc.b  $E
-                dc.b $61 ; a
-                dc.b   0
-                dc.b  $F
-                dc.b $86
-                dc.b $B0
-                dc.b $69 ; i
-                dc.b   0
-                dc.b $12
-                dc.b $6A ; j
-                dc.b   0
-                dc.b   0
-                dc.b  $E
-                dc.b   8
-                dc.b $E9
-                dc.b   0
-                dc.b   2
-                dc.b   0
-                dc.b $68 ; h
-                dc.b   8
-                dc.b $A9
-                dc.b   0
-                dc.b   1
-                dc.b   0
-                dc.b $68 ; h
-                dc.b $61 ; a
-                dc.b   0
-                dc.b  $A
-                dc.b $1A
-                dc.b $4E ; N
-                dc.b $75 ; u
-                dc.b   8
-                dc.b $A9
-                dc.b   0
-                dc.b   4
-                dc.b   0
-                dc.b $69 ; i
-                dc.b   8
-                dc.b $A9
-                dc.b   0
-                dc.b   2
-                dc.b   0
-                dc.b $69 ; i
-                dc.b $10
-                dc.b $29 ; )
-                dc.b   0
-                dc.b $72 ; r
-                dc.b $48 ; H
-                dc.b $80
-                dc.b $61 ; a
-                dc.b   0
-                dc.b   5
-                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
-                dc.b $B5
-                dc.b $FC
-                dc.b $FF
-                dc.b $FF
-                dc.b $FF
-                dc.b $FF
-                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
-                dc.b   0
-                dc.b   0
-                dc.b $18
-                dc.b $61 ; a
-                dc.b   0
-                dc.b  $C
-                dc.b $A6
-                dc.b $4A ; J
-                dc.b $79 ; y
-                dc.b   0
-                dc.b $FF
-                dc.b $18
-                dc.b $A4
-                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
-                dc.b   0
-                dc.b   0
-                dc.b $12
-                dc.b $61 ; a
-                dc.b   0
-                dc.b   7
-                dc.b $A0
-                dc.b $60 ; `
-                dc.b   0
-                dc.b   0
-                dc.b   6
-                dc.b $61 ; a
-                dc.b   0
-                dc.b   3
-                dc.b $6E ; n
-                dc.b $61 ; a
-                dc.b   0
-                dc.b   1
-                dc.b   6
-                dc.b   8
-                dc.b $29 ; )
-                dc.b   0
-                dc.b   5
-                dc.b   0
-                dc.b $68 ; h
-                dc.b $67 ; g
-                dc.b   0
-                dc.b   0
-                dc.b  $E
-                dc.b   8
-                dc.b $E9
-                dc.b   0
-                dc.b   2
-                dc.b   0
-                dc.b $68 ; h
-                dc.b   8
-                dc.b $A9
-                dc.b   0
-                dc.b   1
-                dc.b   0
-                dc.b $68 ; h
-                dc.b $4E ; N
-                dc.b $75 ; u
-                dc.b $30 ; 0
-                dc.b $39 ; 9
-                dc.b   0
-                dc.b $FF
-                dc.b $1B
-                dc.b $32 ; 2
-                dc.b $67 ; g
-                dc.b   0
-                dc.b   0
-                dc.b $26 ; &
-                dc.b $33 ; 3
-                dc.b $7C ; |
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b $14
-                dc.b $33 ; 3
-                dc.b $7C ; |
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b $12
-                dc.b $90
-                dc.b $79 ; y
-                dc.b   0
-                dc.b $FF
-                dc.b $30 ; 0
-                dc.b $4A ; J
-                dc.b $33 ; 3
-                dc.b $C0
-                dc.b   0
-                dc.b $FF
-                dc.b $1B
-                dc.b $32 ; 2
-                dc.b $6E ; n
-                dc.b   0
-                dc.b   0
-                dc.b  $E
-                dc.b $33 ; 3
-                dc.b $FC
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b $FF
-                dc.b $1B
-                dc.b $32 ; 2
-                dc.b $61 ; a
-                dc.b   0
-                dc.b $FF
-                dc.b  $C
-                dc.b $4E ; N
-                dc.b $75 ; u
+sub_12FE4:
+                bsr.w       sub_13422
+                btst.b      #$5,$68(a1)
+                beq.w       loc_12FFE
+                bset.b      #$2,$68(a1)
+                bclr.b      #$1,$68(a1)
+loc_12FFE:
+                bsr.w       sub_13A92
+                rts
+sub_13004:
+                bsr.w       sub_13422
+                bsr.w       sub_131BE
+                rts
+sub_1300E:
+                bclr.b      #$4,$69(a1)
+                bclr.b      #$2,$69(a1)
+                move.b      $72(a1),d0
+                ext.w       d0
+                bsr.w       sub_135F6
+                cmpa.l      #$FFFFFFFF,a2
+                beq.w       loc_13036
+                bsr.w       sub_13422
+                bra.w       loc_13054
+loc_13036:
+                bsr.w       sub_13D44
+                tst.w       (ram_FF18A4).l
+                bne.w       loc_13054
+                bset.b      #$1,$68(a1)
+                bclr.b      #$2,$68(a1)
+                bsr.w       sub_1384C
+loc_13054:
+                btst.b      #$5,$68(a1)
+                bne.w       loc_1306A
+                bsr.w       Race_GetCurveSpeedLimit
+                cmp.w       $12(a1),d0
+                bpl.w       loc_13076
+loc_1306A:
+                bset.b      #$2,$68(a1)
+                bclr.b      #$1,$68(a1)
+loc_13076:
+                bsr.w       sub_13A92
+                rts
+sub_1307C:
+                bclr.b      #$4,$69(a1)
+                bclr.b      #$2,$69(a1)
+                move.b      $72(a1),d0
+                ext.w       d0
+                bsr.w       sub_135F6
+                cmpa.l      #$FFFFFFFF,a2
+                bne.w       loc_130B2
+                bsr.w       sub_13D44
+                tst.w       (ram_FF18A4).l
+                bne.w       loc_130BA
+                bsr.w       sub_1384C
+                bra.w       loc_130B6
+loc_130B2:
+                bsr.w       sub_13422
+loc_130B6:
+                bsr.w       sub_131BE
+loc_130BA:
+                btst.b      #$5,$68(a1)
+                beq.w       loc_130D0
+                bset.b      #$2,$68(a1)
+                bclr.b      #$1,$68(a1)
+loc_130D0:
+                rts
+sub_130D2:
+                move.w      (ram_FF1B32).l,d0
+                beq.w       loc_13100
+                move.w      #$0,$14(a1)
+                move.w      #$0,$12(a1)
+                sub.w       (Race_ram_FrameDelay).l,d0
+                move.w      d0,(ram_FF1B32).l
+                bgt.w       loc_13104
+                move.w      #$0,(ram_FF1B32).l
+loc_13100:
+                bsr.w       sub_1300E
+loc_13104:
+                rts
 
 ; =============== S U B R O U T I N E =======================================
 
@@ -4144,150 +3558,49 @@ sub_13106:
 .locret_1312E:
                 rts
 ; End of function sub_13106
-
-
-                dc.b $20
-                dc.b $29 ; )
-                dc.b   0
-                dc.b   4
-                dc.b $90
-                dc.b $B9
-                dc.b   0
-                dc.b $FF
-                dc.b $1E
-                dc.b $68 ; h
-                dc.b $6A ; j
-                dc.b   0
-                dc.b   0
-                dc.b   4
-                dc.b $44 ; D
-                dc.b $80
-                dc.b $B0
-                dc.b $BC
-                dc.b   0
-                dc.b $21 ; !
-                dc.b   0
-                dc.b   0
-                dc.b $6D ; m
-                dc.b   0
-                dc.b   0
-                dc.b  $C
-                dc.b   8
-                dc.b $A9
-                dc.b   0
-                dc.b   6
-                dc.b   0
-                dc.b $68 ; h
-                dc.b $60 ; `
-                dc.b   0
-                dc.b   0
-                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
-                dc.b $30 ; 0
-                dc.b $29 ; )
-                dc.b   0
-                dc.b $46 ; F
-                dc.b $C1
-                dc.b $E9
-                dc.b   0
-                dc.b $12
-                dc.b $48 ; H
-                dc.b $40 ; @
-                dc.b $C0
-                dc.b $F9
-                dc.b   0
-                dc.b $FF
-                dc.b $30 ; 0
-                dc.b $4A ; J
-                dc.b $34 ; 4
-                dc.b $29 ; )
-                dc.b   0
-                dc.b $30 ; 0
-                dc.b $D0
-                dc.b $42 ; B
-                dc.b   8
-                dc.b $29 ; )
-                dc.b   0
-                dc.b   3
-                dc.b   0
-                dc.b $69 ; i
-                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
-                dc.b   0
-                dc.b   0
-                dc.b $22 ; "
-                dc.b $B0
-                dc.b $7C ; |
-                dc.b   0
-                dc.b $A9
-                dc.b $6A ; j
-                dc.b   0
-                dc.b   0
-                dc.b $12
-                dc.b $B0
-                dc.b $7C ; |
-                dc.b   0
-                dc.b $37 ; 7
-                dc.b $6A ; j
-                dc.b   0
-                dc.b   0
-                dc.b $36 ; 6
-                dc.b $30 ; 0
-                dc.b $3C ; <
-                dc.b   0
-                dc.b $37 ; 7
-                dc.b $60 ; `
-                dc.b   0
-                dc.b   0
-                dc.b $2A ; *
-                dc.b $30 ; 0
-                dc.b $3C ; <
-                dc.b   0
-                dc.b $A9
-                dc.b $60 ; `
-                dc.b   0
-                dc.b   0
-                dc.b $22 ; "
-                dc.b $B0
-                dc.b $7C ; |
-                dc.b $FF
-                dc.b $57 ; W
-                dc.b $6B ; k
-                dc.b   0
-                dc.b   0
-                dc.b $12
-                dc.b $B0
-                dc.b $7C ; |
-                dc.b $FF
-                dc.b $C9
-                dc.b $6B ; k
-                dc.b   0
-                dc.b   0
-                dc.b $16
-                dc.b $30 ; 0
-                dc.b $3C ; <
-                dc.b $FF
-                dc.b $C9
-                dc.b $60 ; `
-                dc.b   0
-                dc.b   0
-                dc.b  $A
-                dc.b $30 ; 0
-                dc.b $3C ; <
-                dc.b $FF
-                dc.b $57 ; W
-                dc.b $60 ; `
-                dc.b   0
-                dc.b   0
-                dc.b   2
-                dc.b $44 ; D
-                dc.b $69 ; i
-                dc.b   0
-                dc.b $46 ; F
-                dc.b $33 ; 3
-                dc.b $40 ; @
-                dc.b   0
-                dc.b $30 ; 0
-                dc.b $4E ; N
-                dc.b $75 ; u
+sub_13130:
+                move.l      $4(a1),d0
+                sub.l       (ram_FF1E68).l,d0
+                bpl.w       loc_13140
+                neg.l       d0
+loc_13140:
+                cmp.l       #$210000,d0
+                blt.w       loc_13154
+                bclr.b      #$6,$68(a1)
+                bra.w       loc_131B8
+loc_13154:
+                move.w      $46(a1),d0
+                muls.w      $12(a1),d0
+                swap        d0
+                mulu.w      (Race_ram_FrameDelay).l,d0
+                move.w      $30(a1),d2
+                add.w       d2,d0
+                btst.b      #$3,$69(a1)
+                bne.w       loc_13194
+                cmp.w       #$A9,d0
+                bpl.w       loc_1318C
+                cmp.w       #$37,d0
+                bpl.w       loc_131B8
+                move.w      #$37,d0
+                bra.w       loc_131B4
+loc_1318C:
+                move.w      #$A9,d0
+                bra.w       loc_131B4
+loc_13194:
+                cmp.w       #$FF57,d0
+                bmi.w       loc_131AC
+                cmp.w       #$FFC9,d0
+                bmi.w       loc_131B8
+                move.w      #$FFC9,d0
+                bra.w       loc_131B4
+loc_131AC:
+                move.w      #$FF57,d0
+                bra.w       loc_131B4
+loc_131B4:
+                neg.w       $46(a1)
+loc_131B8:
+                move.w      d0,$30(a1)
+                rts
 
 ; =============== S U B R O U T I N E =======================================
 

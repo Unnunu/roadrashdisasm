@@ -105,6 +105,7 @@ def schema():
     dwords("Race_StaticActorList (RAM)", 0x2589A, 3)
     dwords("Race_ActorGraphicsTable", 0x258EE, 10)
 
+    dwords("ActorActionTable", 0x12D16, 99)
     dwords("unk_259C0 (ptr-to-ptr)", 0x259C0, 20)
     dwords("unk_25A10 (actor data ptrs)", 0x25A10, 13)
     dwords("unk_25B50 (bike data ptrs)", 0x25B50, 8)

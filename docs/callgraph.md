@@ -6,8 +6,8 @@ indirect calls (e.g. `jsr (a0)`) are counted but not resolved.
 
 ## Summary
 
-- Functions/symbols: **385**
-- Resolved call edges: **679**
+- Functions/symbols: **390**
+- Resolved call edges: **695**
 - Indirect calls seen: **9**
 
 Notes: `VerticalInterrupt` calls the pointer stored in `ram_UpdateFunction`
@@ -322,33 +322,38 @@ flowchart LR
 | `sub_12C9A` | `0x12C9A` | `Race_UpdateStaticActors` | - |
 | `sub_12CCE` | `0x12CCE` | `sub_12BD2` | - |
 | `sub_12EA2` | `0x12EA2` | `Race_Update` | `Race_RecycleActor`, `Race_RecycleOpponent`, `sub_13A92` |
+| `sub_12FE4` | `0x12FE4` | - | `sub_13422`, `sub_13A92` |
+| `sub_13004` | `0x13004` | - | `sub_131BE`, `sub_13422` |
+| `sub_1300E` | `0x1300E` | `sub_130D2` | `Race_GetCurveSpeedLimit`, `sub_13422`, `sub_135F6`, `sub_1384C`, `sub_13A92`, `sub_13D44` |
+| `sub_1307C` | `0x1307C` | - | `sub_131BE`, `sub_13422`, `sub_135F6`, `sub_1384C`, `sub_13D44` |
+| `sub_130D2` | `0x130D2` | - | `sub_1300E` |
 | `sub_13106` | `0x13106` | `Race_Update` | - |
-| `sub_131BE` | `0x131BE` | `sub_165D0`, `sub_16612`, `sub_16644`, `sub_1666A`, `sub_166B0`, `sub_166F0` | `Race_GetCurveSpeedLimit`, `sub_13A92` |
+| `sub_131BE` | `0x131BE` | `sub_13004`, `sub_1307C`, `sub_165D0`, `sub_16612`, `sub_16644`, `sub_1666A`, `sub_166B0`, `sub_166F0` | `Race_GetCurveSpeedLimit`, `sub_13A92` |
 | `sub_13292` | `0x13292` | `sub_166DC` | `Race_GetCurveSpeedLimit`, `sub_13A92` |
 | `sub_1333C` | `0x1333C` | `sub_16612`, `sub_16644`, `sub_1666A`, `sub_166B0`, `sub_166DC`, `sub_166F0` | `sub_136B6` |
-| `sub_13422` | `0x13422` | `sub_166F0` | `sub_135F6`, `sub_13892` |
-| `sub_135F6` | `0x135F6` | `sub_13422`, `sub_16458`, `sub_166F0` | `sub_13626` |
+| `sub_13422` | `0x13422` | `sub_12FE4`, `sub_13004`, `sub_1300E`, `sub_1307C`, `sub_166F0` | `sub_135F6`, `sub_13892` |
+| `sub_135F6` | `0x135F6` | `sub_1300E`, `sub_1307C`, `sub_13422`, `sub_16458`, `sub_166F0` | `sub_13626` |
 | `sub_13626` | `0x13626` | `sub_135F6` | - |
 | `sub_136B6` | `0x136B6` | `sub_1333C` | - |
 | `Race_SetupActorSprite` | `0x13746` | `Race_SetupActor`, `Race_UpdateActorAI` | `sub_13812` |
 | `sub_137E4` | `0x137E4` | `Race_UpdateStaticActors` | `sub_13812` |
 | `sub_13812` | `0x13812` | `Race_SetupActorSprite`, `sub_137E4` | - |
 | `sub_1383E` | `0x1383E` | `Race_Update` | - |
-| `sub_1384C` | `0x1384C` | `sub_165D0`, `sub_165E0`, `sub_1666A` | - |
+| `sub_1384C` | `0x1384C` | `sub_1300E`, `sub_1307C`, `sub_165D0`, `sub_165E0`, `sub_1666A` | - |
 | `sub_13892` | `0x13892` | `sub_13422` | - |
 | `sub_138CE` | `0x138CE` | `Race_Update` | `Rand_GetWord`, `sub_13A26` |
 | `sub_13A26` | `0x13A26` | `sub_138CE` | - |
-| `sub_13A92` | `0x13A92` | `Race_Update`, `sub_12EA2`, `sub_131BE`, `sub_13292`, `sub_1634E`, `sub_165E0` | `sub_13BBC` |
+| `sub_13A92` | `0x13A92` | `Race_Update`, `sub_12EA2`, `sub_12FE4`, `sub_1300E`, `sub_131BE`, `sub_13292`, `sub_1634E`, `sub_165E0` | `sub_13BBC` |
 | `sub_13BBC` | `0x13BBC` | `sub_13A92` | - |
 | `sub_13BD8` | `0x13BD8` | `sub_1180C` | - |
 | `sub_13BF4` | `0x13BF4` | `Race_Update` | `sub_13CFE` |
 | `sub_13CFE` | `0x13CFE` | `sub_13BF4` | `Race_ActivateActor`, `Race_GetCurveSpeedLimit`, `Race_SetupActor` |
-| `sub_13D44` | `0x13D44` | `sub_16458` | - |
+| `sub_13D44` | `0x13D44` | `sub_1300E`, `sub_1307C`, `sub_16458` | - |
 | `sub_13DE0` | `0x13DE0` | `Race_UpdateStaticActors` | - |
 | `sub_13E94` | `0x13E94` | `Race_Update` | `Race_GetCurveSpeedLimit` |
 | `Race_UpdateBikeLean` | `0x13EA0` | `Race_Update` | - |
 | `Race_UpdateBikeCurve` | `0x13EFA` | `Race_UpdateActorAI` | - |
-| `Race_GetCurveSpeedLimit` | `0x13FE6` | `Race_InitOpponentActor`, `Race_InitTrafficActor`, `sub_131BE`, `sub_13292`, `sub_13CFE`, `sub_13E94` | - |
+| `Race_GetCurveSpeedLimit` | `0x13FE6` | `Race_InitOpponentActor`, `Race_InitTrafficActor`, `sub_1300E`, `sub_131BE`, `sub_13292`, `sub_13CFE`, `sub_13E94` | - |
 | `Race_UpdateLeanCurve` | `0x1406A` | `sub_113A4`, `sub_113CA` | - |
 | `sub_142D8` | `0x142D8` | `sub_14486` | - |
 | `sub_1434A` | `0x1434A` | `sub_11B7A`, `sub_14486`, `sub_14CEC` | - |

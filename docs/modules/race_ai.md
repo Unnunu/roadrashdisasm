@@ -35,5 +35,6 @@ random and audio live in `race_anim_audio.asm`.
 | Function | Address | Contract | Algorithm | Data | Hardware | Why | Dynamic | Status |
 |----------|---------|----------|-----------|------|----------|-----|---------|--------|
 | actor/input/AI chain | `0x10E00`+ | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | TODO |
+| actor action dispatch | `0x12D0A`-`0x131BE` | [x] | [~] | [x] | [x] | [x] | [ ] | analyzed |
 
 Detailed flow: `docs/analysis/race.md`; spawn: `docs/analysis/race_spawn.md`.

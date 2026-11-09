@@ -22,8 +22,54 @@ EndLevel_WindowImage: ; $7F400
 img_Gamepad: ; $7F834
     binclude "baserom.md",$7F834,$00764
 
+; *****
+; Function Boot_CheckRomChecksum
+; Sums the ROM bytes (skipping the checksum long at $18C), compares $FE407B8A;
+; on mismatch programs the VDP for a solid screen and loops forever.
+; In:  -
+; Out: returns on match, hangs on mismatch
+; Clobbers: d0/d1/d2/a0/a4
+; *****
+
 Boot_CheckRomChecksum: ; $7FF98
-    binclude "baserom.md",$7FF98,$00068
+                moveq       #$0,d0
+                suba.l      a0,a0
+                move.l      #$1FFE6,d1
+loc_7FFA2:
+                cmpa.w      #$18C,a0
+                bne.s       loc_7FFAC
+                addq.w      #$4,a0
+                bra.s       loc_7FFAE
+loc_7FFAC:
+                add.l       (a0)+,d0
+loc_7FFAE:
+                subq.l      #$1,d1
+                bgt.s       loc_7FFA2
+                movea.l     #$80001,a0
+                move.l      #$20000,d1
+                moveq       #$0,d2
+loc_7FFC0:
+                move.b      (a0),d2
+                add.l       d2,d0
+                addq.w      #$2,a0
+                subq.l      #$1,d1
+                bgt.s       loc_7FFC0
+                cmp.l       #$FE407B8A,d0
+                bne.s       loc_7FFD4
+                rts
+loc_7FFD4:
+                movea.l     #$C00004,a4
+                move.w      #$8F02,(a4)
+                move.w      #$8004,(a4)
+                move.w      #$8700,(a4)
+                move.w      #$8144,(a4)
+                move.w      #$C000,(a4)
+                move.w      #$3F,d1
+loc_7FFF2:
+                move.w      #$E,(VdpData).l
+                dbf         d1,loc_7FFF2
+loc_7FFFE:
+                bra.s       loc_7FFFE
 
 EndLevel_AnimationTiles: ; $80000
     binclude "baserom.md",$80000,$0BF12

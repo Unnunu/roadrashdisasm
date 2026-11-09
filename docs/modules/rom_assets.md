@@ -1,7 +1,7 @@
 # Module card: `rom_assets.asm`
 
 - **ROM range:** `0x07EA66`–`0x0BFFFF`
-- **Status:** labelled tail split at 53 known boundaries; bytes raw; internals TODO
+- **Status:** labelled tail split at 53 boundaries; boot checksum disassembled; assets raw
 - **Related:** `docs/analysis/rom_tail.md`, `docs/analysis/main.md`,
   `docs/analysis/rider_intro.md`, `docs/analysis/highscore.md`,
   `docs/analysis/shop.md`, `docs/analysis/endlevel.md`, `docs/architecture.md`
@@ -17,7 +17,7 @@ track images, the 11 rider portraits, the Natasha overlay, and the ROM checksum 
 | Data | Address | Contract | Algorithm | Data | Hardware | Why | Dynamic | Status |
 |------|---------|----------|-----------|------|----------|-----|---------|--------|
 | `RomTail`/`unk_7EA66` + 52 labels | `0x7EA66`+ | [x] | - | [~] | - | [~] | [ ] | labelled |
-| `Boot_CheckRomChecksum` | `0x7FF98` | [x] | [x] | [x] | - | [x] | [ ] | raw code, labelled |
+| `Boot_CheckRomChecksum` | `0x7FF98` | [x] | [x] | [x] | - | [x] | [ ] | analyzed |
 | Images/fonts (high score/menu/intro/shop/end level) | various | [x] | - | [~] | - | [~] | [ ] | raw |
 | `RaceResults_TrackImage_0..4` | `0x8E4E6`+ | [x] | - | [~] | - | [~] | [ ] | labelled |
 | `RiderIntro_Portrait_0..10` | `0xAF902`+ | [x] | - | [~] | - | [~] | [ ] | labelled |

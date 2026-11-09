@@ -1,8 +1,8 @@
 # Analysis: ROM tail (`0x7EA66`–`0xBFFFF`, `RomTail`)
 
-- **Status:** full ROM assembles byte-exactly; tail split at 53 known labels, bytes raw
-- **Source:** `rom_assets.asm` (`binclude` chunks from `baserom.md`)
-- **Code:** `Boot_CheckRomChecksum` at `0x7FF98` is real code inside the tail; it remains raw but labelled
+- **Status:** full ROM assembles byte-exactly; tail split at 53 labels; boot checksum disassembled
+- **Source:** `rom_assets.asm` (asset chunks from `baserom.md`; `Boot_CheckRomChecksum` source)
+- **Code:** `Boot_CheckRomChecksum` at `0x7FF98` is disassembled in `rom_assets.asm`
 - **Related:** `docs/analysis/rider_intro.md`, `docs/analysis/highscore.md`,
   `docs/analysis/shop.md`, `docs/analysis/endlevel.md`,
   `docs/analysis/race_results.md`, `docs/architecture.md`
@@ -51,7 +51,7 @@ high-score/menu/intro/shop/end-level image/font labels. See `rom_assets.asm`.
 
 ## TODO
 
-- Disassemble `Boot_CheckRomChecksum` and any other code hidden in the tail.
+- Check for other code hidden between the labelled tail assets.
 - Parse the image headers/sizes and the sound samples.
 - Map the compressed image headers/sizes for each asset and the sound samples.
 - Determine whether any code or tables hide between the assets.
