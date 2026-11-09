@@ -26,6 +26,13 @@ Status tags: `[static]` from code; `[dynamic]` observed; `[confirmed]` both;
 | `$FF305A` | `Global_ram_PalettePtr` | 4 | Pointer to the active palette. | `[static]` |
 | `$FF305E` | `Global_ram_Palette` | `$80` | Active palette (64 words). | `[static]` |
 
+## Boot / sound
+
+- `[static]` Boot clears the whole 64 KiB work RAM, so every later structure is
+  initialized by its own screen/module.
+- Audio is deferred, but the sound code seen at `$19FAA` uses a control block starting at
+  `$FFFF0000` and later loads the Z80 driver from `$1DA12` into `$A00000`.
+
 ## Fade (`fade.asm`)
 
 | Address | Name | Size | Meaning |

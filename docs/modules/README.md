@@ -8,7 +8,7 @@ row to the table below.
 
 | File | Address | Role (tentative) | Card |
 |------|---------|------------------|------|
-| `main.asm` | `0x000000` (entry `RESET` `0x000200`) | Vectors, header, boot, interrupts | TODO |
+| `main.asm` | `0x000000` (entry `RESET` `0x000200`) | Vectors, header, boot, interrupts | [main.md](main.md) |
 | `logoEA.asm` | `0x000366` | EA logo, decompression, drawing | TODO |
 | `fade.asm` | `0x001180` | Palette fade in/out | [fade.md](fade.md) |
 | `intro.asm` | `0x001704` | Intro sequence | TODO |
