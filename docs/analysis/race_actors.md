@@ -164,6 +164,29 @@ there; these are **VScroll buffer fields**, not actor fields. Only count `a0` ac
 after verifying that `a0` is an actor pointer; `a1/a2` are actor pointers in the race
 lists.
 
+### `$68/$69` flag map (static + dynamic)
+
+| Byte | Bit | Current meaning | Evidence / confidence |
+|---|---|---|---|
+| `$68` | 0 | collision/impact lock; blocks normal steering | `[static]` `sub_1438E`/`sub_145EC`; medium |
+| `$68` | 1 | throttle/B input; AI also sets it | `[static]` `Race_GetInput` B; active opponents `$42` |
+| `$68` | 2 | brake/A input; reduces acceleration | `[static]` `Race_GetInput` A + `sub_13A92`; medium |
+| `$68` | 3 | off-road/edge; reduces acceleration | `[static]` `Race_UpdateActorAI` edge tests |
+| `$68` | 4 | on-foot/knockdown branch | `[static]` `Race_UpdateActorAI`; hypothesis |
+| `$68` | 5 | lean/curve update enable | `[static]` `Race_UpdateLeanCurve` calls |
+| `$68` | 6 | active/update marker | `[dynamic]` active `$42`, inactive `$00`; confirmed |
+| `$68` | 7 | finish/timer stop | `[static]` race timer/finish paths; medium |
+| `$69` | 0/1 | turn/heading state; exact split TODO | `[dynamic]` 0/2/3/7 under steering |
+| `$69` | 2 | steering active | `[dynamic]` forced steering `$04`/`$07` |
+| `$69` | 3 | on-foot direction/stance | `[static]` `Race_HandleInputOnFoot`; medium |
+| `$69` | 4/5/6 | attack active/side/low | `[confirmed]` combat tests |
+| `$69` | 7 | direction/curve state | `[static]` AI `sub_124E2`; TODO |
+
+`$FF2FAA` is aliased by `$FF2FAA+$71 = $FF301B`; `Race_CreateActors` writes
+`$12` there, so it is the **third static-like actor slot** (indices `$10/$11` are the
+static list). Its other fields remain zero in the demo; the owner/updater (`sub_12974`
+and collision paths) is still TODO.
+
 ## Graphics table (`Race_ActorGraphicsTable`, `0x258EE`)
 
 Words at `+$A/+$C/+$E` selected by the definition's graphics index:
@@ -195,7 +218,9 @@ structure; do not apply normal actor names blindly to `$FF2EAA/$FF2F2A` until th
 static updater is analyzed.
 
 `[dynamic]` `$FF2FAA` is zero except `+$71=$12` in both demo snapshots; it is not in
-the active/free/static lists. Its owner and purpose remain open.
+the active/free/static lists. `Race_CreateActors` writes `$12` at `$FF2FAA+$71`, so
+this is a third static-like slot; `sub_12974`/collision paths reference it. Its
+owner and full purpose remain open.
 
 ## Actor lifecycle notes
 
@@ -218,8 +243,9 @@ the active/free/static lists. Its owner and purpose remain open.
 - `+$22/+$24/+$32/+$36/+$38/+$3A/+$3C/+$3E/+$40/+$42/+$46` under off-road and
   other speeds.
 - `+$2A` origin/role and `+$4A/$4C/$4E` collision/sprite extents.
-- `+$56` sentinel/timer and `+$68` bit roles; especially bit1 vs bit6 on active actors.
-- Static group `$FF2EAA/$FF2F2A` and `$FF2FAA`; player B (`$FF26AA`) is zero in demo.
+- `+$56` sentinel/timer and `+$68` bit0/4/5/7 semantics; `$69` bit0/1/7 split.
+- Static group `$FF2EAA/$FF2F2A` and `$FF2FAA` (index `$12`); player B
+  (`$FF26AA`) is zero in demo.
 - Which fields are copied/overwritten by `Race_SpawnOpponent`/`Race_RecycleActor`.
 - Next dynamic tests: accelerate/brake, off-road, 2P/player B, static/police
   appearance. Steering/lean is covered by the left/right snapshots above.
