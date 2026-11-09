@@ -144,6 +144,30 @@ Known so far:
 | `$FF36BE`/`$FF36C0` | `ram_FF36BE/C0` | 2 | Second object's target/current smoothed value. |
 | `$FF36C4` | `ram_FF36C4` | 2 | Base value added to the speed computation. |
 
+Rider/bike sprite builder (`sub_5760.asm`):
+
+| Address | Name | Size | Meaning |
+|---|---|---|---|
+| `$FF38AC` | `Race_ram_CurrentSpriteAttributeTable` | 4 | SAT base pointer. |
+| `$FFDE64` | `Animation_ram_SpriteIndex` | 2 | Sprite chain index / next link. |
+| `$FFDE60` | `Animation_ram_TileIndex` | 2 | Tile cursor. |
+| `$FFD34A` | `Animation_ram_BaseTile` | 2 | Base tile added to entries. |
+| `$FFDE5E` | `ram_FFDE5E` | 2 | Base priority/tile bits. |
+| `$FFDE62` | `ram_FFDE62` | 2 | Chain-end flag (`$FFFF`). |
+| `$FFDE66` | `ram_FFDE66` | 2 | Current entry X base. |
+| `$FFDE68` | `ram_FFDE68` | 2 | Y offset/limit (`$8000` sentinel first). |
+| `$FFDE6A` | `ram_FFDE6A` | 2 | Base link/limit (`$7C`). |
+| `$FFDE6E` | `ram_FFDE6E` | 2 | Base X (`+$80`). |
+| `$FFDE70` | `ram_FFDE70` | 2 | Base Y (`+$80`). |
+| `$FF0906` | `ram_FF0906` | 2 | Strip X base. |
+| `$FF0908` | `ram_FF0908` | 2 | Row/tile stride. |
+| `$FF090A`/`$FF090C` | `ram_FF090A/C` | 2 each | Column/row counts. |
+| `$FF090E` | `ram_FF090E` | 2 | Starting tile index. |
+| `$FF1336` | `ram_FF1336` | 2 | Shadow/overlay X offset. |
+| `$FF133A` | `ram_FF133A` | 2 | Shadow/overlay flag. |
+| `$FF1366` | `ram_FF1366` | 2 | Second chain-end flag. |
+| `$5944` | `unk_5944` | `$80` | Per-strip SAT table (16 records x 8 bytes). |
+
 Race structures (player/bike state, sprite tables, road arrays, HUD buffers) are **TODO**.
 
 ## logoEA overlay (phase-specific)

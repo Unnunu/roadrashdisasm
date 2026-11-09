@@ -15,7 +15,7 @@ row to the table below.
 | `menu_password.asm` | `0x002446` | Password menu | [menu_password.md](menu_password.md) |
 | `menu_main.asm` | `0x003400` | Main menu | [menu_main.md](menu_main.md) |
 | `message.asm` | `0x004226` | On-screen messages / button prompts | [message.md](message.md) |
-| `sub_5760.asm` | `0x005760` | Not yet identified | TODO |
+| `sub_5760.asm` | `0x005760` | Rider/bike sprite chain builder | [sub_5760.md](sub_5760.md) |
 | `character.asm` | `0x0059C4` | Character screen / rider rendering | TODO |
 | `race_results.asm` | `0x005F28` | Post-race results screen | TODO |
 | `highscore.asm` | `0x006DC0` | High-score screen | TODO |
