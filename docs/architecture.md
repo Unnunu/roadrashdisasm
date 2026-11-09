@@ -8,6 +8,11 @@ Related:
 - `AGENTS.md` — build rules, AS syntax requirements, ROM disassembly workflow.
 - `docs/coding-style.md` — identifiers, comments, function headers, RAM/overlay policy.
 - `docs/reverse-engineering.md` — evidence rules, BlastEm workflow, experiment format.
+- `docs/hardware.md` — VDP/DMA/controller/Z80 reference and game configurations.
+- `docs/ram-map.md` — phase-aware work-RAM map.
+- `docs/analysis/` — deep dives (annotated listings, why, experiments).
+- `docs/callgraph.md` — generated function index and call graph.
+- `docs/references.md`, `docs/glossary.md` — sources and terms.
 - `docs/modules/_template.md` — template for per-module cards.
 - `docs/modules/README.md` — index of module cards.
 

@@ -184,14 +184,19 @@ structure offsets. This is some of the most valuable documentation in the ROM.
 - `; unknown: <what>` or `TODO` in header fields for unverified facts.
 - Do not leave misleading confident comments in unanalyzed code.
 
-## 8. Code comments vs. module docs
+## 8. Code comments vs. analysis docs
 
-- **In code:** function contracts, hardware details, local invariants, quirks.
+- **In code:** function contracts, hardware details, local invariants, quirks. Comments
+  explain *why*; they are not a line-by-line narration.
 - **`docs/modules/<file>.md`:** architecture, control flow, data structures, external
-  API, hacks/bugs, open questions.
-- **`docs/architecture.md`:** ROM map, boot/interrupt flow, module index, RAM overview.
+  API, hacks/bugs, coverage matrix, open questions.
+- **`docs/analysis/<file>.md`:** deep dives for non-trivial routines — annotated listing,
+  algorithm, hardware interactions, "why" with evidence tags.
+- **`docs/hardware.md` / `docs/ram-map.md`:** hardware facts and phase-aware RAM.
+- **`docs/architecture.md`:** ROM map, boot/interrupt flow, module index.
 
-Avoid duplicating long prose; link instead.
+Avoid duplicating long prose; link instead. Rename proposals live in a table
+(Current | Proposed | Evidence | Confidence) and are applied only on request.
 
 ## 9. Incremental adoption & verification
 

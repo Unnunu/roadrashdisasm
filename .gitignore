@@ -4,6 +4,6 @@
 *.lst
 *.p
 build/
-analysis/
+/analysis/
 __pycache__/
 *.pyc

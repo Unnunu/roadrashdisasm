@@ -83,8 +83,15 @@ differing byte is reported. `baserom.md` is the only ROM file and is git-ignored
 | `tools/asl`, `tools/p2bin` | Assembler (Macro Assembler AS) and binary converter. Do not modify. |
 | `tools/disasm.py` | Capstone-based ROM range -> project AS source generator. |
 | `tools/roundtrip.py` | Round-trip verifier for `disasm.py` (ROM -> AS -> assemble -> compare). |
+| `tools/callgraph.py` | Best-effort function index / call graph generator. |
 | `tools/extract.py` | Asset extraction helper (Python 3 + Pillow). |
-| `docs/` | Reverse-engineering documentation (see below). |
+| `docs/architecture.md` | ROM map, boot/interrupt flow, module index. |
+| `docs/hardware.md` | VDP/DMA/controller/Z80 reference + game configurations. |
+| `docs/ram-map.md` | Phase-aware work-RAM map (structures, overlays). |
+| `docs/analysis/` | Deep dives per module/routine (annotated listings, why). |
+| `docs/callgraph.md` | Generated function index and call graph. |
+| `docs/references.md` | External hardware/CPU documentation links. |
+| `docs/glossary.md` | Project and hardware terms. |
 | `build/` | Generated build artifacts (git-ignored). |
 | `analysis/` | Local RE working data: RAM dumps, address logs, generated disassembly, notes (git-ignored). |
 
@@ -186,6 +193,10 @@ Read and follow `docs/coding-style.md` when editing sources. In short:
   documented overlay/scratch regions (see the `logoEA.asm` exception in the guide).
 - Do not introduce legacy cross-reference artifacts (`CODE XREF`, `DATA XREF`,
   `↑`/`↓` continuations); they were removed from the tree.
+- Deep analysis lives in `docs/analysis/` and module cards; source comments stay focused
+  on contracts and *why*, not line-by-line narration.
+- Rename proposals go in a table (Current | Proposed | Evidence | Confidence) and are
+  applied only on request.
 - Apply the guide incrementally when touching a file; do not mass-reformat.
 - After any rename, re-run `./build.sh` and require `Matched OK`.
 
@@ -193,21 +204,37 @@ Read and follow `docs/coding-style.md` when editing sources. In short:
 
 Read and follow `docs/reverse-engineering.md` when analyzing code behavior.
 
-- **No speculation.** Every claim must have evidence; tag it
-  `[static]`, `[dynamic]`, `[confirmed]`, `[hypothesis]`, or `[refuted]`.
+- **No speculation.** Every claim must have evidence; tag it `[static]`, `[dynamic]`,
+  `[confirmed]`, `[hardware]`, `[design]`, `[hypothesis]`, or `[refuted]`.
+  `[hardware]` = required by documented hardware; `[design]` = likely author intent
+  (always a hypothesis unless proven).
+- Analyze at all levels: architecture (L0), function contract (L1), algorithm (L2),
+  instruction/encoding (L3), hardware/why (L4), root cause/design (L5).
+- Definition of done per function: contract, algorithm, data, hardware, why, quirks,
+  dynamic verification where possible, open questions with experiments.
+- Maintain a coverage matrix per module:
+  `Function | Address | Contract | Algorithm | Data | Hardware | Why | Dynamic | Status`.
 - Unverified behavior stays `TODO`; do not encode guesses in names or confident comments.
 - Dynamic checks run in BlastEm: the user can use the native console, and the agent can
   drive the GDB remote stub headless (see `docs/reverse-engineering.md`). Prefer a
   small, targeted experiment over guessing.
+- Renames are proposed in the module card / `docs/analysis/` (Current | Proposed |
+  Evidence | Confidence) and applied only when the user asks; re-run `./build.sh` after.
 - Use `analysis/` for RAM dumps (`analysis/dumps/`), generated disassembly
   (`analysis/disasm/`) and logs; it is git-ignored.
-- Record verified facts, hypotheses, and experiments in the module card.
+- Record verified facts, hypotheses, and experiments in the module card and, for complex
+  routines, in `docs/analysis/<file>.md`.
 
 ## Documentation
 
 - `docs/architecture.md` — ROM map, boot/interrupt flow, module index, RAM overview.
 - `docs/coding-style.md` — identifiers, comments, function headers, RAM/overlay policy.
 - `docs/reverse-engineering.md` — evidence rules, BlastEm workflow, experiment format.
+- `docs/hardware.md` — hardware reference and per-screen VDP configurations.
+- `docs/ram-map.md` — phase-aware RAM map.
+- `docs/analysis/` — deep dives (annotated listings, why, experiments).
+- `docs/callgraph.md` — generated function index and call graph.
+- `docs/references.md`, `docs/glossary.md` — sources and terms.
 - `docs/modules/<file>.md` — one card per module, based on
   `docs/modules/_template.md`. Fields: role, control flow, RAM/ROM & structures,
   external calls/API, hacks/bugs, TODO.

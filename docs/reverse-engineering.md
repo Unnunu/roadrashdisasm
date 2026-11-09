@@ -7,7 +7,7 @@ How we determine what the code does and why. The guiding rule is simple:
 > confident comments.
 
 Related: `AGENTS.md`, `docs/coding-style.md`, `docs/architecture.md`,
-`docs/modules/_template.md`.
+`docs/hardware.md`, `docs/ram-map.md`, `docs/analysis/`, `docs/modules/_template.md`.
 
 ## 1. Evidence tags
 
@@ -18,11 +18,33 @@ tag:
 |---|---|
 | `[static]` | Follows from the code/data: control flow, constants, tables, call sites, ROM bytes. |
 | `[dynamic]` | Observed in BlastEm: registers, RAM, VRAM/CRAM/VSRAM, sprite list, plane state. |
+| `[hardware]` | Required/implied by documented hardware (VDP field, DMA constraint, CPU rule, ...). |
+| `[design]` | Likely author intent. Always a hypothesis unless a document proves it. |
 | `[confirmed]` | Static and dynamic evidence agree. |
 | `[hypothesis]` | Plausible but unverified. Keep `; TODO: verify` in code; do not rename based on it. |
 | `[refuted]` | Tested and disproved. Record it so it is not revisited. |
 
-Only `[confirmed]` facts may drive identifier renames or definitive code comments.
+Only `[confirmed]` facts may drive identifier renames or definitive code comments. A
+`why` without `[hardware]`/`[static]`/`[dynamic]` evidence stays `[design]`/`[unknown]`.
+
+### 1.1 Depth levels
+
+Analyze every function at all levels:
+
+| Level | Question |
+|---|---|
+| L0 | Where does it sit in the game flow, who calls it, which phase/screen? |
+| L1 | What is the contract (purpose, In/Out/Clobbers, side effects, invariants)? |
+| L2 | What is the algorithm, step by step, with data structures and edge cases? |
+| L3 | Why this instruction/operand size/addressing mode/constant? |
+| L4 | What hardware does it touch (VDP/DMA/CRAM/VSRAM/planes/sprites/controllers/Z80) and why? |
+| L5 | Why is it designed this way (memory/CPU budget, reuse, historical constraints)? |
+
+Definition of done per function: contract, algorithm, data, hardware, why, quirks,
+dynamic verification where possible, and open questions with experiments. Per module:
+a complete coverage matrix in the card (`Function | Address | Contract | Algorithm |
+Data | Hardware | Why | Dynamic | Status`) plus a deep dive in `docs/analysis/` for
+non-trivial routines.
 
 ## 2. Workflow
 
@@ -32,9 +54,9 @@ Only `[confirmed]` facts may drive identifier renames or definitive code comment
 4. **Run it**: the agent can drive BlastEm's GDB remote stub headless (section 3.2);
    use the native console when the user wants to run it interactively. For visual
    checks (VRAM/CRAM/planes), ask the user.
-5. **Record the result** with an evidence tag in the module card.
+5. **Record the result** with an evidence tag in the module card and the coverage matrix.
 6. **Update code comments/names only for confirmed facts.**
-7. Keep `docs/modules/<file>.md` in sync.
+7. Keep `docs/modules/<file>.md` and the matching `docs/analysis/<file>.md` in sync.
 
 ## 3. BlastEm debuggers
 
@@ -199,13 +221,19 @@ In the module card (`docs/modules/<file>.md`):
   (static: fade.asm; dynamic: BlastEm breakpoint at $1242)`).
 - **Hypotheses** — untested ideas, each with the experiment that would settle it.
 - **Experiments** — goal / setup / breakpoint / observed result.
+- **Coverage matrix** — one row per function with Contract/Algorithm/Data/Hardware/Why/
+  Dynamic/Status.
 - **Open questions** — what is still unknown.
 
-Never let a hypothesis masquerade as a fact.
+For complex routines, put the annotated listing, algorithm and detailed "why" in
+`docs/analysis/<file>.md`; the card links to it. Never let a hypothesis masquerade as a
+fact.
 
 ## 8. Naming and comments
 
 - Rename identifiers only after `[confirmed]` evidence, and as a separate explicit task.
+- Record rename proposals in a table: Current | Proposed | Evidence | Confidence. Apply
+  them only when the user asks.
 - Comments in code state confirmed behavior or explicitly say `TODO`.
 - Hardware/magic numbers should be explained from documentation or observation, not guessed.
 
