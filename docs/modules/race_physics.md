@@ -1,13 +1,13 @@
-# Module card: `race_physics.asm`
+# Module card: `src/race/race_physics.asm`
 
-- **ROM range:** `0x00D8FA`–`0x00E731` (`road_marking.asm` starts at `0xE732`)
+- **ROM range:** `0x00D8FA`–`0x00E731` (`src/race/road_marking.asm` starts at `0xE732`)
 - **Status:** partially analyzed (code region identified; actor/physics/AI functions TODO)
 - **Related:** `docs/analysis/race.md`, `docs/ram-map.md`, `docs/modules/race.md`
 
 ## Role / purpose
 
 `DmaWriteVRAM` plus the actor/physics/AI functions placed after the HUD and before the
-road-marking module. Called from `Race_GameTick`/`Race_Update` in `race_core.asm`.
+road-marking module. Called from `Race_GameTick`/`Race_Update` in `src/race/race_core.asm`.
 
 ## Entry points & API
 

@@ -1,8 +1,8 @@
-# Analysis: gap data tables (`race_data_tables.asm`, `race_engine_tables.asm`,
-`race_actor_extra_tables.asm`)
+# Analysis: gap data tables (`src/data/race_data_tables.asm`, `src/data/race_engine_tables.asm`,
+`src/data/race_actor_extra_tables.asm`)
 
 - **Status:** extracted + assembled byte-exactly; semantics partial
-- **Source:** the three files above; included from `main.asm` around `binclude` chunks
+- **Source:** the three files above; included from `src/main.asm` around `binclude` chunks
 - **Related:** `docs/modules/race_data_tables.md`, `docs/analysis/race_actors.md`,
   `docs/ram-map.md`
 
@@ -17,7 +17,7 @@
 | `RaceResults_CopTableNeg` | `$19EC2` | `$50` | 5 cops x 2 variants (negative money). |
 | `EndLevel_LevelRiderTable` | `$19F12` | `$50` | 5 levels x 2 variants (rival + Natasha). |
 
-Evidence [static]: the quote records are in `rider_intro_quotes.asm`; `RiderIntro_GameTick` indexes `d0` (0/8/0x10/0x18) + `(level-1)*$A0`
+Evidence [static]: the quote records are in `src/screens/rider_intro_quotes.asm`; `RiderIntro_GameTick` indexes `d0` (0/8/0x10/0x18) + `(level-1)*$A0`
 + `track*$10`; results use `(index-1)*$20`/$10 with `rand & $18`/$8; end level uses
 `(level-1)*$10` with `rand & 8`. All records are `(quote_ptr,image_ptr)` consumed by
 `UncompressW` + `WriteToVRAM/WriteNametableToBuffer`.
@@ -35,7 +35,7 @@ bridge.
 | `unk_257EE` | `$257EE` | `$14` | 10 words (engine timing). |
 | `unk_25802` | `$25802` | 8 | 2 longs copied to `ram_FFD330`. |
 | `unk_2580A` | `$2580A` | 8 | 2 longs copied to `ram_FFD338`. |
-| `unk_25812` | `$25812` | `$44` | 34 words used by `race_ai.asm`. |
+| `unk_25812` | `$25812` | `$44` | 34 words used by `src/race/race_ai.asm`. |
 
 `Race_InitPhysicsConstants` copies `unk_257D0` (9 words) and the two long pairs;
 `Audio_UpdateEngineState` reads `unk_257E2/E8/EE`; `race_ai` uses `unk_25812`.
@@ -54,7 +54,7 @@ bridge.
 
 `unk_25A10` is dereferenced as `movea.l (a3,d0.w),a3` (13 pointers). The other tables are
 read as words/bytes; exact field meanings are TODO. `unk_25EC0` and the per-track
-records/streams are now in `race_track_data.asm` (see `docs/analysis/race_track_data.md`).
+records/streams are now in `src/data/race_track_data.asm` (see `docs/analysis/race_track_data.md`).
 
 ## Open questions
 

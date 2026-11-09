@@ -1,4 +1,4 @@
-# Module card: `fade.asm`
+# Module card: `src/core/fade.asm`
 
 - **ROM range:** `0x001180`–`0x0013BF` (verify the exact end against `build/roadrash.lst`)
 - **Status:** partially analyzed
@@ -19,7 +19,7 @@ palette has finished changing.
 | `Fade_InitFadeIn` | `0x11C0` | `0x07E6F8` (boot/attract, outside current coverage) | Copies the global palette into the target buffer, clears the current buffer. |
 | `Fade_GameTickWithInit` | `0x1200` | not referenced in disassembled sources | Sets up VDP scroll/backdrop state, then falls through to `Fade_GameTick`. |
 | `Fade_GameTick` | `0x1242` | installed into `ram_UpdateFunction` (`$FF1A62`) by `0x07E6D6`, `0x07E6FC` | Steps the current palette toward the target; clears `ram_UpdateFunction` when done. |
-| `FadeWithFunction_GameTick` | `0x12F8` | compares against `ram_UpdateFunction` in `menu_main.asm` | Same stepping, then calls `Fade_ram_UpdateFunction` when the palette settles. |
+| `FadeWithFunction_GameTick` | `0x12F8` | compares against `ram_UpdateFunction` in `src/screens/menu_main.asm` | Same stepping, then calls `Fade_ram_UpdateFunction` when the palette settles. |
 
 ## Control flow / state machine
 
@@ -43,20 +43,20 @@ palette has finished changing.
 - `Fade_ram_CurrentPalette` `$FF0306` — 64 words (128 bytes).
 - `Fade_ram_TargetPalette` `$FF0386` — 64 words (128 bytes).
 - `ram_UpdateFunction` `$FF1A62` — main per-frame update pointer (cross-module; in
-  `ram_const.asm`).
+  `src/core/ram_const.asm`).
 
 ## External calls / dependencies
 
 - `DmaWriteCRAM` — palette DMA.
 - VDP control/data writes in `Fade_GameTickWithInit`.
-- Boot/attract sequence at `0x07E6A2` (now in `top_level.asm`) installs
+- Boot/attract sequence at `0x07E6A2` (now in `src/core/top_level.asm`) installs
   `Fade_GameTick` into `$FF1A62` and polls it until cleared.
 
 ## Hacks / bugs / quirks
 
 - `Fade_InitFadeOut` / `Fade_InitFadeIn` looked unreferenced at first: their addresses
   do not occur as 4-byte values, because the callers use `jsr` with a 16-bit absolute
-  operand (`4EB8 1180`, `4EB8 11C0`) in the top-level flow (`top_level.asm`, `0x07E6A2`).
+  operand (`4EB8 1180`, `4EB8 11C0`) in the top-level flow (`src/core/top_level.asm`, `0x07E6A2`).
 - The 4-byte occurrences of `$00001242` around `$7E6xx` are `move.l #...,$FF1A62`
   immediates, not a data pointer table.
 
@@ -72,7 +72,7 @@ palette has finished changing.
   `Fade_GameTick` into `$FF1A62`, then calls `Intro_Init` (`0x1704`) and
   `Fade_InitFadeIn`.
 - `[static]` `Fade_InitFadeOut` has 11 call sites and `Fade_InitFadeIn` has 9, all in
-  the top-level flow (`top_level.asm`, `$7E6A2`–`$7EA65`).
+  the top-level flow (`src/core/top_level.asm`, `$7E6A2`–`$7EA65`).
 - `[static]` The top-level flow pairs a fade-in (with `FadeWithFunction_GameTick`
   installed and a callback in `a0`) with a fade-out (with `Fade_GameTick` installed)
   around `Menu_Init` (`$3400`), `RiderIntro_Init` (`$59C4`), `HighScore_Init` (`$6DC0`),
@@ -125,4 +125,4 @@ palette has finished changing.
 - [ ] Confirm that `$00FF0586` is really just leftover `a0` from `Intro_Init` (static
   reading; dynamic trace of `Intro_Init` would settle it).
 - [ ] Verify the `±2` / `±$20` palette step constants with a CRAM/palette check.
-- [ ] Verify the exact end address of `fade.asm` in the ROM layout.
+- [ ] Verify the exact end address of `src/core/fade.asm` in the ROM layout.

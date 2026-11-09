@@ -11,10 +11,10 @@ Matching disassembly of **Road Rash** (Sega Genesis, 1991, US region).
   md5 `543b64ccb26c18edc6c98c12b1302dc0`.
 - Current coverage: the **full ROM** `0x000000`–`0x0BFFFF` assembles byte-exactly.
   Source/labelled data modules cover `0x000000`–`0x019F61` and `0x0257D0`–`0x07EA65`
-  (`rider_intro_quotes.asm`, `race_data_tables.asm`, `race_engine_tables.asm`,
-  `race_actor_tables.asm`, `race_actor_extra_tables.asm`, `race_track_data.asm`,
-  `road_shapes.asm`, `race_misc_data.asm`, `top_level.asm`, ...). Two raw bridges remain
-  in `main.asm`: `0x019F62`–`0x0257CF` (audio/sound, deferred) and `0x07EA66`–`0x0BFFFF`
+  (`src/screens/rider_intro_quotes.asm`, `src/data/race_data_tables.asm`, `src/data/race_engine_tables.asm`,
+  `src/data/race_actor_tables.asm`, `src/data/race_actor_extra_tables.asm`, `src/data/race_track_data.asm`,
+  `src/data/road_shapes.asm`, `src/data/race_misc_data.asm`, `src/core/top_level.asm`, ...). Two raw bridges remain
+  in `src/main.asm`: `0x019F62`–`0x0257CF` (audio/sound, deferred) and `0x07EA66`–`0x0BFFFF`
   (asset tail, `RomTail`; see `docs/analysis/rom_tail.md`).
 - `baserom.md` is local-only (git-ignored). Ask the user for it if missing.
 - All documentation and source comments in this project are **English**.
@@ -43,16 +43,18 @@ then:
 
 ```sh
 mkdir -p build
-tools/asl -cpu 68000 -L -olist build/roadrash.lst -o build/roadrash.p main.asm
+tools/asl -cpu 68000 -L -olist build/roadrash.lst -o build/roadrash.p \
+  -i src/core -i src/screens -i src/race -i src/data -i src/logoEA -i . \
+  src/main.asm
 tools/p2bin build/roadrash.p build/roadrash.bin
 cmp -n <built-size> build/roadrash.bin baserom.md
 ```
 
 The build now covers the **full ROM** `0x000000`–`0x0BFFFF`. The top-level flow at
-`0x07E6A2` is real source (`top_level.asm`); data modules are included from source with
+`0x07E6A2` is real source (`src/core/top_level.asm`); data modules are included from source with
 `binclude "baserom.md",<start>,<length>` chunks inside them. The remaining raw bridges
 are the audio range `0x019F62`–`0x0257CF` and the asset tail `0x07EA66`–`0x0BFFFF`
-(`RomTail`) in `main.asm`. The check
+(`RomTail`) in `src/main.asm`. The check
 compares the built image against the same-length prefix of `baserom.md`. On success the
 temporary `build/roadrash.bin` is removed; on mismatch it is kept and the first
 differing byte is reported. `baserom.md` is the only ROM file and is git-ignored;
@@ -62,44 +64,44 @@ differing byte is reported. `baserom.md` is the only ROM file and is git-ignored
 
 | Path | Contents |
 |------|----------|
-| `main.asm` | Entry point: 68000 vector table, ROM header, `RESET`/`start`, register defaults, Z80 sound-driver blob, `doStart`, input routines, interrupt/exception handlers, then `include`s of all modules. |
-| `hw_const.asm` | VDP/HV constants and VDP access macros. |
-| `unknown.asm` | Equates for not-yet-identified addresses (ROM pointers, audio entries). |
-| `ram_const.asm` | RAM address equates (`*_ram_*`, `ram_*`). |
-| `logoEA.asm` | Electronic Arts logo / decompression / drawing. |
-| `fade.asm` | Palette fade in/out. |
-| `intro.asm` | Intro sequence. |
-| `menu_password.asm` | Password menu. |
-| `menu_main.asm` | Main menu. |
-| `message.asm` | On-screen messages / button prompts. |
-| `rider_sprites.asm` | Rider/bike sprite chain builder. |
-| `rider_intro.asm` | Pre-race rider/opponent intro. |
-| `race_results.asm` | Post-race results screen. |
-| `highscore.asm` | High-score screen. |
-| `shop.asm` | Bike shop. |
-| `endlevel.asm` | End-of-level menu. |
-| `road_render.asm`, `race_hud_debug.asm`, `track_data.asm` | Road/object renderer; HUD digits/debug; track data decompressor. |
-| `uncompress.asm` | Decompression routines. |
-| `race_actor_tables.asm` | Actor pointer/graphics tables from the ROM gap ($25856-$259B5). |
-| `rider_intro_quotes.asm` | Rider-intro quote records from the ROM gap ($16E70-$19A11). |
-| `race_data_tables.asm` | Intro/results/level data tables from the ROM gap ($19A12-$19F61). |
-| `race_engine_tables.asm` | Physics/engine/audio-timing tables from the ROM gap ($257D0-$25855). |
-| `race_actor_extra_tables.asm` | Actor/AI tables from the ROM gap ($259B6-$25EBF). |
-| `race_track_data.asm` | Per-track records and data streams ($25EC0-$3BF19). |
-| `road_shapes.asm` | Road/object shape table and shape bytes ($3BF1A-$7DCA7). |
-| `race_misc_data.asm` | HUD/needle, palette and results tables ($7DCA8-$7E6A1). |
-| `rom_assets.asm` | Labelled asset/code tail ($7EA66-$BFFFF). |
-| `race.asm` | Include list for the split main gameplay (order: race_core, race_hud, race_physics, road_marking, race_ai, animation, race_spawn). |
-| `race_core.asm` | Race top-level/init/results/actor data. |
-| `race_hud.asm` | Race HUD. |
-| `race_physics.asm` | DmaWriteVRAM + actor/physics/AI functions. |
-| `road_marking.asm` | Road marking / sprite placement. |
-| `race_ai_road.asm` | Road profile/objects/standings/speed. |
-| `race_ai.asm` | Actor/input/AI/physics. |
-| `race_anim_audio.asm` | Animations, random, engine audio. |
-| `animation.asm` | Sprite animation. |
-| `race_spawn.asm` | Track data + dynamic spawn. |
-| `top_level.asm` | Top-level screen flow at `0x07E6A2` (intro/menu/race/results); generated with `tools/disasm.py`. |
+| `src/main.asm` | Entry point: 68000 vector table, ROM header, `RESET`/`start`, register defaults, Z80 sound-driver blob, `doStart`, input routines, interrupt/exception handlers, then `include`s of all modules. |
+| `src/core/hw_const.asm` | VDP/HV constants and VDP access macros. |
+| `src/core/unknown.asm` | Equates for not-yet-identified addresses (ROM pointers, audio entries). |
+| `src/core/ram_const.asm` | RAM address equates (`*_ram_*`, `ram_*`). |
+| `src/logoEA/logoEA.asm` | Electronic Arts logo / decompression / drawing. |
+| `src/core/fade.asm` | Palette fade in/out. |
+| `src/screens/intro.asm` | Intro sequence. |
+| `src/screens/menu_password.asm` | Password menu. |
+| `src/screens/menu_main.asm` | Main menu. |
+| `src/screens/message.asm` | On-screen messages / button prompts. |
+| `src/screens/rider_sprites.asm` | Rider/bike sprite chain builder. |
+| `src/screens/rider_intro.asm` | Pre-race rider/opponent intro. |
+| `src/screens/race_results.asm` | Post-race results screen. |
+| `src/screens/highscore.asm` | High-score screen. |
+| `src/screens/shop.asm` | Bike shop. |
+| `src/screens/endlevel.asm` | End-of-level menu. |
+| `src/race/road_render.asm`, `src/race/race_hud_debug.asm`, `src/race/track_data.asm` | Road/object renderer; HUD digits/debug; track data decompressor. |
+| `src/core/uncompress.asm` | Decompression routines. |
+| `src/data/race_actor_tables.asm` | Actor pointer/graphics tables from the ROM gap ($25856-$259B5). |
+| `src/screens/rider_intro_quotes.asm` | Rider-intro quote records from the ROM gap ($16E70-$19A11). |
+| `src/data/race_data_tables.asm` | Intro/results/level data tables from the ROM gap ($19A12-$19F61). |
+| `src/data/race_engine_tables.asm` | Physics/engine/audio-timing tables from the ROM gap ($257D0-$25855). |
+| `src/data/race_actor_extra_tables.asm` | Actor/AI tables from the ROM gap ($259B6-$25EBF). |
+| `src/data/race_track_data.asm` | Per-track records and data streams ($25EC0-$3BF19). |
+| `src/data/road_shapes.asm` | Road/object shape table and shape bytes ($3BF1A-$7DCA7). |
+| `src/data/race_misc_data.asm` | HUD/needle, palette and results tables ($7DCA8-$7E6A1). |
+| `src/data/rom_assets.asm` | Labelled asset/code tail ($7EA66-$BFFFF). |
+| `src/race/race.asm` | Include list for the split main gameplay (order: race_core, race_hud, race_physics, road_marking, race_ai, animation, race_spawn). |
+| `src/race/race_core.asm` | Race top-level/init/results/actor data. |
+| `src/race/race_hud.asm` | Race HUD. |
+| `src/race/race_physics.asm` | DmaWriteVRAM + actor/physics/AI functions. |
+| `src/race/road_marking.asm` | Road marking / sprite placement. |
+| `src/race/race_ai_road.asm` | Road profile/objects/standings/speed. |
+| `src/race/race_ai.asm` | Actor/input/AI/physics. |
+| `src/race/race_anim_audio.asm` | Animations, random, engine audio. |
+| `src/race/animation.asm` | Sprite animation. |
+| `src/race/race_spawn.asm` | Track data + dynamic spawn. |
+| `src/core/top_level.asm` | Top-level screen flow at `0x07E6A2` (intro/menu/race/results); generated with `tools/disasm.py`. |
 | `tools/asl`, `tools/p2bin` | Assembler (Macro Assembler AS) and binary converter. Do not modify. |
 | `tools/disasm.py` | Capstone-based ROM range -> project AS source generator. |
 | `tools/roundtrip.py` | Round-trip verifier for `disasm.py` (ROM -> AS -> assemble -> compare). |
@@ -125,6 +127,8 @@ Include order matters: it determines code layout in the ROM. Do not reorder incl
 - `tools/asl` is Macro Assembler AS (`AS V1.42 Beta`), **not** GNU `as` and **not**
   ASM68K/clownassembler. Its syntax and defaults differ from both.
 - Target is plain **68000**; pass `-cpu 68000` (required).
+- Source include paths: `-i src/core -i src/screens -i src/race -i src/data
+  -i src/logoEA -i .`; `binclude` asset paths stay root-relative (`assets/...`).
 - `tools/p2bin` converts the `.p` object to a raw binary.
 
 ## AS syntax rules (hard requirements for byte-exactness)
@@ -146,7 +150,7 @@ under AS. Breaking them almost always changes the emitted bytes.
 
 Also:
 
-- `supmode on` and `padding off` are set at the top of `main.asm`:
+- `supmode on` and `padding off` are set at the top of `src/main.asm`:
   - `padding off` stops AS from inserting alignment bytes before instructions/data at
     odd addresses (ASM68K never did this for 68000).
   - `supmode on` declares supervisor mode and silences privileged-instruction warnings.
@@ -173,7 +177,7 @@ python3 tools/roundtrip.py 0x1180 0x13c0
 ```
 
 The tool resolves known symbols from `build/roadrash.lst` and the equates in
-`ram_const.asm` / `unknown.asm` / `hw_const.asm`, creates `sub_XXXX` / `loc_XXXX`
+`src/core/ram_const.asm` / `src/core/unknown.asm` / `src/core/hw_const.asm`, creates `sub_XXXX` / `loc_XXXX`
 labels for internal branch/call targets, and preserves the original encoding sizes
 (`.s`/`.w` branches, abs.w/abs.l, `0.w(aN)`, ...).
 
@@ -212,8 +216,8 @@ Read and follow `docs/coding-style.md` when editing sources. In short:
 - Identifiers carry the meaning; comments explain *why*, not the mnemonic.
 - Every function gets a `; *****` header with mandatory
   Purpose / In / Out / Clobbers / Notes fields, closed by `; End of function <Name>`.
-- RAM equates normally live in `ram_const.asm`; module-local maps are allowed only for
-  documented overlay/scratch regions (see the `logoEA.asm` exception in the guide).
+- RAM equates normally live in `src/core/ram_const.asm`; module-local maps are allowed only for
+  documented overlay/scratch regions (see the `src/logoEA/logoEA.asm` exception in the guide).
 - Do not introduce legacy cross-reference artifacts (`CODE XREF`, `DATA XREF`,
   `↑`/`↓` continuations); they were removed from the tree.
 - Deep analysis lives in `docs/analysis/` and module cards; source comments stay focused
@@ -283,7 +287,8 @@ The build must report `0 errors`. The only accepted warning class is the one abo
 - `build/` (generated artifacts), `assets/` (generated asset slices/previews) and
   `analysis/` (local RE working data).
 - `tools/asl`, `tools/p2bin` (prebuilt toolchain).
-- `LogoEA_Image_ElectronicArts.bin` (asset used by `binclude`).
+- `LogoEA_Image_ElectronicArts.bin` is **not** a repository file anymore: it is
+  generated as `assets/images/ea_logo/data.bin` from `baserom.md`.
 
 ## Git / commit policy
 

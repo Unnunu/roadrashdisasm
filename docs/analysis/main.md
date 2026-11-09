@@ -1,9 +1,9 @@
-# Analysis: `main.asm` (boot flow)
+# Analysis: `src/main.asm` (boot flow)
 
 - **Module / routine:** boot/init (RESET, defaults, Z80 stub, doStart)
 - **ROM range:** `0x000200`–`0x0002FA` (boot code), `0x00028E`–`0x0002C3` (data)
 - **Status:** boot flow analyzed; input/IRQ/helpers TODO
-- **Source:** `main.asm`
+- **Source:** `src/main.asm`
 - **Related:** `docs/architecture.md`, `docs/hardware.md`, `docs/ram-map.md`
 
 ## Coverage matrix
@@ -98,7 +98,7 @@ word enables DMA). Writing 0 to `VdpData` (`move.w d0,(a3)`) starts the fill wit
 
 `[hardware]` The boot comment on reg `$00` ("palette select") was inaccurate: palette
 selection for the backdrop is in reg `$07` bits 5-4; reg `$00` bit2 is a fixed "1".
-The comment is corrected in `main.asm`.
+The comment is corrected in `src/main.asm`.
 
 ## 4. Z80 load and reset sequence
 
@@ -116,7 +116,7 @@ $0000 -> $A11200   ; assert reset again (line 163)
 
 `[hardware]` Per the standard Z80 bus sequence: `$0000` = assert reset, `$0100` =
 release reset; `$0100` = request bus, `$0000` = release bus. The in-source comments on
-these lines were inverted; they are corrected in `main.asm` (comments only).
+these lines were inverted; they are corrected in `src/main.asm` (comments only).
 
 `[static]` The 38-byte stub (`z80_start`): clears the rest of Z80 RAM with an
 overlapping `LDIR`, sets I/R, restores registers from zeroed stack slots, writes

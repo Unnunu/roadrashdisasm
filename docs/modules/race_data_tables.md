@@ -1,7 +1,7 @@
 # Module card: gap data tables
 
-- **Files / ranges:** `race_data_tables.asm` (`$19A12-$19F61`),
-  `race_engine_tables.asm` (`$257D0-$25855`), `race_actor_extra_tables.asm`
+- **Files / ranges:** `src/data/race_data_tables.asm` (`$19A12-$19F61`),
+  `src/data/race_engine_tables.asm` (`$257D0-$25855`), `src/data/race_actor_extra_tables.asm`
   (`$259B6-$25EBF`)
 - **Status:** tables extracted from the ROM gap and assembled from source; semantics
   partial (audio timing/extra tables TODO)

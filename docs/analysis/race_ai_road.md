@@ -1,10 +1,10 @@
-# Analysis: `race_ai_road.asm` (road profile, objects, visible list, standings)
+# Analysis: `src/race/race_ai_road.asm` (road profile, objects, visible list, standings)
 
 - **Module:** road profile/height/curve, HScroll/marking tables, object/visible lists,
   sprite-tile staging, race standings/results, speed display
 - **ROM range:** `0x00EB34`–`0x010DFF`
 - **Status:** analyzed (roles/flow); some render/object internals and data layouts TODO
-- **Source:** `race_ai_road.asm`
+- **Source:** `src/race/race_ai_road.asm`
 - **Related:** `docs/analysis/race.md`, `docs/analysis/race_physics.md`,
   `docs/analysis/race_spawn.md`, `docs/modules/race_ai_road.md`, `docs/ram-map.md`
 

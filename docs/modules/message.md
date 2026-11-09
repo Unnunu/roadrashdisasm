@@ -1,4 +1,4 @@
-# Module card: `message.asm`
+# Module card: `src/screens/message.asm`
 
 - **ROM range:** `0x004226`–`0x00575F`
 - **Status:** analyzed (message system/strings; shared data tables partly TODO)
@@ -27,13 +27,13 @@ descriptions).
 ## Message field / VDP context
 
 - Bottom `40x6` cells (x=0..39, y=22..27) of `Menu_ram_FrameBuffer` (the 64x28 window
-  nametable, DMA'd to VRAM `$7000`; see `menu_main.asm`).
+  nametable, DMA'd to VRAM `$7000`; see `src/screens/menu_main.asm`).
 - Text: font tiles (`$0000`) via `EncodeString` + `WriteNametableToBuffer`.
 - Icons: gamepad image at VRAM `$A000` (tile base `$500`, nametable base `$2500` =
   palette line 1). A=4, B=5/6, C=7/8, Start=9/$A/$B, dpad=0/$2FF/$2/$3 and
   $C/$D/$E/$F/$2FF; `$2FF` = blank/black.
 - `WriteNametableToBuffer`/`Masked` take `d0 = width`, `d1 = height` (source headers in
-  `menu_main.asm` had them swapped; corrected).
+  `src/screens/menu_main.asm` had them swapped; corrected).
 
 ## Message array
 
@@ -58,7 +58,7 @@ frames / off 32. `Message_ram_ButtonBlinkCounter` ($FF05E6) and
   `StrOnePlayerModeSelected` `0x4888`, `StrTwoPlayerModeSelected` `0x48F4`,
   `StrMusicOn` `0x4960`, `StrMusicOff` `0x49A4`.
 - `Menu_dRaceNameTable` race-name/tooltip pointers (used by `Menu_BuildRaceTooltip` in `menu_main`).
-- `unk_4C18` demo high-score table (used by `intro.asm`).
+- `unk_4C18` demo high-score table (used by `src/screens/intro.asm`).
 - `unk_4CA4`…`unk_4DDC` main-menu tooltips, `unk_4E20` ".. password invalid ..",
   `unk_4E78`/`unk_4EE4`/`word_4EEE` password labels, `unk_4F4A`…`unk_5668`
   shop/password/high-score tooltips and bike descriptions.

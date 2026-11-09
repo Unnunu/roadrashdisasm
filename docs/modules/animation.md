@@ -1,6 +1,6 @@
-# Module card: `animation.asm`
+# Module card: `src/race/animation.asm`
 
-- **ROM range:** `0x016860`–`0x0169AF` (`race_spawn.asm` starts at `0x169B0`)
+- **ROM range:** `0x016860`–`0x0169AF` (`src/race/race_spawn.asm` starts at `0x169B0`)
 - **Status:** analyzed (scripts/data + dynamic TODO)
 - **Related:** `docs/analysis/animation.md`, `docs/analysis/rider_sprites.md`,
   `docs/analysis/race_hud.md`, `docs/analysis/race.md`, `docs/ram-map.md`,

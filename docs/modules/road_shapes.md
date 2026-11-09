@@ -1,4 +1,4 @@
-# Module card: `road_shapes.asm`
+# Module card: `src/data/road_shapes.asm`
 
 - **ROM range:** `0x03BF1A`–`0x07DCA7` (`unk_7DCA8` starts the next data)
 - **Status:** table/count/data location extracted; shape record format TODO
@@ -9,7 +9,7 @@
 ## Role / purpose
 
 `Road_ShapeTable` maps an object shape index (`+8`/`+$12`) to a shape-data pointer.
-`Road_ScaleShape`/`Road_ProjectShape` in `road_render.asm` and the race AI read the
+`Road_ScaleShape`/`Road_ProjectShape` in `src/race/road_render.asm` and the race AI read the
 shape bytes to build the road strip/object geometry. The shape bytes are opaque,
 byte-oriented data included from `baserom.md`.
 

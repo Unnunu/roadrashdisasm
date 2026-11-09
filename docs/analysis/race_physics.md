@@ -1,10 +1,10 @@
-# Analysis: `race_physics.asm` (camera, HInt scroll, rearview, nearest opponent)
+# Analysis: `src/race/race_physics.asm` (camera, HInt scroll, rearview, nearest opponent)
 
 - **Module:** VDP DMA helpers, rearview mirror/camera, HInt V/HScroll tables,
   road-marking HUD, actor-sprite projection, nearest-opponent/engine audio
 - **ROM range:** `0x00D8FA`–`0x00E731`
 - **Status:** analyzed (roles/flow); some table offsets and audio/audio fields TODO
-- **Source:** `race_physics.asm`
+- **Source:** `src/race/race_physics.asm`
 - **Related:** `docs/analysis/race.md`, `docs/analysis/race_spawn.md`,
   `docs/modules/race_physics.md`, `docs/ram-map.md`
 
@@ -36,7 +36,7 @@ Data: `Race_RoadMarkingDataA/B` (`0xDC84`/`0xDD44`), `ram_FF33CC` road rows,
   palette.
 - `Race_BuildVScrollInfo`/`Race_BuildHScrollTable` fill the per-frame
   `Race_ram_CurrentVScrollInfo`/`CurrentHScrollTable` buffers consumed by the HInt
-  (main.asm `HorizontalInterrupt`).
+  (src/main.asm `HorizontalInterrupt`).
 
 ## RAM / fields
 
@@ -51,9 +51,9 @@ Data: `Race_RoadMarkingDataA/B` (`0xDC84`/`0xDD44`), `ram_FF33CC` road rows,
 ## Open questions
 
 - Exact HInt layer/table offsets and the sky/horizon/road splits.
-- Engine-audio mapping of `ram_FF36B0/B4` into the main.asm audio.
+- Engine-audio mapping of `ram_FF36B0/B4` into the src/main.asm audio.
 - `Race_ProjectActorSprite` field semantics and the road-marking data layout.
-- The `race_ai.asm` road profile/interpolation/object/AI chain (next).
+- The `src/race/race_ai.asm` road profile/interpolation/object/AI chain (next).
 
 ## Rename proposals (apply only on request)
 

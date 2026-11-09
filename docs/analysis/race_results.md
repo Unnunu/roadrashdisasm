@@ -1,9 +1,9 @@
-# Analysis: `race_results.asm` (post-race results / bust / repair)
+# Analysis: `src/screens/race_results.asm` (post-race results / bust / repair)
 
 - **Module:** post-race result screens: normal standings, caught-by-cops, bike repair
-- **ROM range:** `0x005F28`–`0x006DBF` (`highscore.asm` starts at `0x6DC0`)
+- **ROM range:** `0x005F28`–`0x006DBF` (`src/screens/highscore.asm` starts at `0x6DC0`)
 - **Status:** analyzed statically (demo skips the screen; rendering dynamic TODO)
-- **Source:** `race_results.asm`
+- **Source:** `src/screens/race_results.asm`
 - **Related:** `docs/architecture.md`, `docs/hardware.md`, `docs/ram-map.md`
 
 ## Coverage matrix
@@ -20,7 +20,7 @@
 
 ## Role & flow
 
-After a race the top-level flow (`top_level.asm` `0x7E8F4`) runs `Race_ComputeStandings` and
+After a race the top-level flow (`src/core/top_level.asm` `0x7E8F4`) runs `Race_ComputeStandings` and
 `Race_ComputeResults` (race outcome/fines), then loops through
 `RaceResults_Init`/`RaceResults_GameTick`. The screen shows one of:
 
@@ -34,7 +34,7 @@ After a race the top-level flow (`top_level.asm` `0x7E8F4`) runs `Race_ComputeSt
 Start exits (top-level: outcome 4 -> EndLevel screen, otherwise back to the menu);
 A opens the high-score table; C opens the bike shop; B shows the cash/password box.
 
-## Outcome flags (computed by `Race_ComputeResults` in `race.asm`)
+## Outcome flags (computed by `Race_ComputeResults` in `src/race/race.asm`)
 
 | Address | Meaning |
 |---|---|
@@ -43,7 +43,7 @@ A opens the high-score table; C opens the bike shop; B shows the cash/password b
 | `Race_EventBuffer` | 16-long race sort/event buffer; first word `$FFFF` = busted or bike destroyed. |
 | `Race_CopIndex` | Cop/officer index (1..5) when busted; 0 = bike destroyed. |
 | `ram_FF091A` | Fine/repair amount: cop fine = `PlayerLevel * $14`; repair = 10% of the bike price (`Shop_dPrices`), deducted from money. |
-| `ram_FF1414`/`FF1418`/`FF141A` | Standings string header/text, height, width (built by `race.asm`). |
+| `ram_FF1414`/`FF1418`/`FF141A` | Standings string header/text, height, width (built by `src/race/race.asm`). |
 | `Menu_ram_PlayerLevel` | Level (1..5) for the fine, repair and congratulations text. |
 
 Message group by outcome: 0 -> index 21 (`unk_5276`: complete every course); >4 ->
@@ -68,7 +68,7 @@ index 28 (`unk_52CE`: complete every course in 4th place or better); 4 -> index 
 - Panel `unk_7EA66` -> `$B000`, 12x14 at (2,5), base `$580`.
 - Select the cop portrait from `RaceResults_CopTablePos` (money >= 0, 5x4 variants) or `RaceResults_CopTableNeg`
   (money < 0, 5x2), index `Race_CopIndex-1`, random variant (`&$18` / `&8`).
-- Same asset format as `rider_intro.asm`: 8-byte interleaved size/header prefix; header
+- Same asset format as `src/screens/rider_intro.asm`: 8-byte interleaved size/header prefix; header
   gives name string, image/nametable/palette offsets. Draw 10x12 at (3,6), name at
   (3,19), quote at (16,y/2) with stride 128.
 - Message: `unk_56AC` "Caught by the cops / Your fine -" with `ram_FF091A` formatted by
@@ -110,7 +110,7 @@ WindowY 28), sprite/HScroll `$6000`, 128x32, display on, H-int off. Background
 `img_MainMenu_Background` -> `$8000`, gamepad -> `$A000` (plane), font -> `$0`, panel
 `unk_7EA66` -> `$B000`, portrait -> `$C000`; frame buffer -> `$7000`.
 
-Track-image tables (just before `top_level.asm`):
+Track-image tables (just before `src/core/top_level.asm`):
 
 | Address | Contents |
 |---|---|
@@ -139,13 +139,13 @@ Result portrait tables (8-byte records `quote_ptr, image_ptr`):
   the next level, you need to earn ... more.", "Continue play at Current level",
   "The next level will be level") is not referenced in the source; likely dead/legacy
   data. `[static]`
-- The demo path skips this module (`top_level.asm` `0x7E8B4` -> menu), so a dynamic
+- The demo path skips this module (`src/core/top_level.asm` `0x7E8B4` -> menu), so a dynamic
   capture needs the non-demo race.
 
 ## Dynamic status
 
 Not captured: the demo skips results and forcing the non-demo race needs input. Table
-contents and the flag logic are parsed statically from `baserom.md` and `race.asm`.
+contents and the flag logic are parsed statically from `baserom.md` and `src/race/race.asm`.
 To confirm visually: finish a non-demo race in the native console and inspect the
 standings/police/repair screens.
 

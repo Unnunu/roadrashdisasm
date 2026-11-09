@@ -1,10 +1,10 @@
-# Analysis: `race_anim_audio.asm` (PRNG, engine audio, animation/target/collision)
+# Analysis: `src/race/race_anim_audio.asm` (PRNG, engine audio, animation/target/collision)
 
 - **Module:** PRNG, engine audio/gear state, player animation, nearest-target,
   collision/proximity, and the track/animation data tables
 - **ROM range:** `0x014056`–`0x01685F`
 - **Status:** analyzed (roles/flow); some animation/collision/audio fields TODO
-- **Source:** `race_anim_audio.asm`
+- **Source:** `src/race/race_anim_audio.asm`
 - **Related:** `docs/analysis/race.md`, `docs/analysis/race_ai.md`,
   `docs/analysis/race_physics.md`, `docs/modules/race_anim_audio.md`,
   `docs/ram-map.md`
@@ -60,7 +60,7 @@ and sets the two indexes (`ram_FF18FE`/`ram_FF1900`, 0..31). `Rand_GetWord` retu
 - Exact animation table/scripts and `sub_141...`/`sub_155...` helpers.
 - Engine-audio mapping of `$6B/$6C/$6D` and `ram_FF1AD7` into the sound driver.
 - Collision/impact rules and the `ram_FF1A68` data.
-- Next: `race_hud.asm`/`road_marking.asm`/`animation.asm` cards/internals.
+- Next: `src/race/race_hud.asm`/`src/race/road_marking.asm`/`src/race/animation.asm` cards/internals.
 
 ## Rename proposals
 

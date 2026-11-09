@@ -1,9 +1,9 @@
-# Analysis: `rider_intro.asm` (pre-race rider/opponent intro)
+# Analysis: `src/screens/rider_intro.asm` (pre-race rider/opponent intro)
 
 - **Module:** rider/opponent introduction screen shown between the main menu and the race
 - **ROM range:** `0x0059C4`–`0x005F27` (`RiderIntro_Init` `0x59C4`, `RiderIntro_GameTick` `0x5E66`)
 - **Status:** analyzed statically; rendering not yet confirmed dynamically (demo skips it)
-- **Source:** `rider_intro.asm`
+- **Source:** `src/screens/rider_intro.asm`
 - **Related:** `docs/architecture.md`, `docs/hardware.md`, `docs/ram-map.md`
 
 ## Coverage matrix
@@ -18,7 +18,7 @@
 
 ## Role & flow
 
-`top_level.asm` calls `RiderIntro_Init`/`RiderIntro_GameTick` at `0x7E78C`/`0x7E790` after
+`src/core/top_level.asm` calls `RiderIntro_Init`/`RiderIntro_GameTick` at `0x7E78C`/`0x7E790` after
 the main-menu fade, **only when `MainMenu_ram_DemoMode == 0`** (`0x7E782`); the demo
 branch (`0x7E7CC`) goes to the high-score demo instead. The screen shows the rider you
 will race next: portrait, name, a taunt/quote, and an optional extra overlay, then
@@ -41,7 +41,7 @@ returns to the race when the held button is released (or after the message timer
   Sergio, Helldog, O'Shea; e.g. level 1 track 0 variants = Natasha, Biff, Slater,
   Natasha (variant 3); level 5 track 0 = O'Connor, Sergio, Helldog, O'Connor.
 
-## Quote data (`rider_intro_quotes.asm`, `0x16E70-$19A11`)
+## Quote data (`src/screens/rider_intro_quotes.asm`, `0x16E70-$19A11`)
 
 - Quote records are `8-byte header + height*width text`: header `(word y, word x,
   word height, word width)`, text is fixed-size and space-padded.
@@ -51,7 +51,7 @@ returns to the race when the held button is released (or after the message timer
   `0x16E70-$19863`; e.g. `$16E70`: y=7, x=16, h=4, w=19, then 76 text bytes.
   Some records are separated by 1-4 padding bytes and the tail to `$19A11` is
   unreferenced/unknown.
-- The region is assembled as one labelled `binclude` in `rider_intro_quotes.asm`.
+- The region is assembled as one labelled `binclude` in `src/screens/rider_intro_quotes.asm`.
 - The 11 unique image pointers are `$AF902-$BE628` (ROM tail after the current
   `$7EA65` build coverage), so the portraits are not part of the current image yet.
 
@@ -150,7 +150,7 @@ the blinking Start icon, index 20 = terminator. The screen therefore auto-exits 
 
 ## Dynamic status
 
-The demo path skips this screen (`top_level.asm` `0x7E782`), and the GDB forced-path
+The demo path skips this screen (`src/core/top_level.asm` `0x7E782`), and the GDB forced-path
 experiment (patched `0x7E788` branch) did not reach `RiderIntro_Init` within the test
 budget. To confirm visually: press Start on the main menu in the native console (non-demo
 path), then inspect VRAM `$7000`/the portrait palette. Rendering/positions above are

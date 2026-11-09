@@ -1,6 +1,6 @@
-# Module card: `endlevel.asm`
+# Module card: `src/screens/endlevel.asm`
 
-- **ROM range:** `0x008342`–`0x008FB3` (`road_render.asm` starts at `0x8FB4`)
+- **ROM range:** `0x008342`–`0x008FB3` (`src/race/road_render.asm` starts at `0x8FB4`)
 - **Status:** analyzed (static; non-demo only)
 - **Related:** `docs/architecture.md`, `docs/reverse-engineering.md`,
   `docs/hardware.md`, `docs/ram-map.md`, `docs/analysis/endlevel.md`
@@ -16,7 +16,7 @@ of a level are finished in 1st-4th (`ram_FF0918 == 4`).
 
 | Symbol | Address | Called by | Description |
 |--------|---------|-----------|-------------|
-| `EndLevel_Init` | `0x8342` | `top_level.asm` `0x7E9FA` | Build the animation stage. |
+| `EndLevel_Init` | `0x8342` | `src/core/top_level.asm` `0x7E9FA` | Build the animation stage. |
 | `EndLevel_GameTick` | `0x8AEE` | fade wrapper | Animation timing/input/swap. |
 | `EndLevel_UpdateAnimation` | `0x8B94` | top-level frame loop | Animation script update. |
 | `EndLevel_InitVictoryCharacter` | `0x8682` | `GameTick` end stage | Level-up rider screen. |
@@ -62,7 +62,7 @@ Detailed listing: `docs/analysis/endlevel.md`.
 
 ## External calls / dependencies
 
-- Callers: `top_level.asm`.
+- Callers: `src/core/top_level.asm`.
 - Uses `UncompressW/B`, `UncompressToVRAM`, `WriteToVRAM`, `WriteNametable(ToBuffer)`,
   `EncodeString`, `Menu_ShowMessage`, `DmaWriteVRAM`, `DmaWriteCRAM`,
   `UpdateAnimation2`, `Race_FinishFrame`, `Race_SwapFrames`, `GetInputPlayerA/B`,
@@ -75,7 +75,7 @@ Detailed listing: `docs/analysis/endlevel.md`.
 - The level-up rider is selected before the level is incremented. `[static]`
 - Start release ends the victory animation; Start held ends the character screen.
 - The level-up text at `$8C96`..`$8D8A` is unreferenced and duplicates the
-  `race_results.asm` tail. `[static]`
+  `src/screens/race_results.asm` tail. `[static]`
 
 ## Verified facts
 

@@ -1,9 +1,9 @@
-# Analysis: `road_marking.asm` (road markings -> sprites)
+# Analysis: `src/race/road_marking.asm` (road markings -> sprites)
 
 - **Module:** road marking scan, band sizing, sprite geometry/creation, tile patterns
 - **ROM range:** `0x00E732`–`0x00EB33`
 - **Status:** analyzed (partial; dynamic/visual TODO)
-- **Source:** `road_marking.asm`
+- **Source:** `src/race/road_marking.asm`
 - **Related:** `docs/analysis/road_render.md`, `docs/analysis/animation.md`,
   `docs/modules/road_marking.md`, `docs/ram-map.md`
 

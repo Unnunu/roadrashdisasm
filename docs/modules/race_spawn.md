@@ -1,9 +1,9 @@
-# Module card: `race_spawn.asm`
+# Module card: `src/race/race_spawn.asm`
 
-- **ROM range:** `0x0169B0`–`0x016E6F` (after `animation.asm`)
+- **ROM range:** `0x0169B0`–`0x016E6F` (after `src/race/animation.asm`)
 - **Status:** analyzed (track data init/next chunk + dynamic spawn)
 - **Related:** `docs/analysis/race_spawn.md`, `docs/analysis/race_actors.md`,
-  `race_actor_tables.asm`,
+  `src/data/race_actor_tables.asm`,
   `docs/ram-map.md`, `docs/modules/race.md`
 
 ## Role / purpose
@@ -16,10 +16,10 @@ actor lists; the final part of the race module.
 | Symbol | Address | Called by | Description |
 |--------|---------|-----------|-------------|
 | `TrackData_InitLevel` | `0x169B0` | `Race_Init` | Initial track data + scaling. |
-| `TrackData_DecodeNextChunk` | `0x16A32` | `top_level.asm` | Next 64-sample chunk. |
+| `TrackData_DecodeNextChunk` | `0x16A32` | `src/core/top_level.asm` | Next 64-sample chunk. |
 | `Race_SpawnTick` | `0x16AF6` | `Race_Update` | Opponent/traffic spawn. |
 | `Race_SpawnOpponent`/`Traffic` | `0x16BD6`/`0x16C1A` | spawn tick | Ahead/behind paths. |
-| `Race_UpdateSpeedDisplay`/`Race_FormatDecimal` | `0xF108`/`0xF11C` | HUD/debug | Speed/decimal (`race_ai_road.asm`). |
+| `Race_UpdateSpeedDisplay`/`Race_FormatDecimal` | `0xF108`/`0xF11C` | HUD/debug | Speed/decimal (`src/race/race_ai_road.asm`). |
 
 ## Coverage matrix
 

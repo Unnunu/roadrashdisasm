@@ -1,4 +1,4 @@
-# Module card: `race.asm`
+# Module card: `src/race/race.asm`
 
 - **ROM range:** `0x00A4E2`–`0x016E6F`; include split (order below)
 - **Status:** partially analyzed (top-level flow, init/assets, input/loop, buffer
@@ -11,40 +11,40 @@
 
 Main gameplay: level/asset setup, the per-frame simulation/render loop, player input and
 steering, actor/opponent/physics updates, road interpolation and rendering, HUD/road
-marking/animation, and the race outcome. `top_level.asm` calls `Race_Init`, installs
+marking/animation, and the race outcome. `src/core/top_level.asm` calls `Race_Init`, installs
 `Race_GameTick` as the frame update, and calls `Race_Update` each frame.
 
 ## Split modules
 
 | File | ROM | Role | Card |
 |---|---|---|---|
-| `race_core.asm` | `$A4E2-$D277` | Top-level/init/results/actor data | [race_core.md](race_core.md) |
-| `race_hud.asm` | `$D278-$D8F9` | Race HUD | [race_hud.md](race_hud.md) |
-| `race_physics.asm` | `$D8FA-$E731` | DMA, camera, HInt scroll, rearview/marking, nearest opponent | [race_physics.md](race_physics.md) |
-| `road_marking.asm` | `$E732-$EB33` | Road marking / sprite placement | [road_marking.md](road_marking.md) |
-| `race_ai_road.asm` | `$EB34-$10DFF` | Road profile/objects/standings/speed | [race_ai_road.md](race_ai_road.md) |
-| `race_ai.asm` | `$10E00-$14055` | Actor/input/AI/physics | [race_ai.md](race_ai.md) |
-| `race_anim_audio.asm` | `$14056-$1685F` | Animations, random, engine audio | [race_anim_audio.md](race_anim_audio.md) |
-| `animation.asm` | `$16860-$169AF` | Sprite animation | [animation.md](animation.md) |
-| `race_spawn.asm` | `$169B0-$16E6F` | Track data + dynamic spawn | [race_spawn.md](race_spawn.md) |
-| `race_actor_tables.asm` | `$25856-$259B5` | Actor pointer/graphics tables (ROM gap data) | - |
-| `race_data_tables.asm` | `$19A12-$19F61` | Intro/results/level tables (ROM gap data) | [race_data_tables.md](race_data_tables.md) |
-| `race_engine_tables.asm` | `$257D0-$25855` | Physics/engine/audio tables (ROM gap data) | [race_data_tables.md](race_data_tables.md) |
-| `race_actor_extra_tables.asm` | `$259B6-$25EBF` | Actor/AI tables (ROM gap data) | [race_data_tables.md](race_data_tables.md) |
-| `race_track_data.asm` | `$25EC0-$3BF19` | Per-track records/streams (ROM gap data) | [race_track_data.md](race_track_data.md) |
-| `road_shapes.asm` | `$3BF1A-$7DCA7` | Road/object shape table/data (ROM gap) | [road_shapes.md](road_shapes.md) |
-| `race_misc_data.asm` | `$7DCA8-$7E6A1` | HUD/palette/results tables (ROM gap) | [race_misc_data.md](race_misc_data.md) |
+| `src/race/race_core.asm` | `$A4E2-$D277` | Top-level/init/results/actor data | [race_core.md](race_core.md) |
+| `src/race/race_hud.asm` | `$D278-$D8F9` | Race HUD | [race_hud.md](race_hud.md) |
+| `src/race/race_physics.asm` | `$D8FA-$E731` | DMA, camera, HInt scroll, rearview/marking, nearest opponent | [race_physics.md](race_physics.md) |
+| `src/race/road_marking.asm` | `$E732-$EB33` | Road marking / sprite placement | [road_marking.md](road_marking.md) |
+| `src/race/race_ai_road.asm` | `$EB34-$10DFF` | Road profile/objects/standings/speed | [race_ai_road.md](race_ai_road.md) |
+| `src/race/race_ai.asm` | `$10E00-$14055` | Actor/input/AI/physics | [race_ai.md](race_ai.md) |
+| `src/race/race_anim_audio.asm` | `$14056-$1685F` | Animations, random, engine audio | [race_anim_audio.md](race_anim_audio.md) |
+| `src/race/animation.asm` | `$16860-$169AF` | Sprite animation | [animation.md](animation.md) |
+| `src/race/race_spawn.asm` | `$169B0-$16E6F` | Track data + dynamic spawn | [race_spawn.md](race_spawn.md) |
+| `src/data/race_actor_tables.asm` | `$25856-$259B5` | Actor pointer/graphics tables (ROM gap data) | - |
+| `src/data/race_data_tables.asm` | `$19A12-$19F61` | Intro/results/level tables (ROM gap data) | [race_data_tables.md](race_data_tables.md) |
+| `src/data/race_engine_tables.asm` | `$257D0-$25855` | Physics/engine/audio tables (ROM gap data) | [race_data_tables.md](race_data_tables.md) |
+| `src/data/race_actor_extra_tables.asm` | `$259B6-$25EBF` | Actor/AI tables (ROM gap data) | [race_data_tables.md](race_data_tables.md) |
+| `src/data/race_track_data.asm` | `$25EC0-$3BF19` | Per-track records/streams (ROM gap data) | [race_track_data.md](race_track_data.md) |
+| `src/data/road_shapes.asm` | `$3BF1A-$7DCA7` | Road/object shape table/data (ROM gap) | [road_shapes.md](road_shapes.md) |
+| `src/data/race_misc_data.asm` | `$7DCA8-$7E6A1` | HUD/palette/results tables (ROM gap) | [race_misc_data.md](race_misc_data.md) |
 
-`race.asm` includes these in exactly that order; the code is split at the original
+`src/race/race.asm` includes these in exactly that order; the code is split at the original
 `race_hud`/`road_marking`/`animation` include boundaries.
 
 ## Entry points & API
 
 | Symbol | Address | Called by | Description |
 |--------|---------|-----------|-------------|
-| `Race_Init` | `0xA4E2` | `top_level.asm` `0x7E80C` | Full level/race setup + warm-up frames. |
+| `Race_Init` | `0xA4E2` | `src/core/top_level.asm` `0x7E80C` | Full level/race setup + warm-up frames. |
 | `Race_GameTick` | `0xBA76` | fade wrapper | VDP/input/pause/demo per-frame update. |
-| `Race_Update` | `0xC00C` | `top_level.asm` `0x7E87A` | Simulation + render prep. |
+| `Race_Update` | `0xC00C` | `src/core/top_level.asm` `0x7E87A` | Simulation + render prep. |
 | `Race_GetInput` | `0xBE56` | `Race_GameTick` | Steering/buttons/pause. |
 | `Race_GetInputDemo` | `0xBE2C` | `Race_GameTick` (demo) | Any button ends the demo. |
 | `Race_SwapFrames` | `0xBBFE` | `Race_GameTick` | Pre-switch the next buffers. |
@@ -95,9 +95,9 @@ marking/animation, and the race outcome. `top_level.asm` calls `Race_Init`, inst
   `Menu_ram_FrameBuffer/2`, `Race_ram_FrameReady/2`, `Race_ram_SpriteSize1/2`,
   `Intro_ram_ImageBuffer`/`Race_ram_ImageBuffer2`, VScroll info
   `ram_FF3FDC/$411C/$425C`, HUD/SAT/HScroll DMA.
-- Subsystems: `race_hud.asm` (0xD278), `road_marking.asm` (0xE732),
-  `animation.asm` (0x16860); road/object renderer `road_render.asm`; track decoder
-  `track_data.asm`; LZSS `uncompress.asm`.
+- Subsystems: `src/race/race_hud.asm` (0xD278), `src/race/road_marking.asm` (0xE732),
+  `src/race/animation.asm` (0x16860); road/object renderer `src/race/road_render.asm`; track decoder
+  `src/race/track_data.asm`; LZSS `src/core/uncompress.asm`.
 
 ## Coverage matrix
 
@@ -121,15 +121,15 @@ marking/animation, and the race outcome. `top_level.asm` calls `Race_Init`, inst
 | `Race_CreateActors` | `0xCAD0` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
 | `Race_SpawnTick` + spawn | `0x16AF6`+ | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
 | Actors/physics/AI | `0xD9DA`+ | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | TODO |
-| `race_hud.asm` | `0xD278` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
-| `road_marking.asm` | `0xE732` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
-| `animation.asm` | `0x16860` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
+| `src/race/race_hud.asm` | `0xD278` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
+| `src/race/road_marking.asm` | `0xE732` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
+| `src/race/animation.asm` | `0x16860` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
 
 Detailed top-level flow: `docs/analysis/race.md`; actors: `docs/analysis/race_actors.md`; spawn: `docs/analysis/race_spawn.md`; split cards above.
 
 ## External calls / dependencies
 
-- Callers: `top_level.asm`.
+- Callers: `src/core/top_level.asm`.
 - Uses `UncompressW/B`, `UncompressToVRAM`, `WriteToVRAM`, `WriteNametable(ToBuffer)`,
   `DmaWriteVRAM`, `DmaWriteCRAM`, `PiecewiseLinearInterpolation`, `Road_DrawObjects`
   (`road_render`), `RaceHud_Draw`, `RoadMarking_Draw`, `UpdateAnimation(2)`, the audio

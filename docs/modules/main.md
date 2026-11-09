@@ -1,4 +1,4 @@
-# Module card: `main.asm`
+# Module card: `src/main.asm`
 
 - **ROM range:** `0x000000`–`0x0016E6F` (entry `RESET` at `0x000200`; includes interleaved)
 - **Status:** partially analyzed (boot flow done; input/IRQ/helpers TODO)

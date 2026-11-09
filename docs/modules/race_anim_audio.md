@@ -1,6 +1,6 @@
-# Module card: `race_anim_audio.asm`
+# Module card: `src/race/race_anim_audio.asm`
 
-- **ROM range:** `0x014056`–`0x01685F` (`animation.asm` starts at `0x16860`)
+- **ROM range:** `0x014056`–`0x01685F` (`src/race/animation.asm` starts at `0x16860`)
 - **Status:** TODO (region identified; animations/random/audio internals not analyzed)
 - **Related:** `docs/analysis/race.md`, `docs/analysis/rider_sprites.md`,
   `docs/analysis/race_physics.md`, `docs/ram-map.md`, `docs/modules/race.md`
@@ -10,7 +10,7 @@
 Actor/road animations, random helpers and engine-audio routines:
 `Race_UpdateLeanCurve`..`Race_UpdateCollision`, `Rand_Init`/`Rand_GetWord`, `Audio_UpdateEngine0`,
 `Audio_UpdateEngineState`/audio helpers, and the data tables in between. Feeds the animation engine
-(`animation.asm`/`RiderSprites_Build`) and the engine sound.
+(`src/race/animation.asm`/`RiderSprites_Build`) and the engine sound.
 
 ## Entry points & API
 

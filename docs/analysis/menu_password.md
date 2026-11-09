@@ -1,10 +1,10 @@
-# Analysis: `menu_password.asm` (password entry / game state)
+# Analysis: `src/screens/menu_password.asm` (password entry / game state)
 
 - **Module / routine:** password entry screen, player name/password editing, password
   validation/parsing/generation
-- **ROM range:** `0x002446`–`0x0033FF` (`menu_main.asm` starts at `0x3400`)
+- **ROM range:** `0x002446`–`0x0033FF` (`src/screens/menu_main.asm` starts at `0x3400`)
 - **Status:** analyzed (password format/checksum reimplemented; exact visual cursor TODO)
-- **Source:** `menu_password.asm`
+- **Source:** `src/screens/menu_password.asm`
 - **Related:** `docs/architecture.md`, `docs/hardware.md`, `docs/ram-map.md`
 
 ## Coverage matrix
@@ -33,7 +33,7 @@
 - `MenuPassword_SetCursorPos` writes the **high byte** of `d0` into the frame buffer cell
   (`y*128 + x*2`); the game calls it with `$6000` to restore the text palette and `0`
   to draw/erase the cursor cell. The character (low byte) is unchanged.
-- The VDP context is `Menu_Init` (`menu_main.asm`): planes A/B share `$4000`, the window
+- The VDP context is `Menu_Init` (`src/screens/menu_main.asm`): planes A/B share `$4000`, the window
   nametable at `$7000` holds the 64x28 frame buffer, and the window covers the screen
   (`WindowY=28`). The password DMA destination `$7200` is therefore window row 4; the
   64x24 password area occupies rows 4-27. The sprite and H-scroll tables overlap at

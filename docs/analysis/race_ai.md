@@ -1,10 +1,10 @@
-# Analysis: `race_ai.asm` (on-foot input, actor AI, bike lean/curve)
+# Analysis: `src/race/race_ai.asm` (on-foot input, actor AI, bike lean/curve)
 
 - **Module:** on-foot player/AI input, actor AI loop, static actor AI, bike lean/curve,
   curve speed limit, actor sprite setup, movement/collision helpers
 - **ROM range:** `0x010E00`–`0x014055`
 - **Status:** analyzed (roles/flow); exact AI/collision field semantics partly TODO
-- **Source:** `race_ai.asm`
+- **Source:** `src/race/race_ai.asm`
 - **Related:** `docs/analysis/race.md`, `docs/analysis/race_ai_road.md`,
   `docs/analysis/race_physics.md`, `docs/modules/race_ai.md`, `docs/ram-map.md`
 
@@ -61,8 +61,8 @@ speed/curve (`ram_FF302E/3032/3034`, `word_14742`). `Race_GetCurveSpeedLimit` re
   flips `$46` when clamped.
 - The table targets `sub_16458`, `sub_165D0`, `sub_165E0`, `sub_16612`, `sub_16624`,
   `sub_1662C`, `sub_16644`, `sub_1666A`, `sub_166B0`, `sub_166DC` in
-  `race_anim_audio.asm`.
-- Code at these entry points is now disassembled in `race_ai.asm`; exact AI/action
+  `src/race/race_anim_audio.asm`.
+- Code at these entry points is now disassembled in `src/race/race_ai.asm`; exact AI/action
   semantics and dynamic behavior remain TODO.
 
 ## RAM / fields
@@ -80,7 +80,7 @@ Actor fields used here: `$12` Speed, `$14`, `$16` type, `$22`/`$26` movement,
 - Static/police actor role and the `$FF2FAA` actor.
 - AI tables (`unk_10E3E`/`unk_12B7C`/`unk_13A1A`) and the on-foot rules.
 - Exact actor-action handler semantics (`0x12FE4`..`0x131BE`) and dynamic checks.
-- Next: `race_anim_audio.asm` (animations/random/audio).
+- Next: `src/race/race_anim_audio.asm` (animations/random/audio).
 
 ## Rename proposals
 

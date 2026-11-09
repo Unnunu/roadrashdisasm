@@ -1,4 +1,4 @@
-# Module card: `rider_intro.asm`
+# Module card: `src/screens/rider_intro.asm`
 
 - **ROM range:** `0x0059C4`–`0x005F27` (`RiderIntro_Init` `0x59C4`,
   `RiderIntro_GameTick` `0x5E66`)
@@ -17,10 +17,10 @@ to the race and records the controller in `Race_ram_ActiveController`.
 
 | Symbol | Address | Called by | Description |
 |--------|---------|-----------|-------------|
-| `RiderIntro_Init` | `0x59C4` | `top_level.asm` `0x7E78C` | Build the screen. |
-| `RiderIntro_GameTick` | `0x5E66` | `top_level.asm` `0x7E790` (fade wrapper) | Per-frame update/input. |
+| `RiderIntro_Init` | `0x59C4` | `src/core/top_level.asm` `0x7E78C` | Build the screen. |
+| `RiderIntro_GameTick` | `0x5E66` | `src/core/top_level.asm` `0x7E790` (fade wrapper) | Per-frame update/input. |
 
-`top_level.asm` skips the screen when `MainMenu_ram_DemoMode != 0` (`0x7E782`).
+`src/core/top_level.asm` skips the screen when `MainMenu_ram_DemoMode != 0` (`0x7E782`).
 
 ## Control flow / state machine
 
@@ -39,7 +39,7 @@ to the race and records the controller in `Race_ram_ActiveController`.
   header at `p`: `-10` string ptr (name at `+6`), `-6` image offset, `-4` nametable
   offset, `-2` palette offset.
 - Quote: `8-byte header (y,x,height,width) + width*height text`; the 85 unique quote
-  records (`$16E70-$19863`) are in `rider_intro_quotes.asm` (tail to `$19A11` raw).
+  records (`$16E70-$19863`) are in `src/screens/rider_intro_quotes.asm` (tail to `$19A11` raw).
 - The 11 unique portrait images are at `$AF902-$BE628`, in the ROM tail after the
   current `$7EA65` build coverage.
 - `ram_FF0520` = selected player's 2-bit "extra" field (`$FF0522`/`$FF0524`); variant 3
@@ -60,7 +60,7 @@ Detailed listing, table parse and layout: `docs/analysis/rider_intro.md`.
 
 ## External calls / dependencies
 
-- Callers: `top_level.asm`.
+- Callers: `src/core/top_level.asm`.
 - Uses `UncompressW/B`, `WriteToVRAM`, `WriteNametable(ToBuffer)`, `EncodeString`,
   `Menu_ShowMessage`, `DmaWriteVRAM`, `Rand_GetWord`, `GetInputPlayerA/B`,
   `AudioFunc1/4`.

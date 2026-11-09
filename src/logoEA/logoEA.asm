@@ -1035,4 +1035,4 @@ logoEA_dCircleShadowLength:
     dc.b    4,8,11,14,21,28,37,30,0
 
 LogoEA_Image_ElectronicArts:        
-    binclude "LogoEA_Image_ElectronicArts.bin"
+    binclude "assets/images/ea_logo/data.bin"

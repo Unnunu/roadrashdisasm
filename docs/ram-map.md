@@ -2,7 +2,7 @@
 
 Work RAM is 64 KiB at `$FF0000`–`$FFFFFF`. The game **reuses** the same bytes in
 different phases (overlays), so a flat map is misleading: this document is organised by
-subsystem and phase. Source of truth for addresses remains `ram_const.asm`; this file adds
+subsystem and phase. Source of truth for addresses remains `src/core/ram_const.asm`; this file adds
 meaning, size, invariants and overlap notes.
 
 Status tags: `[static]` from code; `[dynamic]` observed; `[confirmed]` both;
@@ -10,11 +10,11 @@ Status tags: `[static]` from code; `[dynamic]` observed; `[confirmed]` both;
 
 ## Conventions
 
-- Address format: `$FFxxxx` (24-bit). Some modules (e.g. `logoEA.asm`) use the equivalent
+- Address format: `$FFxxxx` (24-bit). Some modules (e.g. `src/logoEA/logoEA.asm`) use the equivalent
   32-bit sign-extended form `$FFFFxxxx`; keep it where the ROM encodes it literally.
 - Fields named `Subsystem_ram_Field`; unknown bytes stay `ram_XXXXXX`.
 - Record size and alignment when known (`; size $N` comments already appear in
-  `ram_const.asm`).
+  `src/core/ram_const.asm`).
 - Overlay regions must say which phases share them and which module owns them at each
   time.
 
@@ -33,7 +33,7 @@ Status tags: `[static]` from code; `[dynamic]` observed; `[confirmed]` both;
 - Audio is deferred, but the sound code seen at `$19FAA` uses a control block starting at
   `$FFFF0000` and later loads the Z80 driver from `$1DA12` into `$A00000`.
 
-## Fade (`fade.asm`)
+## Fade (`src/core/fade.asm`)
 
 | Address | Name | Size | Meaning |
 |---|---|---|---|
@@ -42,7 +42,7 @@ Status tags: `[static]` from code; `[dynamic]` observed; `[confirmed]` both;
 | `$FF0306` | `Fade_ram_CurrentPalette` | `$80` | Current palette (64 words). |
 | `$FF0386` | `Fade_ram_TargetPalette` | `$80` | Target palette (64 words). |
 
-## Intro (`intro.asm`)
+## Intro (`src/screens/intro.asm`)
 
 | Address | Name | Size | Meaning |
 |---|---|---|---|
@@ -63,7 +63,7 @@ is analyzed:
   `BikeIdPlayerA/B`, `Player`, `PlayerMode`, `NextMessageTimer`,
   `MessageBlinkTimer`, `CurrentMessageId`, `TempString`, `FrameBuffer`,
   `FrameBuffer2` (`$FFC4AC`, size `$E00`), `DemoMode`.
-### Password menu (`menu_password.asm`)
+### Password menu (`src/screens/menu_password.asm`)
 
 | Address | Name | Size | Meaning |
 |---|---|---|---|
@@ -85,7 +85,7 @@ The player state used by the password system: `Menu_ram_Player` `$FF0508`, level
 `$FF0520`), places `$FF052E/$FF0538`, opponents `$FF0546/$FF0566`, bike ids
 `$FF0542/$FF0544`.
 
-### Main menu (`menu_main.asm`)
+### Main menu (`src/screens/menu_main.asm`)
 
 | Address | Name | Size | Meaning |
 |---|---|---|---|
@@ -104,7 +104,7 @@ The player state used by the password system: `Menu_ram_Player` `$FF0508`, level
 | `$FFB62C` | `Menu_ram_FrameBuffer` | `$E00` | 64x28 window/text frame buffer (DMA to `$7000`). |
 | `$FF8364` | `Race_ram_ImageBuffer2` | TODO | Race badge/card nametable staging. |
 
-### Character intro (`rider_intro.asm`)
+### Character intro (`src/screens/rider_intro.asm`)
 
 | Address | Name | Size | Meaning |
 |---|---|---|---|
@@ -121,9 +121,9 @@ ROM: `RiderIntro_RecordTable` = `[5 levels][5 tracks][4 variants]` 8-byte record
 carry an 8-byte interleaved `size/header` prefix; the header gives the name string,
 image/nametable/palette offsets (see `docs/analysis/rider_intro.md`).
 
-### Actors/player and race state (`race.asm`)
+### Actors/player and race state (`src/race/race.asm`)
 
-The top-level `race.asm` analysis is in `docs/analysis/race.md`; the actor tables and
+The top-level `src/race/race.asm` analysis is in `docs/analysis/race.md`; the actor tables and
 definitions are in `docs/analysis/race_actors.md`. Initial field inventory:
 
 | Offset | Size | Field | Evidence |
@@ -146,7 +146,7 @@ Actor instances (`$80` each): `RacePlayerA`/`RacePlayerB` (`$FF1EAA`/`$FF26AA`),
 15 opponents `$FF1F2A`..`$FF262A` (`Race_ActorList`), static actors
 `$FF2EAA`/`$FF2F2A` (type `$10`); `$FF2FAA` is a further actor-like instance used by
 `Race_UpdateStaticActors` (`$68` bit6), role TODO. `Road_ObjectArray` (`$FFD37C`) is the separate
-0x14-byte road object array (`road_render.asm`).
+0x14-byte road object array (`src/race/road_render.asm`).
 
 Actor tables: `Race_ActorList` `$25856` (16 actor pointers + sentinel),
 `Race_ActorListMid` `$2585E`, `Race_StaticActorList` `$2589A`,
@@ -167,7 +167,7 @@ Buffers: `Intro_TitleScrollTable`/`Intro_TitleScrollSpeed` (+$400 SAT),
 `Intro_ram_ImageBuffer`/`Race_ram_ImageBuffer2`, VScroll info
 `ram_FF3FDC/$411C/$425C` with `Race_ram_Alpha1/2/3`, HUD/SAT/HScroll DMA targets.
 
-### Spawn/traffic (`race.asm`)
+### Spawn/traffic (`src/race/race.asm`)
 
 | Address | Name | Size | Meaning |
 |---|---|---|---|
@@ -188,7 +188,7 @@ Buffers: `Intro_TitleScrollTable`/`Intro_TitleScrollSpeed` (+$400 SAT),
 (`x-$100000`), with active/free lists and distance checks; `Race_UpdateSpeedDisplay`
 + `Race_FormatDecimal` produce `ram_FF3046`. See `docs/analysis/race_spawn.md`.
 
-### PRNG/audio/animation (`race_anim_audio.asm`)
+### PRNG/audio/animation (`src/race/race_anim_audio.asm`)
 
 | Address | Name | Size | Meaning |
 |---|---|---|---|
@@ -208,7 +208,7 @@ Actor fields: `$3E/$40/$42` lean, `$4A/$5A` collision/range, `$5C` tile base,
 32-word sum PRNG; `Rand_GetWord` returns `state[i1]+state[i2]`. See
 `docs/analysis/race_anim_audio.md`.
 
-### Actors/AI (`race_ai.asm`)
+### Actors/AI (`src/race/race_ai.asm`)
 
 | Address | Name | Size | Meaning |
 |---|---|---|---|
@@ -227,7 +227,7 @@ movement, `$30`/`$36/$38` Y/road, `$3E/$40/$42` lean, `$56`, `$68`/`$69` flags,
 `unk_10E3E`, `unk_12B7C`, `unk_12D0A`, `unk_13A1A`; curve limit `unk_14056`.
 See `docs/analysis/race_ai.md`.
 
-### Road profile/objects (`race_ai_road.asm`)
+### Road profile/objects (`src/race/race_ai_road.asm`)
 
 | Address | Name | Size | Meaning |
 |---|---|---|---|
@@ -245,7 +245,7 @@ fills the profile arrays; `Road_BuildVisibleList` builds `ram_FF1D50`; `Race_Wri
 stages sprite tiles. Standings: `Race_ComputeStandings`/`Race_ScaleResultValue`. See
 `docs/analysis/race_ai_road.md`.
 
-### Camera/HInt/rearview (`race_physics.asm`)
+### Camera/HInt/rearview (`src/race/race_physics.asm`)
 
 | Address | Name | Size | Meaning |
 |---|---|---|---|
@@ -263,12 +263,12 @@ stages sprite tiles. Standings: `Race_ComputeStandings`/`Race_ScaleResultValue`.
 | `ram_FF3238` | `ram_FF3238` | - | Road marking widths; `RoadMarking_ram_WidthArray`/`ram_FF3A9C` X. |
 
 `Race_BuildVScrollInfo`/`Race_BuildHScrollTable` produce the per-frame
-`Race_ram_CurrentVScrollInfo`/`CurrentHScrollTable` data for the HInt in `main.asm`;
+`Race_ram_CurrentVScrollInfo`/`CurrentHScrollTable` data for the HInt in `src/main.asm`;
 `Race_DrawRearviewMirror`/`Race_DrawRoadMarkingHud` draw the mirror/marking in the HUD;
 `Race_UpdateNearestOpponent` produces the nearest-opponent/engine-audio values.
 See `docs/analysis/race_physics.md`.
 
-### Race results (`race_results.asm`)
+### Race results (`src/screens/race_results.asm`)
 
 | Address | Name | Size | Meaning |
 |---|---|---|---|
@@ -287,12 +287,12 @@ ROM tables: `$19D32` (level, money>=0, 5x4), `$19DD2` (level, money<0, 5x2),
 offsets, `$7E68E` nametable offsets, `$7E698` palette offsets.
 See `docs/analysis/race_results.md`.
 
-### High score (`highscore.asm`)
+### High score (`src/screens/highscore.asm`)
 
 | Address | Name | Size | Meaning |
 |---|---|---|---|
 | `$FF05EA` | `HighScore_ram_Table` | 8+140 | Header `(22,16,7,20)` + 7 x 20-char entries. |
-| `$FF05F2` | table text | 140 | First entry; built by `intro.asm`, sorted by `Race_UpdateHighScoreTable`. |
+| `$FF05F2` | table text | 140 | First entry; built by `src/screens/intro.asm`, sorted by `Race_UpdateHighScoreTable`. |
 | `$FF052A`/`$FF052C` | `HighScore_ram_PlayerATableOffset/B` | 2 each | Player row offsets (20*5 / 20*6 initially). |
 | `$FF094E` | `HighScore_ram_CurrentButtons` | 2 | Buttons handled by A/B/C. |
 | `$FF3692` | `MainMenu_ram_DemoMode` | 2 | Cleared on a demo release -> menu; 1 -> demo race. |
@@ -301,7 +301,7 @@ The screen draws entries 0..4 (table font `$800`) and the player rows at the off
 (regular font `$0`). Assets: title `$A2F5C`, badge `$7EB72`, fonts `$A2BAA`->`$800`,
 `$A2E68`->`$1000`. See `docs/analysis/highscore.md`.
 
-### Bike shop (`shop.asm`)
+### Bike shop (`src/screens/shop.asm`)
 
 | Address | Name | Size | Meaning |
 |---|---|---|---|
@@ -319,7 +319,7 @@ ROM: `Shop_BikeDescriptions` `$81D2`, `Shop_dPrices` `$8312`, `Shop_BikeImageTab
 current price/2; money -= price - current/2; regenerate the password. See
 `docs/analysis/shop.md`.
 
-### HUD digits/debug (`race_hud_debug.asm`)
+### HUD digits/debug (`src/race/race_hud_debug.asm`)
 
 | Address | Name | Size | Meaning |
 |---|---|---|---|
@@ -330,10 +330,10 @@ current price/2; money -= price - current/2; regenerate the password. See
 
 Digit HUD: `d1` packed row/column -> offset `row*128+column*2`; tile `$5C0+digit`, bit15
 priority, `d2` palette/priority. Buffers `Race_ram_CurrentHudBuffer`/`NextHudBuffer`.
-`Race_FormatDecimal` (`race.asm`) formats distance/POSZ values. No direct callers; likely debug/
+`Race_FormatDecimal` (`src/race/race.asm`) formats distance/POSZ values. No direct callers; likely debug/
 alternate HUD. See `docs/analysis/race_hud_debug.md`.
 
-### Race HUD (`race_hud.asm`)
+### Race HUD (`src/race/race_hud.asm`)
 
 | Address | Name | Size | Meaning |
 |---|---|---|---|
@@ -353,7 +353,7 @@ alternate HUD. See `docs/analysis/race_hud_debug.md`.
 `RaceHud_Draw` -> time/place/stamina/HP/names/speed/RPM/odometer. HUD entry offset is
 `2*(y*64+x)`; tile entries set bit 15 + palette. See `docs/analysis/race_hud.md`.
 
-### Road marking (`road_marking.asm`)
+### Road marking (`src/race/road_marking.asm`)
 
 | Address | Name | Size | Meaning |
 |---|---|---|---|
@@ -371,7 +371,7 @@ alternate HUD. See `docs/analysis/race_hud_debug.md`.
 X/width arrays, and stops at `Animation_ram_SpriteIndex >= 80`. See
 `docs/analysis/road_marking.md`.
 
-### Animation (`animation.asm`)
+### Animation (`src/race/animation.asm`)
 
 | Address | Name | Size | Meaning |
 |---|---|---|---|
@@ -385,7 +385,7 @@ Script: `{tilemap, frame_count, frame_ptrs[]}`; frame: `count`, then
 `(dy,size,palette/flip/tile,dx)` per sprite. `UpdateAnimation` copies tiles;
 `UpdateAnimation2` assumes them in VRAM. See `docs/analysis/animation.md`.
 
-### Road/object renderer (`road_render.asm`)
+### Road/object renderer (`src/race/road_render.asm`)
 
 | Address | Name | Size | Meaning |
 |---|---|---|---|
@@ -403,9 +403,9 @@ Script: `{tilemap, frame_count, frame_ptrs[]}`; frame: `count`, then
 | `$FF136A` | horizon | 2 | Road horizon/limit. |
 
 SAT is double-buffered: `$FF479C`/`$FF4E1C`. Shape table `Road_ShapeTable` (`$3BF1A`,
-564 entries) and shape data `$3C7EC-$7DCA7` are in `road_shapes.asm`. See `docs/analysis/road_render.md`; the exact projection math is TODO.
+564 entries) and shape data `$3C7EC-$7DCA7` are in `src/data/road_shapes.asm`. See `docs/analysis/road_render.md`; the exact projection math is TODO.
 
-### End level (`endlevel.asm`)
+### End level (`src/screens/endlevel.asm`)
 
 | Address | Name | Size | Meaning |
 |---|---|---|---|
@@ -419,7 +419,7 @@ buffers. Level-up rider table `$19F12` (5 levels x 2), frame counts `$8C8C`,
 animation script `$8DC2`, tiles `$80000`, window image `$7F400`. `EndLevel_AdvanceLevel` advances the
 level/opponents/password. See `docs/analysis/endlevel.md`.
 
-### Track data decoder (`track_data.asm`)
+### Track data decoder (`src/race/track_data.asm`)
 
 | Address | Name | Size | Meaning |
 |---|---|---|---|
@@ -430,11 +430,11 @@ level/opponents/password. See `docs/analysis/endlevel.md`.
 | `$FF1A52`/`$FF1A56` | `RaceTrack_Data2/3` | 4 each | Compressed track streams. |
 | `$FF1A6C` | `ram_FF1A6C` | 4 | Per-track scaling table pointer. |
 
-ROM: `off_16AB0` (race.asm) -> per-track tables; tables `$A054/$A08C/$A094/$A0CC`
+ROM: `off_16AB0` (src/race/race.asm) -> per-track tables; tables `$A054/$A08C/$A094/$A0CC`
 (bit masks/shifts). Race callers scale channel 1 by `signed byte * factor / $10000`
 (128 samples at level start, 64-sample chunks afterwards). See `docs/analysis/track_data.md`.
 
-### Decompressor (`uncompress.asm`)
+### Decompressor (`src/core/uncompress.asm`)
 
 The LZSS ring is `Road_ram_XLeftArray` (0x1000 bytes, prefilled `$20`). Streaming
 decoder state (`UncompressStreamStart`/`UncompressStreamContinue`):
@@ -446,10 +446,10 @@ decoder state (`UncompressStreamStart`/`UncompressStreamContinue`):
 | `$FF13A8` | mid-match flag | 2 | `$FFFF` while resuming inside a back-reference. |
 | `$FF13AA` | VRAM assembly | 4 | `UncompressToVRAM` 4-byte buffer. |
 
-`WriteToVRAM` (`race.asm`) takes the decompressed tile count from the first long's low
+`WriteToVRAM` (`src/race/race.asm`) takes the decompressed tile count from the first long's low
 word (high word `$0808` marker). See `docs/analysis/uncompress.md`.
 
-### Messages (`message.asm`)
+### Messages (`src/screens/message.asm`)
 
 | Address | Name | Size | Meaning |
 |---|---|---|---|
@@ -462,7 +462,7 @@ word (high word `$0808` marker). See `docs/analysis/uncompress.md`.
 The message field is rows 22-27 (40x6) of `Menu_ram_FrameBuffer`.
 - `RaceResults_ram_*`, `HighScore_ram_*`, `Shop_ram_*`, `EndLevel_ram_*` — TODO.
 
-## Race (`race.asm`, `race_hud.asm`, `road_marking.asm`, `animation.asm`)
+## Race (`src/race/race.asm`, `src/race/race_hud.asm`, `src/race/road_marking.asm`, `src/race/animation.asm`)
 
 Known so far:
 
@@ -472,7 +472,7 @@ Known so far:
 | `$FF1E82` | `ram_FF1E82` | 2 | Best/last progress value. |
 | `$FF1E96`, `$FF1E9A`, `$FF1E9E` | `ram_FF1E96/9A/9E` | 4? | Race progress snapshots. |
 | `$FF1B3E` | `ram_FF1B3E` | 2 | Cleared at the start of the top-level flow. |
-| `$FF3692` | `MainMenu_ram_DemoMode` | 2 | Demo/attract flag (named in `ram_const.asm`). |
+| `$FF3692` | `MainMenu_ram_DemoMode` | 2 | Demo/attract flag (named in `src/core/ram_const.asm`). |
 | `$FF3696` | `Race_ram_State` | 2 | Race state / demo selector. |
 | `$FF3698`, `$FF369A` | `ram_FF3698/9A` | 2 | Race/demo flags. |
 | `$FF0910` | `ram_FF0910` | 4 | Next-screen selector for the results dispatcher. |
@@ -488,7 +488,7 @@ Known so far:
 | `$FF36BE`/`$FF36C0` | `ram_FF36BE/C0` | 2 | Second object's target/current smoothed value. |
 | `$FF36C4` | `ram_FF36C4` | 2 | Base value added to the speed computation. |
 
-Rider/bike sprite builder (`rider_sprites.asm`):
+Rider/bike sprite builder (`src/screens/rider_sprites.asm`):
 
 | Address | Name | Size | Meaning |
 |---|---|---|---|
@@ -516,7 +516,7 @@ Race structures (player/bike state, sprite tables, road arrays, HUD buffers) are
 
 ## logoEA overlay (phase-specific)
 
-`logoEA.asm` keeps its own map at `$FFFF0000`/`$FFFFC000`… It is an **overlay** used during
+`src/logoEA/logoEA.asm` keeps its own map at `$FFFF0000`/`$FFFFC000`… It is an **overlay** used during
 the EA-logo phase and physically overlaps later menu buffers (e.g. `TilesSquare $FFC0E4`
 overlaps `Menu_ram_FrameBuffer2 $FFC4AC`). Values are written 32-bit because the ROM
 encodes them literally (e.g. `movea.l #LogoEA_ram_Base` → `207C FFFF 0000`). Do not
@@ -540,5 +540,5 @@ normalize to `$FFxxxx`.
 
 ## Unknown area
 
-`ram_const.asm` still contains many `ram_XXXXXX` placeholders. Rename them only after
+`src/core/ram_const.asm` still contains many `ram_XXXXXX` placeholders. Rename them only after
 `[confirmed]` evidence, in a dedicated rename task.

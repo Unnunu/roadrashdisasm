@@ -1,10 +1,10 @@
-# Analysis: `message.asm` (tooltips / button prompts)
+# Analysis: `src/screens/message.asm` (tooltips / button prompts)
 
 - **Module / routine:** message/tooltip system, blinking controller-button prompts, shared
   strings and data tables
-- **ROM range:** `0x004226`–`0x00575F` (`rider_sprites.asm` starts at `0x5760`)
+- **ROM range:** `0x004226`–`0x00575F` (`src/screens/rider_sprites.asm` starts at `0x5760`)
 - **Status:** analyzed (message system and strings; shared data tables partly TODO)
-- **Source:** `message.asm`
+- **Source:** `src/screens/message.asm`
 - **Related:** `docs/architecture.md`, `docs/hardware.md`, `docs/ram-map.md`
 
 ## Coverage matrix
@@ -29,14 +29,14 @@
 
 - The message field is the bottom `40×6` cells (x=0..39, y=22..27) of
   `Menu_ram_FrameBuffer` (the 64×28 window nametable, DMA'd to VRAM `$7000`; see
-  `menu_main.asm`).
+  `src/screens/menu_main.asm`).
 - Text uses the font (`$0000`) via `EncodeString` + `WriteNametableToBuffer`.
 - Button icons are tiles from the **gamepad image** at VRAM `$A000` (tile base `$500`,
   nametable base `$2500` = palette line 1): A = tile 4, B = tiles 5/6, C = 7/8,
   Start = 9/$A/$B, directional pad = 0/$2FF/$2/$3 and $C/$D/$E/$F/$2FF; `$2FF` is the
   blank/black tile.
 - **Signature note:** `WriteNametableToBuffer`/`Masked` actually take `d0 = width`,
-  `d1 = height` (their source headers had `d0`/`d1` swapped; corrected in `menu_main.asm`).
+  `d1 = height` (their source headers had `d0`/`d1` swapped; corrected in `src/screens/menu_main.asm`).
   The show functions below use `d0=width`, `d1=height`.
 
 ## Message array (`Message_MsgArray`, `0x457E`)
@@ -105,7 +105,7 @@ The blink period (`Message_ram_ButtonBlinkPeriod`, `$FF05E8`) is set by the scre
 
 ## Shared strings / data tables
 
-`message.asm` also holds data used by other screens:
+`src/screens/message.asm` also holds data used by other screens:
 
 - `StrPressStartToExit` `0x479E`, `StrPressABToChangeLetter` `0x47BC`,
   `StrPressCToSelectOtherPlayer` `0x4800`, `StrUseDirPadToMoveCursor` `0x4844`,

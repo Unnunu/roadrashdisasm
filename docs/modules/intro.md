@@ -1,4 +1,4 @@
-# Module card: `intro.asm`
+# Module card: `src/screens/intro.asm`
 
 - **ROM range:** `0x001704`–`0x002445`
 - **Status:** partially analyzed (VDP/text/scroll structure and runtime confirmed; exact title visuals TODO)

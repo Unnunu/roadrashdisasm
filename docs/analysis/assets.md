@@ -5,8 +5,8 @@
 - **Tool:** `tools/assets.py` + `tools/asset_specs.json`
 - **Generated:** `assets/` (git-ignored; never committed because the extracted
   artwork is copyrighted)
-- **Build:** `build.sh` runs `tools/assets.py split`; `rom_assets.asm` and
-  `race_misc_data.asm` `binclude` the generated `.bin` files (not `baserom.md`)
+- **Build:** `build.sh` runs `tools/assets.py split`; `src/data/rom_assets.asm` and
+  `src/data/race_misc_data.asm` `binclude` the generated `.bin` files (not `baserom.md`)
 
 ## Asset types found in the tail
 
@@ -57,7 +57,7 @@ split.
 
 ```
 assets/
-  images/<id>/data.bin      # exact ROM slice; binclude in rom_assets.asm
+  images/<id>/data.bin      # exact ROM slice; binclude in src/data/rom_assets.asm
   tilesets/<id>/data.bin
   maps/<id>/data.bin
   palettes/<id>/data.bin
@@ -83,6 +83,13 @@ python3 tools/assets.py all
 
 `build.sh` only needs `split`; previews are optional/local. The manifest
 (`tools/asset_specs.json`) is our metadata and is committed; `assets/` is not.
+
+## EA logo
+
+`LogoEA_Image_ElectronicArts` is a ROM slice at `0xCFE` (size `0x3D6`) and is now
+generated as `assets/images/ea_logo/data.bin`; the previously tracked root
+`LogoEA_Image_ElectronicArts.bin` was removed. It uses the custom
+`LogoEA_DecompressLZ` format, so PNG preview is deferred.
 
 ## Deferred
 

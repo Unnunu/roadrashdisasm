@@ -1,4 +1,4 @@
-# Module card: `race_track_data.asm`
+# Module card: `src/data/race_track_data.asm`
 
 - **ROM range:** `0x025EC0`–`0x03BF19` (`Road_ShapeTable` starts at `0x3BF1A`)
 - **Status:** records/labels + stream boundaries extracted; stream formats TODO

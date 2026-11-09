@@ -1,9 +1,9 @@
-# Analysis: `intro.asm` (intro / title / credits)
+# Analysis: `src/screens/intro.asm` (intro / title / credits)
 
 - **Module / routine:** intro screen, credit strings, title/bottom scroll effect, initial game state
-- **ROM range:** `0x001704`–`0x002445` (`menu_password.asm` starts at `0x2446`)
+- **ROM range:** `0x001704`–`0x002445` (`src/screens/menu_password.asm` starts at `0x2446`)
 - **Status:** partially analyzed (VDP/text/scroll structure understood; exact title visuals TODO)
-- **Source:** `intro.asm`
+- **Source:** `src/screens/intro.asm`
 - **Related:** `docs/architecture.md`, `docs/hardware.md`, `docs/ram-map.md`
 
 ## Coverage matrix
@@ -83,7 +83,7 @@ the next frame without Start ends the stage). `.endStage` clears `ram_UpdateFunc
 ## Title/credits scroll effect
 
 - `Intro_TitleScrollTable` (`$FF439C`) and `Intro_TitleScrollSpeed` (`$FF4A1C`) are
-  per-line arrays (4 bytes per line; `ram_const.asm` says `size $400 + $280`).
+  per-line arrays (4 bytes per line; `src/core/ram_const.asm` says `size $400 + $280`).
 - `Intro_Init` clears lines 0-149, then starts at offset `+$2F8` (line 190) and uses a
   **predecrement** (`move.l d1,-(a2)`), so the generated ramp is actually written to
   lines **189..150**: the foreground scroll starts at 400 (`$1900000`, "completely out

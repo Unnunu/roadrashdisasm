@@ -31,7 +31,7 @@ pseudo-code or state diagram is welcome.
 
 ## RAM / ROM & structures
 
-- RAM variables used (names from `ram_const.asm`, addresses, sizes).
+- RAM variables used (names from `src/core/ram_const.asm`, addresses, sizes).
 - Tables/data in ROM (addresses, element layout).
 - Structures and field offsets.
 

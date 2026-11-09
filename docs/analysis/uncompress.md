@@ -1,12 +1,12 @@
-# Analysis: `uncompress.asm` (LZSS decompressors)
+# Analysis: `src/core/uncompress.asm` (LZSS decompressors)
 
 - **Module:** LZSS decompression: byte format, word format, interruptible streaming,
   and direct-to-VRAM
-- **ROM range:** `0x009B9E`–`0x009FE3` (`track_data.asm` starts at `0x9FE4`)
+- **ROM range:** `0x009B9E`–`0x009FE3` (`src/race/track_data.asm` starts at `0x9FE4`)
 - **Status:** analyzed; algorithm validated with a Python decoder against the assets
-- **Source:** `uncompress.asm`
+- **Source:** `src/core/uncompress.asm`
 - **Related:** `docs/architecture.md`, `docs/ram-map.md`, `docs/analysis/road_render.md`,
-  `docs/coding-style.md` (asset formats), `race.asm` `WriteToVRAM`
+  `docs/coding-style.md` (asset formats), `src/race/race.asm` `WriteToVRAM`
 
 ## Coverage matrix
 
@@ -82,13 +82,13 @@ frames.
 
 - The ring buffer is `Road_ram_XLeftArray`, the road scratch array; the decompressors
   overwrite it (the ring is not preserved across separate `UncompressB/W` calls).
-- `WriteToVRAM` (`race.asm`) expects the decompressed asset's first long to hold the
+- `WriteToVRAM` (`src/race/race.asm`) expects the decompressed asset's first long to hold the
   tile count in its low word (the `asl.w` ignores the high word). The observed first
   longs are `$08080007` (panel, 7 tiles) and `$0808011A` (gamepad, low word `$011A`).
   The high word `$0808` appears to be a format marker; the exact header semantics and
   the gamepad's over-copy (the low word exceeds the tiles that fit in 0xC20 bytes) are
   TODO.
-- `LogoEA_DecompressLZ` (logoEA.asm) is a separate decompressor with its own ring buffer.
+- `LogoEA_DecompressLZ` (src/logoEA/logoEA.asm) is a separate decompressor with its own ring buffer.
 
 ## Quirks / notes
 

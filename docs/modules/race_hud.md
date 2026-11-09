@@ -1,6 +1,6 @@
-# Module card: `race_hud.asm`
+# Module card: `src/race/race_hud.asm`
 
-- **ROM range:** `0x00D278`–`0x00D8F9` (`race_physics.asm` starts at `0xD8FA`)
+- **ROM range:** `0x00D278`–`0x00D8F9` (`src/race/race_physics.asm` starts at `0xD8FA`)
 - **Status:** analyzed (partial; needle/font data + dynamic TODO)
 - **Related:** `docs/analysis/race_hud.md`, `docs/analysis/race.md`,
   `docs/analysis/animation.md`, `docs/ram-map.md`, `docs/modules/race.md`

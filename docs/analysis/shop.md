@@ -1,9 +1,9 @@
-# Analysis: `shop.asm` (bike shop)
+# Analysis: `src/screens/shop.asm` (bike shop)
 
 - **Module:** bike shop: select a bike, buy/trade in, read stats/description
-- **ROM range:** `0x0074AA`–`0x008341` (`endlevel.asm` starts at `0x8342`)
+- **ROM range:** `0x0074AA`–`0x008341` (`src/screens/endlevel.asm` starts at `0x8342`)
 - **Status:** analyzed statically (shop is non-demo; no capture taken)
-- **Source:** `shop.asm`
+- **Source:** `src/screens/shop.asm`
 - **Related:** `docs/architecture.md`, `docs/hardware.md`, `docs/ram-map.md`
 
 ## Coverage matrix
@@ -111,7 +111,7 @@ then shifts the scroll position by `-$D0`/`+$D0`.
   `ram_FF089A`/`ram_FF07C2`/`ram_FF082E` dynamic messages.
 - ROM: `Shop_BikeDescriptions` `$81D2` (8 pointers), `Shop_dPrices` `$8312` (8 words),
   `Shop_BikeImageTable` `$8322` (8 pointers), `Shop_BikePalettes` `$7E370`
-  (8 x 32 bytes, referenced from `unknown.asm`).
+  (8 x 32 bytes, referenced from `src/core/unknown.asm`).
 - Player state: `Menu_ram_Player`, `Menu_ram_MoneyPlayerA/B`,
   `Menu_ram_BikeIdPlayerA/B`.
 
@@ -125,7 +125,7 @@ then shifts the scroll position by `-$D0`/`+$D0`.
   backwards into the temporary string. `[static]`
 - The shop's window/plane transparency and the visual scroll band are not yet captured
   dynamically. `[hypothesis]`
-- `Shop_ram_CurrentButtons` is unnamed in `ram_const.asm`; a rename is proposed below.
+- `Shop_ram_CurrentButtons` is unnamed in `src/core/ram_const.asm`; a rename is proposed below.
 
 ## Dynamic status
 

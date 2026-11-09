@@ -1,6 +1,6 @@
-# Module card: `track_data.asm`
+# Module card: `src/race/track_data.asm`
 
-- **ROM range:** `0x009FE4`–`0x00A4E1` (`race.asm` starts at `0xA4E2`)
+- **ROM range:** `0x009FE4`–`0x00A4E1` (`src/race/race.asm` starts at `0xA4E2`)
 - **Status:** analyzed (algorithm and dynamic stream start confirmed; channel semantics
   partly TODO)
 - **Related:** `docs/architecture.md`, `docs/ram-map.md`,
@@ -16,8 +16,8 @@ track/level factor.
 
 | Symbol | Address | Called by | Description |
 |--------|---------|-----------|-------------|
-| `TrackData_StartDecode` | `0x9FE4` | `race.asm` `TrackData_InitLevel` | Initialize the streams/output and decode the first chunk. |
-| `TrackData_DecodeChunk` | `0xA04A` | `TrackData_StartDecode`, `race.asm` `TrackData_DecodeNextChunk` | Decode the next per-call chunk. |
+| `TrackData_StartDecode` | `0x9FE4` | `src/race/race.asm` `TrackData_InitLevel` | Initialize the streams/output and decode the first chunk. |
+| `TrackData_DecodeChunk` | `0xA04A` | `TrackData_StartDecode`, `src/race/race.asm` `TrackData_DecodeNextChunk` | Decode the next per-call chunk. |
 | `TrackData_DecodeChannel1` | `0xA0D4` | `TrackData_DecodeChunk` | Channel 1 decoder. |
 | `TrackData_DecodeChannel2` | `0xA2DA` | `TrackData_DecodeChunk` | Channel 2 decoder. |
 
@@ -56,8 +56,8 @@ Detailed listing: `docs/analysis/track_data.md`.
 
 ## External calls / dependencies
 
-- `race.asm` `TrackData_InitLevel`/`TrackData_DecodeNextChunk` (start and per-progress chunks).
-- `top_level.asm` calls `TrackData_DecodeNextChunk` when the race progress crosses a chunk.
+- `src/race/race.asm` `TrackData_InitLevel`/`TrackData_DecodeNextChunk` (start and per-progress chunks).
+- `src/core/top_level.asm` calls `TrackData_DecodeNextChunk` when the race progress crosses a chunk.
 
 ## Hacks / bugs / quirks
 

@@ -1,6 +1,6 @@
-# Module card: `race_misc_data.asm`
+# Module card: `src/data/race_misc_data.asm`
 
-- **ROM range:** `0x07DCA8`–`0x07E6A1` (`top_level.asm` starts at `0x7E6A2`)
+- **ROM range:** `0x07DCA8`–`0x07E6A1` (`src/core/top_level.asm` starts at `0x7E6A2`)
 - **Status:** tables/scripts located; internal semantics partial TODO
 - **Related:** `docs/analysis/race_misc_data.md`, `docs/analysis/race_hud.md`,
   `docs/analysis/shop.md`, `docs/analysis/race_results.md`,

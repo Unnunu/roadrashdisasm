@@ -1,6 +1,6 @@
-# Module card: `highscore.asm`
+# Module card: `src/screens/highscore.asm`
 
-- **ROM range:** `0x006DC0`–`0x0074A9` (`shop.asm` starts at `0x74AA`)
+- **ROM range:** `0x006DC0`–`0x0074A9` (`src/screens/shop.asm` starts at `0x74AA`)
 - **Status:** analyzed (static; demo path can reach it)
 - **Related:** `docs/architecture.md`, `docs/reverse-engineering.md`,
   `docs/hardware.md`, `docs/ram-map.md`, `docs/analysis/highscore.md`
@@ -16,7 +16,7 @@ play A/B/C select high score/results/shop and a release returns to the results.
 
 | Symbol | Address | Called by | Description |
 |--------|---------|-----------|-------------|
-| `HighScore_Init` | `0x6DC0` | `top_level.asm` `0x7E7CC`/`0x7E9?` | Build the screen. |
+| `HighScore_Init` | `0x6DC0` | `src/core/top_level.asm` `0x7E7CC`/`0x7E9?` | Build the screen. |
 | `HighScore_GameTick_Demo` | `0x72BA` | demo fade wrapper | Attract update. |
 | `HighScore_GameTick` | `0x732E` | normal fade wrapper | Normal update/input. |
 | `HighScore_HandleInput` | `0x7460` | `GameTick` | A/B/C actions. |
@@ -34,8 +34,8 @@ play A/B/C select high score/results/shop and a release returns to the results.
 ## RAM / ROM & structures
 
 - `HighScore_ram_Table` (`$FF05EA`): header `(22,16,7,20)` + 7 x 20-char entries; text
-  starts at `$FF05F2`; built by `intro.asm` from `unk_4C18`, updated/sorted by
-  `Race_UpdateHighScoreTable` (race.asm) and `Intro_InitPlayerA` (intro.asm).
+  starts at `$FF05F2`; built by `src/screens/intro.asm` from `unk_4C18`, updated/sorted by
+  `Race_UpdateHighScoreTable` (src/race/race.asm) and `Intro_InitPlayerA` (src/screens/intro.asm).
 - `HighScore_ram_PlayerATableOffset/B` (`$FF052A/$FF052C`): player row offsets (20*5,
   20*6 initially; can move after sorting).
 - `HighScore_ram_CurrentButtons` (`$FF094E`); `MainMenu_ram_DemoMode` (`$FF3692`);
@@ -57,7 +57,7 @@ Detailed listing/table: `docs/analysis/highscore.md`.
 
 ## External calls / dependencies
 
-- Callers: `top_level.asm`; `race_results.asm`/`shop.asm` set `ram_FF0910` to
+- Callers: `src/core/top_level.asm`; `src/screens/race_results.asm`/`src/screens/shop.asm` set `ram_FF0910` to
   `HighScore_Init`.
 - Uses `UncompressW/B`, `WriteToVRAM`, `WriteNametable(ToBuffer)`, `EncodeString`,
   `Menu_ShowMessage`, `DmaWriteVRAM`, `GetInputPlayerA/B`, `AudioFunc1/3/4`.

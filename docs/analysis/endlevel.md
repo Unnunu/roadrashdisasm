@@ -1,10 +1,10 @@
-# Analysis: `endlevel.asm` (level-complete victory + level-up)
+# Analysis: `src/screens/endlevel.asm` (level-complete victory + level-up)
 
 - **Module:** level-complete sequence: victory animation, then the level-up character
   screen (increments the player level and rebuilds the opponents)
-- **ROM range:** `0x008342`–`0x008FB3` (`road_render.asm` starts at `0x8FB4`)
+- **ROM range:** `0x008342`–`0x008FB3` (`src/race/road_render.asm` starts at `0x8FB4`)
 - **Status:** analyzed statically (non-demo only; no capture)
-- **Source:** `endlevel.asm`
+- **Source:** `src/screens/endlevel.asm`
 - **Related:** `docs/architecture.md`, `docs/hardware.md`, `docs/ram-map.md`
 
 ## Coverage matrix
@@ -65,7 +65,7 @@ opponents and regenerates the password, and returns to the main menu.
 
 ## Level-up character screen
 
-- Same portrait layout as `rider_intro.asm`: panel `unk_7EA66` at (2,5) 12x14, portrait
+- Same portrait layout as `src/screens/rider_intro.asm`: panel `unk_7EA66` at (2,5) 12x14, portrait
   at (3,6) 10x12, name at (3,19), quote at (16,y/2) with stride 128.
 - Rider table `EndLevel_LevelRiderTable` (`0x19F12`): 5 levels x 2 variants (8-byte
   `quote_ptr,image_ptr` records, same asset format). Level 1-5 variants include the
@@ -97,7 +97,7 @@ opponents and regenerates the password, and returns to the main menu.
 The strings at `$8C96`, `$8D02`, `$8D16`, `$8D52`, `$8D8A` ("To go to the next level,
 you need to earn ... more.", "Continue play at Current level", "The next level will be
 level") are **not referenced** in the disassembled source; they duplicate the tail data
-in `race_results.asm` (`$6C94`..). Likely dead/legacy text. `[static]`
+in `src/screens/race_results.asm` (`$6C94`..). Likely dead/legacy text. `[static]`
 
 ## RAM
 
@@ -119,7 +119,7 @@ in `race_results.asm` (`$6C94`..). Likely dead/legacy text. `[static]`
   `Race_FinishFrame`, `Race_SwapFrames`) with endlevel buffers and script. `[static]`
 - The level is incremented **after** the level-up rider record is selected, so the
   portrait is for the completed level. `[static]`
-- The unused level-up text duplicates the `race_results.asm` tail. `[static]`
+- The unused level-up text duplicates the `src/screens/race_results.asm` tail. `[static]`
 
 ## Dynamic status
 

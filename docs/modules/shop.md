@@ -1,6 +1,6 @@
-# Module card: `shop.asm`
+# Module card: `src/screens/shop.asm`
 
-- **ROM range:** `0x0074AA`–`0x008341` (`endlevel.asm` starts at `0x8342`)
+- **ROM range:** `0x0074AA`–`0x008341` (`src/screens/endlevel.asm` starts at `0x8342`)
 - **Status:** analyzed (static; shop is non-demo, rendering dynamic TODO)
 - **Related:** `docs/architecture.md`, `docs/reverse-engineering.md`,
   `docs/hardware.md`, `docs/ram-map.md`, `docs/analysis/shop.md`
@@ -16,7 +16,7 @@ from the results/high-score screens; Start returns to the results.
 
 | Symbol | Address | Called by | Description |
 |--------|---------|-----------|-------------|
-| `Shop_Init` | `0x74AA` | `top_level.asm` `0x7E9B2` | Build the shop. |
+| `Shop_Init` | `0x74AA` | `src/core/top_level.asm` `0x7E9B2` | Build the shop. |
 | `Shop_GameTick` | `0x79F8` | fade wrapper | Per-frame update/input. |
 | `Shop_HandleInput` | `0x7B4C` | `GameTick` | A/B/C/D-pad actions. |
 | `Shop_DrawCreditsAndPrice` | `0x7D5E` | `Init`/`HandleInput` | Credits + price. |
@@ -65,7 +65,7 @@ Detailed listing/table/purchase logic: `docs/analysis/shop.md`.
 
 ## External calls / dependencies
 
-- Callers: `top_level.asm`; results/high-score C; the shop sets `ram_FF0910` to
+- Callers: `src/core/top_level.asm`; results/high-score C; the shop sets `ram_FF0910` to
   HighScore/RaceResults/Shop.
 - Uses `UncompressW/B`, `WriteToVRAM`, `WriteNametable(ToBuffer)`, `EncodeString`,
   `Menu_ShowMessage`, `DmaWriteVRAM`, `DmaWriteCRAM`, `GetInputPlayerA/B`, `Race_FormatNumber`,
@@ -85,7 +85,7 @@ uses palette 2 when insufficient, otherwise palette 3.
 - Palette copy skips source entry 4 and maps entry 13 to destination entry 4; three
   base bike images are reused for eight bikes. `[static]`
 - "(its yours)" is assembled from three immediate longs written backwards. `[static]`
-- `Shop_ram_CurrentButtons` is unnamed in `ram_const.asm`.
+- `Shop_ram_CurrentButtons` is unnamed in `src/core/ram_const.asm`.
 
 ## Verified facts
 

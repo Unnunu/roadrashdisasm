@@ -218,7 +218,7 @@ In the module card (`docs/modules/<file>.md`):
 
 - **Verified facts** — bullet list with tags and the evidence
   (e.g. `[confirmed] Fade_ram_Timer is reloaded with 3 every 4th frame
-  (static: fade.asm; dynamic: BlastEm breakpoint at $1242)`).
+  (static: src/core/fade.asm; dynamic: BlastEm breakpoint at $1242)`).
 - **Hypotheses** — untested ideas, each with the experiment that would settle it.
 - **Experiments** — goal / setup / breakpoint / observed result.
 - **Coverage matrix** — one row per function with Contract/Algorithm/Data/Hardware/Why/
@@ -237,7 +237,7 @@ fact.
 - Comments in code state confirmed behavior or explicitly say `TODO`.
 - Hardware/magic numbers should be explained from documentation or observation, not guessed.
 
-## 9. Calibration example: `fade.asm`
+## 9. Calibration example: `src/core/fade.asm`
 
 Current static evidence:
 
@@ -250,7 +250,7 @@ Current static evidence:
 - `[static]` The addresses of `Fade_InitFadeOut` / `Fade_InitFadeIn` do **not** occur as
   4-byte values in `baserom.md`, and the sources contain no symbolic references.
   **But** they are referenced in the top-level flow at `0x07E6A2` (now
-  `top_level.asm`) via `jsr` with a 16-bit absolute operand:
+  `src/core/top_level.asm`) via `jsr` with a 16-bit absolute operand:
   `4EB8 1180` (`Fade_InitFadeOut`) and `4EB8 11C0` (`Fade_InitFadeIn`).
   **`[refuted]` earlier "dead code" hypothesis** — the 4-byte pointer scan was not
   sufficient; 16-bit absolute operands must be searched too.
@@ -307,7 +307,7 @@ Conclusion: `[confirmed]` the static reading of `Fade_GameTick` — reload 3, st
 4th frame, install/clear `ram_UpdateFunction`.
 
 The same session disassembled the full top-level flow with `tools/disasm.py`
-(`0x7E6A2`–`0x7EA66`); it is now committed as `top_level.asm` and verified by the
+(`0x7E6A2`–`0x7EA66`); it is now committed as `src/core/top_level.asm` and verified by the
 build. See `docs/architecture.md` for the screen-flow map.
 
 Open questions: meaning of `$FF3692` and of the `$00FF0586` callback.

@@ -1,12 +1,12 @@
-# Analysis: `race.asm` (main gameplay)
+# Analysis: `src/race/race.asm` (main gameplay)
 
 - **Module:** race/gameplay: init, assets, per-frame simulation/render loop, input,
   actors/physics/AI, road/HUD/animation pipeline, race outcome
-- **ROM range:** `0x00A4E2`–`0x016E6F`; split modules: `race_core.asm`
-  (`0xA4E2`-`0xD277`), `race_hud.asm` (`0xD278`-`0xD8F9`), `race_physics.asm`
-  (`0xD8FA`-`0xE731`), `road_marking.asm` (`0xE732`-`0xEB33`), `race_ai_road.asm` (`0xEB34`-`0x10DFF`; road profile/objects/standings/speed; `docs/analysis/race_ai_road.md`), `race_ai.asm`
-  (`0x10E00`-`0x14055`), `race_anim_audio.asm` (`0x14056`-`0x1685F`), `animation.asm` (`0x16860`-`0x169AF`), `race_spawn.asm`
-  (`0x169B0`-`0x16E6F`); `race.asm` is the include list.
+- **ROM range:** `0x00A4E2`–`0x016E6F`; split modules: `src/race/race_core.asm`
+  (`0xA4E2`-`0xD277`), `src/race/race_hud.asm` (`0xD278`-`0xD8F9`), `src/race/race_physics.asm`
+  (`0xD8FA`-`0xE731`), `src/race/road_marking.asm` (`0xE732`-`0xEB33`), `src/race/race_ai_road.asm` (`0xEB34`-`0x10DFF`; road profile/objects/standings/speed; `docs/analysis/race_ai_road.md`), `src/race/race_ai.asm`
+  (`0x10E00`-`0x14055`), `src/race/race_anim_audio.asm` (`0x14056`-`0x1685F`), `src/race/animation.asm` (`0x16860`-`0x169AF`), `src/race/race_spawn.asm`
+  (`0x169B0`-`0x16E6F`); `src/race/race.asm` is the include list.
 - **Status:** partially analyzed (top-level flow, init/assets, input/loop, buffer
   rotation, initial struct inventory; actor/physics/AI and sub-module internals TODO)
 - **Related:** `docs/architecture.md`, `docs/ram-map.md`, `docs/hardware.md`,
@@ -32,13 +32,13 @@
 | `Race_Update` | `0xC00C` | [x] | [~] | [x] | [x] | [x] | [ ] | partial |
 | `Race_ComputeResults` (outcome) | `0xC3F8` | [x] | [~] | [x] | - | [x] | [ ] | partial |
 | Actor/physics/AI | `0xD9DA`+ | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | TODO |
-| `race_hud.asm` | `0xD278` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
-| `road_marking.asm` | `0xE732` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
-| `animation.asm` | `0x16860` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
+| `src/race/race_hud.asm` | `0xD278` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
+| `src/race/road_marking.asm` | `0xE732` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
+| `src/race/animation.asm` | `0x16860` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
 
 ## Role & entry points
 
-The top level calls `Race_Init` (`top_level.asm` `0x7E80C`), sets
+The top level calls `Race_Init` (`src/core/top_level.asm` `0x7E80C`), sets
 `ram_UpdateFunction = Race_GameTick` after the fade, and calls `Race_Update` each
 frame (with the progress/standings/track-chunk logic around it). `Race_Init` runs two
 warm-up updates and two `Race_GameTick`/frame-ready loops before returning; the main
@@ -132,7 +132,7 @@ This is the double/quad buffering that avoids tearing.
 
 - `Race_InitTrack`: `CurrentTrackId*2` -> `unk_25EC0` -> the track record;
   `RaceTrack_Data1` = per-level word, `Data2/3` = the track-data decoder streams
-  (`track_data.asm`), `Data4/5/6` = object/spawn/gfx data; initial time/position/state.
+  (`src/race/track_data.asm`), `Data4/5/6` = object/spawn/gfx data; initial time/position/state.
 - `Race_InitActorLists`/`Race_InitActorPositions`: actor pointer groups and their
   initial screen fields (`ram_FF1A08`/`ram_FF1982`; exact 8+7 split TODO).
 - `Race_InitPhysicsConstants`: bike physics/steering/engine constants.
@@ -195,19 +195,19 @@ Actors/player structures:
 | Area | Functions/addresses |
 |---|---|
 | Init/assets | `Race_Init` `0xA4E2`, loaders `0xA79C`–`0xAFF2`, `WriteToVRAM` `0xAFF2` |
-| VDP/interrupts | `Race_InitVdp` `0xA72A`, HInt via `main.asm`; VScroll/HInt buffers |
+| VDP/interrupts | `Race_InitVdp` `0xA72A`, HInt via `src/main.asm`; VScroll/HInt buffers |
 | Buffering | `Race_SwapFrames` `0xBBFE`, `Race_FinishFrame` `0xBD24` |
 | Input | `Race_GetInput` `0xBE56`, `Race_GetInputDemo` `0xBE2C`, steering/pause |
 | Time | `Race_UpdateTime` `0xBA02`, `Race_ResetFrameTimers` `0xB9AE` |
 | Track/actors | `Race_InitTrack` `0xB016`, `Race_InitActorLists/Positions/PhysicsConstants/LoadTrackParams/SpawnOpponents`, `Race_CreateActors` `0xCAD0`; `Race_ActorList/DefinitionTable/GraphicsTable/StaticActorList` |
 | Spawn/traffic | `Race_SpawnTick` `0x16AF6`, `Race_SpawnOpponent/Traffic`, active/free lists, `Race_UpdateSpeedDisplay`/`Race_FormatDecimal` |
-| AI/physics | `sub_10E00`..`Race_GetCurveSpeedLimit`, `Race_HandleInputOnFoot` `0x110AE`/`Another` `0x111FA` (`race_ai.asm`) |
-| Animations/audio | `Race_UpdateLeanCurve`..`Race_UpdateCollision`, `Rand_Init` `0x15FE8`/`Rand_GetWord` `0x16034`, `Audio_UpdateEngine0` `0x16520` (`race_anim_audio.asm`) |
-| Camera/scroll/rearview | `Race_UpdateCamera`, `Race_BuildVScrollInfo`/`HScrollTable`, `Race_DrawRearviewMirror`, `Race_DrawRoadMarkingHud`, `Race_UpdateNearestOpponent` (`race_physics.asm`) |
+| AI/physics | `sub_10E00`..`Race_GetCurveSpeedLimit`, `Race_HandleInputOnFoot` `0x110AE`/`Another` `0x111FA` (`src/race/race_ai.asm`) |
+| Animations/audio | `Race_UpdateLeanCurve`..`Race_UpdateCollision`, `Rand_Init` `0x15FE8`/`Rand_GetWord` `0x16034`, `Audio_UpdateEngine0` `0x16520` (`src/race/race_anim_audio.asm`) |
+| Camera/scroll/rearview | `Race_UpdateCamera`, `Race_BuildVScrollInfo`/`HScrollTable`, `Race_DrawRearviewMirror`, `Race_DrawRoadMarkingHud`, `Race_UpdateNearestOpponent` (`src/race/race_physics.asm`) |
 | Physics/AI | `Race_UpdateSpeedDisplay`, `Race_SpawnTick`, `Race_UpdateBikeLean`..`sub_13106` (TODO) |
 | Road/render | `PiecewiseLinearInterpolation`, `Road_FillProfileTables`, `sub_FD96/FB1E/F40C`, `sub_109B6/FC0E`, `Road_BuildVisibleList`, `Road_DrawObjects` (`road_render`), `RoadMarking_Draw` |
-| HUD | `RaceHud_Draw` (`race_hud.asm`) |
-| Animation | `UpdateAnimation(2)` (`animation.asm`), `RiderSprites_Build` |
+| HUD | `RaceHud_Draw` (`src/race/race_hud.asm`) |
+| Animation | `UpdateAnimation(2)` (`src/race/animation.asm`), `RiderSprites_Build` |
 | Outcome | `Race_ComputeResults` (`0xC3F8`), `Race_SortResults`, `Race_UpdateHighScoreTable`, password/highscore |
 | Audio | `Race_InitAudio` `0xA674`, engine channels (`AudioFunc6/8/9/11/12/14`) |
 
@@ -217,7 +217,7 @@ Actors/player structures:
    (see `docs/analysis/race_actors.md`; `RacePlayer`/`RaceActor`, `$FF2FAA`).
 2. Analyze the actor/physics functions (`Race_UpdateSpeedDisplay`, `Race_SpawnTick`, `sub_13xxx`,
    `sub_Dxxx`, `sub_Exxx`) and the object list.
-3. `race_hud.asm`, `road_marking.asm`, `animation.asm` data tables/scripts + dynamic checks.
+3. `src/race/race_hud.asm`, `src/race/road_marking.asm`, `src/race/animation.asm` data tables/scripts + dynamic checks.
 4. The race outcome (`Race_ComputeResults`/`Race_SortResults`/`Race_UpdateHighScoreTable`) and the standings.
 5. Only after the field layout is confirmed: define the AS `STRUCT`s, convert the
    confirmed uses, build after each batch, remove the flat `STRUCT_OFFSET_*` aliases.

@@ -1,6 +1,6 @@
-# Module card: `race_hud_debug.asm`
+# Module card: `src/race/race_hud_debug.asm`
 
-- **ROM range:** `0x0098C2`–`0x009B9D` (`uncompress.asm` starts at `0x9B9E`)
+- **ROM range:** `0x0098C2`–`0x009B9D` (`src/core/uncompress.asm` starts at `0x9B9E`)
 - **Status:** analyzed (no direct callers; likely debug/alternate HUD or indirect)
 - **Related:** `docs/architecture.md`, `docs/ram-map.md`, `docs/hardware.md`,
   `docs/analysis/race_hud_debug.md`
@@ -11,7 +11,7 @@ Writes digit tiles into the race HUD buffers (`Race_ram_CurrentHudBuffer`,
 `Race_ram_NextHudBuffer`), draws a race value plus a racer/standings list with the
 current row highlighted, and contains several debug readouts of the player struct and
 race state. None of the labels are called by the disassembled modules; the normal HUD
-is in `race_hud.asm`.
+is in `src/race/race_hud.asm`.
 
 ## Entry points & API
 
@@ -46,7 +46,7 @@ is in `race_hud.asm`.
 - Debug values: `RacePlayerA + STRUCT_OFFSET_*` (`POSZ/POSX_HIGH/POSX_LOW/POSY/GEAR/
   +$68`), `Race_ram_NumSprites`, `ram_FF1B3E`, `ram_FF3046/304C`, `ram_FF1786`,
   `Race_ram_FrameDelay`.
-- `Race_FormatDecimal` (`race.asm` `0xF11C`) number formatter.
+- `Race_FormatDecimal` (`src/race/race.asm` `0xF11C`) number formatter.
 
 ## Coverage matrix
 
@@ -68,7 +68,7 @@ Detailed listing: `docs/analysis/race_hud_debug.md`.
 
 - `RaceDebug_ShowFrameDelay` does not set a HUD position after `Race_FormatDecimal`; the position is the
   formatted value. Likely unfinished debug code. `[static]`
-- No direct callers; the normal HUD is `race_hud.asm`. `[static]`
+- No direct callers; the normal HUD is `src/race/race_hud.asm`. `[static]`
 - HUD buffers are double-buffered; `RaceHud_DrawStandings` uses the next buffer, the debug readouts
   the current one. `[static]`
 

@@ -1,10 +1,10 @@
-# Analysis: `logoEA.asm` (Electronic Arts logo)
+# Analysis: `src/logoEA/logoEA.asm` (Electronic Arts logo)
 
 - **Module / routine:** EA-logo screen (runtime figure generation, sprites, text, VDP trick)
 - **ROM range:** `0x000366`–`0x00117F` (see `build/roadrash.lst`)
 - **Status:** partially analyzed (VDP trick + text placement understood statically; dynamic
   VRAM confirmation pending)
-- **Source:** `logoEA.asm`
+- **Source:** `src/logoEA/logoEA.asm`
 - **Related:** `docs/architecture.md`, `docs/hardware.md`, `docs/ram-map.md`
 
 ## Coverage matrix
@@ -32,7 +32,7 @@
 
 ## RAM map (overlay/scratch)
 
-`logoEA.asm` keeps its own map at `$FFFF0000`/`$FFFFCxxx`. It is an overlay used during
+`src/logoEA/logoEA.asm` keeps its own map at `$FFFF0000`/`$FFFFCxxx`. It is an overlay used during
 the logo phase and physically overlaps later menu buffers (e.g. `TilesSquare $FFC0E4`
 overlaps `Menu_ram_FrameBuffer2 $FFC4AC`). Values are 32-bit because the ROM encodes them
 literally (e.g. `movea.l #LogoEA_ram_Base` → `207C FFFF 0000`).
@@ -161,7 +161,8 @@ The square, triangle and circle are generated as 4bpp tiles in RAM and uploaded 
 
 ## Text (Electronic Arts) and LZ decompression
 
-- `LogoEA_SetupGfx` reads the compressed asset `LogoEA_Image_ElectronicArts`:
+- `LogoEA_SetupGfx` reads the generated `assets/images/ea_logo/data.bin` asset
+  (ROM `0xCFE`, size `0x3D6`):
   - first two bytes = little-endian size (`b1<<8 | b0`), then it skips 4 bytes and calls
     `LogoEA_DecompressLZ` with `a3` = data, `a1` = `ImageEAUncompressed`, `d2` = size.
 - `LogoEA_DecompressLZ` is an **LZSS-style** decompressor:

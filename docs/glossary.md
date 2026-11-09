@@ -18,7 +18,7 @@ Project-specific and hardware terms used in the documentation.
 | **PSG** | SN76489 programmable sound generator. |
 | **Z80** | Sound CPU; runs the driver blob copied at boot. |
 | **Update function** | Per-frame routine stored in `ram_UpdateFunction` (`$FF1A62`) and called from `VerticalInterrupt`. |
-| **Fade** | Palette transition driven by `fade.asm` (fade-in/out). |
+| **Fade** | Palette transition driven by `src/core/fade.asm` (fade-in/out). |
 | **Overlay** | RAM reused by different phases (e.g. `logoEA` vs menu buffers). |
 | **Coverage** | Which ROM ranges are real disassembly vs raw bridged bytes. |
 | **Round-trip** | ROM → generated AS → assemble → compare bytes. |

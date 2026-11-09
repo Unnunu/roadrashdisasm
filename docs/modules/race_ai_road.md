@@ -1,6 +1,6 @@
-# Module card: `race_ai_road.asm`
+# Module card: `src/race/race_ai_road.asm`
 
-- **ROM range:** `0x00EB34`–`0x010DFF` (`race_ai.asm` starts at `0x10E00`)
+- **ROM range:** `0x00EB34`–`0x010DFF` (`src/race/race_ai.asm` starts at `0x10E00`)
 - **Status:** partially analyzed (road/profile/objects/standings/speed regions identified; internals TODO)
 - **Related:** `docs/analysis/race.md`, `docs/analysis/race_spawn.md`,
   `docs/ram-map.md`, `docs/modules/race.md`, `docs/modules/race_ai.md`,

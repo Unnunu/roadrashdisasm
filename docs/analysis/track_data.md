@@ -1,11 +1,11 @@
-# Analysis: `track_data.asm` (track/road data decompressor)
+# Analysis: `src/race/track_data.asm` (track/road data decompressor)
 
 - **Module:** two-channel delta/bit-packed decoder for the track (road curve/height)
   data, with a resumable per-call budget
-- **ROM range:** `0x009FE4`–`0x00A4E1` (`race.asm` starts at `0xA4E2`)
+- **ROM range:** `0x009FE4`–`0x00A4E1` (`src/race/race.asm` starts at `0xA4E2`)
 - **Status:** analyzed (algorithm + dynamic start/streams confirmed; channel semantics
   partly TODO)
-- **Source:** `track_data.asm`
+- **Source:** `src/race/track_data.asm`
 - **Related:** `docs/architecture.md`, `docs/ram-map.md`, `docs/analysis/road_render.md`
 
 ## Coverage matrix
@@ -19,7 +19,7 @@
 
 ## Role & callers
 
-`race.asm` `TrackData_InitLevel` (level start) and `TrackData_DecodeNextChunk` (as the race progresses) call this
+`src/race/race.asm` `TrackData_InitLevel` (level start) and `TrackData_DecodeNextChunk` (as the race progresses) call this
 decoder to expand the level's track data into `Track_CurveBuffer` and scale it by the track/
 level factor.
 
@@ -30,7 +30,7 @@ level factor.
     (128 values) -> `TrackData_StartDecode`.
   - Then scale the first channel: factor `d2 = ram_FF1A6C[PlayerLevel-1]`; each signed
     byte `Track_CurveBuffer[2*i] * d2 / $10000` (mulu/swap with sign), 128 entries.
-- `TrackData_DecodeNextChunk` (called from `top_level.asm` when the race progress crosses a chunk):
+- `TrackData_DecodeNextChunk` (called from `src/core/top_level.asm` when the race progress crosses a chunk):
   chunk `(d0+1)&3`, destination `Track_CurveBuffer + chunk*$80`, `d1=$3F` (64 values) ->
   `TrackData_DecodeChunk`; scale the 64 first-channel entries the same way.
 

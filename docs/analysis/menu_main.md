@@ -1,11 +1,11 @@
-# Analysis: `menu_main.asm` (main menu)
+# Analysis: `src/screens/menu_main.asm` (main menu)
 
 - **Module / routine:** main menu (VDP setup, background, race selection, player info,
   music toggle, demo timer, password-screen entry)
-- **ROM range:** `0x003400`–`0x004225` (`message.asm` starts at `0x4226`)
+- **ROM range:** `0x003400`–`0x004225` (`src/screens/message.asm` starts at `0x4226`)
 - **Status:** analyzed (VDP/window/menu structure understood; exact card layout and demo
   behaviour TODO)
-- **Source:** `menu_main.asm`
+- **Source:** `src/screens/menu_main.asm`
 - **Related:** `docs/architecture.md`, `docs/hardware.md`, `docs/ram-map.md`
 
 ## Coverage matrix
@@ -71,7 +71,7 @@ VRAM map:
 
 The frame buffer is cleared with the default tile `$7FF` (low priority, palette 0, tile
 `$FFE0`). The password screen's destination `$7200` is therefore the window nametable
-row 4 (`$7000 + $200`), matching `menu_password.asm`.
+row 4 (`$7000 + $200`), matching `src/screens/menu_password.asm`.
 
 ## Init flow (`Menu_Init`, `0x3400`)
 

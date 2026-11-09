@@ -1,6 +1,6 @@
-# Module card: `race_results.asm`
+# Module card: `src/screens/race_results.asm`
 
-- **ROM range:** `0x005F28`–`0x006DBF` (`highscore.asm` starts at `0x6DC0`)
+- **ROM range:** `0x005F28`–`0x006DBF` (`src/screens/highscore.asm` starts at `0x6DC0`)
 - **Status:** analyzed (static; demo skips the screen, rendering dynamic TODO)
 - **Related:** `docs/architecture.md`, `docs/reverse-engineering.md`,
   `docs/hardware.md`, `docs/ram-map.md`, `docs/analysis/race_results.md`
@@ -16,7 +16,7 @@ open the shop (C), or inspect the cash/password (B).
 
 | Symbol | Address | Called by | Description |
 |--------|---------|-----------|-------------|
-| `RaceResults_Init` | `0x5F28` | `top_level.asm` `0x7E924` | Build the result screen. |
+| `RaceResults_Init` | `0x5F28` | `src/core/top_level.asm` `0x7E924` | Build the result screen. |
 | `RaceResults_GameTick` | `0x6A90` | fade wrapper | Per-frame update/input/messages. |
 | `RaceResults_HandleInput` | `0x6BD4` | `GameTick` | A/B/C actions. |
 | `RaceResults_DrawStandings` | `0x62CE` | `Init` | Normal standings layout. |
@@ -45,7 +45,7 @@ open the shop (C), or inspect the cash/password (B).
   unread; `Menu_ram_PlayerLevel` for fine/repair/congratulations.
 - Result portrait tables: `$19D32` (level, money>=0, 5x4), `$19DD2` (level, money<0,
   5x2), `$19E22` (cop, money>=0, 5x4), `$19EC2` (cop, money<0, 5x2); 8-byte records
-  `quote_ptr, image_ptr` (same asset format as `rider_intro.asm`).
+  `quote_ptr, image_ptr` (same asset format as `src/screens/rider_intro.asm`).
 - Track images: `$7E670` pointers, `$7E684` image offsets, `$7E68E` nametable offsets,
   `$7E698` palette offsets.
 - Messages: groups 21 (`unk_5276`), 28 (`unk_52CE`), 35 (`ram_FF089A`/`unk_533A`) plus
@@ -67,12 +67,12 @@ Detailed listing and table parse: `docs/analysis/race_results.md`.
 
 ## External calls / dependencies
 
-- Callers: `top_level.asm` (and `shop.asm`/`highscore.asm` set `ram_FF0910` back to
+- Callers: `src/core/top_level.asm` (and `src/screens/shop.asm`/`src/screens/highscore.asm` set `ram_FF0910` back to
   `RaceResults_Init`).
 - Uses `UncompressW/B`, `WriteToVRAM`, `WriteNametable(ToBuffer)`, `EncodeString`,
   `Menu_ShowMessage`, `DmaWriteVRAM`, `GetInputPlayerA/B`, `Rand_GetWord`, `Race_FormatMoney`,
   `Race_FormatNumber`, `AudioFunc1/3/4`.
-- Race outcome fields are computed by `Race_ComputeResults` in `race.asm`.
+- Race outcome fields are computed by `Race_ComputeResults` in `src/race/race.asm`.
 
 ## Hacks / bugs / quirks
 

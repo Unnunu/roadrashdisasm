@@ -96,7 +96,7 @@ The VDP can copy/fill memory without CPU involvement:
   wraps and clears all 64 KiB of VRAM.
 
 DMA is commonly scheduled during VBlank to stay within the display budget. The fade
-code (`fade.asm`) uses DMA to upload the 64-word palette to CRAM (`DmaWriteCRAM`).
+code (`src/core/fade.asm`) uses DMA to upload the 64-word palette to CRAM (`DmaWriteCRAM`).
 
 ## 5. Interrupts and timing
 

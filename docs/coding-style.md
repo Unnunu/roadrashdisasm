@@ -52,7 +52,7 @@ Suffix conventions:
 | Count | `...Count` |
 
 Not yet identified RAM keeps `ram_XXXXXX` (address-based placeholder).
-Cross-module variables always live in `ram_const.asm` (see section 6).
+Cross-module variables always live in `src/core/ram_const.asm` (see section 6).
 
 ### 2.3 ROM data, tables, constants
 
@@ -84,7 +84,7 @@ Put a short block at the top of each module (values may be `TODO`):
 
 ```asm
 ; *************************************************
-; shop.asm - bike shop screen (selection, prices, palette)
+; src/screens/shop.asm - bike shop screen (selection, prices, palette)
 ; ROM range: $0074AA-$008341
 ; Status:    partial
 ; API:       Shop_Init, Shop_GameTick
@@ -158,17 +158,17 @@ structure offsets. This is some of the most valuable documentation in the ROM.
 
 ## 6. RAM equates and overlays
 
-- Default: all RAM equates live in `ram_const.asm`.
-- Cross-module variables always live in `ram_const.asm`.
+- Default: all RAM equates live in `src/core/ram_const.asm`.
+- Cross-module variables always live in `src/core/ram_const.asm`.
 - A module may keep a **local RAM map** only when it documents a phase-specific
   overlay/scratch area that physically overlaps other allocations. Such a map must:
   - use module-prefixed names (`LogoEA_ram_*`);
   - have an explicit `overlay`/`scratch` note listing the overlapping regions;
-  - not duplicate names in `ram_const.asm`.
+  - not duplicate names in `src/core/ram_const.asm`.
 
 ### logoEA exception
 
-`logoEA.asm` keeps its RAM map locally:
+`src/logoEA/logoEA.asm` keeps its RAM map locally:
 
 - Addresses are written 32-bit (`$FFFF0000`, `$FFFFC000…$FFFFE7E4`). This is required
   for byte-exactness: `movea.l #LogoEA_ram_Base,a0` emits the literal `207C FFFF 0000`,
@@ -176,7 +176,7 @@ structure offsets. This is some of the most valuable documentation in the ROM.
 - The area is an overlay: e.g. `LogoEA_ram_TilesSquare`/`TilesTriangle`/`TilesCircle`
   overlap `Menu_ram_FrameBuffer2 ($FFC4AC, size $E00)` and parts of
   `Menu_ram_FrameBuffer`.
-- The single cross-module variable `LogoEA_ram_Finished` stays in `ram_const.asm`.
+- The single cross-module variable `LogoEA_ram_Finished` stays in `src/core/ram_const.asm`.
 
 ## 7. Markers
 

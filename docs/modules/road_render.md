@@ -1,6 +1,6 @@
-# Module card: `road_render.asm`
+# Module card: `src/race/road_render.asm`
 
-- **ROM range:** `0x008FB4`–`0x0098C1` (`race_hud_debug.asm` starts at `0x98C2`)
+- **ROM range:** `0x008FB4`–`0x0098C1` (`src/race/race_hud_debug.asm` starts at `0x98C2`)
 - **Status:** partially analyzed (object list/records, call graph and dynamic samples
   confirmed; shape/projection math TODO)
 - **Related:** `docs/architecture.md`, `docs/reverse-engineering.md`,
@@ -8,7 +8,7 @@
 
 ## Role / purpose
 
-Race road/object renderer. `race.asm` calls `Road_DrawObjects` after the HUD updates; it walks
+Race road/object renderer. `src/race/race.asm` calls `Road_DrawObjects` after the HUD updates; it walks
 the visible-object list and renders each object's road strip/tile and rider/vehicle
 sprite chain, using `RiderSprites_Build` for the sprite chain.
 
@@ -16,7 +16,7 @@ sprite chain, using `RiderSprites_Build` for the sprite chain.
 
 | Symbol | Address | Called by | Description |
 |--------|---------|-----------|-------------|
-| `Road_DrawObjects` | `0x942A` | `race.asm:1809` | Walk the visible-object list. |
+| `Road_DrawObjects` | `0x942A` | `src/race/race.asm:1809` | Walk the visible-object list. |
 | `Road_DrawObject` | `0x9484` | `Road_DrawObjects` | Render one 0x14-byte object record. |
 | `Road_DrawStrip` | `0x8FB4` | `Road_DrawObject` | Road strip/tile + sprite chain. |
 | `Road_InterpolateLeftEdge`/`Road_InterpolateRightEdge` | `0x9142`/`0x91F0` | `Road_DrawStrip` | Left/right edge interpolation. |
@@ -47,7 +47,7 @@ copy the chain into the SAT with the x offset/clipping, then the second shape.
   `Race_ram_CurrentSpriteAttributeTable` (double-buffered `$FF479C`/`$FF4E1C`),
   `Race_ram_CurrentSpriteTileArray`.
 - `Road_ShapeTable` (`$3BF1A`): 564-entry shape pointer table + shape data `$3C7EC-$7DCA7`,
-  now in `road_shapes.asm` (see `docs/analysis/road_shapes.md`); the dynamic
+  now in `src/data/road_shapes.asm` (see `docs/analysis/road_shapes.md`); the dynamic
   sample `$05994E`, bytes `10 37 20 36 ...`).
 
 ## Coverage matrix
@@ -65,9 +65,9 @@ Detailed listing and dynamic samples: `docs/analysis/road_render.md`.
 
 ## External calls / dependencies
 
-- Caller: `race.asm` (`Road_DrawObjects`).
+- Caller: `src/race/race.asm` (`Road_DrawObjects`).
 - Internal: `RiderSprites_Build` (rider sprite chain), `Animation_ram_*`/`Race_ram_*` state.
-- `race.asm` also uses `Road_ShapeTable` (`0x10018`, `0x10352`).
+- `src/race/race.asm` also uses `Road_ShapeTable` (`0x10018`, `0x10352`).
 
 ## Hacks / bugs / quirks
 
@@ -78,7 +78,7 @@ Detailed listing and dynamic samples: `docs/analysis/road_render.md`.
 
 ## Verified facts
 
-- `[static]` `race.asm` -> `Road_DrawObjects` -> `Road_DrawObject` -> `Road_DrawStrip` -> `RiderSprites_Build`.
+- `[static]` `src/race/race.asm` -> `Road_DrawObjects` -> `Road_DrawObject` -> `Road_DrawStrip` -> `RiderSprites_Build`.
 - `[static]` Object record layout and the 0x14-byte array/list.
 - `[dynamic]` Demo list `1,2,3,4,9,0,A,B,5,6,C,D,E,7,8,F`; records/fields sampled;
   first `Road_DrawStrip` `d0=d1=$10000`, shape data `$05994E`.
@@ -86,7 +86,7 @@ Detailed listing and dynamic samples: `docs/analysis/road_render.md`.
 ## Hypotheses
 
 - `[hypothesis]` The 16 demo objects are the player, opponents and road props; test:
-  map object records to race.asm roles.
+  map object records to src/race/race.asm roles.
 - `[hypothesis]` `Road_InterpolateRightEdgeAlt` is an unused early version of `Road_InterpolateRightEdge`.
 - TODO: exact shape-byte format and projection constants (`$C0/$200`).
 

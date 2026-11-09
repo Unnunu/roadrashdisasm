@@ -1,10 +1,10 @@
-# Analysis: `race_hud.asm` (race HUD)
+# Analysis: `src/race/race_hud.asm` (race HUD)
 
 - **Module:** speed/RPM needles, odometer, place, time, stamina, bike HP, player
   name/place, opponent name, HUD digits/symbols
 - **ROM range:** `0x00D278`–`0x00D8F9`
 - **Status:** analyzed (partial; data tables/dynamic TODO)
-- **Source:** `race_hud.asm`
+- **Source:** `src/race/race_hud.asm`
 - **Related:** `docs/analysis/race.md`, `docs/analysis/animation.md`,
   `docs/modules/race_hud.md`, `docs/ram-map.md`
 
@@ -54,7 +54,7 @@ table/tile array for the two needles via `UpdateAnimation`).
 ## Data / RAM
 
 - `RaceHud_dRankStrings` (`0xD58E`): `" 1st"`..`"16th"` (4 bytes each).
-- `unk_7DEAA`: speed/RPM needle animation script (now `race_misc_data.asm`), frames/tilemap
+- `unk_7DEAA`: speed/RPM needle animation script (now `src/data/race_misc_data.asm`), frames/tilemap
   still TODO.
 - `ram_FF1A70`: gear curve (divisor source); `ram_FF1AA2`: RPM divisor.
 - `ram_FF352C`: odometer digit font (8 longs/digit).

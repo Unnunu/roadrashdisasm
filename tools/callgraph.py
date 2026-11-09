@@ -15,7 +15,7 @@ import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DEFAULT_LISTING = os.path.join(ROOT, "build", "roadrash.lst")
-EQUATE_FILES = ["ram_const.asm", "unknown.asm", "hw_const.asm"]
+EQUATE_FILES = ["src/core/ram_const.asm", "src/core/unknown.asm", "src/core/hw_const.asm"]
 
 LABEL_RE = re.compile(r"^\s*([A-Za-z_][\w.$]*):")
 INSN_RE = re.compile(r"^\s*([A-Za-z_.$][\w.$]*)(.*)$")
@@ -135,10 +135,14 @@ def main():
 
     edges = set()
     indirect = 0
-    files = sorted(f for f in os.listdir(ROOT) if f.endswith(".asm"))
-    for fname in files:
+    src_root = os.path.join(ROOT, "src")
+    files = []
+    for base, _dirs, filenames in os.walk(src_root):
+        for filename in filenames:
+            if filename.endswith(".asm"):
+                files.append(os.path.join(base, filename))
+    for path in sorted(files):
         current = None
-        path = os.path.join(ROOT, fname)
         for line in open(path, encoding="utf-8", errors="replace"):
             code = strip_comment(line).rstrip()
             lm = LABEL_RE.match(code)
@@ -166,7 +170,7 @@ def main():
             if target.startswith("."):
                 continue
             target = canonical(target, names, addr2name)
-            caller = current or ("<%s>" % fname)
+            caller = current or ("<%s>" % os.path.basename(path))
             edges.add((caller, target))
 
     nodes = set()

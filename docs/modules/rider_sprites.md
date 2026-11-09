@@ -1,7 +1,7 @@
-# Module card: `rider_sprites.asm`
+# Module card: `src/screens/rider_sprites.asm`
 
 - **ROM range:** `0x005760`–`0x0059C3` (routines) + `0x005944`–`0x0059C3` (table
-  `RiderSprites_StripTable`); `rider_intro.asm` starts at `0x59C4`
+  `RiderSprites_StripTable`); `src/screens/rider_intro.asm` starts at `0x59C4`
 - **Status:** analyzed (static + dynamic)
 - **Related:** `docs/architecture.md`, `docs/reverse-engineering.md`,
   `docs/hardware.md`, `docs/ram-map.md`, `docs/analysis/rider_sprites.md`
@@ -9,7 +9,7 @@
 ## Role / purpose
 
 Builds a linked **rider/bike sprite chain** in the race sprite attribute table (SAT).
-It is called by `road_render.asm` (`bsr.w RiderSprites_Build`) each time the animation needs a new chunk
+It is called by `src/race/road_render.asm` (`bsr.w RiderSprites_Build`) each time the animation needs a new chunk
 of sprites, writes `Y, size/link, tile/priority, X` entries, advances the animation tile
 cursor / sprite index, and additionally emits a shadow/overlay layer.
 
@@ -17,7 +17,7 @@ cursor / sprite index, and additionally emits a shadow/overlay layer.
 
 | Symbol | Address | Called by | Description |
 |--------|---------|-----------|-------------|
-| `RiderSprites_Build` | `0x5760` | `road_render.asm:82` | Build sprite chain chunk. |
+| `RiderSprites_Build` | `0x5760` | `src/race/road_render.asm:82` | Build sprite chain chunk. |
 | `RiderSprites_BuildAlt` | `0x593E` | — (no direct caller in source) | Wrapper `bsr.w RiderSprites_Build; rts`. |
 
 ## Control flow / state machine
@@ -55,9 +55,9 @@ Detailed listing and field hypotheses: `docs/analysis/rider_sprites.md`.
 
 ## External calls / dependencies
 
-- Caller: `road_render.asm` (race object/animation update; analyzed later).
-- Reads/writes the shared animation state used by `animation.asm`, `road_marking.asm`,
-  `race_hud.asm`.
+- Caller: `src/race/road_render.asm` (race object/animation update; analyzed later).
+- Reads/writes the shared animation state used by `src/race/animation.asm`, `src/race/road_marking.asm`,
+  `src/race/race_hud.asm`.
 
 ## Hacks / bugs / quirks
 
@@ -77,8 +77,8 @@ Detailed listing and field hypotheses: `docs/analysis/rider_sprites.md`.
 
 - `[hypothesis]` Entries are rider + bike sprites with a shadow/reflection layer. Test:
   map the SAT entries to the graphics in BlastEm.
-- `[hypothesis]` `d0/d1` inputs are the animation direction/size from `road_render.asm`. Test:
-  analyze `road_render.asm` and break at `$5760` entry.
+- `[hypothesis]` `d0/d1` inputs are the animation direction/size from `src/race/road_render.asm`. Test:
+  analyze `src/race/road_render.asm` and break at `$5760` entry.
 
 ## Experiments performed
 

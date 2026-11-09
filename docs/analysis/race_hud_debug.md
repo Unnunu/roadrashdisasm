@@ -1,11 +1,11 @@
-# Analysis: `race_hud_debug.asm` (race HUD digit helpers + debug/alternate HUD)
+# Analysis: `src/race/race_hud_debug.asm` (race HUD digit helpers + debug/alternate HUD)
 
 - **Module:** number/digit drawing into the race HUD buffers, race-position display,
   and debug readouts of the player struct/race state
-- **ROM range:** `0x0098C2`–`0x009B9D` (`uncompress.asm` starts at `0x9B9E`)
+- **ROM range:** `0x0098C2`–`0x009B9D` (`src/core/uncompress.asm` starts at `0x9B9E`)
 - **Status:** analyzed (no direct callers in the disassembled source; likely
   debug/alternate HUD or called indirectly)
-- **Source:** `race_hud_debug.asm`
+- **Source:** `src/race/race_hud_debug.asm`
 - **Related:** `docs/architecture.md`, `docs/ram-map.md`, `docs/hardware.md`
 
 ## Coverage matrix
@@ -33,7 +33,7 @@ The module writes digit tiles into the race HUD buffers (`Race_ram_CurrentHudBuf
 - several debug readouts (`RaceDebug_ShowDistanceTravelled`, POSZ, frame delay,
   `ram_FF304C`, `ram_FF3046`, the gear, and a multi-value debug panel).
 
-None of the labels are called by the disassembled modules (`race_hud.asm` has its own
+None of the labels are called by the disassembled modules (`src/race/race_hud.asm` has its own
 drawing); they are likely debug/alternate HUD code or called indirectly from the
 un-disassembled gap.
 
@@ -70,7 +70,7 @@ offset is `((d1 & $FF00) >> 1) + ((d1 & $FF) << 1)` = `row*128 + column*2`
 | `sub_9A98` | `ram_FF3046` | `$180D` |
 | `RaceHud_DrawGear` | player `GEAR` + `$5C1` | `$1716` |
 
-`Race_FormatDecimal` (`race.asm` `0xF11C`) converts the value for the distance readouts. These
+`Race_FormatDecimal` (`src/race/race.asm` `0xF11C`) converts the value for the distance readouts. These
 are internal race variables shown at fixed HUD cells, characteristic of a debug
 overlay.
 
@@ -80,7 +80,7 @@ overlay.
   position before `RaceHud_WriteDigit4`; `d1` still holds the formatted value, so the digit
   position is wrong. Likely unfinished debug code. `[static]`
 - No direct callers in the disassembled source; the normal race HUD lives in
-  `race_hud.asm`. `[static]`
+  `src/race/race_hud.asm`. `[static]`
 - HUD buffers are double-buffered (`CurrentHudBuffer`/`NextHudBuffer`); `RaceHud_DrawStandings`
   writes to the next buffer while the debug readouts use the current one. `[static]`
 

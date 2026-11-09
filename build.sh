@@ -17,7 +17,9 @@ mkdir -p "$BUILD"
 python3 tools/assets.py split --quiet
 
 # assemble
-if ! "$AS" -cpu 68000 -L -olist "$BUILD/roadrash.lst" -o "$BUILD/roadrash.p" main.asm; then
+if ! "$AS" -cpu 68000 -L -olist "$BUILD/roadrash.lst" -o "$BUILD/roadrash.p" \
+        -i src/core -i src/screens -i src/race -i src/data -i src/logoEA -i . \
+        src/main.asm; then
     echo "Build FAILED"
     exit 1
 fi

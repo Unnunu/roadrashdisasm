@@ -1,4 +1,4 @@
-# Module card: `logoEA.asm`
+# Module card: `src/logoEA/logoEA.asm`
 
 - **ROM range:** `0x000366`–`0x00117F`
 - **Status:** partially analyzed (VDP trick understood statically; dynamic VRAM confirmation pending)
@@ -68,7 +68,8 @@ The overlay overlaps later menu framebuffers (see `docs/ram-map.md`).
 ## External calls / dependencies
 
 - `doStart` (enable display/poll finished), `VerticalInterrupt` (per-frame call).
-- The compressed asset `LogoEA_Image_ElectronicArts.bin` (`binclude`).
+- The compressed EA logo asset is generated as `assets/images/ea_logo/data.bin`
+  (ROM `0xCFE`, size `0x3D6`) and included via `binclude`.
 - No sound calls in this module.
 
 ## Hacks / bugs / quirks

@@ -1,8 +1,8 @@
-# Analysis: `race_misc_data.asm` (final data before top-level)
+# Analysis: `src/data/race_misc_data.asm` (final data before top-level)
 
 - **ROM range:** `0x07DCA8`–`0x07E6A1`
 - **Status:** layout/consumers analyzed; some internals TODO
-- **Source:** `race_misc_data.asm` (raw `binclude` chunks with labels)
+- **Source:** `src/data/race_misc_data.asm` (raw `binclude` chunks with labels)
 - **Related:** `docs/analysis/race_hud.md`, `docs/analysis/shop.md`,
   `docs/analysis/race_results.md`, `docs/analysis/race_ai.md`,
   `docs/analysis/road_shapes.md`, `docs/modules/race_misc_data.md`
@@ -22,7 +22,7 @@
 
 ## Consumers
 
-- `race_ai.asm sub_112C8`: indexes `unk_7DCA8` with `d1*2`/`d2*2` (16-bit values).
+- `src/race/race_ai.asm sub_112C8`: indexes `unk_7DCA8` with `d1*2`/`d2*2` (16-bit values).
   Values start `$0000,$0192,$0324,$04B6,...`; the exact sine/scale mapping is TODO.
 - `RaceHud_DrawSpeedArrow`/`DrawRPMArrow`: `unk_7DEAA` is the animation script passed to
   `UpdateAnimation`; its first dword points to the tilemap (`$7E070`), the next word is
@@ -30,7 +30,7 @@
 - `Shop_*`: `Shop_BikePalettes` (`8*32`) for the bike selection.
 - `Race_LoadActorPalette`: `unk_7E470 + index*32`, copies 8 longs (32 bytes) to the
   global palette.
-- `race_results.asm`: `unk_7E670[track]` -> compressed track image; `unk_7E684/68E/698`
+- `src/screens/race_results.asm`: `unk_7E670[track]` -> compressed track image; `unk_7E684/68E/698`
   are added to the current track id and dereferenced as image/nametable/palette offsets
   (5 entries each).
 

@@ -1,4 +1,4 @@
-# Module card: `menu_main.asm`
+# Module card: `src/screens/menu_main.asm`
 
 - **ROM range:** `0x003400`–`0x004225`
 - **Status:** analyzed (VDP/window/menu structure understood; exact card layout/demo TODO)
@@ -50,7 +50,7 @@ reg92 $1C   WindowY 28 cells (window covers the screen)
 - Planes A/B share `$4000` (background/race selection).
 - Window `$7000` = `Menu_ram_FrameBuffer` (64x28 text/info overlay); DMA'd each frame.
   The password screen writes rows 4-27 to `$7200` (`$7000 + $200`) — confirmed with
-  `menu_password.asm`.
+  `src/screens/menu_password.asm`.
 - Sprite table and H-scroll table overlap at `$6000`; the menu does not use sprites.
 
 ## Control flow / state machine

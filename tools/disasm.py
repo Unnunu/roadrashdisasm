@@ -26,7 +26,7 @@ except ImportError:
 
 DEFAULT_ROM = "baserom.md"
 DEFAULT_LISTING = "build/roadrash.lst"
-EQUATE_FILES = ["ram_const.asm", "unknown.asm", "hw_const.asm"]
+EQUATE_FILES = ["src/core/ram_const.asm", "src/core/unknown.asm", "src/core/hw_const.asm"]
 
 BRANCH_BASE = {
     "bra", "bsr", "bcc", "bcs", "beq", "bne", "bmi", "bpl", "bvs", "bvc",

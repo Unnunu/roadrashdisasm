@@ -1,6 +1,6 @@
-# Module card: `uncompress.asm`
+# Module card: `src/core/uncompress.asm`
 
-- **ROM range:** `0x009B9E`–`0x009FE3` (`track_data.asm` starts at `0x9FE4`)
+- **ROM range:** `0x009B9E`–`0x009FE3` (`src/race/track_data.asm` starts at `0x9FE4`)
 - **Status:** analyzed; algorithm validated with a Python decoder
 - **Related:** `docs/architecture.md`, `docs/ram-map.md`, `docs/analysis/uncompress.md`
 
@@ -18,7 +18,7 @@ direct-to-VRAM word decoder (`UncompressToVRAM`).
 | `UncompressW` | `0x9C26` | asset loaders | 8-byte interleaved size + word LZSS. |
 | `UncompressStreamStart` | `0x9CC6` | streaming users | Start a byte decode with a per-call budget. |
 | `UncompressStreamContinue` | `0x9DC2` | streaming users | Resume the decode. |
-| `UncompressToVRAM` | `0x9EF8` | `endlevel.asm` | Word LZSS straight to the VDP. |
+| `UncompressToVRAM` | `0x9EF8` | `src/screens/endlevel.asm` | Word LZSS straight to the VDP. |
 
 All use `a3` = source, `a1` = output (VRAM dest for `UncompressToVRAM`).
 
@@ -46,7 +46,7 @@ supplies the output pointer and new budget); the ring persists across calls.
 - `Uncompress_StateVram`: 4-byte VRAM assembly buffer.
 - Asset header: the decompressed image begins with a `$0808` marker and the tile count
   in the low word (observed `$08080007` panel, `$0808011A` gamepad); `WriteToVRAM`
-  (`race.asm`) uses the low word. Exact header semantics/TODO.
+  (`src/race/race.asm`) uses the low word. Exact header semantics/TODO.
 - Validated sizes: panel `0x2B8`, gamepad `0xC20`, background `0xDA8`, character
   `0x1058`.
 
@@ -64,10 +64,10 @@ Detailed listing: `docs/analysis/uncompress.md`.
 
 ## External calls / dependencies
 
-- Used by `logoEA.asm`? (no, LogoEA has its own), `intro.asm`, `menu_main.asm`,
-  `rider_intro.asm`, `race_results.asm`, `highscore.asm`, `shop.asm`, `endlevel.asm`,
-  `race.asm` (asset loaders).
-- `WriteToVRAM` (`race.asm`) consumes the decompressed tile-count header.
+- Used by `src/logoEA/logoEA.asm`? (no, LogoEA has its own), `src/screens/intro.asm`, `src/screens/menu_main.asm`,
+  `src/screens/rider_intro.asm`, `src/screens/race_results.asm`, `src/screens/highscore.asm`, `src/screens/shop.asm`, `src/screens/endlevel.asm`,
+  `src/race/race.asm` (asset loaders).
+- `WriteToVRAM` (`src/race/race.asm`) consumes the decompressed tile-count header.
 
 ## Hacks / bugs / quirks
 

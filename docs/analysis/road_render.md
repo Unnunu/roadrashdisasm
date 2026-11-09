@@ -1,10 +1,10 @@
-# Analysis: `road_render.asm` (race road/object renderer)
+# Analysis: `src/race/road_render.asm` (race road/object renderer)
 
 - **Module:** race road-strip/tile renderer and visible-object sprite renderer
-- **ROM range:** `0x008FB4`–`0x0098C1` (`race_hud_debug.asm` starts at `0x98C2`)
+- **ROM range:** `0x008FB4`–`0x0098C1` (`src/race/race_hud_debug.asm` starts at `0x98C2`)
 - **Status:** partially analyzed: object list/records, call graph and road-strip
   structure confirmed; the exact shape/projection math is TODO
-- **Source:** `road_render.asm`
+- **Source:** `src/race/road_render.asm`
 - **Related:** `docs/architecture.md`, `docs/hardware.md`, `docs/ram-map.md`,
   `docs/analysis/rider_sprites.md`
 
@@ -26,12 +26,12 @@
 
 ## Role & call graph
 
-`race.asm` calls `Road_DrawObjects` (`0x1809`) after the HUD/road updates. The renderer walks the
+`src/race/race.asm` calls `Road_DrawObjects` (`0x1809`) after the HUD/road updates. The renderer walks the
 visible-object list and, for each object, draws the road strip/tile and copies the
 object's rider/vehicle sprite chain into the SAT:
 
 ```
-race.asm (0x1809)
+src/race/race.asm (0x1809)
   Road_DrawObjects             ; walk Road_VisibleObjectList visible list
     Road_DrawObject           ; render one object (Road_ObjectArray record)
       Road_DrawStrip         ; road strip/tile + sprite chain for the object
@@ -49,7 +49,7 @@ caller in the disassembled source; likely an unused/alternate strip generator.
 ## Object list and records
 
 - Visible list `Road_VisibleObjectList` (`$FF1D50`): CPU object indices, `$FFFF`-terminated. Built
-  by `race.asm` (`Road_BuildVisibleList` from `ram_FF1B50`/`ram_FF1C50`).
+  by `src/race/race.asm` (`Road_BuildVisibleList` from `ram_FF1B50`/`ram_FF1C50`).
 - Object array `Road_ObjectArray` (`$FFD37C`), 0x14 bytes per record. Fields used by this
   module:
 
@@ -105,9 +105,9 @@ rendering each object and restores them on overflow.
 
 ## Shape table / data
 
-- `Road_ShapeTable` (`0x3BF1A`) is a table of 564 shape-data pointers (`race.asm` uses
+- `Road_ShapeTable` (`0x3BF1A`) is a table of 564 shape-data pointers (`src/race/race.asm` uses
   it at `0x10018`/`0x10352` too); `word_3C7EA` holds the shape count `$234`.
-- Shape data (`$3C7EC-$7DCA7`) is now extracted in `road_shapes.asm` (table/count from
+- Shape data (`$3C7EC-$7DCA7`) is now extracted in `src/data/road_shapes.asm` (table/count from
   source, bytes raw; format TODO). `Road_ScaleShape` reads `(a2)`, `1(a2)`, `2(a2)` and
   scales them by `scale>>2`; `Road_ProjectShapeSpecial`/`Road_ProjectShape` add the object x and the `$C0`/`$200`
   constants, apply the mirror bit (bit15 of `$A(a0)`), and set `ram_FFDE62` when the
@@ -143,7 +143,7 @@ rendering each object and restores them on overflow.
 
 - `Road_InterpolateRightEdgeAlt` has no direct caller; likely alternate/dead. `[static]`
 - `Road_DrawStrip` uses `Animation_ram_TileIndex` as a road/sprite tile cursor, sharing the
-  animation state with `RiderSprites_Build`/`animation.asm`. `[static]`
+  animation state with `RiderSprites_Build`/`src/race/animation.asm`. `[static]`
 - The object `+$E`/`+$10` words are not read here; they belong to the race-side object
   logic. `[static]`
 - TODO: exact shape-byte format, the `$C0/$200` constants and the interpolation;

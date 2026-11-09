@@ -1,6 +1,23 @@
 {
   "assets": [
     {
+      "id": "ea_logo",
+      "label": "LogoEA_Image_ElectronicArts",
+      "aliases": [],
+      "address": "0x00CFE",
+      "size": "0x3D6",
+      "category": "images",
+      "preview": false,
+      "palette_group": null,
+      "variants": null,
+      "atlas_lines": null,
+      "transparent0": false,
+      "compression": "custom",
+      "palette_groups": null,
+      "race_tracks": null,
+      "tileset_asset": null
+    },
+    {
       "id": "result_panel",
       "label": "RomTail",
       "aliases": [

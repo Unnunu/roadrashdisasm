@@ -1,9 +1,9 @@
-# Analysis: `animation.asm` (sprite animation renderer)
+# Analysis: `src/race/animation.asm` (sprite animation renderer)
 
 - **Module:** animation script renderer; SAT entry builder; optional tile copy
 - **ROM range:** `0x016860`–`0x0169AF`
 - **Status:** analyzed (scripts/data TODO)
-- **Source:** `animation.asm`
+- **Source:** `src/race/animation.asm`
 - **Related:** `docs/analysis/race_hud.md`, `docs/analysis/rider_sprites.md`,
   `docs/modules/animation.md`, `docs/ram-map.md`
 

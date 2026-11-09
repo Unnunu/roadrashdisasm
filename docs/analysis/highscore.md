@@ -1,9 +1,9 @@
-# Analysis: `highscore.asm` (high-score table screen)
+# Analysis: `src/screens/highscore.asm` (high-score table screen)
 
 - **Module:** high-score table, plus the attract/demo variant
-- **ROM range:** `0x006DC0`–`0x0074A9` (`shop.asm` starts at `0x74AA`)
+- **ROM range:** `0x006DC0`–`0x0074A9` (`src/screens/shop.asm` starts at `0x74AA`)
 - **Status:** analyzed statically (the demo path can run it; no capture taken)
-- **Source:** `highscore.asm`
+- **Source:** `src/screens/highscore.asm`
 - **Related:** `docs/architecture.md`, `docs/hardware.md`, `docs/ram-map.md`
 
 ## Coverage matrix
@@ -19,10 +19,10 @@
 
 The top level enters this module in two ways:
 
-- **Demo/attract** (`top_level.asm` `0x7E7CC`): `HighScore_Init` +
+- **Demo/attract** (`src/core/top_level.asm` `0x7E7CC`): `HighScore_Init` +
   `HighScore_GameTick_Demo`; after the intro timer expires the demo high score is
   shown, then the demo race.
-- **Normal** (`top_level.asm` `0x7E924`, selected from the results screen A, the shop,
+- **Normal** (`src/core/top_level.asm` `0x7E924`, selected from the results screen A, the shop,
   or A on this screen): `HighScore_Init` + `HighScore_GameTick`.
 
 The screen shows the title, five yellow badge slots with the top five entries, the
@@ -48,10 +48,10 @@ background palette (at `ImageBuffer+$4E4`) is copied to the global palette.
 
 - Header `y=22, x=16, height=7, width=20`, followed by 7 x 20-character entries
   (`$FF05F2` is the first entry).
-- The initial table is built by `intro.asm` from `unk_4C18` (message.asm): Fang,
+- The initial table is built by `src/screens/intro.asm` from `unk_4C18` (src/screens/message.asm): Fang,
   Helldog, Lubster, Natasha, Sergio, Player A, Player B with their money.
 - `HighScore_ram_PlayerATableOffset/B` (20*5 / 20*6 initially) point at the player rows;
-  `Race_UpdateHighScoreTable` in `race.asm` and `Intro_InitPlayerA` in `intro.asm` update/sort them.
+  `Race_UpdateHighScoreTable` in `src/race/race.asm` and `Intro_InitPlayerA` in `src/screens/intro.asm` update/sort them.
 - The screen encodes the table with `EncodeString`; the five top rows use the table font
   at `$800` and draw entries 0..4; the player rows use the regular font at `$0` and draw
   the entries at the player offsets. After sorting, a qualified player can appear both

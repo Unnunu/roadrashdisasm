@@ -1,4 +1,4 @@
-# Module card: `menu_password.asm`
+# Module card: `src/screens/menu_password.asm`
 
 - **ROM range:** `0x002446`–`0x0033FF`
 - **Status:** analyzed (password format/checksum reimplemented; visual cursor TODO)
@@ -64,7 +64,7 @@ the valid password `00000  00001010D8  101MN` (validation sum 21, mask 21).
 - Text font base `$6000` (palette line 3), `WriteNametableToBuffer` with plane width 64.
 - Cursor: `SetCursorPos` writes the high byte of `d0` to a frame-buffer cell; `$6000`
   restores the text palette, `0` draws/erases the cursor cell.
-- VDP registers are set by the main menu (`menu_main.asm`): planes A/B `$4000`, window `$7000` (64x28 frame buffer, covers the screen); `$7200` is window row 4.
+- VDP registers are set by the main menu (`src/screens/menu_main.asm`): planes A/B `$4000`, window `$7000` (64x28 frame buffer, covers the screen); `$7200` is window row 4.
 
 ## RAM / ROM & structures
 
@@ -112,5 +112,5 @@ See `docs/analysis/menu_password.md` for the full matrix.
   an extra bike/upgrade selector.
 - `[ ]` Confirm the sample password in BlastEm.
 - `[ ]` Confirm `MenuPassword_SelectCurrentTrack` selects the worst-place track and the `MenuPassword_SwapPlayerBlocks` block swap.
-- `[ ]` Main-menu VDP setup (`menu_main.asm`) remains TODO.
+- `[ ]` Main-menu VDP setup (`src/screens/menu_main.asm`) remains TODO.
 
