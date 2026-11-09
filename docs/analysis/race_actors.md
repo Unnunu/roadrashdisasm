@@ -106,8 +106,9 @@ special traffic actor; the exact role is TODO.
 
 | Current | Proposed | Evidence | Confidence |
 |---|---|---|---|
-| `+$16` | `ActorType` | definition byte0 | high |
 | `+$66` | `ActorRating` | definition byte5*100, divisor use | medium |
-| `+$75` | `ActorGraphicsIndex` | definition byte2 low 7 bits | high |
 | `+$5C` | `ActorTileBase` | graphics +$E / `ram_FF18AA` | medium |
 | `+$5E`/`+$60` | `ActorSpritePosX/Y` | graphics +$A/+$C | low |
+
+Applied in Batch 3a: `+$02/+$04/+$06/+$12/+$16/+$18/+$30/+$71/+$75` ->
+`RaceActor_PosZ/PosXHigh/PosXLow/Speed/Type/Gear/PosY/Index/GraphicsIndex`.

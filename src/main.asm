@@ -552,7 +552,7 @@ HorizontalInterrupt:
                 bpl.w   .loc_1590
                 move.w  STRUCT_OFFSET_14(a1),d0
                 muls.w  (Race_ram_FrameCounter).l,d0
-                add.w   STRUCT_OFFSET_SPEED(a1),d0
+                add.w   RaceActor_Speed(a1),d0
                 bpl.w   .loc_1576
                 move.w  #0,d0
 .loc_1576:

@@ -35,7 +35,7 @@ RaceHud_Draw:
 ; *************************************************
 
 RaceHud_DrawSpeedArrow:
-                move.w  (RacePlayerA + STRUCT_OFFSET_SPEED).l,d0
+                move.w  (RacePlayerA + RaceActor_Speed).l,d0
                 cmp.w   #14500,d0
                 bcs.w   .loc_D2B4
                 move.w  #31,d0
@@ -67,7 +67,7 @@ RaceHud_DrawSpeedArrow:
 
 RaceHud_DrawRPMArrow:
                 lea     (RaceBike_ram_Parameters).l,a0
-                move.w  (RacePlayerA + STRUCT_OFFSET_GEAR).l,d1
+                move.w  (RacePlayerA + RaceActor_Gear).l,d1
                 asl.w   #1,d1
                 move.w  $E(a0,d1.w),d1
                 ext.l   d1
@@ -75,7 +75,7 @@ RaceHud_DrawRPMArrow:
                 lsr.l   #8,d1
                 lsr.l   #6,d1
                 move.w  d1,(Race_ram_PlayerRpmDivisor).l
-                move.w  (RacePlayerA + STRUCT_OFFSET_SPEED).l,d0
+                move.w  (RacePlayerA + RaceActor_Speed).l,d0
                 ext.l   d0
                 swap    d0
                 divu.w  d1,d0
@@ -107,7 +107,7 @@ RaceHud_DrawRPMArrow:
 RaceHud_DrawOdometer:
                 movea.l (Race_ram_CurrentHudBuffer).l,a1
                 adda.w  #$E00,a1
-                move.l  (RacePlayerA + STRUCT_OFFSET_POSX_HIGH).l,d1
+                move.l  (RacePlayerA + RaceActor_PosXHigh).l,d1
                 move.l  d1,d0
                 clr.w   d0
                 swap    d0

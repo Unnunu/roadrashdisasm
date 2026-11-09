@@ -63,7 +63,7 @@ RaceHud_DrawStandings:
 ; *************************************************
 
 RaceDebug_ShowDistanceTravelled:
-                move.w  (RacePlayerA + STRUCT_OFFSET_POSX_HIGH).l,d0
+                move.w  (RacePlayerA + RaceActor_PosXHigh).l,d0
                 jsr     (Race_FormatDecimal).l
                 move.w  d1,d0
                 move.w  #$1A13,d1
@@ -83,7 +83,7 @@ RaceDebug_ShowDistanceTravelled:
 ; *************************************************
 
 RaceDebug_ShowPosZ:
-                move.w  (RacePlayerA + STRUCT_OFFSET_POSZ).l,d0
+                move.w  (RacePlayerA + RaceActor_PosZ).l,d0
                 jsr     (Race_FormatDecimal).l
                 move.w  d1,d0
                 move.w  #$1508,d1
@@ -168,25 +168,25 @@ RaceDebug_ShowState:
                 movea.l (Race_ram_CurrentHudBuffer).l,a0
                 jsr     (RaceHud_WriteDigit4).l
 
-                move.w  (RacePlayerA + STRUCT_OFFSET_POSY).l,d0
+                move.w  (RacePlayerA + RaceActor_PosY).l,d0
                 move.w  #$1A08,d1
                 move.w  #0,d2
                 movea.l (Race_ram_CurrentHudBuffer).l,a0
                 jsr     (RaceHud_WriteDigit4).l
 
-                move.w  (RacePlayerA + STRUCT_OFFSET_POSZ).l,d0
+                move.w  (RacePlayerA + RaceActor_PosZ).l,d0
                 move.w  #$1A10,d1
                 move.w  #0,d2
                 movea.l (Race_ram_CurrentHudBuffer).l,a0
                 jsr     (RaceHud_WriteDigit4).l
 
-                move.w  (RacePlayerA + STRUCT_OFFSET_POSX_HIGH).l,d0
+                move.w  (RacePlayerA + RaceActor_PosXHigh).l,d0
                 move.w  #$1A17,d1
                 move.w  #0,d2
                 movea.l (Race_ram_CurrentHudBuffer).l,a0
                 jsr     (RaceHud_WriteDigit4).l
 
-                move.w (RacePlayerA + STRUCT_OFFSET_POSX_LOW).l,d0
+                move.w (RacePlayerA + RaceActor_PosXLow).l,d0
                 andi.w  #$FF00,d0
                 move.w  #$1A1C,d1
                 move.w  #0,d2
@@ -223,7 +223,7 @@ sub_9A98:
 ; *************************************************
 
 RaceHud_DrawGear:
-                move.w  (RacePlayerA + STRUCT_OFFSET_GEAR).l,d0
+                move.w  (RacePlayerA + RaceActor_Gear).l,d0
                 addi.w  #$5C1,d0
                 move.w  #$1716,d1
                 move.w  #0,d2

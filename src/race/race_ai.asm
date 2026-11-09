@@ -3388,7 +3388,7 @@ sub_12EA2:
                 btst    #7,(RacePlayerA + STRUCT_OFFSET_68).l
                 bne.w   .loc_12F60
                 move.w  4(a1),d0
-                sub.w   (RacePlayerA + STRUCT_OFFSET_POSX_HIGH).l,d0
+                sub.w   (RacePlayerA + RaceActor_PosXHigh).l,d0
                 bpl.w   .loc_12F4A
                 cmp.w   #$FFEE,d0
                 bpl.w   .loc_12F60
@@ -3424,7 +3424,7 @@ sub_12EA2:
 
 .loc_12FA6:
                 move.w  STRUCT_OFFSET_66(a1),d0
-                cmp.w   (RacePlayerA + STRUCT_OFFSET_SPEED).l,d0
+                cmp.w   (RacePlayerA + RaceActor_Speed).l,d0
                 bgt.w   .loc_12FD8
                 cmpa.l  (Race_ram_NearestActor).l,a1
                 beq.w   .loc_12FCE
@@ -4358,14 +4358,14 @@ sub_1384C:
                 asl.w   #1,d0
                 lea     (unk_12D0A).l,a6
                 move.w  (a6,d0.w),d0
-                sub.w   STRUCT_OFFSET_POSY(a1),d0
+                sub.w   RaceActor_PosY(a1),d0
                 beq.w   .return
                 move.w  d0,d1
                 bpl.w   .loc_13868
                 neg.w   d1
 .loc_13868:
                 mulu.w  #$280,d1
-                move.w  STRUCT_OFFSET_SPEED(a1),d2
+                move.w  RaceActor_Speed(a1),d2
                 mulu.w  d1,d2
                 swap    d2
                 tst.w   d2
@@ -4389,10 +4389,10 @@ sub_13892:
                 asl.w   #1,d0
                 lea     (unk_12D0A).l,a6
                 move.w  (a6,d0.w),d0
-                sub.w   STRUCT_OFFSET_POSY(a1),d0
+                sub.w   RaceActor_PosY(a1),d0
                 ext.l   d0
                 swap    d0
-                move.w  STRUCT_OFFSET_SPEED(a1),d1
+                move.w  RaceActor_Speed(a1),d1
                 lsr.w   #8,d1
                 beq.w   .return
                 move.w  (ram_FF1B46).l,d2
@@ -4697,18 +4697,18 @@ sub_13A92:
                 bra.w   .locret_13BBA
 .loc_13AC2:
                 clr.w   d1
-                move.w  STRUCT_OFFSET_16(a1),d0
+                move.w  RaceActor_Type(a1),d0
                 asl.w   #2,d0
                 lea     (unk_25A10).l,a0
                 movea.l (a0,d0.w),a0
-                move.w  STRUCT_OFFSET_SPEED(a1),d0
+                move.w  RaceActor_Speed(a1),d0
                 btst    #0,STRUCT_OFFSET_68(a1)
                 bne.w   .loc_13B68
                 btst    #4,STRUCT_OFFSET_68(a1)
                 bne.w   .loc_13B3A
                 btst    #1,STRUCT_OFFSET_68(a1)
                 beq.w   .loc_13B30
-                move.w  STRUCT_OFFSET_GEAR(a1),d1
+                move.w  RaceActor_Gear(a1),d1
                 move.w  d1,d2
                 asl.w   #1,d2
                 move.w  $E(a0,d2.w),d3
@@ -4717,14 +4717,14 @@ sub_13A92:
                 cmp.w   0.w(a0),d1
                 bpl.w   .loc_13B68
                 addq.w  #1,d1
-                move.w  d1,STRUCT_OFFSET_GEAR(a1)
+                move.w  d1,RaceActor_Gear(a1)
                 move.w  d1,d2
                 asl.w   #1,d2
 .loc_13B1A:
                 cmp.w   $1A(a0,d2.w),d0
                 bcc.w   .loc_13B2C
                 subq.w  #1,d1
-                move.w  d1,STRUCT_OFFSET_GEAR(a1)
+                move.w  d1,RaceActor_Gear(a1)
                 move.w  d1,d2
                 asl.w   #1,d2
 .loc_13B2C:
@@ -4754,24 +4754,24 @@ sub_13A92:
                 beq.w   .loc_13B84
                 tst.w   d1
                 bmi.w   .loc_13B8A
-                move.w  STRUCT_OFFSET_SPEED(a1),d2
+                move.w  RaceActor_Speed(a1),d2
                 lsr.w   #8,d2
                 sub.w   d2,d1
 .loc_13B84:
                 tst.w   d1
                 bpl.w   .loc_13BB6
 .loc_13B8A:
-                move.w  STRUCT_OFFSET_16(a1),d0
+                move.w  RaceActor_Type(a1),d0
                 asl.w   #2,d0
                 lea     (unk_25A10).l,a0
                 movea.l (a0,d0.w),a0
-                move.w  STRUCT_OFFSET_SPEED(a1),d0
-                move.w  STRUCT_OFFSET_GEAR(a1),d2
+                move.w  RaceActor_Speed(a1),d0
+                move.w  RaceActor_Gear(a1),d2
                 beq.w   .loc_13BB6
                 asl.w   #1,d2
                 cmp.w   $1A(a0,d2.w),d0
                 bcc.w   .loc_13BB6
-                subi.w  #1,STRUCT_OFFSET_GEAR(a1)
+                subi.w  #1,RaceActor_Gear(a1)
 .loc_13BB6:
                 move.w  d1,STRUCT_OFFSET_14(a1)
 .locret_13BBA:
@@ -4861,7 +4861,7 @@ sub_13BF4:
                 beq.w   .locret_13CFC
                 move.l  d0,d1
                 clr.w   d0
-                sub.l   (RacePlayerA + STRUCT_OFFSET_POSX_HIGH).l,d0
+                sub.l   (RacePlayerA + RaceActor_PosXHigh).l,d0
                 cmp.l   #$200000,d0
                 bpl.w   .locret_13CFC
                 addi.l  #4,(ram_FFDBD4).l
@@ -4877,7 +4877,7 @@ sub_13BF4:
                 asl.w   #5,d1
                 subi.w  #$100,d1
                 move.w  d1,$30(a1)
-                move.w  (RacePlayerA + STRUCT_OFFSET_SPEED).l,d0
+                move.w  (RacePlayerA + RaceActor_Speed).l,d0
                 cmp.w   #$2710,d0
                 bmi.w   .loc_13CF4
                 move.w  #$2710,d0
@@ -5172,7 +5172,7 @@ sub_13E94:
 Race_UpdateBikeLean:
                 tst.b   STRUCT_OFFSET_6E(a1)
                 bpl.w   .return
-                move.w  STRUCT_OFFSET_SPEED(a1),d2
+                move.w  RaceActor_Speed(a1),d2
                 beq.w   .loc_13EF2
                 mulu.w  (ram_FF1AB4).l,d2
                 lsr.l   #8,d2

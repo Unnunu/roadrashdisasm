@@ -157,7 +157,7 @@ definitions are in `docs/analysis/race_actors.md`. Initial field inventory:
 | `+$66` | word | `Unk66` (copied from `+$56`; divisor use) | `STRUCT_OFFSET_66` code uses |
 | `+$68` | byte | flags: bit1 = B, bit2 = A, bit7 = timer stop | `Race_GetInput`, `Race_UpdateTime` |
 | `+$73`/`+$74`/`+$75`/`+$77` | byte | actor definition bytes 3/1/2/4 | `Race_CreateActors` |
-| `+$71` | byte | `Index` | `STRUCT_OFFSET_INDEX` |
+| `+$71` | byte | `Index` | `RaceActor_Index` |
 
 Actor instances (`$80` each): `RacePlayerA`/`RacePlayerB` (`$FF1EAA`/`$FF26AA`),
 15 opponents `$FF1F2A`..`$FF262A` (`Race_ActorList`), static actors

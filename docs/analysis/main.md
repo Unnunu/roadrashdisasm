@@ -266,7 +266,7 @@ budget.
    - if `ram_MusicEnabled != 0`, skip to `Audio_Update`;
    - if `Race_ram_State != 0`, call `Audio_Engine1Update`/`Audio_Engine2Update` and skip;
    - otherwise compute a speed/engine parameter from `RacePlayerA` (struct offset `$14`
-     × `Race_ram_FrameCounter` + `STRUCT_OFFSET_SPEED`, scaled by `Race_ram_PlayerRpmDivisor` and
+     × `Race_ram_FrameCounter` + `RaceActor_Speed`, scaled by `Race_ram_PlayerRpmDivisor` and
      `$3800`), smooth it into `Race_ram_Engine1Current` with a ±`$64` rate limit, derive `d1`
      (`>>5 + 2`, min 0), handle player B's struct `RacePlayerB` (distance to
      `Race_ram_PlayerProgress`), call `Audio_Engine1Update`, `Audio_UpdateEngine` (with `Race_ram_NearestActor`) and

@@ -94,13 +94,13 @@ Race_DrawRearviewMirror:
                 movea.l (Global_ram_PalettePtr).l,a2
                 move.l  $78(a2),d1
                 move.w  $7C(a2),d1
-                move.w  (RacePlayerA + STRUCT_OFFSET_POSX_HIGH).l,d0
+                move.w  (RacePlayerA + RaceActor_PosXHigh).l,d0
                 btst    #0,d0
                 bne.w   .loc_D9F8
                 swap    d1
 .loc_D9F8:
                 move.l  d1,$70(a2)
-                move.w  (RacePlayerA + STRUCT_OFFSET_POSY).l,d0
+                move.w  (RacePlayerA + RaceActor_PosY).l,d0
                 subi.w  #$10,d0
                 ext.l   d0
                 divs.w  #$28,d0 ; '('
@@ -110,7 +110,7 @@ Race_DrawRearviewMirror:
 .loc_DA14:
                 move.w  #0,d0
                 bsr.w   Race_DrawMirrorRoad
-                move.w  (RacePlayerA + STRUCT_OFFSET_POSY).l,d0
+                move.w  (RacePlayerA + RaceActor_PosY).l,d0
                 addi.w  #$10,d0
                 ext.l   d0
                 divs.w  #$28,d0 ; '('
@@ -223,7 +223,7 @@ Race_ProjectActorSprite:
                 divs.w  #$10,d0
                 addi.w  #$B00,d0
                 move.w  d0,-(sp)
-                move.w  (RacePlayerA + STRUCT_OFFSET_POSY).l,d1
+                move.w  (RacePlayerA + RaceActor_PosY).l,d1
                 subi.w  #$10,d1
                 ext.l   d1
                 divs.w  #$28,d1 ; '('
@@ -236,7 +236,7 @@ Race_ProjectActorSprite:
                 move.w  d0,$C(a0)
                 addi.w  #$20,d0 ; ' '
                 move.w  d0,0.w(a0)
-                move.w  (RacePlayerA + STRUCT_OFFSET_POSY).l,d1
+                move.w  (RacePlayerA + RaceActor_PosY).l,d1
                 addi.w  #$10,d1
                 ext.l   d1
                 divs.w  #$28,d1 ; '('
@@ -743,7 +743,7 @@ Race_UpdateCamera:
 .loc_DF0A:
                 move.l  #0,(Race_ram_CameraOffset).l
 .loc_DF14:
-                move.w  (RacePlayerA + STRUCT_OFFSET_POSY).l,d0
+                move.w  (RacePlayerA + RaceActor_PosY).l,d0
                 asr.w   #1,d0
                 move.w  d0,d1
                 asr.w   #1,d1
@@ -752,7 +752,7 @@ Race_UpdateCamera:
                 move.w  d0,(ram_FF1E60).l
                 bra.w   .loc_DF6E
 
-                move.w  (RacePlayerA + STRUCT_OFFSET_POSY).l,d1
+                move.w  (RacePlayerA + RaceActor_PosY).l,d1
                 add.w   (ram_FF1E7A).l,d1
                 beq.w   .loc_DF6E
                 clr.w   (ram_FF1E86).l
@@ -777,7 +777,7 @@ Race_UpdateCamera:
 .loc_DF90:
                 move.l  d0,(ram_FF1E64).l
                 move.w  (Race_ram_PlayerProgress).l,d1
-                move.l  (RacePlayerA + STRUCT_OFFSET_POSX_HIGH).l,d0
+                move.l  (RacePlayerA + RaceActor_PosXHigh).l,d0
                 sub.l   (ram_FF1E76).l,d0
                 sub.l   (Race_ram_CameraOffset).l,d0
                 move.l  d0,(Race_ram_PlayerProgress).l
@@ -1261,7 +1261,7 @@ Race_BuildHScrollTable:
 .loc_E5C6:
                 move.l  #0,(a3)+
                 dbf     d0,.loc_E5C6
-                move.l  (RacePlayerA + STRUCT_OFFSET_POSX_HIGH).l,d1
+                move.l  (RacePlayerA + RaceActor_PosXHigh).l,d1
                 asr.l   #8,d1
                 asr.l   #1,d1
                 andi.l  #$C0,d1

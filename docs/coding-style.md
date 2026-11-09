@@ -58,7 +58,8 @@ Cross-module variables always live in `src/core/ram_const.asm` (see section 6).
 
 - Data tables: `Subsystem_dName` (e.g. `dCircleProfile`, `dStringCodeTable`).
 - Graphics/assets: `img_*` (e.g. `img_Intro_Title`).
-- Structure field offsets: `STRUCT_OFFSET_<FIELD>` (e.g. `STRUCT_OFFSET_SPEED`).
+- Confirmed actor field offsets use named symbols such as `RaceActor_Speed`; remaining
+  ambiguous offsets stay `STRUCT_OFFSET_<FIELD>`.
 - Numeric constants: `SCREAMING_SNAKE_CASE` (e.g. `VDP_VRAM_WRITE`).
   Hardware names keep their established spelling (`VdpCtrl`, `VdpData`).
 - Not yet identified ROM symbols keep `unk_XXXX`, `off_XXXX`, `word_XXXX`, `byte_XXXX`.

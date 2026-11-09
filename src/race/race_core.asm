@@ -36,7 +36,7 @@ Race_Init:
                 jsr     (Race_LoadRoadImage).l
                 jsr     (Race_LoadBikePalette).l
                 jsr     (Race_CreateActors).l
-                move.w  #0,(RacePlayerA + STRUCT_OFFSET_16).l
+                move.w  #0,(RacePlayerA + RaceActor_Type).l
                 jsr     (Race_InitActorLists).l
                 jsr     (Race_InitActorPositions).l
                 jsr     (TrackData_InitLevel).l
@@ -1856,7 +1856,7 @@ Race_Update:
                 move.b  #0,(ram_FF1AD7).l
                 move.b  #0,(ram_FF1AD6).l
                 move.b  #0,(ram_FF1ADD).l
-                move.w  (RacePlayerA + STRUCT_OFFSET_SPEED).l,d0
+                move.w  (RacePlayerA + RaceActor_Speed).l,d0
                 jsr     (Race_UpdateSpeedDisplay).l ; HUD speed value
                 jsr     (Race_SpawnTick).l ; dynamic opponent/traffic spawn
                 tst.w   (Race_ram_Started).l
@@ -1898,7 +1898,7 @@ Race_Update:
                 jsr     (Race_UpdateNearestOpponent).l
                 jsr     (sub_12EA2).l
                 jsr     (sub_13106).l
-                move.w  (RacePlayerA + STRUCT_OFFSET_POSX_HIGH).l,d0
+                move.w  (RacePlayerA + RaceActor_PosXHigh).l,d0
                 sub.w   (ram_FF1F2E).l,d0
                 move.w  d0,(Race_ram_PlayerXDifference).l
                 jsr     (Race_UpdateNearestTarget).l
@@ -2736,7 +2736,7 @@ Race_CreateActors:
                 cmpa.l  #$FFFFFFFF,a1 ; we reached the end of the list
                 beq.w   .break
 
-                move.b  d0,STRUCT_OFFSET_INDEX(a1) ; set actor index
+                move.b  d0,RaceActor_Index(a1) ; set actor index
                 addq.w  #1,d0 ; increment index
 ; id list: $4B (player def) followed by the current level's 15 opponents
                 move.w  (a3)+,d2 ; get actor id
@@ -2746,7 +2746,7 @@ Race_CreateActors:
                 clr.w   d2
 ; definition byte 0 -> actor type/sprite; byte 1 -> +$74
                 move.b  (a2)+,d2
-                move.w  d2,STRUCT_OFFSET_16(a1)
+                move.w  d2,RaceActor_Type(a1)
                 move.b  (a2)+,STRUCT_OFFSET_74(a1)
                 bclr    #1,STRUCT_OFFSET_6B(a1)
                 move.b  (a2)+,d2
@@ -2755,7 +2755,7 @@ Race_CreateActors:
                 bset    #1,STRUCT_OFFSET_6B(a1)
 .loc_CB50:
 ; byte 2 low 7 bits -> +$75 (graphics index); bit 7 -> +$6B bit1
-                move.b  d2,STRUCT_OFFSET_75(a1)
+                move.b  d2,RaceActor_GraphicsIndex(a1)
                 ext.w   d2
                 asl.w   #2,d2
                 movea.l (a4,d2.w),a5
@@ -2776,8 +2776,8 @@ Race_CreateActors:
                 move.w  d1,STRUCT_OFFSET_66(a1)
                 move.b  #$FF,STRUCT_OFFSET_6E(a1)
                 clr.l   d1
-                move.w  d1,STRUCT_OFFSET_POSX_LOW(a1)
-                move.w  d1,STRUCT_OFFSET_POSZ(a1)
+                move.w  d1,RaceActor_PosXLow(a1)
+                move.w  d1,RaceActor_PosZ(a1)
                 move.w  d1,STRUCT_OFFSET_1C(a1)
                 move.w  d1,STRUCT_OFFSET_32(a1)
                 move.w  d1,STRUCT_OFFSET_8(a1)
@@ -2792,9 +2792,9 @@ Race_CreateActors:
                 move.w  d1,STRUCT_OFFSET_3A(a1)
                 move.w  d1,STRUCT_OFFSET_38(a1)
                 move.w  d1,STRUCT_OFFSET_3C(a1)
-                move.w  d1,STRUCT_OFFSET_SPEED(a1)
+                move.w  d1,RaceActor_Speed(a1)
                 move.w  d1,STRUCT_OFFSET_14(a1)
-                move.w  d1,STRUCT_OFFSET_GEAR(a1)
+                move.w  d1,RaceActor_Gear(a1)
                 move.b  d1,STRUCT_OFFSET_68(a1)
                 move.b  d1,STRUCT_OFFSET_69(a1)
                 move.b  d1,STRUCT_OFFSET_6A(a1)

@@ -2167,7 +2167,7 @@ sub_14E38:
                 tst.w   (ram_FF1B32).l
                 bne.w   .loc_14FA2
                 move.w  (ram_FF1F2E).l,d0
-                sub.w   (RacePlayerA + STRUCT_OFFSET_POSX_HIGH).l,d0
+                sub.w   (RacePlayerA + RaceActor_PosXHigh).l,d0
                 bpl.w   .loc_14F74
                 neg.w   d0
 
@@ -6091,7 +6091,7 @@ sub_1662C:
 
 sub_16644:
                 move.l  4(a1),d0
-                sub.l   (RacePlayerA + STRUCT_OFFSET_POSX_HIGH).l,d0
+                sub.l   (RacePlayerA + RaceActor_PosXHigh).l,d0
                 cmp.l   #$C000,d0
                 bpl.w   .loc_1665C
                 bsr.s   sub_1662C

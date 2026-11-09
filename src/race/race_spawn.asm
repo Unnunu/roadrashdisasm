@@ -173,7 +173,7 @@ Race_SpawnTick:
 .loc_16B2E:
                 cmpi.w  #6,(ram_FF1A06).l
                 bpl.w   .return
-                cmpi.w  #6000,(RacePlayerA + STRUCT_OFFSET_SPEED).l
+                cmpi.w  #6000,(RacePlayerA + RaceActor_Speed).l
                 bmi.w   .loc_16B54
                 bsr.w   Race_SpawnOpponent
                 cmpa.l  #$FFFFFFFF,a1
@@ -496,7 +496,7 @@ Race_InitOpponentActor:
 Race_InitTrafficActor:
                 move.l  a2,-(sp)
                 lea     (RacePlayerA).l,a2
-                move.l  STRUCT_OFFSET_POSX_HIGH(a2),d0
+                move.l  RaceActor_PosXHigh(a2),d0
                 subi.l  #$100000,d0
                 move.l  d0,4(a1)
                 move.l  d0,$1E(a1)

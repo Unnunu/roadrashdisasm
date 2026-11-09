@@ -180,7 +180,7 @@ Actors/player structures:
 | `+$66` | word | `Unk66` (TODO; copied from `+$56`, used as a divisor) | `STRUCT_OFFSET_66` code uses, `move.w $56(a0),$66(a0)` |
 | `+$68` | byte | flags: bit1 = B held, bit2 = A held, bit7 = timer stop | `Race_GetInput`, `Race_UpdateTime` |
 | `+$69`,`+$6B`,... | byte | unknown state/flags | physics chain (TODO) |
-| `+$71` | byte | `Index` | current `STRUCT_OFFSET_INDEX` |
+| `+$71` | byte | `Index` | current `RaceActor_Index` |
 
 **Important:** the flat `STRUCT_OFFSET_*` symbols are IDA-derived and ambiguous:
 - `STRUCT_OFFSET_66` in `dc.b` animation data was an IDA mistake; the 43 bytes are
@@ -226,9 +226,9 @@ Actors/player structures:
 
 | Current | Proposed | Evidence | Confidence |
 |---------|----------|----------|------------|
-| `+$16` actor field | `ActorType` | definition byte0 | high |
 | `+$66` actor field | `ActorRating` | definition byte5*100 | medium |
-| `+$75` actor field | `ActorGraphicsIndex` | definition byte2 low 7 bits | high |
 | `RacePlayer`/`RaceActor` | (same actor struct type) | player A/B + 15 opponents + static | medium |
+
+Applied in Batch 3a: `RaceActor_PosZ/PosXHigh/PosXLow/Speed/Type/Gear/PosY/Index/GraphicsIndex`.
 | `$FF2FAA` struct | `RaceActor`/`RacePlayerVisual` | not in static list | low |
 
