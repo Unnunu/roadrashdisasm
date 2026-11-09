@@ -168,9 +168,11 @@ Detailed top-level flow: `docs/analysis/race.md`; actors: `docs/analysis/race_ac
 - `[dynamic]` Actor list split: active count 8 = player A + 7 opponents
   (`$FF232A`..`$FF262A`); 7 opponent free slots; nearest target `$FF232A`.
 - `[confirmed]` Actor fields: `$12` Speed, `$14` acceleration, `$26` =
-  `Speed * Race_ram_FrameDelay` (FrameDelay 7), `$1E` fixed at spawn X while `$04`
-  advances, `$66` rating/lifecycle value, `$68` bit6 active/update marker,
-  `$6B` bit1 armed. See `docs/analysis/race_actors.md`.
+  `Speed * Race_ram_FrameDelay` (FrameDelay 7), `$1E` previous X while `$04`
+  advances (`$04-$1E=$26`), `$66` rating/lifecycle value, `$68` bit6
+  active/update marker, `$6B` bit1 armed. See `docs/analysis/race_actors.md`.
+- `[dynamic]` Forced `RaceBike_ram_CurrentSteering=±$600`: `$42=-$49/+$49`,
+  `$69` bit2 set, `$00=current screen Y`, `$1A=previous $30`, `$30=current road Y`.
 
 ## Hypotheses / next steps
 

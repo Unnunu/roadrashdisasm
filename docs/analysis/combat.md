@@ -143,8 +143,9 @@ Conclusions:
 - `$6B` bit0 (`$01`) = high attack; set only with Up.
 - `$69` bit6 (`$40`) = low attack; set with Down, which also selects the
   `ram_FF1ABC` timing (`$6D = $0A`).
-- `$69` bit1 (`$02`) in the C+Down trace is a steering/state bit set elsewhere
-  (`race_ai` writes `$69` bit1), not an attack-height bit.
+- `$69` bit1 (`$02`) in the C+Down trace is a state bit set elsewhere
+  (`race_ai` writes `$69` bit1), not an attack-height bit. A forced-steering test
+  sets bit2 (`$69=$04`), so bit1 is still unresolved; bit2 is steering-related.
 - `$69` bit5 (side) is set/cleared after the nearest-Y comparison; a positive
   side test (player above target) is still pending.
 - `$5A` remains 0 at the input frame; phase/timer progression still needs frame

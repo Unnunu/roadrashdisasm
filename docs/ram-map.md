@@ -148,26 +148,26 @@ Dynamic snapshots `[dynamic]` (2026-11-09): active list = player A + 7 opponents
 
 | Offset | Size | Field | Evidence |
 |---|---|---|---|
-| `+$00` | word | screen/draw Y copy (initialized equal to `+$1A/+$30`) | `[dynamic]` |
+| `+$00` | word | current screen/draw Y | `[dynamic]`; `0(a1)` |
 | `+$02` | word | `PosZ` | 98C2/endlevel debug, HInt |
-| `+$04` | long | current X (`PosX`); `+$06` is its low word | `[dynamic]`; `move.l 4(a1)` |
+| `+$04` | long | current X (`PosX`); `+$06` is its low word | `[confirmed]` `$04 = $1E + $26`; `move.l 4(a1)` |
 | `+$06` | word | `PosX` low word | same |
 | `+$12` | word | `Speed` | `[dynamic]`; HUD/HInt |
 | `+$14` | word | acceleration per frame | `[confirmed]`; `Race_UpdateActorAI` |
 | `+$16` | word | `ActorType` (definition byte0) | `[dynamic]` 2/3/4 |
 | `+$18` | word | `Gear` | 98C2/gear |
-| `+$1A` | word | draw/screen Y; initial copy of `+$30` | `[dynamic]` |
-| `+$1E` | long | spawn/start X (unchanged while `+$04` advances) | `[dynamic]`/spawn |
+| `+$1A` | word | previous road Y (copy of `+$30` at `sub_11448`) | `[dynamic]` |
+| `+$1E` | long | previous X (`sub_11448` copies `+$04` here) | `[confirmed]` |
 | `+$26` | long | frame distance = `Speed * FrameDelay` | `[confirmed]` |
-| `+$2A` | word | screen/road Y offset (TODO) | `[dynamic]` `-$08` |
-| `+$30` | word | `PosY` | `[dynamic]`; HUD/HInt |
+| `+$2A` | word | screen/road Y offset (TODO) | `[dynamic]` `-$08`/`$223` |
+| `+$30` | word | current road/target Y | `[dynamic]`; HUD/HInt |
 | `+$4A` / `+$4C` / `+$4E` | word | collision/sprite extents (TODO) | `[dynamic]` `$0D` |
 | `+$56` | word | sentinel/timer; normal actors `$FFFF` | `[dynamic]` |
 | `+$5A` | word | attack/impact cooldown | combat |
 | `+$5C` / `+$5E` / `+$60` | word | tile base / sprite graphics fields | `[dynamic]`/graphics table |
 | `+$66` | word | rating/skill; also spawn speed seed and recycle distance | `[dynamic]` lifecycle |
 | `+$68` | byte | flags; bit6 = active/update marker | `[dynamic]` active `$42`, inactive `$00` |
-| `+$69` | byte | state/attack flags; bit4/5/6 attack, bit1 steering | combat + AI |
+| `+$69` | byte | state/attack flags; bit4/5/6 attack, bit2 set under steering | combat + dynamic |
 | `+$6B` | byte | bit0 high attack, bit1 armed/special | combat |
 | `+$6C` / `+$6D` | byte | attack phase / timer | combat |
 | `+$6E` / `+$6F` | byte | animation state/frame (`$FF` normal) | `[dynamic]` |

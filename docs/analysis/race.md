@@ -168,25 +168,27 @@ Actors/player structures:
 
 | Offset | Size | Name/status | Evidence |
 |---|---|---|---|
-| `+$00` | word | screen/draw Y copy (initialized equal to `+$1A/+$30`) | dynamic snapshot |
+| `+$00` | word | current screen/draw Y | dynamic snapshot |
 | `+$02` | word | `PosZ` | 98C2/endlevel debug, main HInt |
-| `+$04` | long | current X (`PosX`); `+$06` is its low word | dynamic; `move.l 4(a1)` |
-| `+$06` | word | `PosX` low word | dynamic |
+| `+$04` | long | current X (`PosX`); `+$06` is its low word | confirmed `$04 = $1E + $26`; `move.l 4(a1)` |
+| `+$06` | word | `PosX` low word | confirmed |
 | `+$12` | word | `Speed` | dynamic; `Race_UpdateSpeedDisplay` |
 | `+$14` | word | acceleration per frame | confirmed; `Race_UpdateActorAI` |
 | `+$16` | word | `ActorType` | actor definition byte0; dynamic 2/3/4 |
 | `+$18` | word | `Gear` | 98C2, shop/gear |
-| `+$1A` | word | draw/screen Y | dynamic |
-| `+$1E` | long | spawn/start X | dynamic; spawn/init |
+| `+$1A` | word | previous road Y copy | dynamic |
+| `+$1E` | long | previous X (`sub_11448`) | confirmed `$04-$1E=$26` |
 | `+$26` | long | frame distance = `Speed * FrameDelay` | confirmed |
-| `+$2A` | word | screen/road Y offset | dynamic `-$08`; TODO |
-| `+$30` | word | `PosY` | dynamic; HUD/HInt |
+| `+$2A` | word | screen/road Y offset | dynamic `-$08`/`$223`; TODO |
+| `+$30` | word | current road/target Y (`PosY`) | dynamic; HUD/HInt |
+| `+$36`/`+$38`/`+$3A`/`+$3C` | word | road/curve/lean accumulators | dynamic steering `5/$22B/3/0` |
+| `+$3E`/`+$40`/`+$42`/`+$46` | word | lean/curve/direction; `$42` signed | confirmed `$42=±$49`; `$46=$FFFD` |
 | `+$4A` / `+$4C` / `+$4E` | word | collision/sprite extents | dynamic `$0D`; TODO |
 | `+$56` | word | sentinel/timer; normal actors `$FFFF` | dynamic |
 | `+$5C`/`+$5E`/`+$60` | word | actor graphics/sprite fields | `Race_ActorGraphicsTable`; dynamic |
 | `+$66` | word | rating/skill; also speed seed and recycle distance | `Race_CreateActors`/spawn; dynamic lifecycle |
 | `+$68` | byte | flags; bit6 active/update marker | dynamic active `$42`; AI |
-| `+$69` | byte | state/attack flags; bit4/5/6 attack, bit1 steering | combat/AI |
+| `+$69` | byte | state/attack flags; bit4/5/6 attack, bit2 set under steering | combat/AI + dynamic |
 | `+$6B` | byte | bit0 high attack, bit1 armed/special | combat |
 | `+$6C` / `+$6D` | byte | attack phase/timer | combat |
 | `+$6E` / `+$6F` | byte | animation state/frame (`$FF` normal) | dynamic |
@@ -228,8 +230,8 @@ Actors/player structures:
 ## Open questions / next steps
 
 1. Actor model: dynamic snapshots now confirm active/free split (8+7), `$12/$14/$26`,
-   `$1E` spawn X, `$68` bit6 active marker; remaining steering/off-road/static/2P
-   fields are listed in `docs/analysis/race_actors.md`.
+   `$1E` previous X, `$68` bit6 active marker, `$42` signed lean; remaining
+   off-road/static/2P fields are listed in `docs/analysis/race_actors.md`.
 2. Analyze the actor/physics functions (`Race_UpdateSpeedDisplay`, `Race_SpawnTick`,
    `sub_13xxx`, `sub_Dxxx`, `sub_Exxx`) and the object list.
 3. `src/race/race_hud.asm`, `src/race/road_marking.asm`, `src/race/animation.asm` data tables/scripts + dynamic checks.

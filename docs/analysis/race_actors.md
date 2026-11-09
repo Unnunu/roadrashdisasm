@@ -37,6 +37,8 @@ Headless BlastEm/GDB captures in `analysis/dumps/`:
 | `actor_post_create_ram.bin` | `0xB72A` `Race_InitActorPositions` entry | after `Race_CreateActors`; definitions/init fields |
 | `actor_post_positions_ram.bin` | `0xA544` after `jsr Race_InitActorPositions` | after `$00/$1A/$1E/$30` position initialization |
 | `actor_running_ram.bin` | `0x10E66` `Race_UpdateActorAI`, PlayerA `$12` > 0 | demo race in motion |
+| `actor_steer_left_ram.bin` | `0x10E66`, `RaceBike_ram_CurrentSteering=-$600` each frame | 90-frame forced left steering |
+| `actor_steer_right_ram.bin` | same, `CurrentSteering=+$600` | 90-frame forced right steering |
 
 Observed demo state: `Race_ram_Started=1`, active count `8`, active list =
 `$FF1EAA,$FF232A,$FF23AA,$FF242A,$FF24AA,$FF252A,$FF25AA,$FF262A`; nearest target
@@ -45,6 +47,13 @@ Observed demo state: `Race_ram_Started=1`, active count `8`, active list =
 `$26=$777`/`$7A8`. `$FF26AA` (player B) and `$FF2FAA` remain zero except the latter's
 `$71=$12`; the static actors `$FF2EAA/$FF2F2A` diverge from normal actors after the
 update (`$16` becomes 0, `$30=$8000`, `$46=-$11/ +$10`, `$56=$E2/$17`, `$74=$0E/$01`).
+
+Forced steering snapshots: PlayerA `Speed=$2D15`, `$14=$000E`, `$26=$00013B93`,
+`$04=$004CD697`, `$1E=$004B9B04` (so `$04 = $1E + $26`), `$69=$04`, and
+`$42=-$0049` (left) / `+$0049` (right). `$00=$35`, `$1A=$31`, `$30=$35`; `$22=$09`,
+`$36=$05`, `$38=$022B`, `$3A=$03`, `$3C=$00`, `$46=-$03` in both directions. This
+confirms `$04/$1E/$26` are current/previous X and per-frame distance, and `$42` is
+the signed lean/curve value.
 
 ## Actor definitions (`Race_ActorDefinitionTable`, `0xCCDA`)
 
@@ -101,27 +110,27 @@ routines; `+$06` is its low word, not an independent X coordinate.
 
 | Offset | Width | Role / status | Evidence |
 |---|---|---|---|
-| `+$00` | word | screen/draw Y copy; equals `+$1A/+$30` after init | `[dynamic]`; source uses `0(a1)` |
+| `+$00` | word | current screen/draw Y; source uses `0(a1)` | `[dynamic]` steering `$35`; no-steer `$A0` |
 | `+$02` | word | `PosZ` (existing name) | `[static]` endlevel/HInt |
-| `+$04` | long | current X position; `PosXHigh/Low` are one 32-bit value | `[dynamic]` changes `$80000 -> $80682` while `+$1E` stays `$80000`; `[static]` `move.l 4(a1)` |
+| `+$04` | long | current X position; `PosXHigh/Low` are one 32-bit value | `[confirmed]` `$04 = $1E + $26` in all snapshots |
 | `+$06` | word | low word of `+$04`; no separate field | same |
 | `+$08`/`+$0A`/`+$0C` | word | unknown animation/impact registers; zero in snapshots | `[dynamic]`; writes in `race_anim_audio` |
-| `+$12` | word | `Speed` | `[confirmed]` PlayerA `$EE`, opponents `$111/$118` |
-| `+$14` | word | acceleration per frame; added to Speed with FrameDelay | `[confirmed]` PlayerA `$22`, opponents `$27/$28`; `Race_UpdateActorAI` `$10E66` |
+| `+$12` | word | `Speed` | `[confirmed]` PlayerA `$EE`, opponents `$111/$118`; steering `$2D15` |
+| `+$14` | word | acceleration per frame; added to Speed with FrameDelay | `[confirmed]` `$22` low speed, `$0E` at `$2D15`; `Race_UpdateActorAI` |
 | `+$16` | word | `Type`/sprite from definition byte0 | `[confirmed]` 2/3/4; static actors anomaly below |
 | `+$18` | word | `Gear` | `[static]`; zero in demo |
-| `+$1A` | word | draw/screen Y; initialized equal to `+$00/+$30` | `[dynamic]`; exact distinction from `+$00` TODO |
+| `+$1A` | word | previous draw/road Y copied from `+$30` at `sub_11448` entry | `[dynamic]` steering `$31` vs `$30=$35` |
 | `+$1C` | word | unknown; zero in snapshots | `[dynamic]` |
-| `+$1E` | long | spawn/start X; stays at spawn value while `+$04` advances | `[dynamic]` PlayerA `$80000`, Opp `$110000`; writes in `Race_InitActorPositions`/spawn |
-| `+$22`/`+$24` | word | unknown movement/steering state; zero in no-steer demo | `[dynamic]` |
-| `+$26` | long | frame distance = `Speed * Race_ram_FrameDelay` | `[confirmed]` Player `$EE*7=$682`, Opp `$111*7=$777`, `$118*7=$7A8` |
-| `+$2A` | word | screen/road Y offset; source derives from `+$02`/road value | `[dynamic]` `-$08`; exact role TODO |
-| `+$2C`/`+$2E` | word | impact/speed fraction pair; source writes from Speed | `[static]`; zero in demo |
-| `+$30` | word | `PosY` | `[dynamic]` `$A0`/`$20`; `[static]` HUD/HInt |
-| `+$32` | word | road/target Y candidate; zero in demo | `[dynamic]` |
-| `+$36`/`+$38`/`+$3A`/`+$3C` | word | road/target/lean accumulators | `[static]` writes; zero in no-steer demo |
-| `+$3E`/`+$40`/`+$42` | word | lean/curve state | `[static]` `Race_UpdateBikeCurve`; zero in demo |
-| `+$46` | word | curve/direction sign; AI flips it | `[static]`; zero in demo |
+| `+$1E` | long | previous X; `sub_11448` copies current `+$04` here before adding `+$26` | `[confirmed]` `$04-$1E=$26`; initial spawn value before movement |
+| `+$22`/`+$24` | word | X/Y screen delta/velocity; `$22` non-zero under steering | `[dynamic]` `$09/0` steering; zero no-steer |
+| `+$26` | long | frame distance = `Speed * Race_ram_FrameDelay` | `[confirmed]` Player `$EE*7=$682`, Opp `$111*7=$777`; steering `$2D15*7=$13B93` |
+| `+$2A` | word | screen/road Y offset; source derives from `+$02`/road value | `[dynamic]` `-$08` no-steer, `$223` steering; exact role TODO |
+| `+$2C`/`+$2E` | word | impact/speed fraction pair; source writes from Speed | `[static]`; zero in snapshots |
+| `+$30` | word | current road/target Y; `+$1A` keeps the previous value | `[dynamic]` steering `$35`; no-steer `$A0` |
+| `+$32` | word | road/target Y candidate; zero in snapshots | `[dynamic]` |
+| `+$36`/`+$38`/`+$3A`/`+$3C` | word | road/curve/lean accumulators | `[dynamic]` steering `5/$22B/3/0`; zero no-steer |
+| `+$3E`/`+$40`/`+$42` | word | lean/curve state; `$42` signed | `[confirmed]` `$42=-$49` left, `+$49` right; `$3E/$40` zero in test |
+| `+$46` | word | curve/direction sign; AI flips it | `[dynamic]` `-$03` under forced steering |
 | `+$4A` | word | collision/proximity extent | `[dynamic]` `$0D` active; `[static]` `Race_UpdateCollision` |
 | `+$4C`/`+$4E` | word | left/right sprite/collision extents | `[dynamic]` `$0D/0` or `$0D/$0D`; exact role TODO |
 | `+$56` | word | sentinel/timer; `$FFFF` normal actors | `[dynamic]` `$FFFF`; static `$E2/$17` |
@@ -130,7 +139,7 @@ routines; `+$06` is its low word, not an independent X coordinate.
 | `+$5E`/`+$60` | word | sprite graphics fields | `[confirmed]` Player `$400/$180`; graphics table |
 | `+$66` | word | rating/skill; lifecycle value | `[confirmed]` definition byte5*100; spawn uses as `Speed`, recycle as distance |
 | `+$68` | byte | flags; bit6 = active/update marker (set for player + active opponents) | `[dynamic]` active `$42`, inactive `$00`; source `Race_UpdateActorAI` |
-| `+$69` | byte | state/attack flags; bit4/5/6 attack, bit1 steering | `[confirmed]` combat + `[static]` AI writes |
+| `+$69` | byte | state/attack flags; bit4/5/6 attack, bit2 set under steering | `[confirmed]` combat; `[dynamic]` steering `$04` vs idle `$02` |
 | `+$6A` | byte | animation/impact flags; bit7 used in animation code | `[static]`; zero in demo |
 | `+$6B` | byte | bit0 high attack, bit1 armed/special | `[confirmed]` Player `$00`, armed opponent `$02` |
 | `+$6C`/`+$6D` | byte | attack phase/timer | `[confirmed]` combat |
@@ -186,8 +195,10 @@ the active/free/static lists. Its owner and purpose remain open.
 - `Race_CreateActors` sets definition-derived fields and zeroes many motion fields.
 - `Race_InitActorPositions` writes `+$00`, `+$1A`, `+$30` (same Y value) and
   `+$04`, `+$1E` (same X value) for the initial positions.
-- Later `Race_Spawn`/`Race_InitOpponentActor`/`Race_InitTrafficActor` overwrite
-  `+$1E` (spawn X), `+$12` (from `+$66`), and other state.
+- `sub_11448` copies current X (`+$04`) to `+$1E`, then adds `+$26` to `+$04`;
+  `+$1E` is therefore the previous/start-of-frame X during normal movement.
+- Later `Race_Spawn`/`Race_InitOpponentActor`/`Race_InitTrafficActor` also initialize
+  `+$1E`, `+$12` (from `+$66`), and other state.
 - `Race_RecycleActor` reuses `+$66` as a distance value before recycling; this is
   why a single name like `Rating` is too narrow for `+$66`.
 - `Race_UpdateActorAI` then updates `+$12` from `+$14`, writes `+$26`, and the
@@ -195,15 +206,26 @@ the active/free/static lists. Its owner and purpose remain open.
 
 ## Open questions
 
-- Exact roles of `+$00` vs `+$1A` vs `+$30`; `+$1E` (spawn/start X) needs a
-  steering/acceleration snapshot to confirm it stays fixed.
-- `+$22/+$24/+$32/+$36/$38/$3A/$3C/$3E/$40/$42/$46` under active steering/off-road.
+- Exact roles of `+$00` vs `+$1A` vs `+$30`; forced steering shows `$00=current
+  screen Y`, `$1A=previous $30`, `$30=current road Y`.
+- `+$22/+$24/+$32/+$36/+$38/+$3A/+$3C/+$3E/+$40/+$42/+$46` under off-road and
+  other speeds.
 - `+$2A` origin/role and `+$4A/$4C/$4E` collision/sprite extents.
 - `+$56` sentinel/timer and `+$68` bit roles; especially bit1 vs bit6 on active actors.
 - Static group `$FF2EAA/$FF2F2A` and `$FF2FAA`; player B (`$FF26AA`) is zero in demo.
 - Which fields are copied/overwritten by `Race_SpawnOpponent`/`Race_RecycleActor`.
-- Next dynamic tests: steer left/right, accelerate/brake, off-road, 2P/player B,
-  static/police appearance. Use `docs/reverse-engineering.md` experiment format.
+- Next dynamic tests: accelerate/brake, off-road, 2P/player B, static/police
+  appearance. Steering/lean is covered by the left/right snapshots above.
+
+## Experiments performed
+
+| Goal | Setup / breakpoint | Observed | Conclusion |
+|---|---|---|---|
+| Initial field map | `0xB72A` before positions; `0xA544` after | definitions, zeroed fields, positions | creation/position lifecycle confirmed |
+| Active/free split | GDB dump of `$FF1A08/$FF1982` | 8 active, 7 free; active starts `$FF232A` | 8+7 split confirmed |
+| Speed/frame distance | `0x10E66`, Speed > 0 | `$EE/$111/$118`, `$26=$682/$777/$7A8`, FrameDelay 7 | `$26=Speed*FrameDelay` confirmed |
+| Steering/lean | `CurrentSteering=±$600` each frame, 90 frames | `$42=∓$49`, `$69=$04`, `$04-$1E=$26` | `$42` signed lean; `$1E` previous X |
+| Static/extra slots | running dump | static `$16=0`, `$30=$8000`; extra zero except `$71` | static layout/owner TODO |
 
 ## Rename proposals (apply only on request)
 
@@ -212,7 +234,7 @@ the active/free/static lists. Its owner and purpose remain open.
 | `+$04` | `ActorX` (long) | `move.l 4(a1)`; dynamic current X; `$06` is its low word | high |
 | `+$06` | `ActorXLow` (word) | low half of `+$04`, not a separate coordinate | high |
 | `+$14` | `ActorAcceleration` | added to Speed in `Race_UpdateActorAI`; dynamic `$22/$27/$28` | high |
-| `+$1E` | `ActorSpawnX` (long) | set at init/spawn; stays fixed while `+$04` advances | medium |
+| `+$1E` | `ActorPreviousX` (long) | `sub_11448` copies `+$04` here; `$04-$1E=$26` | high |
 | `+$26` | `ActorFrameDistance` | `Speed * Race_ram_FrameDelay`; dynamic exact | high |
 | `+$66` | `ActorRating`/`ActorSkill` | definition byte5*100; also speed seed/distance at spawn/recycle | medium |
 | `+$68` | `ActorFlags` | bit6 active/update marker; multiple AI bits | medium |

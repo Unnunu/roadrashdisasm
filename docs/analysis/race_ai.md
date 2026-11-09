@@ -68,7 +68,7 @@ speed/curve (`Race_ram_TrackParam0`/`Race_ram_TrackParam2`/`Race_ram_TrackParam3
 ## RAM / fields
 
 Actor fields used here: `$12` Speed, `$14` acceleration (`Speed += $14 * FrameDelay`
-after the speed/on-foot gates), `$16` type, `$1E` spawn X, `$22`, `$26` frame
+after the speed/on-foot gates), `$16` type, `$1E` previous X, `$22`, `$26` frame
 distance = `Speed * FrameDelay`, `$30`/`$36/$38` Y/road, `$3E/$40/$42` lean, `$56`,
 `$68` flags (bit6 active/update marker confirmed in the demo), `$69` flags, `$6E`,
 `$71` index, `$73`, `$75`, `$78`. Data: `unk_258AE`/`unk_25A10` actor data,
