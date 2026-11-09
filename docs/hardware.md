@@ -96,22 +96,59 @@ code (`fade.asm`) uses DMA to upload the 64-word palette to CRAM (`DmaWriteCRAM`
 
 ## 5. Interrupts and timing
 
-- VBlank: IRQ level 6 (`VerticalInterrupt` at `$1164`); the main per-frame update pointer
-  `ram_UpdateFunction` (`$FF1A62`) is called from here.
-- HBlank: IRQ level 4 (`HorizontalInterrupt` at `$145A`), typically for raster effects
-  (split-screen scrolling, palette changes).
-- The VDP status/HV counter is at `$C00008`.
-- The 68000's per-frame budget matters for DMA and HInt raster work; measure hot paths
-  when it explains a design choice.
+- **VBlank (IRQ 6, `VerticalInterrupt` `$1164`).** Saves all registers, loads
+  `ram_UpdateFunction` (`$FF1A62`), returns if zero, otherwise `jsr (a0)`; restores and
+  `rte`. The update function may clobber all registers.
+- **HBlank (IRQ 4, `HorizontalInterrupt` `$145A`).** Raster effect:
+  - re-arms the H-int counter with `$8AFF`;
+  - returns immediately while `ram_FF369E == $FFFF` (effect disabled, e.g. logo);
+  - indexes `Race_ram_NextVScrollInfo + ram_FF0406`, sets the VSRAM write address and
+    waits on the HV counter for a precise scanline/horizontal position;
+  - writes a longword to `VdpData`, then **36 NOPs** (VDP write-recovery delay), then
+    writes the next command word to `VdpCtrl`;
+  - when the next `ram_FF0406 == $90`, runs a once-per-frame engine-audio update
+    (`AudioFunc1/8/11`, `sub_1652`).
+- **HV counter** (`$C00008`): high byte = vertical counter, low byte = horizontal
+  counter. The handler polls both to place writes at a specific raster position.
+- **VDP status** read via `$C00004`; a control-port read resets the command latch. Where
+  the V-int flag is acknowledged in this game is still an open question.
+- **Budget:** the per-frame update runs inside VBlank; long updates can overrun into
+  active display. DMA and HInt raster work share the same budget. Measure hot paths
+  (race update, HInt handler) when it explains a design choice.
 
 ## 6. Controllers (TH protocol)
 
-- Data ports: `$A10003` (port 1), `$A10005` (port 2).
-- Control ports: `$A10009` (port 1), `$A1000B` (port 2).
-- The TH line selects which button group is read: TH=0 reads up/down/left/right/B/C;
-  TH=1 reads A/Start (and, with extra clocking, the 6-button extras X/Y/Z/Mode).
-- `GetInputPlayerA/B` in `main.asm` implement the read sequence; details are documented in
-  `docs/analysis/main.md`.
+| Port | Player 1 | Player 2 |
+|---|---|---|
+| Data | `$A10003` | `$A10005` |
+| Control | `$A10009` | `$A1000B` |
+
+A standard **3-button** pad is read by toggling TH:
+
+| Step | Write to data port | Bits 5-0 |
+|---|---|---|
+| 1 | `$40` (TH=1) | C, B, Right, Left, Down, Up |
+| 2 | `$00` (TH=0) | Start, A, 0, 0, Down, Up |
+
+Bits are active-low (1 = released). The game rearranges them into **SACBRLDU**
+(bit7 Start … bit0 Up) and inverts so that **1 = pressed**.
+
+The game's read sequence (`GetInputPlayerA/B`):
+
+1. Write `$40` to the control port (TH as output).
+2. Write `$00` to the data port, wait (`$A` for player A, `$14` for player B), read.
+3. Write `$40` to the data port, wait the same, read.
+4. Shift/mask/or/not into SACBRLDU; the low 8 bits of `d0` are the result (upper bits
+   are left untouched).
+
+Quirks (see `docs/analysis/main.md`):
+
+- The wait count differs between player A and B; the reason is not documented.
+- The routines do **not** pause the Z80 while touching the ports (hardware workaround
+  for the Z80/68K bus conflict). Road Rash (1991) predates the 6-button pad (1993), so
+  only the 3-button protocol is implemented; X/Y/Z/Mode are not read.
+- After the first input read the control ports are `$40`; the boot code uses the
+  nonzero `$A10008`/`$A1000C` value as a warm-reset indicator.
 
 ## 7. Z80 / audio (deferred deep dive)
 

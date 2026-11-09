@@ -16,12 +16,12 @@
 | `z80_start`/`z80_end` | `0x02C4` | [x] | [x] | [x] | [x] | [ ] | [ ] | analyzed (stub) |
 | `doStart` | `0x02FA` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
 | `sub_7FF98` (ROM checksum) | `0x7FF98` | [x] | [x] | [x] | [ ] | [x] | [x] | analyzed |
-| `GetInputPlayerA` | `0x10D4` | TODO | TODO | TODO | TODO | TODO | [ ] | TODO |
-| `GetInputPlayerB` | `0x111C` | TODO | TODO | TODO | TODO | TODO | [ ] | TODO |
+| `GetInputPlayerA` | `0x10D4` | [x] | [x] | - | [x] | [x] | [x] | analyzed |
+| `GetInputPlayerB` | `0x111C` | [x] | [x] | - | [x] | [x] | [x] | analyzed |
 | `VerticalInterrupt` | `0x1164` | [x] | [x] | [x] | [x] | [x] | [x] | analyzed (dispatcher) |
-| `HorizontalInterrupt` | `0x145A` | TODO | TODO | TODO | TODO | TODO | [ ] | TODO |
-| Exception handlers | `0x13C0`… | TODO | TODO | TODO | TODO | TODO | - | TODO |
-| `sub_1652` | `0x1652` | TODO | TODO | TODO | TODO | TODO | [ ] | TODO |
+| `HorizontalInterrupt` | `0x145A` | [x] | [x] | [x] | [x] | [x] | [x] | analyzed (audio semantics TODO) |
+| Exception handlers | `0x13C0`… | [x] | [x] | [x] | [x] | [x] | - | analyzed (quirk) |
+| `sub_1652` | `0x1652` | [x] | [x] | [x] | - | [x] | [x] | analyzed (field meanings hypothesis) |
 
 ## 1. Entry and warm-reset check (`RESET`, `0x0200`)
 
@@ -177,6 +177,144 @@ Then:
   reading both controllers until a button is pressed or `LogoEA_ram_Finished` is set.
 - `[static]` On exit: `ram_UpdateFunction = 0`; `jmp (loc_7E6A2)` (top-level flow).
 
+## 7. Controller input (`GetInputPlayerA/B`)
+
+`[hardware]` A standard 3-button pad is read by toggling TH and reading the data port:
+
+| Step | Write to data port | Bits 5-0 |
+|---|---|---|
+| 1 | `$40` (TH=1) | C, B, Right, Left, Down, Up |
+| 2 | `$00` (TH=0) | Start, A, 0, 0, Down, Up |
+
+The game performs the second step first, then the first step:
+
+- `move.b #$40,$A10009` sets TH as an output on control port 1.
+- `move.b #0,$A10003` clears TH; wait `d1=$A` (11 `dbf` iterations); read data;
+  `asl.b #2` + `andi.b #$C0` moves the Start/A bits into bits 7-6.
+- `move.b #$40,$A10003` sets TH; wait `d1=$A`; read data; `andi.b #$3F` keeps
+  C/B/Right/Left/Down/Up.
+- `or.b d1,d0` + `not.b d0` produce the `SACBRLDU` layout with **1 = pressed**:
+  bit7 Start, bit6 A, bit5 C, bit4 B, bit3 Right, bit2 Left, bit1 Down, bit0 Up.
+
+`[dynamic]` GDB-remote: the first call sees control ports `0` (not yet configured);
+afterwards `ctrl1=ctrl2=$40`, `data1=data2=$7F` (no buttons). The returned `d0` has the
+button byte in the **low 8 bits**; the upper bits are not cleared (observed
+`d0=$0000FF00` with no buttons). Callers must use the low byte (`tst.b d0`,
+`andi.w #$FF`).
+
+Quirks:
+
+- `GetInputPlayerB` waits `d1=$14` (21 iterations) instead of `$A` (11). The difference
+  is not explained by the code; likely empirical timing for port 2 (`[design]`/`[unknown]`).
+- The routines do **not** pause the Z80 while reading the ports, contrary to the
+  hardware workaround for the Z80/68K bus conflict. `[design]` Road Rash predates the
+  6-button pad (1991 vs 1993), so only the 3-button protocol is implemented; the code
+  does not read X/Y/Z/Mode and may misbehave on 6-button pads.
+- Because the input routines write `$40` to the control ports, the boot check of
+  `$A10008`/`$A1000C` sees nonzero after the first input; this is the mechanism behind
+  the warm-reset hypothesis (`[dynamic]` confirmed control-port state; `[hypothesis]`
+  for the reset path).
+
+## 8. `VerticalInterrupt` (`0x1164`)
+
+```asm
+VerticalInterrupt:
+    movem.l d0-d7/a0-a6,-(sp)
+    movea.l (ram_UpdateFunction).l,a0
+    cmpa.l  #0,a0
+    beq.w   .return
+    jsr     (a0)
+.return:
+    movem.l (sp)+,d0-d7/a0-a6
+    rte
+```
+
+`[static]` Contract: saves all registers, calls the pointer in `ram_UpdateFunction`
+(`$FF1A62`) if nonzero, restores, returns. The update function may clobber any register.
+`[confirmed]` the dispatcher runs every VBlank (observed return address `$117A` and the
+fade experiment).
+
+`[hardware]` The VDP V-int is acknowledged by reading the VDP status/control port. This
+handler does not read it; the called update functions or screen code must do so (or the
+interrupt source is cleared by the VDP's interrupt acknowledge). **Open question**:
+verify where the V-int flag is cleared and whether a long update can overrun the VBlank
+budget.
+
+## 9. `HorizontalInterrupt` (`0x145A`)
+
+`[static]` This is a raster-effect and engine-audio handler:
+
+1. `move.w #$8AFF,VdpCtrl` re-arms the H-int counter for 255 lines.
+2. If `ram_FF369E == $FFFF`, return immediately (effect disabled; used during the
+   logo/fade).
+3. Save `d0-d2/a0-a2`.
+4. Read the scroll-step offset `ram_FF0406`; if `<= 0`, skip to the end.
+5. Index the VSRAM/scroll table at `Race_ram_NextVScrollInfo + offset`; it yields a
+   VDP command word, a target HV value, a data word and a next offset:
+   - write the command word to `VdpCtrl`;
+   - load `d0` (target), `d1` (data word), `d2` (longword data), and the next
+     `ram_FF0406`;
+   - set VSRAM write address 0 (`VDP_VSRAM_WRITE`).
+6. Busy-wait on the HV counter until the target scanline and horizontal position are
+   reached (`.loc_14AA`, `.loc_14B2`, `.loc_14BC`); then write the longword `d2` to the
+   VDP data port. This changes the scroll mid-frame (per-line/split scrolling).
+7. Execute **36 NOPs**; `[hardware]`/`[design]` this is a VDP write-recovery delay
+   (timing-critical; exact count probably tuned for the board/VDP).
+8. Write `d1` to `VdpCtrl`.
+9. If the next `ram_FF0406 == $90`, run the once-per-frame engine-audio update:
+   - reset `ram_FF0406 = 0`;
+   - if `ram_MusicEnabled != 0`, skip to `AudioFunc1`;
+   - if `Race_ram_State != 0`, call `AudioFunc8`/`AudioFunc11` and skip;
+   - otherwise compute a speed/engine parameter from `ram_FF1EAA` (struct offset `$14`
+     × `Race_ram_FrameCounter` + `STRUCT_OFFSET_SPEED`, scaled by `ram_FF1AA2` and
+     `$3800`), smooth it into `ram_FF36B8` with a ±`$64` rate limit, derive `d1`
+     (`>>5 + 2`, min 0), handle player B's struct `ram_FF26AA` (distance to
+     `ram_FF1E68`), call `AudioFunc8`, `sub_1652` (with `ram_FF1908`) and
+     `AudioFunc11`.
+10. Set `ram_FF369E = $FFFF`; if `ram_FF0406 > 0`, set it back to 0 (re-enable the
+    effect next time).
+
+`[dynamic]` GDB-remote observed `ram_FF369E = $FFFF` during the logo, then `0` once the
+effect was enabled; `ram_FF0406 = $10` and `ram_MusicEnabled = 1` in the observed
+frames. `[static]` The audio calls are sound-driver entry points (`AudioFunc1/8/11`);
+their exact parameters are deferred with the audio deep dive.
+
+## 10. `sub_1652` (`0x1652`)
+
+`[static]` Contract: `a1` = object/struct pointer (`$FFFFFFFF` = invalid). Returns
+`d0` = smoothed value, `d1` = distance parameter.
+
+- Invalid pointer: `d1 = $1F`, `d0 = 0`.
+- If bit 7 of `$6E(a1)` is set (engine active?), compute
+  `$14(a1) * Race_ram_FrameCounter + $12(a1)`, clamp to 0, scale by
+  `ram_FF1AA4` and `$3800`.
+- Add `$400`, clamp to `>= $400`, smooth toward `ram_FF36C0` with a ±`$64` rate limit,
+  store back into `ram_FF36C0`.
+- Compute `|ram_FF1E68 - 4(a1)| * 2`, take the high word, clamp to `<= $1F` -> `d1`.
+
+`[hypothesis]` The routine computes engine-audio parameters for player B (or a second
+object), mirroring the player-A math in `HorizontalInterrupt`; the struct fields
+`$6E`/`$14`/`$12`/`4` are `STRUCT_OFFSET_*` fields but their exact game meaning is TODO.
+
+## 11. Exception handlers
+
+`[static]` Every exception handler is:
+
+```asm
+    lea     (vectorTable).w,a0
+    move.l  #'TAG',(a0)
+    stop    #$2700
+```
+
+The tags are `BUS `, `ADDR`, `ILEG`, `ZDIV`, `CHK `, `TRPV`, `PRIV`, `TRAC`, `LINA`,
+`LINF`, `SPUR`.
+
+`[static]` Quirk: `vectorTable` is at address 0, i.e. **cartridge ROM**; the write to
+ROM is ignored by the cartridge, so the tag is not actually stored. The tag values are
+still useful as an indicator when reading the handler code, and `stop #$2700` halts the
+CPU permanently (interrupt mask 7). `[design]` This looks like a debug leftover; on an
+exception the game freezes.
+
 ## Verified facts
 
 - `[static]` The ROM checksum routine computes `$FE407B8A` on `baserom.md` (verified with
@@ -186,12 +324,28 @@ Then:
 - `[static]` `movem.l (a6),d0-a6` after the RAM clear zeroes all registers because `a6`
   wrapped to `$FF0000` and the RAM is zero.
 - `[hardware]` The VDP register decode above follows the Genesis VDP register reference.
+- `[dynamic]` After the first input read, control ports 1/2 are `$40`; the long read at
+  `$A10008` is therefore nonzero after the game starts. This confirms the state used by
+  the warm-reset check.
+- `[dynamic]` `GetInputPlayerA` returns the button byte in the low 8 bits and leaves the
+  upper bits untouched (`d0=$0000FF00` with no buttons pressed).
+- `[dynamic]` During the logo, `ram_UpdateFunction = 0x366` (`LogoEA_GameTick`) and
+  `VerticalInterrupt` dispatches it every frame.
+- `[dynamic]` `HorizontalInterrupt` fires during the logo with `ram_FF369E = $FFFF`
+  (effect disabled) and later with `ram_FF369E = 0` (effect enabled);
+  `ram_FF0406 = $10`, `ram_MusicEnabled = 1` in the observed frames.
+- `[static]` The exception handlers write their tags to address 0 (ROM), so the writes
+  have no runtime effect; `stop #$2700` freezes the CPU.
 
 ## Hypotheses
 
 - `[hypothesis]` The `$A10008`/`$A1000C` check detects a soft reset by seeing the
-  control-port state left by the input routines. Test: read `$A10008` at `RESET` on
-  cold boot and after a soft reset.
+  control-port state left by the input routines. The control-port state is confirmed;
+  the reset path itself still needs a Reset-button test.
+- `[hypothesis]` The 36 NOPs after the VSRAM mid-frame write are a VDP write-recovery
+  delay; the count is timing-tuned for the board. Test: vary/observe the effect in the
+  emulator (not byte-exact, analysis only).
+- `[hypothesis]` `sub_1652` computes engine-audio parameters for a second object/player.
 - `[design]` The 38-byte Z80 stub is a placeholder/stop stub; the real driver is loaded
   later at `$1D9C2`. Test: break at `$1D9C2`, confirm the copy from `$1DA12`.
 
@@ -201,6 +355,7 @@ Then:
 |------|--------------------|----------|------------|
 | Verify the ROM checksum | Python reimplementation of `sub_7FF98` | `$FE407B8A` | `[confirmed]` the check passes. |
 | Verify Z80 reset polarity | static: boot writes + sound code at `$1D9C2` | `$0000` assert, `$0100` release | `[confirmed]` comments at boot are inverted. |
+| Input + interrupts | GDB remote: break `0x10D4`, `0x111A`, `0x1164`, `0x145A` | ctrl ports `$40`; `d0` low byte; VInt up=`0x366`; HInt `$FF369E` `$FFFF→0` | `[confirmed]` input/IRQ behaviour. |
 
 ## Rename proposals (apply only on request)
 
@@ -212,8 +367,10 @@ Then:
 
 ## Open questions
 
-- [ ] Confirm the soft-reset behaviour dynamically (control ports + `ram_UpdateFunction`).
+- [ ] Trigger a real soft reset and confirm the boot skips init/logo.
 - [ ] Identify what the 38-byte Z80 stub is for (placeholder vs. a real init step).
-- [ ] Analyze `GetInputPlayerA/B`, `VerticalInterrupt`, `HorizontalInterrupt`,
-  `sub_1652`, and the exception handlers (next milestones).
+- [ ] Where is the VDP V-int flag cleared (handler does not read the status)?
+- [ ] HInt timing: confirm the 36-NOP delay and the HV-counter windows in BlastEm.
+- [ ] Audio semantics of `AudioFunc1/8/11` and `sub_1652` (deferred audio deep dive).
+- [ ] 6-button pad behaviour (the code only implements the 3-button protocol).
 - [ ] Confirm the VDP VRAM map after boot with `vr` / a VRAM viewer.

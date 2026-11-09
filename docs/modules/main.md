@@ -64,9 +64,10 @@ See `docs/analysis/main.md` for the annotated boot flow and evidence.
 
 ## Coverage matrix
 
-See `docs/analysis/main.md` for the full matrix. Summary: boot (`RESET`, `start`,
-`defaults`, Z80 stub, `doStart`) analyzed; `GetInputPlayer*`, `HorizontalInterrupt`,
-`sub_1652`, and exception handlers still TODO.
+See `docs/analysis/main.md` for the full matrix. Boot (`RESET`, `start`, `defaults`,
+Z80 stub, `doStart`), input (`GetInputPlayerA/B`), `VerticalInterrupt`,
+`HorizontalInterrupt`, `sub_1652`, and the exception handlers are analyzed; the audio
+parameters inside `HorizontalInterrupt`/`sub_1652` are deferred with the audio deep dive.
 
 ## Verified facts
 
@@ -77,6 +78,12 @@ See `docs/analysis/main.md` for the full matrix. Summary: boot (`RESET`, `start`
 - `[static]` `movem.l (a6),d0-a6` zeroes registers from cleared RAM at `$FF0000`.
 - `[confirmed]` `VerticalInterrupt` dispatches `ram_UpdateFunction` every frame
   (GDB-remote experiment, see `fade.md`).
+- `[dynamic]` After the first input read, control ports 1/2 are `$40`; `GetInputPlayerA`
+  returns the button byte in the low 8 bits (upper bits untouched).
+- `[dynamic]` `HorizontalInterrupt` disables the raster effect while `ram_FF369E=$FFFF`
+  (logo) and enables it later (`$FF369E=0`); `ram_FF0406` is the scroll-table offset.
+- `[static]` Exception-handler tags are written to address 0 (ROM, ignored); `stop`
+  freezes the CPU.
 
 ## Hypotheses
 
@@ -100,7 +107,8 @@ See `docs/analysis/main.md` for the full matrix. Summary: boot (`RESET`, `start`
 
 ## Open questions
 
-- [ ] Analyze `GetInputPlayerA/B`, `VerticalInterrupt`, `HorizontalInterrupt`,
-  `sub_1652`, and the exception handlers.
-- [ ] Confirm the soft-reset behaviour dynamically.
+- [ ] Trigger a real soft reset and confirm the boot skips init/logo.
+- [ ] Confirm where the VDP V-int flag is cleared (the handler does not read status).
+- [ ] Confirm the HInt timing/36-NOP delay and the 6-button-pad behaviour.
+- [ ] Audio semantics of `AudioFunc1/8/11` and `sub_1652` (deferred).
 - [ ] Identify the purpose of the 38-byte Z80 stub.

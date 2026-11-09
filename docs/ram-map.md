@@ -81,6 +81,16 @@ Known so far:
 | `$FF3698`, `$FF369A` | `ram_FF3698/9A` | 2 | Race/demo flags. |
 | `$FF0910` | `ram_FF0910` | 4 | Next-screen selector for the results dispatcher. |
 | `$FF0918` | `ram_FF0918` | 2 | Compared with 4 to select the end-level screen. |
+| `$FF3048` | `Race_ram_FrameCounter` | 2 | Race frame counter. |
+| `$FF0406` | `ram_FF0406` | 2 | HInt scroll-table offset; reaching `$90` triggers the engine-audio update. |
+| `$FF369E` | `ram_FF369E` | 2 | `$FFFF` disables the HInt raster effect; 0 enables it. |
+| `$FF05D6` | `ram_MusicEnabled` | 2 | Music-enabled flag used by the HInt audio block. |
+| `$FF1AA2`/`$FF1AA4` | `ram_FF1AA2/A4` | 2 | Divisors for the engine-speed scaling (`divu`). |
+| `$FF1EAA`/`$FF26AA` | `ram_FF1EAA/26AA` | `$80` | Player/bike-like structures (`struct of size $80`). |
+| `$FF1908` | `ram_FF1908` | 4 | Object pointer passed to `sub_1652`. |
+| `$FF36B6`/`$FF36B8` | `ram_FF36B6/B8` | 2 | Target/current smoothed engine value (rate-limited to ±`$64`). |
+| `$FF36BE`/`$FF36C0` | `ram_FF36BE/C0` | 2 | Second object's target/current smoothed value. |
+| `$FF36C4` | `ram_FF36C4` | 2 | Base value added to the speed computation. |
 
 Race structures (player/bike state, sprite tables, road arrays, HUD buffers) are **TODO**.
 
