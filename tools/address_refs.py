@@ -116,8 +116,9 @@ def schema():
 
     # Misc tables embedded in binclude.
     dwords("unk_7E670 (track images)", 0x7E670, 5)
-    tables.append(("unk_7DEAA (needle script)", 0x7DEAA, 1,
+    tables.append(("unk_7DEAA (needle tilemap)", 0x7DEAA, 1,
                    lambda rom, off: u32(rom, off), 4, "rom"))
+    dwords("unk_7DEAA frames", 0x7DEB0, 32)
 
     return tables
 
