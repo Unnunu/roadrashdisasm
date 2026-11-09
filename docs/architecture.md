@@ -136,7 +136,7 @@ tentative until the module card is filled in.
 
 | Address | File | Role (tentative) | Card |
 |---|---|---|---|
-| `0x000366` | `logoEA.asm` | EA logo, decompression, drawing | TODO |
+| `0x000366` | `logoEA.asm` | EA logo, decompression, drawing | [logoEA.md](modules/logoEA.md) |
 | `0x001180` | `fade.asm` | Palette fade in/out | [fade.md](modules/fade.md) |
 | `0x001704` | `intro.asm` | Intro sequence | TODO |
 | `0x002446` | `menu_password.asm` | Password menu | TODO |

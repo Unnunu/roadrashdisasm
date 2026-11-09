@@ -102,6 +102,22 @@ overlaps `Menu_ram_FrameBuffer2 $FFC4AC`). Values are written 32-bit because the
 encodes them literally (e.g. `movea.l #LogoEA_ram_Base` → `207C FFFF 0000`). Do not
 normalize to `$FFxxxx`.
 
+| Address | Name | Size | Meaning |
+|---|---|---|---|
+| `$FFFFC000` | `TextTimer` | 2 | Text animation timer (starts `$E2` = 226). |
+| `$FFFFC002` | `FigureAnimationFrame` | 2 | Figure animation frame (`0..$18`). |
+| `$FFFFC004` | `NextUpdateTimer` | 2 | Update every 3 frames; 180 (3 s) after a figure. |
+| `$FFFFC006` | `LineValue` | 4 | Current 8-pixel line colour. |
+| `$FFFFC00A` | `CurrentFigure` | 2 | 0 square, 1 circle, 2 triangle. |
+| `$FFFFC00C`/`$C030` | `SquareYArray`/`SquareDataArray` | 36 each | 9 strips × 2 sprites. |
+| `$FFFFC054`/`$C078` | `TriangleYArray`/`TriangleDataArray` | 36 each | Same. |
+| `$FFFFC09C`/`$C0C0` | `CircleYArray`/`CircleDataArray` | 36 each | Same. |
+| `$FFFFC0E4` | `TilesSquare` | `$900` | 72 runtime square tiles. |
+| `$FFFFC9E4` | `TilesTriangle` | `$900` | 72 runtime triangle tiles. |
+| `$FFFFD2E4` | `TilesCircle` | `$900` | 72 runtime circle tiles. |
+| `$FFFFDBE4` | `ImageEAUncompressed` | `$C00` | Decompressed text/palette/nametable. |
+| `$FFFFE7E4` | `UncompressTempBuffer` | `$1000` | LZ ring buffer (spaces). |
+
 ## Unknown area
 
 `ram_const.asm` still contains many `ram_XXXXXX` placeholders. Rename them only after

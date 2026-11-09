@@ -61,6 +61,10 @@ Notes:
 - The in-source comments occasionally describe reg `$00` as palette select; palette
   selection for the backdrop is in reg `$07`, and reg `$00` bit2 is a fixed "1".
 - `VdpCtrl` = `$C00004`, `VdpData` = `$C00000`, `HvCounter` = `$C00008`.
+- A VRAM write command is a two-word control-port sequence. The EA logo writes only the
+  first word per text row (`$720C`, ...) after a full `$8000` command, relying on the VDP
+  retaining the previous second word (`$0002`); the effective address is `$B20C` inside
+  the shared plane. See `docs/analysis/logoEA.md` (dynamic confirmation pending).
 
 ## 3. VRAM / CRAM / VSRAM / SAT
 
@@ -169,3 +173,4 @@ sprite table, VRAM budget, scroll mode, etc.):
 | Screen / routine | Registers written | Why |
 |---|---|---|
 | Boot (`RESET`) | reg0 `$04`, reg1 `$14`, reg2 `$30`, reg3 `$3C`, reg4 `$07`, reg5 `$6C`, reg7 `$00`, reg0A `$FF`, reg0B `$00`, reg0C `$81`, reg0D `$37`, reg0F `$01`, reg10 `$01`, reg11/12 `$00`, reg13/14 `$FF`, reg15-17 `$00/$00/$80` | Clears VRAM via DMA fill; sets plane A `$C000`, window `$F000`, plane B `$E000`, sprite table `$D800`, H-scroll `$DC00`; display/V-int off until the logo. |
+| EA logo (`LogoEA_Init`) | reg0 `$04`, reg1 `$34`, reg2 `$28`, reg3 `$30`, reg4 `$05`, reg5 `$6E`, reg7 `$00`, reg0B `$03`, reg0C `$81`, reg8A `$01`, reg8D `$08`, reg8F `$02`, reg90 `$03`, reg91/92 `$00` | Plane A **and** plane B at `$A000` (shared nametable), window `$C000`, sprites `$DC00`, H-scroll table `$2000`, 128x32 planes, **H-scroll per line**. Display enabled later by `doStart`. |
