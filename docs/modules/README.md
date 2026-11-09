@@ -23,7 +23,7 @@ row to the table below.
 | `endlevel.asm` | `0x008342` | Level-complete animation / level-up | [endlevel.md](endlevel.md) |
 | `8FB4.asm` | `0x008FB4` | Road/object renderer (partial) | [8FB4.md](8FB4.md) |
 | `98C2.asm` | `0x0098C2` | HUD digit writers / debug overlay | [98C2.md](98C2.md) |
-| `uncompress.asm` | `0x009B9E` | Decompression routines | TODO |
+| `uncompress.asm` | `0x009B9E` | LZSS decompressors (B/W/stream/VRAM) | [uncompress.md](uncompress.md) |
 | `9FE4.asm` | `0x009FE4` | Not yet identified | TODO |
 | `race.asm` | `0x00A4E2` | Main gameplay | TODO |
 | `race_hud.asm` | `0x00D278` | Race HUD (included by `race.asm`) | TODO |

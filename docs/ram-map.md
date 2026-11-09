@@ -220,6 +220,21 @@ buffers. Level-up rider table `$19F12` (5 levels x 2), frame counts `$8C8C`,
 animation script `$8DC2`, tiles `$80000`, window image `$7F400`. `sub_8946` advances the
 level/opponents/password. See `docs/analysis/endlevel.md`.
 
+### Decompressor (`uncompress.asm`)
+
+The LZSS ring is `Road_ram_XLeftArray` (0x1000 bytes, prefilled `$20`). Streaming
+decoder state (`sub_9CC6`/`sub_9DC2`):
+
+| Address | Name | Size | Meaning |
+|---|---|---|---|
+| `$FF136C`..`$FF1384` | `Uncompress_State` a-regs | 4 each | a0 (ring), a1 (output), a2 (ring ptr), a3 (source), a4-a6. |
+| `$FF1388`..`$FF13A4` | `Uncompress_State` d-regs | 4 each | d0-d7 (d2 remaining, d3 bit count, d5 run, d6 flags, d7 ring index). |
+| `$FF13A8` | mid-match flag | 2 | `$FFFF` while resuming inside a back-reference. |
+| `$FF13AA` | VRAM assembly | 4 | `UncompressToVRAM` 4-byte buffer. |
+
+`WriteToVRAM` (`race.asm`) takes the decompressed tile count from the first long's low
+word (high word `$0808` marker). See `docs/analysis/uncompress.md`.
+
 ### Messages (`message.asm`)
 
 | Address | Name | Size | Meaning |
