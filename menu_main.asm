@@ -1,5 +1,10 @@
 ; *************************************************
 ; Function Menu_Init
+; Main-menu initialization: VDP, assets, frame buffer, initial draws, music.
+; In:  Menu_ram_Player and player state (reinit if money is negative)
+; Out: VDP/VRAM/frame buffer initialized; MainMenu_GameTick is the update
+; Clobbers: d0-d7/a0-a6
+; Notes: planes A/B share $4000; the window $7000 holds the 64x28 frame buffer.
 ; *************************************************
 
 Menu_Init:
@@ -29,7 +34,7 @@ Menu_Init:
 
 .loc_3494:
                 lea     (VdpCtrl).l,a0
-                move.w  #$8004,(a0) ; H-ints disabled, Pal Select 1, HVC latch disabled, Display gen enabled
+                move.w  #$8004,(a0) ; H-ints off, left column unblanked, HV counter normal (display enabled by $8174)
                 move.w  #$8174,(a0) ; Display enabled, V-ints enabled, Height: 28, Mode 5, 64K VRAM
                 move.w  #$8210,(a0) ; Scroll A Name Table:    $4000
                 move.w  #$831C,(a0) ; Window Name Table:      $7000
@@ -43,7 +48,9 @@ Menu_Init:
                 move.w  #$8F02,(a0) ; Auto-increment: $2
                 move.w  #$9003,(a0) ; Scroll A/B Size: 128x32
                 move.w  #$9100,(a0) ; WindowX = 0
-                move.w  #$921C,(a0) ; WindowY = 28 cells
+                move.w  #$921C,(a0) ; WindowY = 28 cells (window covers the screen)
+; Planes A/B share $4000; the window $7000 holds the 64x28 text frame buffer.
+; The sprite table and H-scroll table both point at $6000 (the menu uses no sprites).
 ; clear sprites
                 VDP_VRAM_WRITE $6000,(a0) ; write to sprite table
                 move.w  #3,d0
@@ -139,7 +146,7 @@ Menu_Init:
                 move.l  #$B000,d0
                 lea     (Intro_ram_ImageBuffer).l,a0
                 jsr     (WriteToVRAM).l
-; clear Menu_ram_FrameBuffer
+; clear the 64x28 window frame buffer with the default tile $7FF
                 lea     (Menu_ram_FrameBuffer).l,a0
                 move.l  #$7FF07FF,d1 ; default tile
                 move.w  #$37F,d0 ; buffer size $380 * 4 = $E00, $700 tiles
@@ -219,7 +226,7 @@ Menu_Init:
                 move.w  (Menu_ram_CurrentTrackId).l,d0
                 jsr     (Menu_DrawRaceSelection).l
                 jsr     (Menu_DrawPlayerInfo).l
-; write framebuffer to VRAM
+; DMA the frame buffer to the window nametable $7000
                 move.l  #Menu_ram_FrameBuffer,d0 ; source
                 move.w  #$7000,d1 ; destination : window Nametable
                 move.w  #$700,d2 ; size in words 64 x 28
@@ -236,6 +243,7 @@ Menu_Init:
 
 ; *************************************************
 ; Function WriteNametableToBuffer
+; Copies a rectangular nametable region into a buffer with a fixed row stride.
 ; d0 - height in cells
 ; d1 - width in cells
 ; d2 - topLeftX
@@ -273,6 +281,8 @@ WriteNametableToBuffer:
 
 ; *************************************************
 ; Function WriteNametableToBufferMasked
+; Like WriteNametableToBuffer, but writes only where the destination word equals the
+; mask tile (used for the race cards: only black/default tiles are replaced).
 ; d0 - height in cells
 ; d1 - width in cells
 ; d2 - topLeftX
@@ -312,6 +322,11 @@ WriteNametableToBufferMasked:
 
 ; *************************************************
 ; Function MainMenu_GameTick
+; Main-menu per-frame update: demo timer, DMA, input, Start release, tooltips.
+; In:  MainMenu_ram_* state
+; Out: -
+; Clobbers: d0-d2/a0 (the update callback may clobber all registers)
+; Notes: 30 s idle -> demo mode; Start exits on release.
 ; *************************************************
 
 MainMenu_GameTick:
@@ -324,7 +339,7 @@ MainMenu_GameTick:
                 bra.w   .endStage
 
 .inputPlayerA:
-; write framebuffer to VRAM
+; DMA the frame buffer to the window nametable $7000
                 move.l  #Menu_ram_FrameBuffer,d0 ; source
                 move.w  #$7000,d1 ; destination : window Nametable
                 move.w  #$700,d2 ; size in words 64 x 28
@@ -412,6 +427,11 @@ MainMenu_GameTick:
 
 ; *************************************************
 ; Function Menu_DrawPlayerInfo
+; Draws the player selection border and the active player's name + level.
+; In:  Menu_ram_PlayerMode bits 0/1 (A/B), Menu_ram_Player (highlight)
+; Out: Menu_ram_FrameBuffer rows 17-20 updated
+; Clobbers: d0-d6/a0-a1
+; Notes: palette 2 ($4000) for player A, palette 3 ($6000) for player B.
 ; *************************************************
 
 Menu_DrawPlayerInfo:
@@ -543,6 +563,11 @@ Menu_DrawPlayerInfo:
 
 ; *************************************************
 ; Function sub_3B56
+; Builds the selected race's tooltip (name + decimal distance/record) in TempString.
+; In:  d0 - current track id
+; Out: Menu_ram_TempString filled
+; Clobbers: d0/d1/a0-a1
+; Notes: uses unk_49E8 (race names) and unk_25EC0 (per-level values); exact fields TODO.
 ; *************************************************
 
 sub_3B56:
@@ -598,7 +623,12 @@ sub_3B56:
 
 ; *************************************************
 ; Function MainMenu_HandleInput
-; d0 - current buttons state (SACBRLDU)
+; Handles a newly pressed button on the main menu.
+; In:  d0 - current SACBRLDU buttons
+;      Menu_ram_CurrentButtonsPtr - which player pressed
+; Out: player mode/track/music/password screen updated
+; Clobbers: d0-d2/a0-a1
+; Notes: A cycles player mode, B music, directions track, C password screen.
 ; *************************************************
 
 MainMenu_HandleInput:
@@ -689,7 +719,7 @@ MainMenu_HandleInput:
 .checkC:
                 btst    #5,(MainMenu_ram_CurrentButtons).l
                 beq.w   .return
-; init password menu
+; C: open the password screen for the player who pressed it
                 move.w  #(8*12),(Menu_ram_CurrentMessageId).l ; Press 'start' to exit
                 move.w  #30,(Menu_ram_MessageBlinkTimer).l
                 move.w  #240,(Menu_ram_NextMessageTimer).l
@@ -774,7 +804,11 @@ MainMenu_HandleInput:
 
 ; *************************************************
 ; Function Menu_DrawRaceSelection
-; d0 - current race offset
+; Draws the race badge and five race cards for the current track.
+; In:  d0 - current race offset (0,2,4,6,8)
+; Out: Menu_ram_FrameBuffer updated
+; Clobbers: d0-d6/a0-a1
+; Notes: cards show the active player's places; current/left/right/most-* positions.
 ; *************************************************
 
 Menu_DrawRaceSelection:
@@ -882,10 +916,12 @@ Menu_DrawRaceSelection:
 
 ; *************************************************
 ; Function Menu_DrawRaceCard
-; d0 - player place in this race
-; d1 - race id
-; d2 - topLeftX
-; d3 - topLeftY
+; Copies one race card and writes its place text ("1st/2nd/3rd/Nth").
+; In:  d0 - player place (0 = no text)
+;      d1 - race id, d2 - x, d3 - y
+; Out: Menu_ram_FrameBuffer updated (masked write)
+; Clobbers: d0-d6/a0-a1
+; Notes: mask tile $7FF = default black; only those cells are replaced.
 ; *************************************************
 
 Menu_DrawRaceCard:
@@ -944,12 +980,17 @@ Menu_DrawRaceCard:
                 move.w  #64,d6 ; plane width
                 lea     (Intro_ram_ImageBuffer).l,a0 ; source
                 lea     (Menu_ram_FrameBuffer).l,a1 ; destination
-                jsr     (WriteNametableToBufferMasked).w ; write these tiles only on black tiles
+                jsr     (WriteNametableToBufferMasked).w ; write only on black/default tiles
                 rts
 ; End of function Menu_DrawRaceCard
 
 ; *************************************************
 ; Function Menu_ShowMessage
+; Draws the current tooltip (text + optional show function) with blinking.
+; In:  Menu_ram_CurrentMessageId (multiple of 8), Message_MsgArray
+; Out: Menu_ram_FrameBuffer / Message_* updated
+; Clobbers: d0-d6/a0-a1
+; Notes: the blink timer toggles the text; the show function draws the image.
 ; *************************************************
 
 Menu_ShowMessage:
