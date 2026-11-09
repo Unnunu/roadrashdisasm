@@ -145,7 +145,7 @@ definitions are in `docs/analysis/race_actors.md`. Initial field inventory:
 Actor instances (`$80` each): `RacePlayerA`/`RacePlayerB` (`$FF1EAA`/`$FF26AA`),
 15 opponents `$FF1F2A`..`$FF262A` (`Race_ActorList`), static actors
 `$FF2EAA`/`$FF2F2A` (type `$10`); `$FF2FAA` is a further actor-like instance used by
-`sub_12868` (`$68` bit6), role TODO. `Road_ObjectArray` (`$FFD37C`) is the separate
+`Race_UpdateStaticActors` (`$68` bit6), role TODO. `Road_ObjectArray` (`$FFD37C`) is the separate
 0x14-byte road object array (`road_render.asm`).
 
 Actor tables: `Race_ActorList` `$25856` (16 actor pointers + sentinel),
@@ -187,6 +187,25 @@ Buffers: `Intro_TitleScrollTable`/`Intro_TitleScrollSpeed` (+$400 SAT),
 `Race_SpawnTick` spawns ahead opponents (`x+$200000`) or behind traffic
 (`x-$100000`), with active/free lists and distance checks; `Race_UpdateSpeedDisplay`
 + `Race_FormatDecimal` produce `ram_FF3046`. See `docs/analysis/race_spawn.md`.
+
+### Actors/AI (`race_ai.asm`)
+
+| Address | Name | Size | Meaning |
+|---|---|---|---|
+| `$FF1A08` | actor list | - | Player/opponent actor pointers (AI loop). |
+| `$FF1982` | static actor list | - | Static/police actor pointers. |
+| `$FF2FAA` | actor-like instance | `$80`? | Further actor instance (role TODO). |
+| `$FF1E68`/`$FF1E82`/`$FF1E9A` | race progress | 2-4 | Player/AI progress/checkpoint. |
+| `$FF302E`/`$FF3032`/`$FF3034` | curve speeds | 2 each | Speed limits by direction/condition. |
+| `word_14742` | curve speed | 2 | Curve/lean speed value. |
+| `$FF1AA6`/`$FF1AAA`/`$FF1AB2`/`$FF1AB4` | bike physics | 2 each | Steering/speed scaling. |
+| `Race_ram_FrameDelay`/`CurrentButtons` | frame/input | 2 each | AI/input timing. |
+
+Actor fields used by the AI: `$12` Speed, `$14`, `$16` type, `$22`/`$26`
+movement, `$30`/`$36/$38` Y/road, `$3E/$40/$42` lean, `$56`, `$68`/`$69` flags,
+`$6E`, `$71` index, `$73`, `$75`, `$78`. AI data: `unk_258AE`, `unk_25A10`,
+`unk_10E3E`, `unk_12B7C`, `unk_12D0A`, `unk_13A1A`; curve limit `unk_14056`.
+See `docs/analysis/race_ai.md`.
 
 ### Road profile/objects (`race_ai_road.asm`)
 

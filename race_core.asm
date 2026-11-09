@@ -1864,16 +1864,16 @@ Race_Update:
 ; race started ??
                 jsr     (sub_160E2).l
                 lea     (RacePlayerA).l,a1
-                jsr     (sub_13EA0).l
+                jsr     (Race_UpdateBikeLean).l
                 jsr     (sub_1383E).l
                 lea     (RacePlayerA).l,a1
                 jsr     (sub_13A92).l
-                jsr     (sub_10E66).l
+                jsr     (Race_UpdateActorAI).l
                 jsr     (sub_13E94).l
                 jsr     (sub_10DBE).l
                 jsr     (sub_10DDA).l
                 jsr     (sub_13BF4).l
-                jsr     (sub_12868).l
+                jsr     (Race_UpdateStaticActors).l
                 lea     (ram_FF2FAA).l,a1
                 move.w  (ram_FF1B30).l,d0
                 cmp.w   #$1C,d0

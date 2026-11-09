@@ -55,7 +55,7 @@ the exact 8+7 split and initial active count are TODO.
    opponent `ram_FF1F2A` + `$68` bit6 is special).
 3. `Race_ActivateActor` (append to `ram_FF1A0C`, `ram_FF1A06++`).
 4. `Race_InitOpponentActor`: x = player A x + `$200000`; `+$66` rating -> `+$12`
-   Speed; `Race_SetupActor`; `sub_13FE6`; clamp Speed.
+   Speed; `Race_SetupActor`; `Race_GetCurveSpeedLimit`; clamp Speed.
 
 `Race_SpawnTraffic` (`0x16C1A`):
 
@@ -71,7 +71,7 @@ the exact 8+7 split and initial active count are TODO.
 
 - `Race_SetupActor` (`0x16D9A`): `Track_CurveBuffer` at the actor position ->
   `+$8/+$C`; clear `$68` bits 4/0; `+$2C`, `+$5C = ram_FF18A8`, `+$6E = $FF`;
-  zero `+0/$A/$2/$32/$36/$38/$3A/$3C`; `+$1A/+0` from `+$30`; call `sub_13746`.
+  zero `+0/$A/$2/$32/$36/$38/$3A/$3C`; `+$1A/+0` from `+$30`; call `Race_SetupActorSprite`.
 - `Race_RecycleActor` (`0x16CAE`): the first opponent/level case resets
   `ram_FF1B38/34/36`; otherwise push to `ram_FF19C4`; remove from the active list;
   `+$66 = +$04 / ram_FF1E9C`.
@@ -103,7 +103,7 @@ the exact 8+7 split and initial active count are TODO.
 - The exact initial `ram_FF1A0C`/`ram_FF19C4` counts and the `ram_FF1A08`/`ram_FF1A0C`
   overlap.
 - `ram_FF1B34/B36/B38` semantics (level/cop).
-- The `Race_SetupActor` fields and `sub_13746` (actor sprite/animation) need the
+- The `Race_SetupActor` fields and `Race_SetupActorSprite` (actor sprite/animation) need the
   physics chain (`sub_13xxx`).
 - The traffic free list's initial population.
 

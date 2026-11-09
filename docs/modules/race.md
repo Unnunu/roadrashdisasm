@@ -71,7 +71,7 @@ marking/animation, and the race outcome. `top_level.asm` calls `Race_Init`, inst
   Known offsets: `+$02 PosZ`, `+$04 PosXHigh`, `+$06 PosXLow`, `+$12 Speed`,
   `+$18 Gear`, `+$30 PosY`, `+$66 Unk66` (word; copied from `+$56`),
   `+$68` flags (bit1 B, bit2 A, bit7 timer stop), `+$71 Index`.
-- `$FF2FAA`: a further actor-like instance used by `sub_12868` (`$68` bit6), not in
+- `$FF2FAA`: a further actor-like instance used by `Race_UpdateStaticActors` (`$68` bit6), not in
   the static list; role/layout TODO (`docs/analysis/race_actors.md`).
 - Spawn lists: `ram_FF1A0C` active actors, `ram_FF1A06` count, `ram_FF1982` opponent
   free list, `ram_FF19C4` traffic free list; `ram_FF1E68` progress, `ram_FF1E9C`
@@ -128,7 +128,7 @@ Detailed top-level flow: `docs/analysis/race.md`; actors: `docs/analysis/race_ac
   `DmaWriteVRAM`, `DmaWriteCRAM`, `PiecewiseLinearInterpolation`, `Road_DrawObjects`
   (`road_render`), `RaceHud_Draw`, `RoadMarking_Draw`, `UpdateAnimation(2)`, the audio
   functions, `GetInputPlayerA/B`, `Rand_GetWord`, `track_data` decoder, `Race_LoadActorPalette`,
-  `Race_FormatDecimal`; spawn helpers `sub_13746`/`sub_13FE6` (physics TODO).
+  `Race_FormatDecimal`; spawn helpers `Race_SetupActorSprite`/`Race_GetCurveSpeedLimit` (physics TODO).
 
 ## Hacks / bugs / quirks
 
@@ -161,7 +161,7 @@ Detailed top-level flow: `docs/analysis/race.md`; actors: `docs/analysis/race_ac
 ## Hypotheses / next steps
 
 - `[hypothesis]` `ram_FF2FAA` is a further actor-like instance (not in the static
-  list); trace `sub_12868`.
+  list); trace `Race_UpdateStaticActors`.
 - TODO: actor fields `+$66/+$73/+$74/+$75/+$77/+$5C/+$5E/+$60`, player B, 8+7 split.
 - TODO: initial active/free list counts and `ram_FF1A08`/`ram_FF1A0C` overlap. Test:
   break at `Race_SpawnTick` in a race and dump the lists.

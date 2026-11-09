@@ -472,7 +472,7 @@ Race_InitOpponentActor:
                 move.w  STRUCT_OFFSET_66(a1),d0
                 move.w  d0,$12(a1)
                 bsr.w   Race_SetupActor
-                bsr.w   sub_13FE6
+                bsr.w   Race_GetCurveSpeedLimit
                 cmp.w   $12(a1),d0
                 bpl.w   .loc_16D5C
                 move.w  d0,$12(a1)
@@ -503,7 +503,7 @@ Race_InitTrafficActor:
                 move.w  STRUCT_OFFSET_66(a1),d0
                 move.w  d0,$12(a1)
                 bsr.w   Race_SetupActor
-                bsr.w   sub_13FE6
+                bsr.w   Race_GetCurveSpeedLimit
                 cmp.w   $12(a1),d0
                 bpl.w   .loc_16D96
                 move.w  d0,$12(a1)
@@ -522,7 +522,7 @@ Race_InitTrafficActor:
 ; Common actor setup: curve at the actor position, flags, sprite/tile base.
 ; In:  a1 - actor
 ; Out: actor fields
-; Clobbers: d0/a4; calls sub_13746
+; Clobbers: d0/a4; calls Race_SetupActorSprite
 ; *************************************************
 
 Race_SetupActor:
@@ -559,7 +559,7 @@ Race_SetupActor:
 .loc_16E16:
                 move.w  d0,$1A(a1)
                 move.w  d0,0.w(a1)
-                jsr     (sub_13746).l
+                jsr     (Race_SetupActorSprite).l
                 rts
 ; End of function Race_SetupActor
 

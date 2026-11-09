@@ -210,7 +210,7 @@ flowchart LR
 | `Race_FinishFrame` | `0x0BD24` | `EndLevel_UpdateAnimation`, `Race_Update` | - |
 | `Race_GetInputDemo` | `0x0BE2C` | `Race_GameTick` | `GetInputPlayerA`, `GetInputPlayerB` |
 | `Race_GetInput` | `0x0BE56` | `Race_GameTick` | `AudioFunc18`, `AudioFunc4`, `GetInputPlayerA`, `GetInputPlayerB` |
-| `Race_Update` | `0x0C00C` | `Race_Init`, `TopLevel_Init` | `PiecewiseLinearInterpolation`, `RaceHud_Draw`, `Race_BuildHScrollTable`, `Race_BuildVScrollInfo`, `Race_DrawRearviewMirror`, `Race_DrawRoadEdges`, `Race_DrawRoadMarkingHud`, `Race_FinishFrame`, `Race_IntegrateTrackCurve`, `Race_SpawnTick`, `Race_UpdateCamera`, `Race_UpdateNearestOpponent`, `Race_UpdateSpeedDisplay`, `RoadMarking_Draw`, `Road_BuildVisibleList`, `Road_DrawObjects`, `Road_FillProfileTables`, `sub_109B6`, `sub_10DBE`, `sub_10DDA`, `sub_10E66`, `sub_11C44`, `sub_11CC8`, `sub_1218C`, `sub_123A8`, `sub_1281E`, `sub_12868`, `sub_128E0`, `sub_12974`, `sub_12EA2`, `sub_13106`, `sub_1383E`, `sub_138CE`, `sub_13A92`, `sub_13BF4`, `sub_13E94`, `sub_13EA0`, `sub_14E38`, `sub_160E2`, `sub_1611A`, `sub_F40C`, `sub_FB1E`, `sub_FC0E`, `sub_FD96` |
+| `Race_Update` | `0x0C00C` | `Race_Init`, `TopLevel_Init` | `PiecewiseLinearInterpolation`, `RaceHud_Draw`, `Race_BuildHScrollTable`, `Race_BuildVScrollInfo`, `Race_DrawRearviewMirror`, `Race_DrawRoadEdges`, `Race_DrawRoadMarkingHud`, `Race_FinishFrame`, `Race_IntegrateTrackCurve`, `Race_SpawnTick`, `Race_UpdateActorAI`, `Race_UpdateBikeLean`, `Race_UpdateCamera`, `Race_UpdateNearestOpponent`, `Race_UpdateSpeedDisplay`, `Race_UpdateStaticActors`, `RoadMarking_Draw`, `Road_BuildVisibleList`, `Road_DrawObjects`, `Road_FillProfileTables`, `sub_109B6`, `sub_10DBE`, `sub_10DDA`, `sub_11C44`, `sub_11CC8`, `sub_1218C`, `sub_123A8`, `sub_1281E`, `sub_128E0`, `sub_12974`, `sub_12EA2`, `sub_13106`, `sub_1383E`, `sub_138CE`, `sub_13A92`, `sub_13BF4`, `sub_13E94`, `sub_14E38`, `sub_160E2`, `sub_1611A`, `sub_F40C`, `sub_FB1E`, `sub_FC0E`, `sub_FD96` |
 | `Race_SortResults` | `0x0C378` | `Race_ComputeResults` | - |
 | `Race_ComputeResults` | `0x0C3F8` | `TopLevel_Init` | `MenuPassword_CreatePassword`, `Race_BuildStandings`, `Race_SortResults`, `Race_UpdateHighScoreTable` |
 | `Race_UpdateHighScoreTable` | `0x0C598` | `Race_ComputeResults` | `Race_FormatMoney` |
@@ -287,21 +287,21 @@ flowchart LR
 | `sub_10DBE` | `0x10DBE` | `Race_Update` | `sub_10E00` |
 | `sub_10DDA` | `0x10DDA` | `Race_Update` | `sub_10E00` |
 | `sub_10E00` | `0x10E00` | `sub_10DBE`, `sub_10DDA` | - |
-| `sub_10E66` | `0x10E66` | `Race_Update` | `Race_HandleInputOnFoot`, `sub_1103A`, `sub_113A4`, `sub_113CA`, `sub_11448`, `sub_116E2`, `sub_1180C`, `sub_11940`, `sub_11B7A`, `sub_12BD2`, `sub_13746`, `sub_13EFA` |
-| `sub_1103A` | `0x1103A` | `sub_10E66` | `sub_12BD2` |
-| `Race_HandleInputOnFoot` | `0x110AE` | `sub_10E66` | `Race_AnotherInputOnFoot`, `sub_11268`, `sub_11448`, `sub_116E2`, `sub_11940` |
+| `Race_UpdateActorAI` | `0x10E66` | `Race_Update` | `Race_HandleInputOnFoot`, `Race_SetupActorSprite`, `Race_UpdateBikeCurve`, `sub_1103A`, `sub_113A4`, `sub_113CA`, `sub_11448`, `sub_116E2`, `sub_1180C`, `sub_11940`, `sub_11B7A`, `sub_12BD2` |
+| `sub_1103A` | `0x1103A` | `Race_UpdateActorAI` | `sub_12BD2` |
+| `Race_HandleInputOnFoot` | `0x110AE` | `Race_UpdateActorAI` | `Race_AnotherInputOnFoot`, `sub_11268`, `sub_11448`, `sub_116E2`, `sub_11940` |
 | `Race_AnotherInputOnFoot` | `0x111FA` | `Race_HandleInputOnFoot` | `sub_11268` |
 | `sub_11268` | `0x11268` | `Race_AnotherInputOnFoot`, `Race_HandleInputOnFoot` | `sub_112C8` |
 | `sub_112C8` | `0x112C8` | `sub_11268` | - |
-| `sub_113A4` | `0x113A4` | `sub_10E66`, `sub_12868` | `sub_1406A` |
-| `sub_113CA` | `0x113CA` | `sub_10E66` | `sub_1406A` |
-| `sub_11448` | `0x11448` | `Race_HandleInputOnFoot`, `sub_10E66` | `sub_115C6` |
+| `sub_113A4` | `0x113A4` | `Race_UpdateActorAI`, `Race_UpdateStaticActors` | `sub_1406A` |
+| `sub_113CA` | `0x113CA` | `Race_UpdateActorAI` | `sub_1406A` |
+| `sub_11448` | `0x11448` | `Race_HandleInputOnFoot`, `Race_UpdateActorAI` | `sub_115C6` |
 | `sub_115C6` | `0x115C6` | `sub_11448`, `sub_116E2`, `sub_11940` | `sub_146AC` |
-| `sub_116E2` | `0x116E2` | `Race_HandleInputOnFoot`, `sub_10E66`, `sub_1180C`, `sub_12868` | `sub_115C6` |
-| `sub_1180C` | `0x1180C` | `sub_10E66` | `sub_116E2`, `sub_11940`, `sub_13BD8` |
+| `sub_116E2` | `0x116E2` | `Race_HandleInputOnFoot`, `Race_UpdateActorAI`, `Race_UpdateStaticActors`, `sub_1180C` | `sub_115C6` |
+| `sub_1180C` | `0x1180C` | `Race_UpdateActorAI` | `sub_116E2`, `sub_11940`, `sub_13BD8` |
 | `sub_11906` | `0x11906` | `sub_11B7A`, `sub_11CC8`, `sub_1218C`, `sub_12BD2`, `sub_14C3C` | - |
-| `sub_11940` | `0x11940` | `Race_HandleInputOnFoot`, `sub_10E66`, `sub_1180C`, `sub_12868` | `sub_115C6` |
-| `sub_11B7A` | `0x11B7A` | `sub_10E66` | `sub_11906`, `sub_1434A`, `sub_15538` |
+| `sub_11940` | `0x11940` | `Race_HandleInputOnFoot`, `Race_UpdateActorAI`, `Race_UpdateStaticActors`, `sub_1180C` | `sub_115C6` |
+| `sub_11B7A` | `0x11B7A` | `Race_UpdateActorAI` | `sub_11906`, `sub_1434A`, `sub_15538` |
 | `sub_11C44` | `0x11C44` | `Race_Update` | - |
 | `sub_11CC8` | `0x11CC8` | `Race_Update` | `sub_11906`, `sub_12070`, `sub_12414`, `sub_124E2`, `sub_12A9C`, `sub_1438E`, `sub_14486`, `sub_1487C` |
 | `sub_12070` | `0x12070` | `sub_11CC8`, `sub_1218C` | - |
@@ -310,7 +310,7 @@ flowchart LR
 | `sub_12414` | `0x12414` | `sub_11CC8` | - |
 | `sub_124E2` | `0x124E2` | `sub_11CC8`, `sub_1218C`, `sub_123A8` | `sub_12A88`, `sub_12B0C`, `sub_12B24` |
 | `sub_1281E` | `0x1281E` | `Race_Update` | - |
-| `sub_12868` | `0x12868` | `Race_Update` | `sub_113A4`, `sub_116E2`, `sub_11940`, `sub_12C9A`, `sub_137E4`, `sub_13DE0` |
+| `Race_UpdateStaticActors` | `0x12868` | `Race_Update` | `sub_113A4`, `sub_116E2`, `sub_11940`, `sub_12C9A`, `sub_137E4`, `sub_13DE0` |
 | `sub_128E0` | `0x128E0` | `Race_Update` | `Rand_GetWord` |
 | `sub_12974` | `0x12974` | `Race_Update` | - |
 | `sub_12A88` | `0x12A88` | `sub_124E2` | `sub_12A9C`, `sub_12AF8` |
@@ -318,21 +318,21 @@ flowchart LR
 | `sub_12AF8` | `0x12AF8` | `sub_12A88` | - |
 | `sub_12B0C` | `0x12B0C` | `sub_124E2` | - |
 | `sub_12B24` | `0x12B24` | `sub_124E2` | - |
-| `sub_12BD2` | `0x12BD2` | `sub_10E66`, `sub_1103A` | `sub_11906`, `sub_12CCE`, `sub_15538`, `sub_1555C` |
-| `sub_12C9A` | `0x12C9A` | `sub_12868` | - |
+| `sub_12BD2` | `0x12BD2` | `Race_UpdateActorAI`, `sub_1103A` | `sub_11906`, `sub_12CCE`, `sub_15538`, `sub_1555C` |
+| `sub_12C9A` | `0x12C9A` | `Race_UpdateStaticActors` | - |
 | `sub_12CCE` | `0x12CCE` | `sub_12BD2` | - |
 | `sub_12EA2` | `0x12EA2` | `Race_Update` | `Race_RecycleActor`, `Race_RecycleOpponent`, `sub_13A92` |
 | `sub_13106` | `0x13106` | `Race_Update` | - |
-| `sub_131BE` | `0x131BE` | `sub_165D0`, `sub_16612`, `sub_16644`, `sub_1666A`, `sub_166B0`, `sub_166F0` | `sub_13A92`, `sub_13FE6` |
-| `sub_13292` | `0x13292` | `sub_166DC` | `sub_13A92`, `sub_13FE6` |
+| `sub_131BE` | `0x131BE` | `sub_165D0`, `sub_16612`, `sub_16644`, `sub_1666A`, `sub_166B0`, `sub_166F0` | `Race_GetCurveSpeedLimit`, `sub_13A92` |
+| `sub_13292` | `0x13292` | `sub_166DC` | `Race_GetCurveSpeedLimit`, `sub_13A92` |
 | `sub_1333C` | `0x1333C` | `sub_16612`, `sub_16644`, `sub_1666A`, `sub_166B0`, `sub_166DC`, `sub_166F0` | `sub_136B6` |
 | `sub_13422` | `0x13422` | `sub_166F0` | `sub_135F6`, `sub_13892` |
 | `sub_135F6` | `0x135F6` | `sub_13422`, `sub_16458`, `sub_166F0` | `sub_13626` |
 | `sub_13626` | `0x13626` | `sub_135F6` | - |
 | `sub_136B6` | `0x136B6` | `sub_1333C` | - |
-| `sub_13746` | `0x13746` | `Race_SetupActor`, `sub_10E66` | `sub_13812` |
-| `sub_137E4` | `0x137E4` | `sub_12868` | `sub_13812` |
-| `sub_13812` | `0x13812` | `sub_13746`, `sub_137E4` | - |
+| `Race_SetupActorSprite` | `0x13746` | `Race_SetupActor`, `Race_UpdateActorAI` | `sub_13812` |
+| `sub_137E4` | `0x137E4` | `Race_UpdateStaticActors` | `sub_13812` |
+| `sub_13812` | `0x13812` | `Race_SetupActorSprite`, `sub_137E4` | - |
 | `sub_1383E` | `0x1383E` | `Race_Update` | - |
 | `sub_1384C` | `0x1384C` | `sub_165D0`, `sub_165E0`, `sub_1666A` | - |
 | `sub_13892` | `0x13892` | `sub_13422` | - |
@@ -342,13 +342,13 @@ flowchart LR
 | `sub_13BBC` | `0x13BBC` | `sub_13A92` | - |
 | `sub_13BD8` | `0x13BD8` | `sub_1180C` | - |
 | `sub_13BF4` | `0x13BF4` | `Race_Update` | `sub_13CFE` |
-| `sub_13CFE` | `0x13CFE` | `sub_13BF4` | `Race_ActivateActor`, `Race_SetupActor`, `sub_13FE6` |
+| `sub_13CFE` | `0x13CFE` | `sub_13BF4` | `Race_ActivateActor`, `Race_GetCurveSpeedLimit`, `Race_SetupActor` |
 | `sub_13D44` | `0x13D44` | `sub_16458` | - |
-| `sub_13DE0` | `0x13DE0` | `sub_12868` | - |
-| `sub_13E94` | `0x13E94` | `Race_Update` | `sub_13FE6` |
-| `sub_13EA0` | `0x13EA0` | `Race_Update` | - |
-| `sub_13EFA` | `0x13EFA` | `sub_10E66` | - |
-| `sub_13FE6` | `0x13FE6` | `Race_InitOpponentActor`, `Race_InitTrafficActor`, `sub_131BE`, `sub_13292`, `sub_13CFE`, `sub_13E94` | - |
+| `sub_13DE0` | `0x13DE0` | `Race_UpdateStaticActors` | - |
+| `sub_13E94` | `0x13E94` | `Race_Update` | `Race_GetCurveSpeedLimit` |
+| `Race_UpdateBikeLean` | `0x13EA0` | `Race_Update` | - |
+| `Race_UpdateBikeCurve` | `0x13EFA` | `Race_UpdateActorAI` | - |
+| `Race_GetCurveSpeedLimit` | `0x13FE6` | `Race_InitOpponentActor`, `Race_InitTrafficActor`, `sub_131BE`, `sub_13292`, `sub_13CFE`, `sub_13E94` | - |
 | `sub_1406A` | `0x1406A` | `sub_113A4`, `sub_113CA` | - |
 | `sub_142D8` | `0x142D8` | `sub_14486` | - |
 | `sub_1434A` | `0x1434A` | `sub_11B7A`, `sub_14486`, `sub_14CEC` | - |
@@ -412,9 +412,9 @@ flowchart LR
 | `Race_RecycleOpponent` | `0x16C9A` | `sub_12EA2` | `Race_PushFreeActor`, `Race_RemoveActiveActor` |
 | `Race_RecycleActor` | `0x16CAE` | `sub_12EA2` | `Race_PushFreeActor`, `Race_RemoveActiveActor` |
 | `Race_ActivateActor` | `0x16D0A` | `Race_SpawnOpponent`, `Race_SpawnTraffic`, `sub_13CFE` | - |
-| `Race_InitOpponentActor` | `0x16D2A` | `Race_SpawnOpponent` | `Race_SetupActor`, `sub_13FE6` |
-| `Race_InitTrafficActor` | `0x16D60` | `Race_SpawnTraffic` | `Race_SetupActor`, `sub_13FE6` |
-| `Race_SetupActor` | `0x16D9A` | `Race_InitOpponentActor`, `Race_InitTrafficActor`, `sub_13CFE` | `sub_13746` |
+| `Race_InitOpponentActor` | `0x16D2A` | `Race_SpawnOpponent` | `Race_GetCurveSpeedLimit`, `Race_SetupActor` |
+| `Race_InitTrafficActor` | `0x16D60` | `Race_SpawnTraffic` | `Race_GetCurveSpeedLimit`, `Race_SetupActor` |
+| `Race_SetupActor` | `0x16D9A` | `Race_InitOpponentActor`, `Race_InitTrafficActor`, `sub_13CFE` | `Race_SetupActorSprite` |
 | `Race_RemoveActiveActor` | `0x16E26` | `Race_RecycleActor`, `Race_RecycleOpponent` | - |
 | `Race_PushFreeActor` | `0x16E48` | `Race_CheckOpponentAhead`, `Race_CheckTrafficBehind`, `Race_RecycleActor`, `Race_RecycleOpponent` | - |
 | `Race_PopFreeActor` | `0x16E54` | `Race_SpawnOpponent`, `Race_SpawnTraffic` | - |

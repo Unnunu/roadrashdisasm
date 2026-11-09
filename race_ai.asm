@@ -82,7 +82,16 @@ unk_10E3E:      dc.b $18
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_10E66:
+ ; *************************************************
+; Function Race_UpdateActorAI
+; Main actor AI loop: walks the actor list, applies speed/lean/movement and handles
+; the player's on-foot/normal input branches.
+; In:  ram_FF1A08 actor list; Race_ram_FrameDelay/CurrentButtons
+; Out: actor fields; ram_FF1A0C/1D50-related movement state
+; Clobbers: all
+; *************************************************
+
+Race_UpdateActorAI:
                 bset    #6,(RacePlayerA + STRUCT_OFFSET_68).l
                 lea     (ram_FF1A08).l,a2
 
@@ -127,7 +136,7 @@ sub_10E66:
 
 .loc_10EF8:
                 bsr.w   sub_113CA
-                bsr.w   sub_13EFA
+                bsr.w   Race_UpdateBikeCurve
                 btst    #4,$68(a1)
                 beq.w   .loc_10F14
                 btst    #3,$69(a1)
@@ -164,7 +173,7 @@ sub_10E66:
                 tst.w   $12(a1)
                 beq.w   .loc_10F6C
                 bsr.w   sub_113A4
-                bsr.w   sub_13EFA
+                bsr.w   Race_UpdateBikeCurve
                 bsr.w   sub_116E2
 
 .loc_10F6C:
@@ -212,7 +221,7 @@ sub_10E66:
 .loc_10FDE:
                 neg.w   d1
                 move.w  d1,$30(a1)
-                bsr.w   sub_13746
+                bsr.w   Race_SetupActorSprite
                 cmpa.l  #RacePlayerA,a1
                 bne.w   .loc_11018
                 tst.w   (MainMenu_ram_DemoMode).l
@@ -244,7 +253,7 @@ sub_10E66:
 
 .locret_11038:
                 rts
-; End of function sub_10E66
+; End of function Race_UpdateActorAI
 
 
 ; =============== S U B R O U T I N E =======================================
@@ -283,6 +292,14 @@ sub_1103A:
 
 ; =============== S U B R O U T I N E =======================================
 
+
+ ; *************************************************
+; Function Race_HandleInputOnFoot
+; On-foot input/AI for player A: reads the pad and updates turn/speed/lean fields.
+; In:  a1 - actor; Race_ram_CurrentButtons/FrameDelay; unk_258AE
+; Out: actor fields 8/$12/$22/$26/$69
+; Clobbers: d0-d3/a0
+; *************************************************
 
 Race_HandleInputOnFoot:
                 movem.l d0-d2/a0,-(sp)
@@ -384,6 +401,14 @@ Race_HandleInputOnFoot:
 
 ; =============== S U B R O U T I N E =======================================
 
+
+ ; *************************************************
+; Function Race_AnotherInputOnFoot
+; On-foot input/AI for the other actor/pad: turn/speed/lean update.
+; In:  a1 - actor; Race_ram_CurrentButtons
+; Out: actor fields 8/$12/$22/$26/$69
+; Clobbers: d0-d4/a0
+; *************************************************
 
 Race_AnotherInputOnFoot:
                 move.b  (Race_ram_CurrentButtons).l,d3
@@ -2686,7 +2711,15 @@ sub_1281E:
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_12868:
+ ; *************************************************
+; Function Race_UpdateStaticActors
+; Static/police actor AI: walks Race_StaticActorList and updates movement/collision.
+; In:  Race_StaticActorList; unk_25A10 actor data
+; Out: static actor fields; collision helpers
+; Clobbers: all
+; *************************************************
+
+Race_UpdateStaticActors:
                 lea     (Race_StaticActorList).l,a2
 
 .loc_1286E:
@@ -2727,7 +2760,7 @@ sub_12868:
 
 .locret_128DE:
                 rts
-; End of function sub_12868
+; End of function Race_UpdateStaticActors
 
 
 ; =============== S U B R O U T I N E =======================================
@@ -4317,7 +4350,7 @@ sub_131BE:
                 bclr    #2,$68(a1)
                 btst    #5,$68(a1)
                 bne.w   .loc_13280
-                bsr.w   sub_13FE6
+                bsr.w   Race_GetCurveSpeedLimit
                 cmp.w   $12(a1),d0
                 bpl.w   .loc_1328C
 
@@ -4379,7 +4412,7 @@ sub_13292:
                 bclr    #2,$68(a1)
                 btst    #5,$68(a1)
                 bne.w   .loc_1332A
-                bsr.w   sub_13FE6
+                bsr.w   Race_GetCurveSpeedLimit
                 cmp.w   $12(a1),d0
                 bpl.w   .loc_13336
 
@@ -4874,7 +4907,15 @@ sub_136B6:
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_13746:
+ ; *************************************************
+; Function Race_SetupActorSprite
+; Sets up an actor sprite/position after spawn/recycle.
+; In:  a1 - actor; Track_CurveBuffer
+; Out: actor fields
+; Clobbers: all
+; *************************************************
+
+Race_SetupActorSprite:
                 movem.l d0-d1/a0,-(sp)
                 move.w  $30(a1),d0
                 move.w  d0,d1
@@ -4940,7 +4981,7 @@ sub_13746:
 .loc_137DE:
                 movem.l (sp)+,d0-d1/a0
                 rts
-; End of function sub_13746
+; End of function Race_SetupActorSprite
 
 
 ; =============== S U B R O U T I N E =======================================
@@ -5543,7 +5584,7 @@ sub_13BF4:
 sub_13CFE:
                 bsr.w   Race_ActivateActor
                 bsr.w   Race_SetupActor
-                bsr.w   sub_13FE6
+                bsr.w   Race_GetCurveSpeedLimit
                 cmp.w   $12(a1),d0
                 bpl.w   .loc_13D16
                 move.w  d0,$12(a1)
@@ -5799,15 +5840,23 @@ sub_13DE0:
 
 sub_13E94:
                 lea     (RacePlayerA).l,a1
-                bsr.w   sub_13FE6
+                bsr.w   Race_GetCurveSpeedLimit
                 rts
 ; End of function sub_13E94
 
 ; *************************************************
-; Function sub_13EA0
+; Function Race_UpdateBikeLean
 ; a1 - actor
 ; *************************************************
-sub_13EA0:
+ ; *************************************************
+; Function Race_UpdateBikeLean
+; Computes the bike lean ($42) from Speed/Steering physics values.
+; In:  a1 - actor; RaceBike_ram_CurrentSteering; ram_FF1AA6/AAA/B4
+; Out: actor $42
+; Clobbers: d0-d3
+; *************************************************
+
+Race_UpdateBikeLean:
                 tst.b   STRUCT_OFFSET_6E(a1)
                 bpl.w   .return
                 move.w  STRUCT_OFFSET_SPEED(a1),d2
@@ -5838,13 +5887,21 @@ sub_13EA0:
                 move.w  #0,STRUCT_OFFSET_42(a1)
 .return:
                 rts
-; End of function sub_13EA0
+; End of function Race_UpdateBikeLean
 
 
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_13EFA:
+ ; *************************************************
+; Function Race_UpdateBikeCurve
+; Derives the bike curve/lean flags and $3E/$40 from speed/curve values.
+; In:  a1 - actor; ram_FF302E/3032/3034/word_14742
+; Out: actor $3E/$40/$68 bits
+; Clobbers: d0-d2
+; *************************************************
+
+Race_UpdateBikeCurve:
                 movem.l d0-d1,-(sp)
                 btst    #0,$68(a1)
                 bne.w   .loc_13FE0
@@ -5930,13 +5987,21 @@ sub_13EFA:
 .loc_13FE0:
                 movem.l (sp)+,d0-d1
                 rts
-; End of function sub_13EFA
+; End of function Race_UpdateBikeCurve
 
 
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_13FE6:
+ ; *************************************************
+; Function Race_GetCurveSpeedLimit
+; Returns the curve speed limit from Track_CurveBuffer and the actor graphics data.
+; In:  a1 - actor; Track_CurveBuffer; unk_14056
+; Out: d0 - speed limit ($7FFF = none)
+; Clobbers: d0-d2/a0/a2
+; *************************************************
+
+Race_GetCurveSpeedLimit:
                 movem.l d1-d2/a0-a2,-(sp)
                 clr.l   d0
                 btst    #3,$68(a1)
@@ -5980,6 +6045,6 @@ sub_13FE6:
 .loc_14050:
                 movem.l (sp)+,d1-d2/a0-a2
                 rts
-; End of function sub_13FE6
+; End of function Race_GetCurveSpeedLimit
 
 
