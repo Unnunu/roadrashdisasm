@@ -8,15 +8,15 @@
 
 ; *************************************************
 ; Function RaceHud_DrawStandings
-; Draws ram_FF1AE4 (2 digits) and the racer list at ram_FF1AE0; the current row
-; (ram_FF1AE6) uses palette 0, the others palette 2.
-; In:  ram_FF1AE0/1AE4/1AE6
+; Draws RaceHud_ram_StandingsValue (2 digits) and the racer list at RaceHud_ram_StandingsPtr; the current row
+; (RaceHud_ram_StandingsIndex) uses palette 0, the others palette 2.
+; In:  RaceHud_ram_StandingsPtr/1AE4/1AE6
 ; Out: Race_ram_NextHudBuffer
 ; Clobbers: d0-d4, a0/a1
 ; *************************************************
 
 RaceHud_DrawStandings:
-                move.w  (ram_FF1AE4).l,d0
+                move.w  (RaceHud_ram_StandingsValue).l,d0
                 move.w  #$1602,d1
                 move.w  d1,-(sp)
                 move.w  #0,d2
@@ -24,9 +24,9 @@ RaceHud_DrawStandings:
                 jsr     (RaceHud_WriteDigit2).l
                 move.w  (sp)+,d1
                 addq.w  #4,d1
-                movea.l (ram_FF1AE0).l,a1
+                movea.l (RaceHud_ram_StandingsPtr).l,a1
                 move.w  (a1)+,d2
-                move.w  (ram_FF1AE6).l,d3
+                move.w  (RaceHud_ram_StandingsIndex).l,d3
                 move.w  #1,d4
 .loc_98F4:
 ; each list entry points to a pointer to the displayed value

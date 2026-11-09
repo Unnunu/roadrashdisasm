@@ -122,29 +122,29 @@ ClearVRAM:
 ; Function Race_InitAudio
 ; Initializes the engine/skid audio channels and starts the track song.
 ; In:  Menu_ram_CurrentTrackId, ram_MusicEnabled
-; Out: ram_FF36B6..C2, audio channels; ram_CurrentSong
+; Out: Race_ram_Engine1Target..C2, audio channels; ram_CurrentSong
 ; Clobbers: d0/d1/a0
 ; *************************************************
 
 Race_InitAudio:
                 move.b  #0,(ram_FF1AD5).l
-                move.w  #2000,(ram_FF36B6).l
-                move.w  #2000,(ram_FF36B8).l
-                move.w  #1000,(ram_FF36BA).l
-                move.w  #1000,(ram_FF36BC).l
-                move.w  #$7D0,(ram_FF36BE).l
-                move.w  #$7D0,(ram_FF36C0).l
+                move.w  #2000,(Race_ram_Engine1Target).l
+                move.w  #2000,(Race_ram_Engine1Current).l
+                move.w  #1000,(Race_ram_Engine2Target).l
+                move.w  #1000,(Race_ram_Engine2Current).l
+                move.w  #$7D0,(Race_ram_Engine3Target).l
+                move.w  #$7D0,(Race_ram_Engine3Current).l
                 move.w  #60,(ram_FF36C2).l
                 jsr     (Audio_Engine1Start).l
-                move.w  (ram_FF36B8).l,d0
+                move.w  (Race_ram_Engine1Current).l,d0
                 move.w  #$1F,d1
                 jsr     (Audio_Engine1Update).l
                 jsr     (Audio_Engine2Start).l
-                move.w  (ram_FF36BC).l,d0
+                move.w  (Race_ram_Engine2Current).l,d0
                 move.w  #$1F,d1
                 jsr     (Audio_Engine2Update).l
                 jsr     (Audio_Engine3Start).l
-                move.w  (ram_FF36BE).l,d0
+                move.w  (Race_ram_Engine3Target).l,d0
                 move.w  #$1F,d1
                 jsr     (Audio_Engine3Update).l
                 tst.w   (ram_MusicEnabled).l
@@ -1026,7 +1026,7 @@ Race_InitVariables:
                 move.w  #0,(Race_ram_TimeMinutes).l
                 move.w  #0,(Race_CopIndex).l
                 move.w  #0,(ram_FF1B18).l
-                move.w  #0,(ram_FF3036).l
+                move.w  #0,(Race_ram_PlayerXDifference).l
                 move.l  #0,(ram_FF3038).l
                 move.w  #0,(ram_FF303C).l
                 move.w  #0,(ram_FF303E).l
@@ -1265,9 +1265,9 @@ Race_InitPhysicsConstants:
 
 ; *************************************************
 ; Function Race_LoadTrackParams
-; Loads per-track parameters from unk_1471A into ram_FF302E..3034.
+; Loads per-track parameters from unk_1471A into Race_ram_TrackParam0..3034.
 ; In:  Menu_ram_CurrentTrackId
-; Out: ram_FF302E/3030/3032/3034
+; Out: Race_ram_TrackParam0/3030/3032/3034
 ; Clobbers: d0/a0
 ; *************************************************
 
@@ -1276,10 +1276,10 @@ Race_LoadTrackParams:
                 move.w  (Menu_ram_CurrentTrackId).l,d0
                 asl.w   #2,d0
                 adda.w  d0,a0
-                move.w  (a0)+,(ram_FF302E).l
-                move.w  (a0)+,(ram_FF3030).l
-                move.w  (a0)+,(ram_FF3032).l
-                move.w  (a0),(ram_FF3034).l
+                move.w  (a0)+,(Race_ram_TrackParam0).l
+                move.w  (a0)+,(Race_ram_TrackParam1).l
+                move.w  (a0)+,(Race_ram_TrackParam2).l
+                move.w  (a0),(Race_ram_TrackParam3).l
                 rts
 ; End of function Race_LoadTrackParams
 
@@ -1900,7 +1900,7 @@ Race_Update:
                 jsr     (sub_13106).l
                 move.w  (RacePlayerA + STRUCT_OFFSET_POSX_HIGH).l,d0
                 sub.w   (ram_FF1F2E).l,d0
-                move.w  d0,(ram_FF3036).l
+                move.w  d0,(Race_ram_PlayerXDifference).l
                 jsr     (Race_UpdateNearestTarget).l
 .loc_C15A:
                 jsr     (Race_UpdateCamera).l

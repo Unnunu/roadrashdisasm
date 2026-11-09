@@ -5209,7 +5209,7 @@ Race_UpdateBikeLean:
  ; *************************************************
 ; Function Race_UpdateBikeCurve
 ; Derives the bike curve/lean flags and $3E/$40 from speed/curve values.
-; In:  a1 - actor; ram_FF302E/3032/3034/word_14742
+; In:  a1 - actor; Race_ram_TrackParam0/3032/3034/word_14742
 ; Out: actor $3E/$40/$68 bits
 ; Clobbers: d0-d2
 ; *************************************************
@@ -5259,24 +5259,24 @@ Race_UpdateBikeCurve:
                 beq.w   .loc_13F96
                 btst    #3,$68(a1)
                 beq.w   .loc_13F8C
-                move.w  (ram_FF3034).l,d1
+                move.w  (Race_ram_TrackParam3).l,d1
                 bra.w   .loc_13FB0
 
 
 .loc_13F8C:
-                move.w  (ram_FF302E).l,d1
+                move.w  (Race_ram_TrackParam0).l,d1
                 bra.w   .loc_13FB0
 
 
 .loc_13F96:
                 btst    #3,$68(a1)
                 beq.w   .loc_13FAA
-                move.w  (ram_FF3032).l,d1
+                move.w  (Race_ram_TrackParam2).l,d1
                 bra.w   .loc_13FB0
 
 
 .loc_13FAA:
-                move.w  (ram_FF302E).l,d1
+                move.w  (Race_ram_TrackParam0).l,d1
 
 .loc_13FB0:
                 cmp.l   d1,d0
@@ -5319,12 +5319,12 @@ Race_GetCurveSpeedLimit:
                 clr.l   d0
                 btst    #3,$68(a1)
                 beq.w   .loc_14000
-                move.w  (ram_FF3032).l,d0
+                move.w  (Race_ram_TrackParam2).l,d0
                 bra.w   .loc_14006
 
 
 .loc_14000:
-                move.w  (ram_FF302E).l,d0
+                move.w  (Race_ram_TrackParam0).l,d0
 
 .loc_14006:
                 asl.l   #3,d0

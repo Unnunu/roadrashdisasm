@@ -177,7 +177,7 @@ Top-level state: `Race_ram_State` (0 running, non-zero paused/loading),
 `Race_ram_ActiveController`/`CurrentButtons`, `Race_ram_GameEnded`/`DemoGameEnded`,
 `Race_ram_Started` (race started), `ram_FF1B18` (finish timer), `ram_FF3698/369A/368E`
 (pause/demo), `Race_ram_ProgressSnapshotA` (frame count), interpolation arrays
-`ram_FF1E50/52/54/56/58/5A`, `ram_FF3036` (player x difference).
+`ram_FF1E50/52/54/56/58/5A`, `Race_ram_PlayerXDifference` (player x difference).
 
 Buffers: `Intro_TitleScrollTable`/`Intro_TitleScrollSpeed` (+$400 SAT),
 `Menu_ram_FrameBuffer/2`, `Race_ram_FrameReady/2`, `Race_ram_SpriteSize1/2`,
@@ -340,9 +340,9 @@ current price/2; money -= price - current/2; regenerate the password. See
 
 | Address | Name | Size | Meaning |
 |---|---|---|---|
-| `$FF1AE0` | `ram_FF1AE0` | - | Standings pointer list. |
-| `$FF1AE4` | `ram_FF1AE4` | 2 | Standings value/timer (2 digits at `$1602`). |
-| `$FF1AE6` | `ram_FF1AE6` | 2 | Current standings index (palette 0 row). |
+| `$FF1AE0` | `RaceHud_ram_StandingsPtr` | - | Standings pointer list. |
+| `$FF1AE4` | `RaceHud_ram_StandingsValue` | 2 | Standings value/timer (2 digits at `$1602`). |
+| `$FF1AE6` | `RaceHud_ram_StandingsIndex` | 2 | Current standings index (palette 0 row). |
 | `$FF1EAA` | player struct | `$80` | Debug readouts of `POSZ`, `POSX_HIGH/LOW`, `POSY`, `GEAR`, `+$68`. |
 
 Digit HUD: `d1` packed row/column -> offset `row*128+column*2`; tile `$5C0+digit`, bit15
@@ -498,11 +498,11 @@ Known so far:
 | `$FF0406` | `Race_ram_HIntScrollOffset` | 2 | HInt scroll-table offset; reaching `$90` triggers the engine-audio update. |
 | `$FF369E` | `Race_ram_HIntRasterDisabled` | 2 | `$FFFF` disables the HInt raster effect; 0 enables it. |
 | `$FF05D6` | `ram_MusicEnabled` | 2 | Music-enabled flag used by the HInt audio block. |
-| `$FF1AA2`/`$FF1AA4` | `ram_FF1AA2/A4` | 2 | Divisors for the engine-speed scaling (`divu`). |
+| `$FF1AA2`/`$FF1AA4` | `Race_ram_PlayerRpmDivisor`/`Race_ram_NearestRpmDivisor` | 2 | Divisors for the engine-speed scaling (`divu`). |
 | `$FF1EAA`/`$FF26AA` | `RacePlayerA/26AA` | `$80` | Player A/B (`RacePlayer` candidate; see below). |
 | `$FF1908` | `Race_ram_NearestActor` | 4 | Object pointer passed to `Audio_UpdateEngine`. |
-| `$FF36B6`/`$FF36B8` | `ram_FF36B6/B8` | 2 | Target/current smoothed engine value (rate-limited to ±`$64`). |
-| `$FF36BE`/`$FF36C0` | `ram_FF36BE/C0` | 2 | Second object's target/current smoothed value. |
+| `$FF36B6`/`$FF36B8` | `Race_ram_Engine1Target`/`Race_ram_Engine1Current` | 2 | Target/current smoothed engine value (rate-limited to ±`$64`). |
+| `$FF36BE`/`$FF36C0` | `Race_ram_Engine3Target`/`Race_ram_Engine3Current` | 2 | Second object's target/current smoothed value. |
 | `$FF36C4` | `Race_ram_EngineSpeedBase` | 2 | Base value added to the speed computation. |
 
 Rider/bike sprite builder (`src/screens/rider_sprites.asm`):

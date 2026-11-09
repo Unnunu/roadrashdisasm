@@ -266,8 +266,8 @@ budget.
    - if `ram_MusicEnabled != 0`, skip to `Audio_Update`;
    - if `Race_ram_State != 0`, call `Audio_Engine1Update`/`Audio_Engine2Update` and skip;
    - otherwise compute a speed/engine parameter from `RacePlayerA` (struct offset `$14`
-     × `Race_ram_FrameCounter` + `STRUCT_OFFSET_SPEED`, scaled by `ram_FF1AA2` and
-     `$3800`), smooth it into `ram_FF36B8` with a ±`$64` rate limit, derive `d1`
+     × `Race_ram_FrameCounter` + `STRUCT_OFFSET_SPEED`, scaled by `Race_ram_PlayerRpmDivisor` and
+     `$3800`), smooth it into `Race_ram_Engine1Current` with a ±`$64` rate limit, derive `d1`
      (`>>5 + 2`, min 0), handle player B's struct `RacePlayerB` (distance to
      `Race_ram_PlayerProgress`), call `Audio_Engine1Update`, `Audio_UpdateEngine` (with `Race_ram_NearestActor`) and
      `Audio_Engine2Update`.
@@ -287,9 +287,9 @@ their exact parameters are deferred with the audio deep dive.
 - Invalid pointer: `d1 = $1F`, `d0 = 0`.
 - If bit 7 of `$6E(a1)` is set (engine active?), compute
   `$14(a1) * Race_ram_FrameCounter + $12(a1)`, clamp to 0, scale by
-  `ram_FF1AA4` and `$3800`.
-- Add `$400`, clamp to `>= $400`, smooth toward `ram_FF36C0` with a ±`$64` rate limit,
-  store back into `ram_FF36C0`.
+  `Race_ram_NearestRpmDivisor` and `$3800`.
+- Add `$400`, clamp to `>= $400`, smooth toward `Race_ram_Engine3Current` with a ±`$64` rate limit,
+  store back into `Race_ram_Engine3Current`.
 - Compute `|Race_ram_PlayerProgress - 4(a1)| * 2`, take the high word, clamp to `<= $1F` -> `d1`.
 
 `[hypothesis]` The routine computes engine-audio parameters for player B (or a second

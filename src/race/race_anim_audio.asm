@@ -5637,7 +5637,7 @@ Race_UpdateNearestTarget:
                 swap    d1
                 lsr.l   #8,d1
                 lsr.l   #6,d1
-                move.w  d1,(ram_FF1AA4).l
+                move.w  d1,(Race_ram_NearestRpmDivisor).l
                 move.l  4(a2),d0
                 sub.l   4(a1),d0
                 move.l  d0,(ram_FF1786).l

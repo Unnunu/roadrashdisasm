@@ -52,10 +52,10 @@ offset is `((d1 & $FF00) >> 1) + ((d1 & $FF) << 1)` = `row*128 + column*2`
 
 ## `RaceHud_DrawStandings` (standings/timer)
 
-- Draws `ram_FF1AE4` (2 digits) at `$1602` into `Race_ram_NextHudBuffer`.
-- Walks the pointer list at `ram_FF1AE0` (`(a1)+` = count): for each entry, follows the
+- Draws `RaceHud_ram_StandingsValue` (2 digits) at `$1602` into `Race_ram_NextHudBuffer`.
+- Walks the pointer list at `RaceHud_ram_StandingsPtr` (`(a1)+` = count): for each entry, follows the
   pointer twice, reads the value, and draws it at `$1606`, `$160C`, ... (rows 6 apart)
-  with palette 0 for the current entry (`ram_FF1AE6`) and palette 2 for the others.
+  with palette 0 for the current entry (`RaceHud_ram_StandingsIndex`) and palette 2 for the others.
 - The list/current-index/timer are the race standings HUD state.
 
 ## Debug readouts

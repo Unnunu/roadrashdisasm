@@ -116,7 +116,7 @@ This is the double/quad buffering that avoids tearing.
    `sub_1383E`, `sub_13A92`, `Race_UpdateActorAI`, `sub_13E94`, `sub_10DBE`, `sub_10DDA`,
    `sub_13BF4`, `Race_UpdateStaticActors`, `sub_128E0`, `sub_12974`, `sub_138CE`, `sub_1281E`,
    `sub_11C44`, `sub_11CC8`, `sub_1218C`, `sub_123A8`, `Race_UpdateNearestOpponent`, `sub_12EA2`,
-   `sub_13106`), the player/opponent x difference `ram_FF3036`, `Race_UpdateNearestTarget`.
+   `sub_13106`), the player/opponent x difference `Race_ram_PlayerXDifference`, `Race_UpdateNearestTarget`.
 4. Render prep: `Race_UpdateCamera`; if the frame is not ready: `Race_IntegrateTrackCurve`, the
    `PiecewiseLinearInterpolation` calls for the road arrays (`Road_ram_XLeftArray`,
    `Road_ram_MarkingXArray`, `Road_ram_XRightArray`), `Road_FillProfileTables`,

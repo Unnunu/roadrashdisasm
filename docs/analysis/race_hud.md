@@ -34,7 +34,7 @@ table/tile array for the two needles via `UpdateAnimation`).
 
 - Needles use `unk_7DEAA` (animation script at `0x7DEAA`, gap) with
   `UpdateAnimation`; speed `d0 = min(speed/453,31)` at `X=$88,Y=$80`; RPM divisor comes
-  from the gear curve `RaceBike_ram_Parameters[gear]` (`ram_FF1AA2`), frame = `(speed/divisor)/682`.
+  from the gear curve `RaceBike_ram_Parameters[gear]` (`Race_ram_PlayerRpmDivisor`), frame = `(speed/divisor)/682`.
 - Odometer reads `RacePlayerA+POSX_HIGH`, divides by 330 and draws three digits from
   the `ram_FF352C` font into `CurrentHudBuffer+$E00`.
 - Stamina: opponent (`Race_ram_NearestActor` `$5C/5`) at `+$9B8` (`y=19,x=28`), player
@@ -56,10 +56,10 @@ table/tile array for the two needles via `UpdateAnimation`).
 - `RaceHud_dRankStrings` (`0xD58E`): `" 1st"`..`"16th"` (4 bytes each).
 - `unk_7DEAA`: speed/RPM needle animation script (now `src/data/race_misc_data.asm`), frames/tilemap
   still TODO.
-- `RaceBike_ram_Parameters`: gear curve (divisor source); `ram_FF1AA2`: RPM divisor.
+- `RaceBike_ram_Parameters`: gear curve (divisor source); `Race_ram_PlayerRpmDivisor`: RPM divisor.
 - `ram_FF352C`: odometer digit font (8 longs/digit).
 - `Race_ram_PlayerPlace`: place; `Race_ram_NearestActor`: nearest actor; `Race_ram_BikeDamage $FF1B26`.
-- `RaceHud_ram_NameTimer/BA/BC`: name timer / last place / rank; `RaceHud_ram_TextDescriptor`: text descriptor.
+- `RaceHud_ram_NameTimer`/`RaceHud_ram_LastPlace`/`RaceHud_ram_Rank`: name timer / last place / rank; `RaceHud_ram_TextDescriptor`: text descriptor.
 - `Race_ram_CurrentHudBuffer $FF38C8`; `CurrentSpriteAttributeTable $FF38AC`;
   `CurrentSpriteTileArray $FF38D0`.
 

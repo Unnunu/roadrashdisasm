@@ -43,7 +43,7 @@ and sets the two indexes (`ram_FF18FE`/`ram_FF1900`, 0..31). `Rand_GetWord` retu
 - `Race_UpdatePlayerAnimation` advances the player tile base `$5C` up to `ram_FF18AA`
   by `Race_ram_FrameDelay` (on-foot/`$6E` gated).
 - `Race_UpdateNearestTarget` finds the nearest actor by squared X/Y distance and
-  stores `Race_ram_NearestActor`, `ram_FF1AA4`, `ram_FF1786`.
+  stores `Race_ram_NearestActor`, `Race_ram_NearestRpmDivisor`, `ram_FF1786`.
 
 ## Data / RAM
 
@@ -51,7 +51,7 @@ and sets the two indexes (`ram_FF18FE`/`ram_FF1900`, 0..31). `Rand_GetWord` retu
   params; `Race_LoadTrackParams`), `word_14742` (curve speed), `unk_155A4`/
   `unk_15624`/`unk_15CE0`/`unk_15CFC`/`byte_15FA8` (animation/PRNG data).
 - PRNG: `ram_FF18BE` (32 words), `ram_FF18FE`/`ram_FF1900` indexes.
-- Audio/target: `ram_FF1904/1906/1908`, `ram_FF1AD7`, `ram_FF1AA4`, `ram_FF1786`.
+- Audio/target: `ram_FF1904/1906/1908`, `ram_FF1AD7`, `Race_ram_NearestRpmDivisor`, `ram_FF1786`.
 - Actor fields: `$3E/$40/$42` lean, `$4A/$5A` collision/range, `$5C` tile base,
   `$68/$69/$6B/$6C/$6D/$6E` engine/collision/animation flags.
 

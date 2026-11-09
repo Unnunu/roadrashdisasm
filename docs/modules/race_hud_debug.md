@@ -31,8 +31,8 @@ is in `src/race/race_hud.asm`.
 
 - Digit writers: `d1` = packed row/column, offset `row*128 + column*2`; tile word
   `$5C0 + digit`, bit 15 set, OR `d2` (palette/priority).
-- `RaceHud_DrawStandings`: `ram_FF1AE4` (2 digits) at `$1602`; walk `ram_FF1AE0` list, draw each
-  value at `$1606/$160C/...`; current row (`ram_FF1AE6`) palette 0, others palette 2.
+- `RaceHud_DrawStandings`: `RaceHud_ram_StandingsValue` (2 digits) at `$1602`; walk `RaceHud_ram_StandingsPtr` list, draw each
+  value at `$1606/$160C/...`; current row (`RaceHud_ram_StandingsIndex`) palette 0, others palette 2.
 - Debug functions: format the value (`Race_FormatDecimal` for distance/POSZ/frame delay/
   `ram_FF304C`) or write raw hex (`RaceHud_WriteDigit4`) at fixed HUD cells; the gear uses the
   tile base `$5C1+gear`.
@@ -41,7 +41,7 @@ is in `src/race/race_hud.asm`.
 
 - HUD buffers: `Race_ram_CurrentHudBuffer`, `Race_ram_NextHudBuffer`; digit font tile
   base `$5C0` (VRAM `$B800`), bit 15 priority.
-- Standings: `ram_FF1AE0` pointer list, `ram_FF1AE4` value/timer, `ram_FF1AE6` current
+- Standings: `RaceHud_ram_StandingsPtr` pointer list, `RaceHud_ram_StandingsValue` value/timer, `RaceHud_ram_StandingsIndex` current
   index.
 - Debug values: `RacePlayerA + STRUCT_OFFSET_*` (`POSZ/POSX_HIGH/POSX_LOW/POSY/GEAR/
   +$68`), `Race_ram_NumSprites`, `ram_FF1B3E`, `Race_ram_SpeedDisplay`/`ram_FF304C`, `ram_FF1786`,

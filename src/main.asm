@@ -557,7 +557,7 @@ HorizontalInterrupt:
                 move.w  #0,d0
 .loc_1576:
                 andi.l  #$FFFF,d0
-                move.w  (ram_FF1AA2).l,d1
+                move.w  (Race_ram_PlayerRpmDivisor).l,d1
                 ext.l   d0
                 swap    d0
                 divu.w  d1,d0
@@ -566,10 +566,10 @@ HorizontalInterrupt:
                 swap    d0
 .loc_1590:
                 add.w   (Race_ram_EngineSpeedBase).l,d0
-                move.w  d0,(ram_FF36B6).l
+                move.w  d0,(Race_ram_Engine1Target).l
                 lea     (RacePlayerA).l,a1
-                move.w  (ram_FF36B6).l,d0
-                sub.w   (ram_FF36B8).l,d0
+                move.w  (Race_ram_Engine1Target).l,d0
+                sub.w   (Race_ram_Engine1Current).l,d0
                 move.w  d0,d1
                 bpl.w   .loc_15B6
                 neg.w   d1
@@ -582,8 +582,8 @@ HorizontalInterrupt:
                 bpl.w   .loc_15CE
                 move.w  #$FF9C,d0
 .loc_15CE:
-                add.w   (ram_FF36B8).l,d0
-                move.w  d0,(ram_FF36B8).l
+                add.w   (Race_ram_Engine1Current).l,d0
+                move.w  d0,(Race_ram_Engine1Current).l
                 asr.w   #5,d1
                 addi.w  #2,d1
                 bpl.w   .loc_15E8
@@ -647,7 +647,7 @@ Audio_UpdateEngine:
 
 .loc_1682:
                 andi.l  #$FFFF,d0
-                move.w  (ram_FF1AA4).l,d1
+                move.w  (Race_ram_NearestRpmDivisor).l,d1
                 ext.l   d0
                 swap    d0
                 divu.w  d1,d0
@@ -657,14 +657,14 @@ Audio_UpdateEngine:
 
 .loc_169C:
                 addi.w  #$400,d0
-                move.w  d0,(ram_FF36BE).l
-                move.w  (ram_FF36BE).l,d0
+                move.w  d0,(Race_ram_Engine3Target).l
+                move.w  (Race_ram_Engine3Target).l,d0
                 cmp.w   #$400,d0
                 bpl.w   .loc_16B8
                 move.w  #$400,d0
 
 .loc_16B8:
-                sub.w   (ram_FF36C0).l,d0
+                sub.w   (Race_ram_Engine3Current).l,d0
                 cmp.w   #$64,d0
                 ble.w   .loc_16CA
                 move.w  #$64,d0
@@ -675,8 +675,8 @@ Audio_UpdateEngine:
                 move.w  #$FF9C,d0
 
 .loc_16D6:
-                add.w   (ram_FF36C0).l,d0
-                move.w  d0,(ram_FF36C0).l
+                add.w   (Race_ram_Engine3Current).l,d0
+                move.w  d0,(Race_ram_Engine3Current).l
                 move.l  (Race_ram_PlayerProgress).l,d1
                 sub.l   4(a1),d1
                 bpl.w   .loc_16F2

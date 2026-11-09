@@ -61,7 +61,7 @@ RaceHud_DrawSpeedArrow:
 ; Function RaceHud_DrawRPMArrow
 ; Draws the RPM needle from the gear curve (RaceBike_ram_Parameters) and speed.
 ; In:  RacePlayerA speed/gear; RaceBike_ram_Parameters; unk_7DEAA
-; Out: ram_FF1AA2; sprite table/tile array
+; Out: Race_ram_PlayerRpmDivisor; sprite table/tile array
 ; Clobbers: d0-d2/a0/a1/a4
 ; *************************************************
 
@@ -74,7 +74,7 @@ RaceHud_DrawRPMArrow:
                 swap    d1
                 lsr.l   #8,d1
                 lsr.l   #6,d1
-                move.w  d1,(ram_FF1AA2).l
+                move.w  d1,(Race_ram_PlayerRpmDivisor).l
                 move.w  (RacePlayerA + STRUCT_OFFSET_SPEED).l,d0
                 ext.l   d0
                 swap    d0

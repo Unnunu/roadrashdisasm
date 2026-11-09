@@ -42,7 +42,7 @@ walked from `Race_StaticActorList` by `Race_UpdateStaticActors`
 
 `Race_UpdateBikeLean` computes `$42` from Speed/Steering (`ram_FF1AA6/AAA/B4`,
 `RaceBike_ram_CurrentSteering`). `Race_UpdateBikeCurve` derives `$3E/$40` from the
-speed/curve (`ram_FF302E/3032/3034`, `word_14742`). `Race_GetCurveSpeedLimit` reads
+speed/curve (`Race_ram_TrackParam0`/`Race_ram_TrackParam2`/`Race_ram_TrackParam3`, `word_14742`). `Race_GetCurveSpeedLimit` reads
 `Track_CurveBuffer` and the `unk_14056` table to clamp the actor speed
 
 ## Actor action dispatch (`0x12D0A-0x131BE`)
@@ -71,7 +71,7 @@ Actor fields used here: `$12` Speed, `$14`, `$16` type, `$22`/`$26` movement,
 `$30`/`$36/$38` Y/road, `$3E/$40/$42` lean, `$56`, `$68` bits, `$69` bits, `$6E`,
 `$71` index, `$73`, `$75`, `$78`. Data: `unk_258AE`/`unk_25A10` actor data,
 `unk_10E3E`, `unk_12B7C`, `unk_12D0A`, `unk_13A1A`, `Track_CurveBuffer`,
-`ram_FF302E`/`ram_FF3032`/`ram_FF3034`, `word_14742`, `Race_ram_PlayerProgress`/`Race_ram_BestProgress`/`Race_ram_ProgressSnapshotB`, `Race_ram_FrameDelay`/
+`Race_ram_TrackParam0`/`Race_ram_TrackParam2`/`Race_ram_TrackParam3`, `word_14742`, `Race_ram_PlayerProgress`/`Race_ram_BestProgress`/`Race_ram_ProgressSnapshotB`, `Race_ram_FrameDelay`/
 `CurrentButtons`, `Race_StaticActorList`, `$FF2FAA`, `unk_14056` (race_anim_audio).
 
 ## Open questions
