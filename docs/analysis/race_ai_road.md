@@ -79,6 +79,29 @@ keys + indices feed `ram_FF1D50` (`Road_VisibleObjectList`) for
 `Road_DrawObjects`. The exact ascending/descending convention and key units are
 still TODO.
 
+## Object-list/render helpers
+
+- `sub_F40C` (`0xF40C`) is the actor/static/extra object-list builder. It advances
+  `ram_FF1AD9` (mod 4) and `ram_FF1ADC` (mod 8), walks `ram_FF1A08`,
+  `Race_StaticActorList`, then `$FF2FAA`; projects each actor with
+  `Race_ProjectActorSprite` or computes a projected X/Y from player progress; calls
+  `sub_15014`/`sub_10256`/`sub_100D0`/`sub_10294`/`sub_108DA`/`sub_FF7E`; appends
+  records to `Road_ObjectArray` and distances to `ram_FF1B50`.
+- `sub_FD96` (`0xFD96`) appends a special/cop/start object with fixed
+  `$FEA0/$41/$4000` fields when `Race_CopIndex` or `ram_FF3698` requests it.
+- `sub_FB1E` (`0xFB1E`) appends the track-start object selected from
+  `RaceTrack_Data1`/player progress, sets its record/flags, and projects it through
+  `sub_FE3A`.
+- `sub_FC0E` (`0xFC0E`) walks the track object stream cursor `ram_FFD7CC`, appends
+  visible objects with `sub_FE3A`, and stores the per-shape depth data from
+  `ram_FFD77C`.
+- `sub_109B6` (`0x109B6`) advances/rewinds the track-object stream cursor
+  `ram_FFD7C4`/`ram_FFD7C8` against player progress; `sub_10C4E` consumes the
+  resulting object/shape data into the object records.
+
+These helpers are called from `Race_Update` around the road-profile/visible-list
+stage (`sub_FD96`, `sub_FB1E`, `sub_F40C`, `sub_109B6`, `sub_FC0E`).
+
 ## RAM / data
 
 - `Road_ram_XLeftArray`/`XRightArray`/`MarkingXArray`;
