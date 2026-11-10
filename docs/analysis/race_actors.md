@@ -142,13 +142,14 @@ routines; `+$06` is its low word, not an independent X coordinate.
 | `+$2C`/`+$2E` | word | impact/speed fraction pair; source writes from Speed | `[static]`; zero in snapshots |
 | `+$30` | word | current road/target Y; `+$1A` keeps the previous value | `[dynamic]` steering `$35`; hard-left `$FFEA`; no-steer `$A0` |
 | `+$32` | word | `RaceActor_CollisionOffset`; projected collision penetration; zero outside collisions | `[static/dynamic]`; R25 |
-| `+$36`/`+$38`/`+$3A`/`+$3C` | word | `$36` road-Y target offset, `$38` curve delta, `$3A` curve accumulator, `$3C` curve step | `[static/dynamic]` steering `5/$22B/3/0`; see `race_movement.md`; names deferred |
+| `+$36`/`+$38`/`+$3A`/`+$3C` | word | `RoadYTarget`/`CurveDelta`/`CurveAccum`/`CurveStep` | `[static/dynamic]` steering `5/$22B/3/0`; R30 |
 | `+$3E`/`+$40`/`+$42` | word | curve/lean state; `$42` signed | `[confirmed]` `$42=-$49` left, `+$49` right; `$3E/$40` zero in test; R22/R23 names `Curve`/`LeanCurve` |
 | `+$46` | word | curve/direction sign; AI flips it | `[dynamic]` `-$03` under forced steering |
 | `+$4A` | word | collision/proximity extent | `[dynamic]` `$0D` active, `$0E` hard-left; `[static]` `Race_UpdateCollision` |
 | `+$4C`/`+$4E` | word | collision extents toward smaller/larger Y: `CollisionExtentUpper`/`Lower` | `[static/dynamic]` forced pair: side 0 for lower actor, side 1 for upper; R27 |
 | `+$50` | word | attack reach/knockback | `[dynamic]` armed `$28`, unarmed `$19`; `Race_GetAttackerReach` |
 | `+$52` | word | overlap/penetration | `[dynamic]` `$42` armed / `$33` unarmed |
+| `+$54` | word | `RaceActor_FallState` (`$11` on knockdown) | `[static]` R30 |
 | `+$56` | word | `RaceActor_RespawnTimer`; `$FFFF` normal/sentinel, static countdown | `[static/dynamic]` R29; static `$E2/$17` |
 | `+$5A` | word | attack/impact cooldown | `[static]/[dynamic]` combat; zero in demo |
 | `+$5C` | word | tile/animation base | `[confirmed]` Player `$A00 -> $507`; graphics table |
@@ -297,6 +298,10 @@ open semantic question, not a reason to rename the field.
 | `$1E` (literal) | `RaceActor_PreviousX` (long) | `Race_UpdateActorX` copies `+$04` here; `$04-$1E=$26` | high |
 | `$68` | `RaceActor_Flags` | bit6 active/update marker; multiple AI bits | medium |
 | `$5E`/`$60` | `ActorSpritePosX/Y` | graphics +$A/+$C | low |
+
+Applied in R30: `RaceActor_RoadYTarget` (`$36`), `RaceActor_CurveDelta` (`$38`),
+`RaceActor_CurveAccum` (`$3A`), `RaceActor_CurveStep` (`$3C`),
+`RaceActor_FallState` (`$54`).
 
 Applied in R29: `RaceActor_PreviousCollisionOffset` (`$1C`), `RaceActor_RespawnTimer` (`$56`).
 

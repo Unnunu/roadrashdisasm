@@ -37,8 +37,9 @@ threshold and the extra/static activation snapshot, then uses the same curve mat
 - `sub_115C6` combines `$3A + $3C`, derives `$2A` (Y offset), `$2C` (curve/scale
   state), and `$2E` (speed reduction accumulator).
 
-Meaning in one line: `$36` is the road-Y target offset, `$38` the last curve delta,
-`$3A` the curve accumulator, and `$3C` the current curve step. The names stay
+Meaning in one line: `RaceActor_RoadYTarget` (`$36`) is the road-Y target offset, `CurveDelta` (`$38`) the
+last curve delta, `CurveAccum` (`$3A`) the curve accumulator, and `CurveStep` (`$3C`)
+the current curve step. The names stay
 unapplied because `$36` is later treated as a target/clamp value rather than a pure
 accumulator.
 

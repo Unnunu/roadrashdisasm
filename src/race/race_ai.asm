@@ -177,7 +177,7 @@ Race_UpdateActorAI:
                 bsr.w   Race_UpdateActorMovement
 
 .loc_10F6C:
-                move.w  $36(a1),d1
+                move.w  RaceActor_RoadYTarget(a1),d1
                 move.w  d1,d3
                 sub.w   0.w(a1),d1
                 bpl.w   .loc_10FAC
@@ -731,7 +731,7 @@ sub_113CA:
 
 .loc_11406:
                 add.l   d0,(ram_FF1E5C).l
-                sub.l   $36(a1),d0
+                sub.l   RaceActor_RoadYTarget(a1),d0
                 exg     d0,d1
                 muls.w  d1,d0
                 asr.l   #8,d0
@@ -831,7 +831,7 @@ Race_UpdateActorX:
                 movea.w d4,a6
                 move.w  d5,$2C(a1)
                 move.w  d7,-(sp)
-                add.w   $3A(a1),d7
+                add.w   RaceActor_CurveAccum(a1),d7
                 move.w  d7,(ram_FF1E92).l
                 move.w  (sp)+,d7
 
@@ -841,7 +841,7 @@ Race_UpdateActorX:
                 dbf     d0,.loc_11506
 
 .loc_11552:
-                add.w   d7,$3A(a1)
+                add.w   d7,RaceActor_CurveAccum(a1)
                 move.w  6(a1),d0
                 move.b  (a4)+,d1
                 ext.w   d1
@@ -862,12 +862,12 @@ Race_UpdateActorX:
                 nop
 
 .loc_11578:
-                sub.w   $38(a1),d6
+                sub.w   RaceActor_CurveDelta(a1),d6
                 beq.w   .loc_11582
                 nop
 
 .loc_11582:
-                move.w  d1,$38(a1)
+                move.w  d1,RaceActor_CurveDelta(a1)
                 move.l  $26(a1),d1
                 lsr.l   #8,d1
                 muls.w  d6,d1
@@ -882,7 +882,7 @@ Race_UpdateActorX:
                 nop
 
 .loc_115A2:
-                add.w   d1,$36(a1)
+                add.w   d1,RaceActor_RoadYTarget(a1)
                 move.b  (a4)+,d1
                 ext.w   d1
                 bpl.w   .loc_115B8
@@ -909,8 +909,8 @@ Race_UpdateActorX:
 
 
 sub_115C6:
-                move.w  d1,$3C(a1)
-                add.w   $3A(a1),d1
+                move.w  d1,RaceActor_CurveStep(a1)
+                add.w   RaceActor_CurveAccum(a1),d1
                 cmpa.l  #ram_FF2EAA,a1
                 bcc.w   .loc_116AA
                 move.w  (Race_ram_FrameDelay).l,d4
@@ -925,7 +925,7 @@ sub_115C6:
                 add.w   d0,d1
                 add.w   d0,$2A(a1)
                 move.w  d1,(ram_FF1E92).l
-                move.w  d1,$3A(a1)
+                move.w  d1,RaceActor_CurveAccum(a1)
 
 .loc_11610:
                 move.w  (ram_FF1E92).l,d0
@@ -1072,7 +1072,7 @@ Race_UpdateActorMovement:
                 movea.w d4,a6
                 move.w  d5,$2C(a1)
                 move.w  d7,-(sp)
-                add.w   $3A(a1),d7
+                add.w   RaceActor_CurveAccum(a1),d7
                 move.w  d7,(ram_FF1E92).l
                 move.w  (sp)+,d7
                 bra.w   *+4
@@ -1086,7 +1086,7 @@ Race_UpdateActorMovement:
 
 
 .loc_117C0:
-                add.w   d7,$3A(a1)
+                add.w   d7,RaceActor_CurveAccum(a1)
                 move.w  6(a1),d0
                 move.b  (a4)+,d1
                 ext.w   d1
@@ -1103,9 +1103,9 @@ Race_UpdateActorMovement:
 .loc_117DC:
                 swap    d1
                 add.w   d1,d6
-                sub.w   $38(a1),d6
-                move.w  d1,$38(a1)
-                add.w   d1,$36(a1)
+                sub.w   RaceActor_CurveDelta(a1),d6
+                move.w  d1,RaceActor_CurveDelta(a1)
+                add.w   d1,RaceActor_RoadYTarget(a1)
                 move.b  (a4)+,d1
                 ext.w   d1
                 bpl.w   .loc_117FE
@@ -1183,7 +1183,7 @@ Race_UpdateActorShadow:
 
 
 .loc_1188A:
-                move.w  $36(a1),d1
+                move.w  RaceActor_RoadYTarget(a1),d1
                 move.w  d1,d3
                 sub.w   0.w(a1),d1
                 bpl.w   .loc_118AE
@@ -1344,8 +1344,8 @@ Race_UpdateActorFallMovement:
 .loc_11A0E:
                 move.w  d1,$E(a1)
                 move.w  d2,$10(a1)
-                sub.w   d6,$36(a1)
-                sub.w   d7,$3A(a1)
+                sub.w   d6,RaceActor_RoadYTarget(a1)
+                sub.w   d7,RaceActor_CurveAccum(a1)
                 move.w  6(a1),d0
                 move.b  (a4),d1
                 ext.w   d1
@@ -1361,7 +1361,7 @@ Race_UpdateActorFallMovement:
 
 .loc_11A36:
                 swap    d1
-                move.w  d1,$38(a1)
+                move.w  d1,RaceActor_CurveDelta(a1)
                 move.b  1(a4),d1
                 ext.w   d1
                 bpl.w   .loc_11A50
@@ -2310,7 +2310,7 @@ sub_1218C:
                 bsr.w   Race_ApplyCollisionImpact
                 btst    #4,RaceActor_ControlFlags(a1)
                 beq.w   .loc_12384
-                move.w  #0,$54(a1)
+                move.w  #0,RaceActor_FallState(a1)
                 move.b  #0,RaceActor_AnimState(a1)
                 move.b  #$FF,RaceActor_AnimFrame(a1)
                 tst.w   (ram_FF1768).l
@@ -2765,8 +2765,8 @@ Race_UpdateStaticActors:
                 bsr.w   Race_UpdateActorFallMovement
 
 .loc_128C2:
-                move.w  $36(a1),d1
-                add.w   $38(a1),d1
+                move.w  RaceActor_RoadYTarget(a1),d1
+                add.w   RaceActor_CurveDelta(a1),d1
                 move.w  d1,0.w(a1)
                 bsr.w   Race_BuildTargetCandidates
                 bsr.w   sub_12C9A
@@ -4652,8 +4652,8 @@ sub_13A26:
                 bclr    #0,RaceActor_ControlFlags(a2)
                 move.w  #0,d0
                 move.w  d0,2(a2)
-                move.w  d0,$3C(a2)
-                move.w  d0,$3A(a2)
+                move.w  d0,RaceActor_CurveStep(a2)
+                move.w  d0,RaceActor_CurveAccum(a2)
                 move.w  d0,RaceActor_CollisionOffset(a2)
                 move.l  (Race_ram_PlayerProgress).l,d0
                 addi.l  #$208000,d0

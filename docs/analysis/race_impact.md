@@ -75,7 +75,7 @@ actors; it updates `$30` and the draw Y difference.
 | `+$2E` | speed-loss accumulator | `[static]` |
 | `+$32` | current collision offset | `[static]` R25 |
 | `+$4C/+$4E` | upper/lower collision extents | `[static/dynamic]` R27 |
-| `+$54` | fall state (`$11` on knockdown) | `[static]` |
+| `+$54` | `RaceActor_FallState` (`$11` on knockdown) | `[static]` R30 |
 | `+$56` | static respawn timer | `[static/dynamic]` R29 |
 | `+$5C` | knockdown budget / animation base overlap | `[static]`; role split TODO |
 | `+$68/+$69` | control/state bits used by impact/fall | `[confirmed]` combat |

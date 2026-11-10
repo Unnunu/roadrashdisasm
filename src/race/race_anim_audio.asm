@@ -1859,7 +1859,7 @@ Race_ApplyFallKnockdown:
                 bcc.w   .loc_14C8C
                 move.w  #0,$5C(a1)
                 bset    #4,RaceActor_ControlFlags(a1)
-                move.w  #$11,$54(a1)
+                move.w  #$11,RaceActor_FallState(a1)
                 move.b  #0,RaceActor_AnimState(a1)
                 move.b  #$FF,RaceActor_AnimFrame(a1)
                 cmpa.l  #RacePlayerA,a1
@@ -1876,7 +1876,7 @@ Race_ApplyFallKnockdown:
                 bcc.w   .locret_14CEA
                 move.w  #0,$5C(a2)
                 bset    #4,RaceActor_ControlFlags(a2)
-                move.w  #$11,$54(a2)
+                move.w  #$11,RaceActor_FallState(a2)
                 move.b  #0,RaceActor_AnimState(a2)
                 move.b  #$FF,RaceActor_AnimFrame(a2)
                 exg     a1,a2
@@ -2234,11 +2234,11 @@ sub_15014:
                 movea.l (a0,d0.w),a2
                 move.l  a2,(ram_FF1AF6).l
                 bsr.w   sub_1533E
-                move.w  $54(a1),d0
+                move.w  RaceActor_FallState(a1),d0
                 cmp.w   #$11,d0
                 ble.w   .loc_15048
                 move.w  #$11,d0
-                move.w  d0,$54(a1)
+                move.w  d0,RaceActor_FallState(a1)
 
 .loc_15048:
                 asl.w   #2,d0
@@ -2327,11 +2327,11 @@ sub_15014:
                 move.b  d3,$76(a1)
 
 .loc_1514C:
-                move.w  $54(a2),d0
+                move.w  RaceActor_FallState(a2),d0
                 cmp.w   #$11,d0
                 ble.w   .loc_15160
                 move.w  #$11,d0
-                move.w  d0,$54(a1)
+                move.w  d0,RaceActor_FallState(a1)
 
 .loc_15160:
                 asl.w   #2,d0
@@ -2713,7 +2713,7 @@ sub_15538:
                 lea     (unk_15618).l,a4
                 move.b  (a4,d0.w),d0
                 ext.w   d0
-                move.w  d0,$54(a1)
+                move.w  d0,RaceActor_FallState(a1)
                 movem.l (sp)+,d0/a4
                 rts
 ; End of function sub_15538
@@ -2729,7 +2729,7 @@ sub_1555C:
                 lea     (unk_15624).l,a4
                 move.b  (a4,d0.w),d0
                 ext.w   d0
-                move.w  d0,$54(a1)
+                move.w  d0,RaceActor_FallState(a1)
                 movem.l (sp)+,d0/a4
                 rts
 ; End of function sub_1555C

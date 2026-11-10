@@ -390,10 +390,10 @@ RaceActor_FrameDistance equ $26 ; Speed * Race_ram_FrameDelay
 STRUCT_OFFSET_2C equ $2C
 RaceActor_PosY equ $30
 RaceActor_CollisionOffset equ $32
-STRUCT_OFFSET_36 equ $36
-STRUCT_OFFSET_38 equ $38
-STRUCT_OFFSET_3A equ $3A
-STRUCT_OFFSET_3C equ $3C
+RaceActor_RoadYTarget equ $36
+RaceActor_CurveDelta equ $38
+RaceActor_CurveAccum equ $3A
+RaceActor_CurveStep equ $3C
 RaceActor_RespawnTimer equ $56 ; $FFFF = active/normal; static countdown
 RaceActor_Curve equ $3E
 RaceActor_LeanCurve equ $40
@@ -404,6 +404,7 @@ RaceActor_CollisionExtentUpper equ $4C
 RaceActor_CollisionExtentLower equ $4E
 RaceActor_AttackReach equ $50
 RaceActor_AttackOverlap equ $52
+RaceActor_FallState equ $54
 RaceActor_AttackCooldown equ $5A
 RaceActor_TileBase equ $5C ; current animation/tile base
 STRUCT_OFFSET_5E equ $5E
