@@ -48,10 +48,23 @@ The current `preview_p4_line3.png` / `preview_p6_line3.png` are only candidate
 offsets, destination strides, or SAT palette line, so their width/height and
 black padding are not trustworthy.
 
+## Runtime destination preview
+
+The first verified destination preview is generated from the writer output, not
+from the raw shape payload:
+
+- destination `0xFF511C` (`CurrentSpriteTileArray + $80`);
+- changed range `0xFF511C..0xFF5573`;
+- palette line 1 (the `$2036` fill word selects line 1);
+- `assets/shapes/056/preview_runtime.png` (34 tiles, 16-column layout).
+
+This still needs the writer's actual row/column layout for a final shape crop,
+but its bytes now come from the runtime destination. `preview_p4_line3.png` /
+`preview_p6_line3.png` remain candidate raw-source decodes.
+
 ## Next experiment
 
 Use `shape_writer_after.bin`, the writer's offset arrays and the actual palette
-line to model `Road_WriteTileColumns` exactly, then render the destination tile
-data. Only that output should be shown as a shape preview. The current
-`preview_p4_line3.png`/`preview_p6_line3.png` are candidate split decodes and
-must not be treated as final shape art.
+line to derive the final width/height/row layout, then crop
+`preview_runtime.png` to the true shape. Only that output should be treated as
+final shape art.
