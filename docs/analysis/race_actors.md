@@ -298,6 +298,8 @@ open semantic question, not a reason to rename the field.
 | `$68` | `RaceActor_Flags` | bit6 active/update marker; multiple AI bits | medium |
 | `$5E`/`$60` | `ActorSpritePosX/Y` | graphics +$A/+$C | low |
 
+Applied in R22: `RaceActor_Curve` (`$3E`), `RaceActor_CurveDirection` (`$46`).
+
 Applied in R21: `RaceActor_AnimState`, `RaceActor_AnimFrame`,
 `RaceActor_AnimTimer`, `RaceActor_AnimIndex`.
 

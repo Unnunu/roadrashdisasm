@@ -3227,7 +3227,7 @@ sub_12BD2:
                 move.w  d0,$44(a1)
                 btst    #2,RaceActor_StateFlags(a1)
                 beq.w   .loc_12C3C
-                add.w   $46(a1),d0
+                add.w   RaceActor_CurveDirection(a1),d0
 
 .loc_12C3C:
                 bsr.w   sub_12CCE
@@ -3276,7 +3276,7 @@ sub_12C9A:
                 move.b  (a4,d0.w),d0
                 ext.w   d0
                 move.w  d0,$44(a1)
-                add.w   $46(a1),d0
+                add.w   RaceActor_CurveDirection(a1),d0
                 move.w  d0,8(a1)
                 move.w  #0,$C(a1)
                 rts
@@ -3569,7 +3569,7 @@ loc_13140:
                 bclr.b      #$6,RaceActor_ControlFlags(a1)
                 bra.w       loc_131B8
 loc_13154:
-                move.w      $46(a1),d0
+                move.w      RaceActor_CurveDirection(a1),d0
                 muls.w      $12(a1),d0
                 swap        d0
                 mulu.w      (Race_ram_FrameDelay).l,d0
@@ -3597,7 +3597,7 @@ loc_131AC:
                 move.w      #$FF57,d0
                 bra.w       loc_131B4
 loc_131B4:
-                neg.w       $46(a1)
+                neg.w       RaceActor_CurveDirection(a1)
 loc_131B8:
                 move.w      d0,$30(a1)
                 rts
@@ -3813,7 +3813,7 @@ Race_ApplyActorSpeedCorrection:
                 move.w  d1,d0
 
 .loc_133E4:
-                move.w  d0,$46(a1)
+                move.w  d0,RaceActor_CurveDirection(a1)
                 bset    #2,RaceActor_StateFlags(a1)
 
 .locret_133EE:
@@ -4375,7 +4375,7 @@ Race_UpdateActorRoadSteering:
                 swap    d0
                 divs.w  d2,d0
                 asr.w   #8,d0
-                move.w  d0,STRUCT_OFFSET_46(a1)
+                move.w  d0,RaceActor_CurveDirection(a1)
                 bset    #2,RaceActor_StateFlags(a1)
 .return:
                 rts
@@ -4402,7 +4402,7 @@ sub_13892:
 .loc_138BE:
                 divs.w  d1,d0
                 asr.w   #8,d0
-                move.w  d0,STRUCT_OFFSET_46(a1)
+                move.w  d0,RaceActor_CurveDirection(a1)
                 bset    #2,RaceActor_StateFlags(a1)
 .return:
                 rts
@@ -4462,7 +4462,7 @@ sub_138CE:
                 lea     (Race_StaticActionTable).l,a3
                 asl.w   #3,d0
                 move.w  4(a3,d0.w),$12(a2)
-                move.w  6(a3,d0.w),$46(a2)
+                move.w  6(a3,d0.w),RaceActor_CurveDirection(a2)
                 bra.w   .loc_138E4
 
 
@@ -4741,7 +4741,7 @@ Race_UpdateActorSpeedState:
 .loc_13B4C:
                 btst    #5,RaceActor_ControlFlags(a1)
                 beq.w   .loc_13B6C
-                move.w  STRUCT_OFFSET_3E(a1),d0
+                move.w  RaceActor_Curve(a1),d0
                 neg.w   d0
                 mulu.w  #$60,d0
                 swap    d0
@@ -5287,7 +5287,7 @@ Race_UpdateBikeCurve:
                 divu.w  d0,d1
 
 .loc_13FC0:
-                move.w  d1,$3E(a1)
+                move.w  d1,RaceActor_Curve(a1)
                 bset    #5,RaceActor_ControlFlags(a1)
                 bra.w   .loc_13FE0
 
@@ -5295,7 +5295,7 @@ Race_UpdateBikeCurve:
 .loc_13FCE:
                 bclr    #5,RaceActor_ControlFlags(a1)
                 move.w  #0,$40(a1)
-                move.w  #0,$3E(a1)
+                move.w  #0,RaceActor_Curve(a1)
 
 .loc_13FE0:
                 movem.l (sp)+,d0-d1

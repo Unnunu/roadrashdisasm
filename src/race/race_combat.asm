@@ -303,7 +303,7 @@ loc_16440:
                 move.w  6(a4),d2
 
 loc_16452:
-                move.w  d2,$46(a1)
+                move.w  d2,RaceActor_CurveDirection(a1)
 
 locret_16456:
                 rts

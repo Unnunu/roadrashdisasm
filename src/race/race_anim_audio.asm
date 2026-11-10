@@ -37,7 +37,7 @@ unk_14056:      dc.b   1
 
 Race_UpdateLeanCurve:
                 move.w  d0,d1
-                move.w  $3E(a1),d3
+                move.w  RaceActor_Curve(a1),d3
                 beq.w   .locret_140BA
                 ext.l   d1
                 bpl.w   .loc_14086

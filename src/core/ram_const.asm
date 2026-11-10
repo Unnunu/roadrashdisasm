@@ -394,9 +394,9 @@ STRUCT_OFFSET_36 equ $36
 STRUCT_OFFSET_38 equ $38
 STRUCT_OFFSET_3A equ $3A
 STRUCT_OFFSET_3C equ $3C
-STRUCT_OFFSET_3E equ $3E
+RaceActor_Curve equ $3E
 RaceActor_Lean equ $42 ; signed lean/curve value
-STRUCT_OFFSET_46 equ $46
+RaceActor_CurveDirection equ $46
 RaceActor_CollisionExtent equ $4A
 RaceActor_AttackReach equ $50
 RaceActor_AttackOverlap equ $52
