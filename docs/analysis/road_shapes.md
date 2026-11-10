@@ -1,7 +1,7 @@
 # Analysis: `src/data/road_shapes.asm` (road/object shape table + data)
 
 - **ROM range:** `0x03BF1A`–`0x07DCA7`
-- **Status:** table/count/data layout analyzed; shape record format TODO
+- **Status:** table/count/data layout analyzed; shape record header/edges partly confirmed; row data TODO
 - **Source:** `src/data/road_shapes.asm` (table/count from source, data `binclude` from `baserom.md`)
 - **Related:** `docs/analysis/road_render.md`, `docs/analysis/race_track_data.md`,
   `docs/modules/road_shapes.md`, `docs/ram-map.md`
@@ -35,10 +35,16 @@ pointers = symmetric/mirrored shapes). The ordered first pointers are
 
 ## Shape data
 
-The shape bytes are read as `(a2)`, `1(a2)`, `2(a2)` by `Road_ScaleShape`; the exact
-record layout, edge/width encoding and projection constants are still TODO (they need
-the shape data plus the race-side record writers). The bytes are included raw from
-`baserom.md` to preserve byte-exactness.
+The shape bytes are read as `(a2)`, `1(a2)`, `2(a2)` by `Road_ScaleShape`;
+`Road_ProjectShape`/`Road_ProjectShapeSpecial` use byte0 for the projected edge and
+the object X plus `$C0/$200`. `Road_DrawStrip` starts at **shape pointer + 2**:
+the word at `+2` becomes `ram_FFDE5E` (tile/fill base), and `+4` onward is the
+per-row strip data copied/interpolated into `ram_FF0D2E`/`ram_FF102E`.
+
+`[dynamic]` First demo `Road_DrawStrip`: shape id `$56`, pointer `$05994C`,
+bytes `10 37 20 36 00...`; `Road_ScaleShape` reads `10/37/20`, then
+`Road_DrawStrip` receives `a0=$05994E` and its first word is `$2036`. This confirms
+the `+2` handoff; exact row encoding is still TODO.
 
 ## Open questions
 
