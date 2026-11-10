@@ -56,10 +56,15 @@ from the raw shape payload:
 - destination `0xFF511C` (`CurrentSpriteTileArray + $80`);
 - changed range `0xFF511C..0xFF5573`;
 - palette line 1 (the `$2036` fill word selects line 1);
-- `assets/shapes/056/preview_runtime.png` (34 tiles, 16-column layout).
+- `assets/shapes/056/preview_runtime.png` (34 tiles, raw destination layout);
+- `assets/shapes/056/preview_sat_obj_line0.png` / `line1.png` — SAT entries 2..5
+  (the new shape chain) composed into a 16x40 image from runtime tile data.
+  The SAT x/y positions and tile indices come from `Race_ram_CurrentSpriteAttributeTable`;
+  the object chain starts at the saved sprite index 2. Palette line variants are
+  kept because the final attribute palette is still being checked.
 
-This still needs the writer's actual row/column layout for a final shape crop,
-but its bytes now come from the runtime destination. `preview_p4_line3.png` /
+This is a runtime-derived tile/SAT composition, not a source-byte guess. The
+final crop/width/height still needs confirmation against the object's SAT chain. `preview_p4_line3.png` /
 `preview_p6_line3.png` remain candidate raw-source decodes.
 
 ## Next experiment
