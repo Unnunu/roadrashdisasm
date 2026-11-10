@@ -11,6 +11,14 @@ is already byte-exact; this map prioritizes **semantic hubs**, not line count.
 - Deep dive (line-by-line) only for arithmetic/timing/collision fields that cannot be
   explained by contract + dynamic values.
 
+## Progress
+
+- R22 named `RaceActor_Curve` / `RaceActor_CurveDirection`.
+- R23 named `RaceActor_LeanCurve` / `RaceActor_Palette`.
+- Movement/curve dataflow is documented in `race_movement.md`; `$36–$3C` roles are
+  clear, but field renames are intentionally deferred.
+- `$4C/$4E` are pair-side collision extents, not confirmed left/right extents.
+
 ## Highest-value targets
 
 | Priority | Target | Unknown fields | Why / next |

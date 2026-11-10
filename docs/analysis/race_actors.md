@@ -142,11 +142,11 @@ routines; `+$06` is its low word, not an independent X coordinate.
 | `+$2C`/`+$2E` | word | impact/speed fraction pair; source writes from Speed | `[static]`; zero in snapshots |
 | `+$30` | word | current road/target Y; `+$1A` keeps the previous value | `[dynamic]` steering `$35`; hard-left `$FFEA`; no-steer `$A0` |
 | `+$32` | word | road/target Y candidate; zero in snapshots | `[dynamic]` |
-| `+$36`/`+$38`/`+$3A`/`+$3C` | word | road/curve/lean accumulators | `[dynamic]` steering `5/$22B/3/0`; zero no-steer |
+| `+$36`/`+$38`/`+$3A`/`+$3C` | word | `$36` road-Y target offset, `$38` curve delta, `$3A` curve accumulator, `$3C` curve step | `[static/dynamic]` steering `5/$22B/3/0`; see `race_movement.md`; names deferred |
 | `+$3E`/`+$40`/`+$42` | word | curve/lean state; `$42` signed | `[confirmed]` `$42=-$49` left, `+$49` right; `$3E/$40` zero in test; R22/R23 names `Curve`/`LeanCurve` |
 | `+$46` | word | curve/direction sign; AI flips it | `[dynamic]` `-$03` under forced steering |
 | `+$4A` | word | collision/proximity extent | `[dynamic]` `$0D` active, `$0E` hard-left; `[static]` `Race_UpdateCollision` |
-| `+$4C`/`+$4E` | word | left/right sprite/collision extents | `[dynamic]` `$0C/$0F` hard-left; exact role TODO |
+| `+$4C`/`+$4E` | word | pair-side collision extents (side index 0/1) | `[dynamic]` `$0C/$0F` hard-left; left/right mapping TODO |
 | `+$50` | word | attack reach/knockback | `[dynamic]` armed `$28`, unarmed `$19`; `Race_GetAttackerReach` |
 | `+$52` | word | overlap/penetration | `[dynamic]` `$42` armed / `$33` unarmed |
 | `+$56` | word | sentinel/timer; `$FFFF` normal actors | `[dynamic]` `$FFFF`; static `$E2/$17` |
