@@ -1257,7 +1257,7 @@ unk_14744:      dc.b   0
                 dc.b   1
                 dc.b $42 ; B
                 dc.b $BE
-unk_14764:      dc.b   0
+Race_TrackObjectTypeTable:      dc.b   0
                 dc.b   0
                 dc.b   1
                 dc.b   0

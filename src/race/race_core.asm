@@ -932,8 +932,8 @@ Race_InitTrack:
                 move.l  (a0)+,(RaceTrack_Data4).l
                 move.l  (a0)+,(RaceTrack_Data5).l
                 move.l  (a0)+,(RaceTrack_Data6).l
-                move.l  (RaceTrack_Data4).l,(ram_FFD7C4).l
-                move.w  #0,(ram_FFD7C8).l
+                move.l  (RaceTrack_Data4).l,(Race_ram_TrackObjectCursor).l
+                move.w  #0,(Race_ram_TrackObjectDistance).l
                 move.w  #$FFFF,(Road_ObjectArray).l
                 move.w  #1,(Race_ram_State).l
                 move.w  #0,(Race_ram_TimeMinutes).l
@@ -1115,7 +1115,7 @@ Race_InitVariables:
                 move.w  #$FFFF,(Road_ObjectArray).l
                 move.w  #0,(ram_FFD7C0).l
                 move.w  #0,(ram_FFD7C2).l
-                move.w  #0,(ram_FFD7C8).l
+                move.w  #0,(Race_ram_TrackObjectDistance).l
                 move.w  #0,(ram_FFDE5E).l
                 move.w  #0,(Animation_ram_TileIndex).l
                 move.w  #0,(ram_FFDE62).l
@@ -1332,7 +1332,7 @@ Race_LoadBikeData:
 
 Race_SpawnOpponents:
                 lea     (ram_FFD7D4).l,a1
-                move.l  a1,(ram_FFD7CC).l
+                move.l  a1,(Race_ram_TrackObjectRecordCursor).l
                 lea     (ram_FFDBD8).l,a2
                 move.l  a2,(ram_FFDBD4).l
                 movea.l (RaceTrack_Data5).l,a0

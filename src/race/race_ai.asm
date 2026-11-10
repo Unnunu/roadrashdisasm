@@ -2032,15 +2032,15 @@ sub_11CC8:
 
 sub_12070:
                 movem.l d0-d7/a0-a7,-(sp)
-                movea.l (ram_FFD7D0).l,a0
+                movea.l (Race_ram_TrackObjectWritePtr).l,a0
                 suba.w  #$14,a0
-                movea.l (ram_FFD7CC).l,a2
+                movea.l (Race_ram_TrackObjectRecordCursor).l,a2
                 move.l  4(a1),d0
                 addi.l  #$6000,d0
                 move.l  $1E(a1),d1
                 addi.l  #$6000,d1
                 lea     (Road_ShapeTable).l,a6
-                lea     (unk_14764).l,a5
+                lea     (Race_TrackObjectTypeTable).l,a5
 
 .loc_120A4:
                 adda.w  #$14,a0
@@ -5081,7 +5081,7 @@ sub_13CFE:
 
 sub_13DE0:
                 movem.l d0-d2/a0-a2,-(sp)
-                movea.l (ram_FFD7CC).l,a0
+                movea.l (Race_ram_TrackObjectRecordCursor).l,a0
                 move.w  #0,(ram_FF18A4).l
 
 .loc_13DF2:
@@ -5106,7 +5106,7 @@ sub_13DE0:
                 subi.l  #$10000,d2
                 clr.w   d0
                 move.b  2(a0),d0
-                lea     (unk_14764).l,a2
+                lea     (Race_TrackObjectTypeTable).l,a2
                 asl.w   #3,d0
                 adda.w  d0,a2
                 tst.w   6(a2)

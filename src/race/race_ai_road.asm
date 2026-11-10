@@ -1723,14 +1723,14 @@ Race_AddTrackStartObject:
 
 
 Race_AddTrackObjects:
-                move.w  #0,(ram_FFD7CA).l
+                move.w  #0,(Race_ram_TrackObjectCount).l
                 lea     (Road_ObjectArray).l,a0
                 move.w  (ram_FFDE72).l,d0
                 mulu.w  #$14,d0
                 adda.w  d0,a0
-                move.l  a0,(ram_FFD7D0).l
+                move.l  a0,(Race_ram_TrackObjectWritePtr).l
                 move.l  (Race_ram_PlayerProgress).l,d0
-                movea.l (ram_FFD7CC).l,a1
+                movea.l (Race_ram_TrackObjectRecordCursor).l,a1
 
 .loc_FC3A:
                 cmpa.l  #ram_FFD7D4,a1
@@ -1740,7 +1740,7 @@ Race_AddTrackObjects:
                 cmp.l   d0,d1
                 bcs.w   .loc_FC5A
                 subq.l  #4,a1
-                move.l  a1,(ram_FFD7CC).l
+                move.l  a1,(Race_ram_TrackObjectRecordCursor).l
                 bra.s   .loc_FC3A
 
 
@@ -1752,7 +1752,7 @@ Race_AddTrackObjects:
                 move.l  d1,d2
                 sub.l   (Race_ram_PlayerProgress).l,d2
                 bcc.w   .loc_FC82
-                addi.l  #4,(ram_FFD7CC).l
+                addi.l  #4,(Race_ram_TrackObjectRecordCursor).l
                 bra.w   .loc_FD62
 
 
@@ -1764,7 +1764,7 @@ Race_AddTrackObjects:
                 move.w  d0,d7
                 addi.w  #$173,d0
                 move.w  d0,8(a0)
-                lea     (unk_14764).l,a4
+                lea     (Race_TrackObjectTypeTable).l,a4
                 asl.w   #3,d7
                 adda.w  d7,a4
                 move.w  #0,$A(a0)
@@ -1819,7 +1819,7 @@ Race_AddTrackObjects:
                 move.w  (a2,d3.w),6(a0)
                 bclr    #7,$B(a0)
                 adda.w  #$14,a0
-                addi.w  #1,(ram_FFD7CA).l
+                addi.w  #1,(Race_ram_TrackObjectCount).l
 
 .loc_FD62:
                 addq.w  #4,a1
@@ -3578,15 +3578,15 @@ Race_WriteSpriteTiles:
 
 Race_UpdateTrackObjectCursor:
                 move.w  #$FFFF,(ram_FF1B30).l
-                movea.l (ram_FFD7C4).l,a1
+                movea.l (Race_ram_TrackObjectCursor).l,a1
                 move.w  (a1),d0
                 move.w  (Race_ram_PlayerProgress).l,d1
-                sub.w   (ram_FFD7C8).l,d1
+                sub.w   (Race_ram_TrackObjectDistance).l,d1
                 bpl.w   .loc_10A1A
                 cmpa.l  (RaceTrack_Data4).l,a1
                 beq.w   .loc_10A1A
                 subq.w  #4,a1
-                move.l  a1,(ram_FFD7C4).l
+                move.l  a1,(Race_ram_TrackObjectCursor).l
                 move.w  (a1),d0
                 move.w  2(a1),d2
                 rol.w   #4,d2
@@ -3598,9 +3598,9 @@ Race_UpdateTrackObjectCursor:
                 move.w  d3,d1
                 addq.w  #1,d1
                 mulu.w  d2,d1
-                sub.w   d1,(ram_FFD7C8).l
+                sub.w   d1,(Race_ram_TrackObjectDistance).l
                 move.w  (Race_ram_PlayerProgress).l,d1
-                sub.w   (ram_FFD7C8).l,d1
+                sub.w   (Race_ram_TrackObjectDistance).l,d1
                 bra.w   .loc_10A2E
 
 
@@ -3620,21 +3620,21 @@ Race_UpdateTrackObjectCursor:
                 divu.w  d2,d4
                 cmp.w   d3,d4
                 ble.w   .loc_10A78
-                addi.l  #4,(ram_FFD7C4).l
+                addi.l  #4,(Race_ram_TrackObjectCursor).l
                 addq.w  #4,a1
                 move.w  (a1),d0
                 cmp.w   #$FFFF,d0
                 bne.w   .loc_10A5E
                 movea.l (RaceTrack_Data4).l,a1
-                move.l  a1,(ram_FFD7C4).l
+                move.l  a1,(Race_ram_TrackObjectCursor).l
 
 .loc_10A5E:
                 addq.w  #1,d3
                 mulu.w  d3,d2
-                add.w   d2,(ram_FFD7C8).l
+                add.w   d2,(Race_ram_TrackObjectDistance).l
                 move.w  (a1),d0
                 move.w  (Race_ram_PlayerProgress).l,d1
-                sub.w   (ram_FFD7C8).l,d1
+                sub.w   (Race_ram_TrackObjectDistance).l,d1
                 bra.s   .loc_10A1A
 
 

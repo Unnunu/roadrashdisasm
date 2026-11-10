@@ -7,6 +7,8 @@
   `docs/modules/race_anim_audio.md`
 
 ## Role / purpose
+R5 renamed the track-object cursor fields and road-object record offsets; see `docs/analysis/race_ai_road.md`.
+
 
 Road profile/interpolation, visible object lists, sprite-tile staging, race
 standings/results helpers and the speed display: `PiecewiseLinearInterpolation`,

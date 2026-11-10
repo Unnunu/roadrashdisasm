@@ -596,15 +596,28 @@ ram_FFD354 equ $FFD354
 ram_FFD356 equ $FFD356
 ram_FFD358 equ $FFD358
 ram_FFD35A equ $FFD35A
+; Road object record ($14 bytes), used by road_render/Race_BuildActorObjectList.
+RoadObject_X equ $0
+RoadObject_Y equ $2
+RoadObject_Scale equ $4
+RoadObject_Limit equ $6
+RoadObject_Shape equ $8
+RoadObject_Flags equ $A
+RoadObject_XOffset equ $C
+RoadObject_ReservedE equ $E
+RoadObject_Reserved10 equ $10
+RoadObject_Shape2 equ $12
+RoadObject_Size equ $14
+
 Road_ObjectArray equ $FFD37C
 ram_FFD77C equ $FFD77C
 ram_FFD7C0 equ $FFD7C0
 ram_FFD7C2 equ $FFD7C2
-ram_FFD7C4 equ $FFD7C4
-ram_FFD7C8 equ $FFD7C8
-ram_FFD7CA equ $FFD7CA
-ram_FFD7CC equ $FFD7CC
-ram_FFD7D0 equ $FFD7D0
+Race_ram_TrackObjectCursor equ $FFD7C4
+Race_ram_TrackObjectDistance equ $FFD7C8
+Race_ram_TrackObjectCount equ $FFD7CA
+Race_ram_TrackObjectRecordCursor equ $FFD7CC
+Race_ram_TrackObjectWritePtr equ $FFD7D0
 ram_FFD7D4 equ $FFD7D4
 ram_FFDBD4 equ $FFDBD4
 ram_FFDBD8 equ $FFDBD8

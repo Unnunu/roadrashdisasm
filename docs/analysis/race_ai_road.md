@@ -14,6 +14,10 @@ Applied in R4: `Race_BuildActorObjectList`, `Race_AddSpecialObject`,
 `Race_UpdateTrackObjectCursor`, `Race_ProjectTrackObject`,
 `Race_ProjectObject`, `Race_ProjectActorObject`.
 
+Applied in R5: `RoadObject_X/Y/Scale/Limit/Shape/Flags/XOffset/Shape2/Size`;
+`Race_ram_TrackObjectCursor/Distance/Count/RecordCursor/WritePtr`;
+`Race_TrackObjectTypeTable`.
+
 
 | Function | Address | Role |
 |---|---|---|
@@ -97,34 +101,34 @@ still TODO.
 - `Race_AddTrackStartObject` (`0xFB1E`) appends the track-start object selected from
   `RaceTrack_Data1`/player progress, sets its record/flags, and projects it through
   `Race_ProjectObject`.
-- `Race_AddTrackObjects` (`0xFC0E`) walks the track object stream cursor `ram_FFD7CC`, appends
+- `Race_AddTrackObjects` (`0xFC0E`) walks the track object stream cursor `Race_ram_TrackObjectRecordCursor`, appends
   visible objects with `Race_ProjectObject`, and stores the per-shape depth data from
   `ram_FFD77C`.
 - `Race_UpdateTrackObjectCursor` (`0x109B6`) advances/rewinds the track-object stream cursor
-  `ram_FFD7C4`/`ram_FFD7C8` against player progress; `Race_ProjectTrackObject` consumes the
+  `Race_ram_TrackObjectCursor`/`Race_ram_TrackObjectDistance` against player progress; `Race_ProjectTrackObject` consumes the
   resulting object/shape data into the object records.
 
 ### Track-stream dynamic snapshot
 
 At `Race_UpdateTrackObjectCursor` (`0x109C4`):
 
-- `PlayerProgress=$00078000`, `ram_FFD7C4=$00027984`, `ram_FFD7C8=0`;
+- `PlayerProgress=$00078000`, `Race_ram_TrackObjectCursor=$00027984`, `Race_ram_TrackObjectDistance=0`;
 - ROM cursor bytes start `00 7F A0 00 80 39 01 AC 81 FA 00 15 ...`.
 
 At `Race_AddTrackObjects` (`0xFC5A`):
 
-- `ram_FFD7CC=$00FFD7D4`, `ram_FFDE72=22`;
+- `Race_ram_TrackObjectRecordCursor=$00FFD7D4`, `ram_FFDE72=22`;
 - RAM-staged entries start `00 A7 02 18`, `01 A5 01 18`, `02 BC 05 0F`,
   `02 BE 02 0E`.
 
 This confirms that `Race_UpdateTrackObjectCursor` walks the ROM/pointer stream
-(`ram_FFD7C4`), while `Race_AddTrackObjects` consumes the RAM-staged 4-byte records
-at `ram_FFD7CC`. In each staged word, the high word is the position key, `byte2`
+(`Race_ram_TrackObjectCursor`), while `Race_AddTrackObjects` consumes the RAM-staged 4-byte records
+at `Race_ram_TrackObjectRecordCursor`. In each staged word, the high word is the position key, `byte2`
 is the shape/type selector, and `byte3` is the length/row selector (working model).
 
 ### Track-object stream format (static hypothesis)
 
-`Race_AddTrackObjects` reads 4-byte entries from the `ram_FFD7CC` cursor (track stream in
+`Race_AddTrackObjects` reads 4-byte entries from the `Race_ram_TrackObjectRecordCursor` cursor (track stream in
 `RaceTrack_Data4`-adjacent data):
 
 - word at `+0`: position/progress key; compared with `Race_ram_PlayerProgress`;
@@ -132,13 +136,13 @@ is the shape/type selector, and `byte3` is the length/row selector (working mode
   multiplier used by the cursor/stream advance;
 - `Race_ProjectObject` projects the object into the current `Road_ObjectArray` record; the
   shape index is `byte2_low + $173`, the per-shape depth comes from
-  `ram_FFD77C`, and the type data comes from the 8-byte `unk_14764` records;
+  `ram_FFD77C`, and the type data comes from the 8-byte `Race_TrackObjectTypeTable` records;
 - record flags carry the shadow/priority/mirror bits already documented for
   `Road_DrawObject`.
 
 `Race_UpdateTrackObjectCursor` maintains the same stream cursor during normal play: it rewinds when
 past entries are behind the player, advances when the next entry is visible, and
-keeps `ram_FFD7C8` as the accumulated stream distance. The exact nibble units and
+keeps `Race_ram_TrackObjectDistance` as the accumulated stream distance. The exact nibble units and
 the `RaceTrack_Data4` terminator role are still TODO.
 
 These helpers are called from `Race_Update` around the road-profile/visible-list

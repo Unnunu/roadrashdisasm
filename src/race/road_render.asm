@@ -464,7 +464,7 @@ Road_DrawObjects:
                 cmp.w   #$FFFF,d0
                 beq.w   .return
 
-                mulu.w  #$14,d0
+                mulu.w  #RoadObject_Size,d0
                 lea     (Road_ObjectArray).l,a0
                 adda.w  d0,a0
                 movem.l a0-a1,-(sp)
@@ -472,7 +472,7 @@ Road_DrawObjects:
                 move.w  (Animation_ram_SpriteIndex).l,(ram_FF1364).l
                 bsr.w   Road_DrawObject
                 movem.l (sp)+,a0-a1
-                adda.l  #$14,a0
+                adda.l  #RoadObject_Size,a0
                 bra.s   .loop
 .return:
                 rts
@@ -494,15 +494,15 @@ Road_DrawObject:
                 move.w  #0,(ram_FFDE62).l
                 move.w  #0,(ram_FF133A).l
                 clr.l   d0
-                move.w  (a0),(ram_FFDE6E).l
+                move.w  RoadObject_X(a0),(ram_FFDE6E).l
                 move.w  (ram_FFDE6E).l,(ram_FF1342).l
-                move.w  2(a0),(ram_FFDE70).l
+                move.w  RoadObject_Y(a0),(ram_FFDE70).l
                 move.w  (ram_FFDE70).l,(ram_FF1344).l
-                move.w  4(a0),d0
+                move.w  RoadObject_Scale(a0),d0
                 asl.l   #2,d0
                 move.l  d0,(ram_FF1350).l
-                move.w  6(a0),(ram_FF136A).l
-                move.w  $A(a0),d1
+                move.w  RoadObject_Limit(a0),(ram_FF136A).l
+                move.w  RoadObject_Flags(a0),d1
                 bpl.w   .loc_94DC
                 move.w  #1,(ram_FF133A).l
 .loc_94DC:
@@ -511,8 +511,8 @@ Road_DrawObject:
                 andi.w  #$3000,d7
                 asl.w   #1,d7
                 move.w  d7,(ram_FF133E).l
-                move.w  8(a0),d2
-                move.w  $12(a0),d3
+                move.w  RoadObject_Shape(a0),d2
+                move.w  RoadObject_Shape2(a0),d3
                 move.l  a0,-(sp)
 ; shape pointer table (shared with race.asm)
                 lea     (Road_ShapeTable).l,a1
@@ -520,7 +520,7 @@ Road_DrawObject:
                 movea.l (a1,d2.w),a2
                 move.l  a2,(ram_FF1348).l
                 move.w  #0,(ram_FF1354).l
-                btst    #7,$B(a0)
+                btst    #7,RoadObject_Flags+1(a0)
                 beq.w   .loc_962C
 .loc_9520:
                 move.w  #0,(ram_FF135E).l
@@ -625,7 +625,7 @@ Road_DrawObject:
 .loc_96F0:
                 move.w  (sp)+,d1
                 movea.l (sp)+,a0
-                move.b  $A(a0),d7
+                move.b  RoadObject_Flags(a0),d7
                 andi.w  #7,d7
                 beq.w   .locret_978A
                 tst.w   (ram_FF135E).l
@@ -644,7 +644,7 @@ Road_DrawObject:
                 movea.l (Race_ram_CurrentSpriteAttributeTable).l,a2
                 asl.w   #3,d2
                 adda.w  d2,a2
-                move.w  $C(a0),d3
+                move.w  RoadObject_XOffset(a0),d3
                 move.w  d0,d2
                 subq.w  #1,d0
                 subq.w  #1,d7
