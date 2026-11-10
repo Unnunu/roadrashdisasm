@@ -272,7 +272,7 @@ loc_163CC:
                 bpl.w   loc_16428
                 bset    #1,$68(a1)
                 bclr    #2,$68(a1)
-                bsr.w   sub_13A92
+                bsr.w   Race_UpdateActorSpeedState
                 bra.w   loc_16428
 ; ---------------------------------------------------------------------------
 
@@ -285,7 +285,7 @@ loc_163FE:
                 bpl.w   loc_16428
                 bclr    #1,$68(a1)
                 bset    #2,$68(a1)
-                bsr.w   sub_13A92
+                bsr.w   Race_UpdateActorSpeedState
 
 loc_16428:
                 btst    #4,d0
@@ -339,7 +339,7 @@ loc_1647C:
                 bclr    #2,$69(a1)
                 move.b  $72(a1),d0
                 ext.w   d0
-                bsr.w   sub_135F6
+                bsr.w   Race_FindTargetActor
                 movea.l (sp)+,a4
                 cmpa.l  #$FFFFFFFF,a2
                 beq.w   loc_164AA
@@ -516,7 +516,7 @@ Race_ActorSteerThrottle:
                 bclr    #1,$68(a1)
 
 .loc_1660C:
-                bsr.w   sub_13A92
+                bsr.w   Race_UpdateActorSpeedState
                 rts
 ; End of function Race_ActorSteerThrottle
 
@@ -724,7 +724,7 @@ Race_ActorCombatResponse:
                 bclr    #2,$69(a1)
                 move.b  $72(a1),d0
                 ext.w   d0
-                bsr.w   sub_135F6
+                bsr.w   Race_FindTargetActor
                 cmpa.l  #$FFFFFFFF,a2
                 beq.w   .loc_16720
                 cmpa.l  #RacePlayerA,a2

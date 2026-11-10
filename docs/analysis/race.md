@@ -120,13 +120,13 @@ This is the double/quad buffering that avoids tearing.
 4. **If `Race_ram_Started == 0`, skip to camera/render.** Otherwise, in order:
    1. `Race_UpdatePlayerAnimation` (`0x160E2`) — player tile base.
    2. `Race_UpdateBikeLean` (`0x13EA0`) with `a1=RacePlayerA` — steering/lean.
-   3. `sub_1383E`, `sub_13A92` (`0x13A92`) — player physics/gear state.
+   3. `sub_1383E`, `Race_UpdateActorSpeedState` (`0x13A92`) — player physics/gear state.
    4. `Race_UpdateActorAI` (`0x10E66`) — walk active actors; speed/position/AI.
    5. `sub_13E94`, `sub_10DBE`, `sub_10DDA`, `sub_13BF4`.
    6. `Race_UpdateStaticActors` (`0x12868`) — static/police slots.
    7. `$FF2FAA` gate: if `ram_FF1B30 < $1C`, clear its `$68` bit6; otherwise
-      `sub_128E0`/`sub_12974`.
-   8. `sub_138CE`, `sub_1281E`, `sub_11C44`, `sub_11CC8`, `sub_1218C`,
+      `Race_InitExtraStaticActor`/`Race_UpdateExtraStaticActor`.
+   8. `sub_138CE`, `Race_ClearActorOnFootFlags`, `sub_11C44`, `sub_11CC8`, `sub_1218C`,
       `sub_123A8` — traffic/actor collision/action helpers.
    9. `Race_UpdateNearestOpponent` (`0xE5EE`), `Race_UpdateActorActions` (`0x12EA2`),
       `Race_UpdateStaticActions` — standings/action dispatch.
@@ -145,7 +145,7 @@ This is the double/quad buffering that avoids tearing.
    `Race_BuildHScrollTable`; `Race_FinishFrame`.
 
 Key field writers in the pipeline: `Race_UpdateActorAI` (`$12/$14/$26/$30/$68/$69`),
-`Race_UpdateBikeLean`/curve (`$3E/$40/$42`), `sub_13A92` (`$12/$14/$18`),
+`Race_UpdateBikeLean`/curve (`$3E/$40/$42`), `Race_UpdateActorSpeedState` (`$12/$14/$18`),
 `Race_UpdateCollision`/action helpers (`$4A/$4C/$4E/$5A/$69/$6B/$6C/$6D`).
 Dynamic confirmation of the call order is still TODO; source order is definitive.
 

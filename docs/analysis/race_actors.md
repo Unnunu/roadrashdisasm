@@ -174,7 +174,7 @@ lists.
 |---|---|---|---|
 | `$68` | 0 | collision/impact lock; blocks normal steering | `[static]` `sub_1438E`/`sub_145EC`; medium |
 | `$68` | 1 | throttle/B input; AI also sets it | `[static]` `Race_GetInput` B; active opponents `$42` |
-| `$68` | 2 | brake/A input; reduces acceleration | `[static]` `Race_GetInput` A + `sub_13A92`; medium |
+| `$68` | 2 | brake/A input; reduces acceleration | `[static]` `Race_GetInput` A + `Race_UpdateActorSpeedState`; medium |
 | `$68` | 3 | off-road/edge; reduces acceleration | `[static]` `Race_UpdateActorAI` edge tests |
 | `$68` | 4 | on-foot/knockdown branch | `[static]` `Race_UpdateActorAI`; hypothesis |
 | `$68` | 5 | lean/curve update enable | `[static]` `Race_UpdateLeanCurve` calls |
@@ -188,8 +188,8 @@ lists.
 
 `$FF2FAA` is aliased by `$FF2FAA+$71 = $FF301B`; `Race_CreateActors` writes
 `$12` there, so it is the **third static-like actor slot** (indices `$10/$11` are the
-static list). Its other fields remain zero in the demo. `sub_128E0` initializes it
-after `ProgressSnapshotB >= $708`; `sub_12974` updates it; collision paths also read
+static list). Its other fields remain zero in the demo. `Race_InitExtraStaticActor` initializes it
+after `ProgressSnapshotB >= $708`; `Race_UpdateExtraStaticActor` updates it; collision paths also read
 it. This is the best-supported **late-race police/static actor**, but the final role
 is still a hypothesis.
 
@@ -225,10 +225,10 @@ static updater is analyzed.
 
 `[dynamic]` `$FF2FAA` is zero except `+$71=$12` in both demo snapshots; it is not in
 the active/free/static lists. `Race_CreateActors` writes `$12` at `$FF2FAA+$71`, so
-this is a third static-like slot; `sub_128E0`/`sub_12974`/collision paths reference
-it. `sub_128E0` activates it when `Race_ram_ProgressSnapshotB >= $708`, sets `$68`
+this is a third static-like slot; `Race_InitExtraStaticActor`/`Race_UpdateExtraStaticActor`/collision paths reference
+it. `Race_InitExtraStaticActor` activates it when `Race_ram_ProgressSnapshotB >= $708`, sets `$68`
 bit6, `$73` 0/2, `$30/$00/$1A`, `$69` bit3, `$12=$1770`, and a progress-derived X;
-`sub_12974` then updates/moves it. This looks like a late-race **police/static**
+`Race_UpdateExtraStaticActor` then updates/moves it. This looks like a late-race **police/static**
 actor, but the role is still a hypothesis.
 
 `Race_UpdateStaticActors` only processes static actors with `$56==$FFFF` and `$68`

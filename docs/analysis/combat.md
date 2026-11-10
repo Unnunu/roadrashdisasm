@@ -108,6 +108,12 @@ Applied in R3b: `Race_UpdateActorPairCollision` (`sub_124E2`),
 (`sub_12A9C`), `Race_GetStaticCollisionExtent` (`sub_12AF8`),
 `Race_GetAttackerReach` (`sub_12B0C`), `Race_GetDefenderReach` (`sub_12B24`).
 
+Applied in R6: `Race_InitExtraStaticActor`, `Race_UpdateExtraStaticActor`,
+`Race_ClearActorOnFootFlags`, `Race_ApplyCrashImpact`,
+`Race_ApplyCollisionImpact`, `Race_ExchangeCollisionSpeed`,
+`Race_UpdateActorSpeedState`, `Race_FindTargetActor`,
+`Race_ScanTargetDistance`.
+
 Applied in R3c: `Race_ActorSteerRoadCenter`, `Race_ActorSteerThrottle`,
 `Race_ActorCollideSteer`, `Race_ActorSteerCollide`,
 `Race_ActorRandomCombatChoice`, `Race_ActorProximityReaction`,
@@ -173,9 +179,9 @@ otherwise `abs(d0) >> 11` and stores it in `ram_FF1B28`.
 
 | Source | Added to `Race_ram_BikeDamage` | Notes |
 |---|---|---|
-| `sub_11B7A` | `Race_ScaleImpactDamage(Speed) >> 2` | player/actor crash/impact path; sets `$68` bit4 and recovery animation |
-| `sub_14486` | `Race_ScaleImpactDamage(result)` | impact/avoid path, also copies `$69` bit3 from the other actor |
-| `sub_14CEC` | `Race_ScaleImpactDamage(result)` | speed-exchange collision path |
+| `Race_ApplyCrashImpact` | `Race_ScaleImpactDamage(Speed) >> 2` | player/actor crash/impact path; sets `$68` bit4 and recovery animation |
+| `Race_ApplyCollisionImpact` | `Race_ScaleImpactDamage(result)` | impact/avoid path, also copies `$69` bit3 from the other actor |
+| `Race_ExchangeCollisionSpeed` | `Race_ScaleImpactDamage(result)` | speed-exchange collision path |
 
 `Race_UpdateCollision` starts the attack state but does not add damage itself.
 Whether a player punch changes the opponent’s bike-damage/knockdown only through

@@ -17,9 +17,9 @@
 | `sub_1103A` | `0x1103A` | AI movement helper. |
 | `Race_HandleInputOnFoot` | `0x110AE` | On-foot input/AI (player A). |
 | `Race_AnotherInputOnFoot` | `0x111FA` | On-foot input/AI (other actor/pad). |
-| `sub_11268`/`sub_112C8`/`sub_113A4`/`sub_113CA`/`sub_11448`/`sub_115C6`/`sub_116E2`/`sub_1180C`/`sub_11906`/`sub_11940`/`sub_11B7A` | `0x11268`+ | Turn/movement/lean helpers. |
+| `sub_11268`/`sub_112C8`/`sub_113A4`/`sub_113CA`/`sub_11448`/`sub_115C6`/`sub_116E2`/`sub_1180C`/`sub_11906`/`sub_11940`/`Race_ApplyCrashImpact` | `0x11268`+ | Turn/movement/lean helpers. |
 | `sub_11C44`/`sub_11CC8`/`sub_12070`/`sub_1218C`/`sub_123A8`/`sub_12414`/`Race_UpdateActorPairCollision` | `0x11C44`+ | Opponent/AI logic. |
-| `sub_1281E`/`Race_UpdateStaticActors`/`sub_128E0`/`sub_12974` | `0x1281E`+ | Static/police actor AI. |
+| `Race_ClearActorOnFootFlags`/`Race_UpdateStaticActors`/`Race_InitExtraStaticActor`/`Race_UpdateExtraStaticActor` | `0x1281E`+ | Static/police actor AI. |
 | `sub_12...`/`sub_13...` | `0x12A88`+ | Road/actor movement, collision helpers. |
 | `unk_12D0A`/`Race_ActorActionTable` | `0x12D0A`/`0x12D16` | 6-word offset table + 99-entry actor action code-pointer table. |
 | `Race_ActorStateCollision`/`Race_ActorFollowPath`/`Race_ActorNormalUpdate`/`Race_ActorNormalVariant`/`Race_ActorRecovery` | `0x12FE4`+ | Actor action handlers (state/curve/recovery). |
@@ -137,7 +137,7 @@ Action 4 (`a4+$10`, used by `Race_DispatchActorAction`'s final fallback) by prof
   profiles `6/8/9` stay on `Race_ActorNormalUpdate`; forcing PlayerA Speed to `$3000` makes the
   dispatcher reachable.
 - Handler roles: `Race_ActorNormalUpdate` normal target/curve update; `Race_ActorNormalVariant` variant;
-  `Race_ActorRecovery` recovery timer; `Race_ActorStateCollision` state/collision + `sub_13A92`;
+  `Race_ActorRecovery` recovery timer; `Race_ActorStateCollision` state/collision + `Race_UpdateActorSpeedState`;
   `Race_ActorFollowPath` movement/`Race_UpdateActorSpeedGear`; `Race_DispatchActorAction` dispatcher; `Race_ActorSteerRoadCenter/165E0`
   combat actions; `Race_ActorCollideSteer/16624/1662C/16644/1666A/166B0/166DC/166F0` deeper
   combat/action handlers (see `docs/analysis/combat.md`).
@@ -183,6 +183,12 @@ Applied in R2: `Race_ActorProfileTable` (`unk_259C0`), `Race_ActorActionTable`
 (`unk_12D16`), `Race_StaticActionTable` (`unk_25A44`), `Race_UpdateActorActions`
 (`sub_12EA2`), `Race_DispatchActorAction` (`sub_16458`), `Race_ClampActorY`
 (`sub_13130`), `Race_UpdateStaticActions` (`sub_13106`).
+
+Applied in R6: `Race_InitExtraStaticActor`, `Race_UpdateExtraStaticActor`,
+`Race_ClearActorOnFootFlags`, `Race_ApplyCrashImpact`,
+`Race_ApplyCollisionImpact`, `Race_ExchangeCollisionSpeed`,
+`Race_UpdateActorSpeedState`, `Race_FindTargetActor`,
+`Race_ScanTargetDistance`.
 
 Applied in R3c: action handlers `Race_ActorSteerRoadCenter`,
 `Race_ActorSteerThrottle`, `Race_ActorCollideSteer`, `Race_ActorSteerCollide`,

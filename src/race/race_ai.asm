@@ -233,7 +233,7 @@ Race_UpdateActorAI:
 
 
 .loc_11010:
-                bsr.w   sub_11B7A
+                bsr.w   Race_ApplyCrashImpact
                 bra.w   .loc_1101C
 
 
@@ -1656,7 +1656,7 @@ sub_11940:
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_11B7A:
+Race_ApplyCrashImpact:
                 move.w  4(a1),d0
                 lea     (Track_CurveBuffer).l,a4
                 andi.w  #$FF,d0
@@ -1719,7 +1719,7 @@ sub_11B7A:
 
 .locret_11C42:
                 rts
-; End of function sub_11B7A
+; End of function Race_ApplyCrashImpact
 
 
 ; =============== S U B R O U T I N E =======================================
@@ -1908,7 +1908,7 @@ sub_11CC8:
                 bsr.w   Race_UpdateActorPairCollision
                 btst    #4,$68(a1)
                 beq.s   .loc_11EAC
-                bsr.w   sub_14486
+                bsr.w   Race_ApplyCollisionImpact
                 btst    #4,$68(a1)
                 beq.w   .loc_11EF4
                 move.w  $C(a1),(RaceBike_ram_CurrentSteering).l
@@ -1928,7 +1928,7 @@ sub_11CC8:
                 bsr.w   Race_UpdateActorPairCollision
                 btst    #4,$68(a1)
                 beq.w   .loc_11F58
-                bsr.w   sub_14486
+                bsr.w   Race_ApplyCollisionImpact
                 btst    #4,$68(a1)
                 beq.w   .loc_1202E
                 move.w  $C(a1),(RaceBike_ram_CurrentSteering).l
@@ -2260,7 +2260,7 @@ sub_1218C:
 
 
 .loc_122DC:
-                bsr.w   sub_14486
+                bsr.w   Race_ApplyCollisionImpact
                 move.b  #0,$6E(a1)
                 move.b  #$FF,$6F(a1)
                 tst.w   (ram_FF1768).l
@@ -2291,7 +2291,7 @@ sub_1218C:
 
 
 .loc_12356:
-                bsr.w   sub_14486
+                bsr.w   Race_ApplyCollisionImpact
                 btst    #4,$68(a1)
                 beq.w   .loc_12384
                 move.w  #0,$54(a1)
@@ -2676,7 +2676,7 @@ Race_UpdateActorPairCollision:
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_1281E:
+Race_ClearActorOnFootFlags:
                 lea     (ram_FF1A0C).l,a0
 
 .loc_12824:
@@ -2705,7 +2705,7 @@ sub_1281E:
 .loc_1285E:
                 bclr    #4,(ram_FF3012).l
                 rts
-; End of function sub_1281E
+; End of function Race_ClearActorOnFootFlags
 
 
 ; =============== S U B R O U T I N E =======================================
@@ -2766,7 +2766,7 @@ Race_UpdateStaticActors:
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_128E0:
+Race_InitExtraStaticActor:
                 cmpi.l  #$708,(Race_ram_ProgressSnapshotB).l
                 bcs.w   .locret_12972
                 bset    #6,$68(a1)
@@ -2813,13 +2813,13 @@ sub_128E0:
 
 .locret_12972:
                 rts
-; End of function sub_128E0
+; End of function Race_InitExtraStaticActor
 
 
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_12974:
+Race_UpdateExtraStaticActor:
                 lea     (ram_FF2FAA).l,a1
                 cmpi.l  #$708,(Race_ram_ProgressSnapshotB).l
                 bcc.w   .loc_12992
@@ -2916,7 +2916,7 @@ sub_12974:
 
 .locret_12A86:
                 rts
-; End of function sub_12974
+; End of function Race_UpdateExtraStaticActor
 
 
 ; =============== S U B R O U T I N E =======================================
@@ -3364,7 +3364,7 @@ Race_UpdateActorActions:
                 tst.b   $6E(a1)
                 bmi.w   .loc_12EE4
                 move.l  a0,-(sp)
-                bsr.w   sub_13A92
+                bsr.w   Race_UpdateActorSpeedState
                 movea.l (sp)+,a0
                 bra.s   .loc_12EBC
 
@@ -3450,7 +3450,7 @@ Race_UpdateActorActions:
 ; End of function Race_UpdateActorActions
  ; *****
 ; Function Race_ActorStateCollision
-; Actor action handler: updates $68 state bits and calls sub_13422/sub_13A92.
+; Actor action handler: updates $68 state bits and calls sub_13422/Race_UpdateActorSpeedState.
 ; In:  a1 - actor
 ; Out: actor $68 bits
 ; Clobbers: see callees
@@ -3463,7 +3463,7 @@ Race_ActorStateCollision:
                 bset.b      #$2,$68(a1)
                 bclr.b      #$1,$68(a1)
 loc_12FFE:
-                bsr.w       sub_13A92
+                bsr.w       Race_UpdateActorSpeedState
                 rts
 Race_ActorFollowPath:
                 bsr.w       sub_13422
@@ -3474,7 +3474,7 @@ Race_ActorNormalUpdate:
                 bclr.b      #$2,$69(a1)
                 move.b      $72(a1),d0
                 ext.w       d0
-                bsr.w       sub_135F6
+                bsr.w       Race_FindTargetActor
                 cmpa.l      #$FFFFFFFF,a2
                 beq.w       loc_13036
                 bsr.w       sub_13422
@@ -3496,14 +3496,14 @@ loc_1306A:
                 bset.b      #$2,$68(a1)
                 bclr.b      #$1,$68(a1)
 loc_13076:
-                bsr.w       sub_13A92
+                bsr.w       Race_UpdateActorSpeedState
                 rts
 Race_ActorNormalVariant:
                 bclr.b      #$4,$69(a1)
                 bclr.b      #$2,$69(a1)
                 move.b      $72(a1),d0
                 ext.w       d0
-                bsr.w       sub_135F6
+                bsr.w       Race_FindTargetActor
                 cmpa.l      #$FFFFFFFF,a2
                 bne.w       loc_130B2
                 bsr.w       sub_13D44
@@ -3672,7 +3672,7 @@ Race_UpdateActorSpeedGear:
                 bclr    #1,$68(a1)
 
 .loc_1328C:
-                bsr.w   sub_13A92
+                bsr.w   Race_UpdateActorSpeedState
                 rts
 ; End of function Race_UpdateActorSpeedGear
 
@@ -3734,7 +3734,7 @@ sub_13292:
                 bclr    #1,$68(a1)
 
 .loc_13336:
-                bsr.w   sub_13A92
+                bsr.w   Race_UpdateActorSpeedState
                 rts
 ; End of function sub_13292
 
@@ -3906,7 +3906,7 @@ sub_13422:
                 ble.w   .loc_134B0
 
 .loc_13480:
-                bsr.w   sub_135F6
+                bsr.w   Race_FindTargetActor
                 move.l  a2,(ram_FF1892).l
                 move.w  (ram_FF1B46).l,(ram_FF1898).l
                 move.w  d0,(ram_FF189A).l
@@ -3925,7 +3925,7 @@ sub_13422:
                 bpl.w   .loc_13562
 
 .loc_134BC:
-                bsr.w   sub_135F6
+                bsr.w   Race_FindTargetActor
                 move.l  a2,(ram_FF189C).l
                 move.w  (ram_FF1B46).l,(ram_FF18A0).l
                 move.w  d0,(ram_FF18A2).l
@@ -3941,7 +3941,7 @@ sub_13422:
                 addq.w  #1,d0
                 cmp.w   #7,d0
                 bpl.w   .loc_1352A
-                bsr.w   sub_135F6
+                bsr.w   Race_FindTargetActor
                 move.l  a2,(ram_FF1892).l
                 move.w  (ram_FF1B46).l,(ram_FF1898).l
                 move.w  d0,(ram_FF189A).l
@@ -3957,7 +3957,7 @@ sub_13422:
 .loc_1352C:
                 subq.w  #1,d0
                 bmi.w   .loc_13562
-                bsr.w   sub_135F6
+                bsr.w   Race_FindTargetActor
                 move.l  a2,(ram_FF189C).l
                 move.w  (ram_FF1B46).l,(ram_FF18A0).l
                 move.w  d0,(ram_FF18A2).l
@@ -4030,13 +4030,13 @@ sub_13422:
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_135F6:
+Race_FindTargetActor:
                 lea     (ram_FF178A).l,a6
                 move.b  (a6,d0.w),d1
                 ext.w   d1
                 beq.w   .loc_1361E
                 move.w  #$F0,(ram_FF1B46).l
-                bsr.w   sub_13626
+                bsr.w   Race_ScanTargetDistance
                 cmpi.w  #$F0,(ram_FF1B46).l
                 blt.w   .locret_13624
 
@@ -4045,13 +4045,13 @@ sub_135F6:
 
 .locret_13624:
                 rts
-; End of function sub_135F6
+; End of function Race_FindTargetActor
 
 
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_13626:
+Race_ScanTargetDistance:
                 move.b  $71(a1),d7
                 subq.w  #1,d1
                 lea     (ram_FF1792).l,a6
@@ -4104,7 +4104,7 @@ sub_13626:
 .loc_136B0:
                 dbf     d1,.loc_13638
                 rts
-; End of function sub_13626
+; End of function Race_ScanTargetDistance
 
 
 ; =============== S U B R O U T I N E =======================================
@@ -4679,11 +4679,11 @@ sub_13A26:
                 dc.b $75 ; u
 
 ; *************************************************
-; Function sub_13A92
+; Function Race_UpdateActorSpeedState
 ; a1 - actor
 ; *************************************************
 
-sub_13A92:
+Race_UpdateActorSpeedState:
                 btst    #7,STRUCT_OFFSET_68(a1)
                 beq.w   .loc_13AA6
                 move.w  #$FFEC,RaceActor_Acceleration(a1)
@@ -4776,7 +4776,7 @@ sub_13A92:
                 move.w  d1,RaceActor_Acceleration(a1)
 .locret_13BBA:
                 rts
-; End of function sub_13A92
+; End of function Race_UpdateActorSpeedState
 
 ; *************************************************
 ; Function sub_13BBC

@@ -949,7 +949,7 @@ sub_1438E:
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_14486:
+Race_ApplyCollisionImpact:
                 move.w  $1C(a1),d0
                 cmp.w   (ram_FF303E).l,d0
                 bpl.w   .loc_14594
@@ -1056,7 +1056,7 @@ sub_14486:
 
 .locret_145EA:
                 rts
-; End of function sub_14486
+; End of function Race_ApplyCollisionImpact
 
 
 ; =============== S U B R O U T I N E =======================================
@@ -1559,7 +1559,7 @@ sub_1487C:
                 bmi.w   .loc_148C0
 
 .loc_148B8:
-                bsr.w   sub_14CEC
+                bsr.w   Race_ExchangeCollisionSpeed
                 bra.w   .locret_1496A
 
 
@@ -1896,7 +1896,7 @@ sub_14C3C:
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_14CEC:
+Race_ExchangeCollisionSpeed:
                 move.w  #$1F40,d1
                 bsr.w   sub_145EC
                 move.w  d0,(ram_FF18A6).l
@@ -1947,7 +1947,7 @@ sub_14CEC:
                 or.b    d0,$69(a1)
                 bsr.w   sub_14D84
                 rts
-; End of function sub_14CEC
+; End of function Race_ExchangeCollisionSpeed
 
 
 ; =============== S U B R O U T I N E =======================================

@@ -1867,7 +1867,7 @@ Race_Update:
                 jsr     (Race_UpdateBikeLean).l
                 jsr     (sub_1383E).l
                 lea     (RacePlayerA).l,a1
-                jsr     (sub_13A92).l
+                jsr     (Race_UpdateActorSpeedState).l
                 jsr     (Race_UpdateActorAI).l
                 jsr     (sub_13E94).l
                 jsr     (sub_10DBE).l
@@ -1885,12 +1885,12 @@ Race_Update:
 .loc_C0F6:
                 btst    #6,$68(a1)
                 bne.w   .loc_C106
-                jsr     (sub_128E0).l
+                jsr     (Race_InitExtraStaticActor).l
 .loc_C106:
-                jsr     (sub_12974).l
+                jsr     (Race_UpdateExtraStaticActor).l
 .loc_C10C:
                 jsr     (sub_138CE).l
-                jsr     (sub_1281E).l
+                jsr     (Race_ClearActorOnFootFlags).l
                 jsr     (sub_11C44).l
                 jsr     (sub_11CC8).l
                 jsr     (sub_1218C).l
