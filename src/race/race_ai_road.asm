@@ -1299,21 +1299,21 @@ Race_BuildActorObjectList:
                 bne.w   .loc_F6D6
                 cmpi.w  #8,(ram_FF1B28).l
                 bmi.w   .loc_F6D6
-                bsr.w   sub_F9C4
+                bsr.w   Race_AddActorFallObject
 
 .loc_F6D6:
                 tst.w   (ram_FF1B16).l
                 bne.w   .loc_F704
                 btst    #0,$68(a1)
                 beq.w   .loc_F6F2
-                bsr.w   sub_F90E
+                bsr.w   Race_AddActorImpactObject
                 bra.w   .loc_F834
 
 
 .loc_F6F2:
                 btst    #5,$68(a1)
                 beq.w   .loc_F834
-                bsr.w   sub_F842
+                bsr.w   Race_AddActorLeanObject
                 bra.w   .loc_F834
 .loc_F704:
                 bclr    #7,$A(a0)
@@ -1399,7 +1399,7 @@ Race_BuildActorObjectList:
                 bne.w   .loc_F834
                 tst.b   $6F(a1)
                 bne.w   .loc_F834
-                bsr.w   sub_FA98
+                bsr.w   Race_AddActorWeaponObject
                 bclr    #7,$6A(a1)
 
 .loc_F834:
@@ -1418,7 +1418,7 @@ Race_BuildActorObjectList:
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_F842:
+Race_AddActorLeanObject:
                 adda.w  #$14,a0
                 move.b  (ram_FF1AD9).l,d0
                 ext.w   d0
@@ -1478,13 +1478,13 @@ sub_F842:
 
 .locret_F90C:
                 rts
-; End of function sub_F842
+; End of function Race_AddActorLeanObject
 
 
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_F90E:
+Race_AddActorImpactObject:
                 adda.w  #$14,a0
                 move.w  #0,$A(a0)
                 move.l  #0,$C(a0)
@@ -1534,13 +1534,13 @@ sub_F90E:
 
 .locret_F9C2:
                 rts
-; End of function sub_F90E
+; End of function Race_AddActorImpactObject
 
 
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_F9C4:
+Race_AddActorFallObject:
                 adda.w  #$14,a0
                 move.w  #0,$A(a0)
                 move.l  #0,$C(a0)
@@ -1591,7 +1591,7 @@ sub_F9C4:
 
 .locret_FA7E:
                 rts
-; End of function sub_F9C4
+; End of function Race_AddActorFallObject
 
 
 unk_FA80:
@@ -1605,7 +1605,7 @@ unk_FA80:
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_FA98:
+Race_AddActorWeaponObject:
                 adda.w  #$14,a0
                 bclr    #7,$A(a0)
                 move.w  #$172,8(a0)
@@ -1639,7 +1639,7 @@ sub_FA98:
 
 .locret_FB1C:
                 rts
-; End of function sub_FA98
+; End of function Race_AddActorWeaponObject
 
 
 ; =============== S U B R O U T I N E =======================================

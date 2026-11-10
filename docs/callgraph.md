@@ -258,15 +258,15 @@ flowchart LR
 | `Race_FormatDecimal` | `0x0F11C` | `RaceDebug_ShowDistanceTravelled`, `RaceDebug_ShowFrameDelay`, `RaceDebug_ShowPosZ`, `Race_UpdateSpeedDisplay`, `sub_999E` | - |
 | `PiecewiseLinearInterpolation` | `0x0F180` | `Race_Update` | `FillLinearInterpArray` |
 | `FillLinearInterpArray` | `0x0F1AE` | `PiecewiseLinearInterpolation` | - |
-| `Race_BuildActorObjectList` | `0x0F40C` | `Race_Update` | `Race_ProjectActorObject`, `Race_ProjectActorSprite`, `Race_ProjectObject`, `Race_SelectActorObjectShape`, `Race_SelectExtraActorShape`, `Race_SelectOpponentShape`, `Race_SelectPlayerFinishShape`, `sub_15014`, `sub_F842`, `sub_F90E`, `sub_F9C4`, `sub_FA98` |
-| `sub_F842` | `0x0F842` | `Race_BuildActorObjectList` | `Race_ProjectObject` |
-| `sub_F90E` | `0x0F90E` | `Race_BuildActorObjectList` | `Race_ProjectObject` |
-| `sub_F9C4` | `0x0F9C4` | `Race_BuildActorObjectList` | `Race_ProjectObject` |
-| `sub_FA98` | `0x0FA98` | `Race_BuildActorObjectList` | `Race_ProjectObject` |
+| `Race_BuildActorObjectList` | `0x0F40C` | `Race_Update` | `Race_ProjectActorObject`, `Race_ProjectActorSprite`, `Race_ProjectObject`, `Race_SelectActorObjectShape`, `Race_SelectExtraActorShape`, `Race_SelectOpponentShape`, `Race_SelectPlayerFinishShape`, `sub_15014`, `Race_AddActorLeanObject`, `Race_AddActorImpactObject`, `Race_AddActorFallObject`, `Race_AddActorWeaponObject` |
+| `Race_AddActorLeanObject` | `0x0F842` | `Race_BuildActorObjectList` | `Race_ProjectObject` |
+| `Race_AddActorImpactObject` | `0x0F90E` | `Race_BuildActorObjectList` | `Race_ProjectObject` |
+| `Race_AddActorFallObject` | `0x0F9C4` | `Race_BuildActorObjectList` | `Race_ProjectObject` |
+| `Race_AddActorWeaponObject` | `0x0FA98` | `Race_BuildActorObjectList` | `Race_ProjectObject` |
 | `Race_AddTrackStartObject` | `0x0FB1E` | `Race_Update` | `Race_ProjectObject`, `sub_15478` |
 | `Race_AddStagedObjects` | `0x0FC0E` | `Race_Update` | `Race_ProjectObject` |
 | `Race_AddSpecialObject` | `0x0FD96` | `Race_Update` | - |
-| `Race_ProjectObject` | `0x0FE3A` | `Race_AddStagedObjects`, `Race_AddTrackStartObject`, `Race_BuildActorObjectList`, `sub_F842`, `sub_F90E`, `sub_F9C4`, `sub_FA98` | - |
+| `Race_ProjectObject` | `0x0FE3A` | `Race_AddStagedObjects`, `Race_AddTrackStartObject`, `Race_BuildActorObjectList`, `Race_AddActorLeanObject`, `Race_AddActorImpactObject`, `Race_AddActorFallObject`, `Race_AddActorWeaponObject` | - |
 | `Race_ProjectActorObject` | `0x0FF7E` | `Race_BuildActorObjectList` | - |
 | `Race_SelectActorObjectShape` | `0x100D0` | `Race_BuildActorObjectList`, `sub_1030A`, `sub_10384` | `Race_SelectActorIdleShape`, `Race_SelectActorSpeedShape`, `sub_1030A`, `sub_1081A` |
 | `Race_SelectActorSpeedShape` | `0x101EA` | `Race_SelectActorObjectShape` | - |
