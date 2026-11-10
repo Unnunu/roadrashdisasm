@@ -47,6 +47,7 @@ standings/results helpers and the speed display: `PiecewiseLinearInterpolation`,
 | standings/results | `0xEFA4`/`0xF0E4` | [x] | [x] | [x] | - | [x] | [ ] | analyzed |
 | track-object stream | `0xFC0E`/`0x109B6` | [~] | [~] | [~] | [x] | [~] | [~] | format hypothesis + snapshot |
 | object-list/render helpers | `0xF40C`+ | [~] | [~] | [x] | [x] | [~] | [~] | partial + object snapshot |
+| object shape selectors | `0x100D0`+ | [x] | [~] | [x] | [x] | [~] | [ ] | static |
 | road/profile/objects | `0xF40C`+ | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | TODO |
 
 Detailed flow: `docs/analysis/race.md`; spawn: `docs/analysis/race_spawn.md`.

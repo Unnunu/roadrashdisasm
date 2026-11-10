@@ -14,6 +14,11 @@ Applied in R4: `Race_BuildActorObjectList`, `Race_AddSpecialObject`,
 `Race_BuildTrackObjects`, `Race_ProjectTrackObject`,
 `Race_ProjectObject`, `Race_ProjectActorObject`.
 
+Applied in R15: `Race_SelectActorObjectShape`, `Race_SelectActorSpeedShape`,
+`Race_SelectActorIdleShape`, `Race_SelectOpponentShape`,
+`Race_SelectPlayerFinishShape`, `Race_SelectExtraActorShape`,
+`Race_GetActorShapeVariant`.
+
 Applied in R9: `Race_BuildTrackObjects` (was `Race_UpdateTrackObjectCursor`),
 `Race_AddStagedObjects` (was `Race_AddTrackObjects`).
 
