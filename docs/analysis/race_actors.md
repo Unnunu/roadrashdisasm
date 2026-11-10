@@ -133,9 +133,9 @@ routines; `+$06` is its low word, not an independent X coordinate.
 | `+$14` | word | acceleration per frame; added to Speed with FrameDelay | `[confirmed]` `$22` low speed, `$0E` at `$2D15`; `Race_UpdateActorAI` |
 | `+$16` | word | `Type`/sprite from definition byte0 | `[confirmed]` 2/3/4; static actors anomaly below |
 | `+$18` | word | `Gear` | `[static]`; zero in demo |
-| `+$1A` | word | previous draw/road Y copied from `+$30` at `sub_11448` entry | `[dynamic]` steering `$31` vs `$30=$35`; hard-left `$FFE4` |
+| `+$1A` | word | previous draw/road Y copied from `+$30` at `Race_UpdateActorX` entry | `[dynamic]` steering `$31` vs `$30=$35`; hard-left `$FFE4` |
 | `+$1C` | word | unknown; zero in snapshots | `[dynamic]` |
-| `+$1E` | long | previous X; `sub_11448` copies current `+$04` here before adding `+$26` | `[confirmed]` `$04-$1E=$26`; initial spawn value before movement |
+| `+$1E` | long | previous X; `Race_UpdateActorX` copies current `+$04` here before adding `+$26` | `[confirmed]` `$04-$1E=$26`; initial spawn value before movement |
 | `+$22`/`+$24` | word | X/Y screen delta/velocity; `$22` non-zero under steering | `[dynamic]` `$09/0` steering; zero no-steer |
 | `+$26` | long | frame distance = `Speed * Race_ram_FrameDelay` | `[confirmed]` Player `$EE*7=$682`, Opp `$111*7=$777`; steering `$2D15*7=$13B93` |
 | `+$2A` | word | screen/road Y offset; source derives from `+$02`/road value | `[dynamic]` `-$08` no-steer, `$223` steering; exact role TODO |
@@ -238,7 +238,7 @@ actor, but the role is still a hypothesis.
 
 `Race_UpdateStaticActors` only processes static actors with `$56==$FFFF` and `$68`
 bit6. It uses `$16` as the `unk_25A10` type index, recomputes `$26`, calls
-`sub_113A4`/`sub_116E2`/`sub_11940`, then `$36+$38 -> $00`, `sub_137E4`,
+`sub_113A4`/`Race_UpdateActorMovement`/`Race_UpdateActorFallMovement`, then `$36+$38 -> $00`, `sub_137E4`,
 `sub_12C9A`, `sub_13DE0`. The observed static `$16=0` after update is therefore an
 open semantic question, not a reason to rename the field.
 
@@ -247,7 +247,7 @@ open semantic question, not a reason to rename the field.
 - `Race_CreateActors` sets definition-derived fields and zeroes many motion fields.
 - `Race_InitActorPositions` writes `+$00`, `+$1A`, `+$30` (same Y value) and
   `+$04`, `+$1E` (same X value) for the initial positions.
-- `sub_11448` copies current X (`+$04`) to `+$1E`, then adds `+$26` to `+$04`;
+- `Race_UpdateActorX` copies current X (`+$04`) to `+$1E`, then adds `+$26` to `+$04`;
   `+$1E` is therefore the previous/start-of-frame X during normal movement.
 - Later `Race_Spawn`/`Race_InitOpponentActor`/`Race_InitTrafficActor` also initialize
   `+$1E`, `+$12` (from `+$66`), and other state.
@@ -288,7 +288,7 @@ open semantic question, not a reason to rename the field.
 
 | Current | Proposed | Evidence | Confidence |
 |---|---|---|---|
-| `$1E` (literal) | `RaceActor_PreviousX` (long) | `sub_11448` copies `+$04` here; `$04-$1E=$26` | high |
+| `$1E` (literal) | `RaceActor_PreviousX` (long) | `Race_UpdateActorX` copies `+$04` here; `$04-$1E=$26` | high |
 | `$68` | `RaceActor_Flags` | bit6 active/update marker; multiple AI bits | medium |
 | `$5E`/`$60` | `ActorSpritePosX/Y` | graphics +$A/+$C | low |
 

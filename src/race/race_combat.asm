@@ -487,7 +487,7 @@ Race_UpdateAttackPhase:
 Race_ActorSteerRoadCenter:
                 move.b  $72(a1),d0
                 ext.w   d0
-                bsr.w   sub_1384C
+                bsr.w   Race_UpdateActorRoadSteering
                 bsr.w   Race_UpdateActorSpeedGear
                 rts
 ; End of function Race_ActorSteerRoadCenter
@@ -509,7 +509,7 @@ Race_ActorSteerThrottle:
                 ext.w   d0
                 bset    #1,$68(a1)
                 bclr    #2,$68(a1)
-                bsr.w   sub_1384C
+                bsr.w   Race_UpdateActorRoadSteering
                 btst    #5,$68(a1)
                 beq.w   .loc_1660C
                 bset    #2,$68(a1)
@@ -527,7 +527,7 @@ Race_ActorSteerThrottle:
  ; *************************************************
 ; Function Race_ActorCollideSteer
 ; AI action: run the player/actor collision check, then apply the speed/steer
-; correction (Race_UpdateActorSpeedGear + sub_1333C).
+; correction (Race_UpdateActorSpeedGear + Race_ApplyActorSpeedCorrection).
 ; In:  a1 - actor; RacePlayerA
 ; Out: actor collision/speed fields
 ; Clobbers: d0-d1/a2
@@ -538,7 +538,7 @@ Race_ActorCollideSteer:
                 move.w  d1,-(sp)
                 bsr.w   Race_UpdateActorSpeedGear
                 move.w  (sp)+,d1
-                bsr.w   sub_1333C
+                bsr.w   Race_ApplyActorSpeedCorrection
                 rts
 ; End of function Race_ActorCollideSteer
 
@@ -609,7 +609,7 @@ Race_ActorProximityReaction:
 
 .loc_1665C:
                 move.w  #$FFC0,d1
-                bsr.w   sub_1333C
+                bsr.w   Race_ApplyActorSpeedCorrection
                 bsr.w   Race_UpdateActorSpeedGear
                 rts
 ; End of function Race_ActorProximityReaction
@@ -646,13 +646,13 @@ Race_ActorPursueAttack:
 .loc_1669A:
                 move.b  $72(a1),d0
                 ext.w   d0
-                bsr.w   sub_1384C
+                bsr.w   Race_UpdateActorRoadSteering
                 rts
 
 
 .loc_166A6:
                 move.w  #0,d1
-                bsr.w   sub_1333C
+                bsr.w   Race_ApplyActorSpeedCorrection
                 rts
 ; End of function Race_ActorPursueAttack
 
@@ -682,7 +682,7 @@ Race_ActorAttackIfClose:
 
 .loc_166CE:
                 move.w  #0,d1
-                bsr.w   sub_1333C
+                bsr.w   Race_ApplyActorSpeedCorrection
                 bsr.w   Race_UpdateActorSpeedGear
                 rts
 ; End of function Race_ActorAttackIfClose
@@ -693,7 +693,7 @@ Race_ActorAttackIfClose:
 
  ; *************************************************
 ; Function Race_ActorEvadePlayer
-; AI action: evade/steer toward the player using sub_1333C/sub_13292.
+; AI action: evade/steer toward the player using Race_ApplyActorSpeedCorrection/Race_UpdateActorChase.
 ; In:  a1 - actor; RacePlayerA
 ; Out: actor movement
 ; Clobbers: d0-d2
@@ -702,8 +702,8 @@ Race_ActorAttackIfClose:
 Race_ActorEvadePlayer:
                 lea     (RacePlayerA).l,a2
                 move.w  #0,d1
-                bsr.w   sub_1333C
-                bsr.w   sub_13292
+                bsr.w   Race_ApplyActorSpeedCorrection
+                bsr.w   Race_UpdateActorChase
                 rts
 ; End of function Race_ActorEvadePlayer
 
@@ -729,7 +729,7 @@ Race_ActorCombatResponse:
                 beq.w   .loc_16720
                 cmpa.l  #RacePlayerA,a2
                 beq.w   .loc_16720
-                bsr.w   sub_13422
+                bsr.w   Race_UpdateActorSpeedCurve
                 bsr.w   Race_UpdateActorSpeedGear
                 bra.w   .locret_16730
 
@@ -739,7 +739,7 @@ Race_ActorCombatResponse:
                 move.w  d1,-(sp)
                 bsr.w   Race_UpdateActorSpeedGear
                 move.w  (sp)+,d1
-                bsr.w   sub_1333C
+                bsr.w   Race_ApplyActorSpeedCorrection
 
 .locret_16730:
                 rts

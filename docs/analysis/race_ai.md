@@ -14,10 +14,10 @@
 |---|---|---|
 | `sub_10E00`/`unk_10E3E`/`sub_10E66` | `0x10E00`+ | Actor setup + `Race_UpdateActorAI`. |
 | `Race_UpdateActorAI` | `0x10E66` | Main actor AI loop (player/opponents). |
-| `sub_1103A` | `0x1103A` | AI movement helper. |
+| `Race_AdvanceActorProgress` | `0x1103A` | AI movement helper. |
 | `Race_HandleInputOnFoot` | `0x110AE` | On-foot input/AI (player A). |
 | `Race_AnotherInputOnFoot` | `0x111FA` | On-foot input/AI (other actor/pad). |
-| `sub_11268`/`sub_112C8`/`sub_113A4`/`sub_113CA`/`sub_11448`/`sub_115C6`/`sub_116E2`/`sub_1180C`/`sub_11906`/`sub_11940`/`Race_ApplyCrashImpact` | `0x11268`+ | Turn/movement/lean helpers. |
+| `sub_11268`/`sub_112C8`/`sub_113A4`/`sub_113CA`/`Race_UpdateActorX`/`sub_115C6`/`Race_UpdateActorMovement`/`sub_1180C`/`sub_11906`/`Race_UpdateActorFallMovement`/`Race_ApplyCrashImpact` | `0x11268`+ | Turn/movement/lean helpers. |
 | `sub_11C44`/`sub_11CC8`/`sub_12070`/`sub_1218C`/`sub_123A8`/`sub_12414`/`Race_UpdateActorPairCollision` | `0x11C44`+ | Opponent/AI logic. |
 | `Race_ClearActorOnFootFlags`/`Race_UpdateStaticActors`/`Race_InitExtraStaticActor`/`Race_UpdateExtraStaticActor` | `0x1281E`+ | Static/police actor AI. |
 | `sub_12...`/`sub_13...` | `0x12A88`+ | Road/actor movement, collision helpers. |
@@ -34,10 +34,10 @@
 `Race_Update` runs `Race_UpdateActorAI`: it marks the player A `$68` bit6 and walks
 `ram_FF1A08`. For the player A it handles the on-foot case
 (`Race_HandleInputOnFoot` when `$68` bit4 and `$6E==3`), otherwise the normal input/AI
-(`sub_113CA`/`sub_13EFA`, `sub_11448`, `sub_11940`). Opponents use
-`Race_UpdateActorAI`/`sub_1103A`/`sub_113A4`/`sub_116E2`. Static/police actors are
+(`sub_113CA`/`sub_13EFA`, `Race_UpdateActorX`, `Race_UpdateActorFallMovement`). Opponents use
+`Race_UpdateActorAI`/`Race_AdvanceActorProgress`/`sub_113A4`/`Race_UpdateActorMovement`. Static/police actors are
 walked from `Race_StaticActorList` by `Race_UpdateStaticActors`
-(`unk_25A10`, `sub_113A4`/`sub_116E2`/`sub_11940`, `sub_137E4`/`sub_12C9A`/
+(`unk_25A10`, `sub_113A4`/`Race_UpdateActorMovement`/`Race_UpdateActorFallMovement`, `sub_137E4`/`sub_12C9A`/
 `sub_13DE0`).
 
 ## Bike lean / curve

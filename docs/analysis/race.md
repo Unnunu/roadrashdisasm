@@ -197,7 +197,7 @@ Actors/player structures:
 | `+$16` | word | `ActorType` | actor definition byte0; dynamic 2/3/4 |
 | `+$18` | word | `Gear` | 98C2, shop/gear |
 | `+$1A` | word | previous road Y copy | dynamic |
-| `+$1E` | long | previous X (`sub_11448`) | confirmed `$04-$1E=$26` |
+| `+$1E` | long | previous X (`Race_UpdateActorX`) | confirmed `$04-$1E=$26` |
 | `+$26` | long | frame distance = `Speed * FrameDelay` | confirmed |
 | `+$2A` | word | screen/road Y offset | dynamic `-$08`/`$223`; TODO |
 | `+$30` | word | current road/target Y (`PosY`) | dynamic; HUD/HInt |

@@ -160,8 +160,8 @@ Dynamic snapshots `[dynamic]` (2026-11-09): active list = player A + 7 opponents
 | `+$14` | word | acceleration per frame | `[confirmed]`; `Race_UpdateActorAI` |
 | `+$16` | word | `ActorType` (definition byte0) | `[dynamic]` 2/3/4 |
 | `+$18` | word | `Gear` | 98C2/gear |
-| `+$1A` | word | previous road Y (copy of `+$30` at `sub_11448`) | `[dynamic]` |
-| `+$1E` | long | previous X (`sub_11448` copies `+$04` here) | `[confirmed]` |
+| `+$1A` | word | previous road Y (copy of `+$30` at `Race_UpdateActorX`) | `[dynamic]` |
+| `+$1E` | long | previous X (`Race_UpdateActorX` copies `+$04` here) | `[confirmed]` |
 | `+$26` | long | frame distance = `Speed * FrameDelay` | `[confirmed]` |
 | `+$2A` | word | screen/road Y offset (TODO) | `[dynamic]` `-$08`/`$223` |
 | `+$30` | word | current road/target Y | `[dynamic]`; HUD/HInt |
