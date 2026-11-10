@@ -14,6 +14,9 @@ Applied in R4: `Race_BuildActorObjectList`, `Race_AddSpecialObject`,
 `Race_BuildTrackObjects`, `Race_ProjectTrackObject`,
 `Race_ProjectObject`, `Race_ProjectActorObject`.
 
+Applied in R9: `Race_BuildTrackObjects` (was `Race_UpdateTrackObjectCursor`),
+`Race_AddStagedObjects` (was `Race_AddTrackObjects`).
+
 Applied in R5: `RoadObject_X/Y/Scale/Limit/Shape/Flags/XOffset/Shape2/Size`;
 `Race_ram_TrackObjectCursor/Distance/Count/RecordCursor/WritePtr`;
 `Race_TrackObjectTypeTable`.
