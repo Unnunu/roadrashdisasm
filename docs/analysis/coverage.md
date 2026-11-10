@@ -43,9 +43,9 @@ Priority is analytical impact, not address order.
 | # | Target | Unknown / why | Next experiment | Artifact |
 |---|---|---|---|---|
 | 1 | `Race_UpdateActorPairCollision`, `sub_12070`, `sub_12414`, `sub_11CC8` | `$32/$4C/$4E/$56`, side-extent mapping | forced pair separation, log Y ordering + extents | collision contract + field matrix |
-| 2 | `Race_UpdateActorSpeedState`, `Race_UpdateActorSpeedGear` | gear/speed/curve branch semantics | log gear, curve, speed, flags while accelerating/cornering | speed/gear contract |
+| 2 | `Race_UpdateActorSpeedState`, `Race_UpdateActorSpeedGear` | gear/speed/curve branch semantics | **done:** demo trace + `race_speed.md`; gear=0 remains TODO | speed/gear contract |
 | 3 | `Race_FindTargetActor`, `Race_SaveActorShadow` | target selection + shadow sync role | log target candidates/shadow state | target/shadow contract |
-| 4 | `Race_UpdateActorMovement/FallMovement`, `sub_115C6` | `$32`, exact `$36–$3C` roles | normal/steer/off-road/fall snapshots | movement matrix update |
+| 4 | `Race_UpdateActorMovement/FallMovement`, `sub_115C6` | exact `$36–$3C` roles | normal/steer/off-road/fall snapshots | movement matrix update |
 | 5 | `Race_GetCurveSpeedLimit`, `Race_UpdateBikeCurve`, `Race_UpdateLeanCurve` | curve limit and `$40/$78` | high-speed steering trace | curve contract |
 | 6 | Road render helpers: `Race_ProjectObject`, `Race_ProjectActorObject`, `Road_DrawStrip`, `Road_WriteTileColumns` | projection/shape row bytes | object/shape samples + SAT/VSRAM | render/shape doc |
 | 7 | `Race_ApplyCollisionImpact`, `Race_ApplyCrashImpact`, impact chain | `$2A/$2C/$2E/$56` and damage timing | forced impact/fall trace | impact contract |
@@ -58,7 +58,7 @@ Priority is analytical impact, not address order.
 
 - [x] Phase 0: coverage baseline and work queue.
 - [ ] Phase 1: runtime, IRQ, input, RAM ownership.
-- [ ] Phase 2: race simulation semantics.
+- [ ] Phase 2: race simulation semantics (movement, speed, collision in progress).
 - [ ] Phase 3: road/render and data formats.
 - [ ] Phase 4: screens and visual confirmation.
 - [ ] Phase 5: audio/Z80, separate.

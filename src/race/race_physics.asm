@@ -766,7 +766,7 @@ Race_UpdateCamera:
                 add.w   (ram_FF1E60).l,d1
                 move.w  d1,(ram_FF1E60).l
 .loc_DF6E:
-                move.w  (RacePlayerA + STRUCT_OFFSET_32).l,d0
+                move.w  (RacePlayerA + RaceActor_CollisionOffset).l,d0
                 ext.l   d0
                 asr.l   #1,d0
                 add.l   (ram_FF1E7E).l,d0

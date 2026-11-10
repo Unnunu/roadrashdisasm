@@ -550,7 +550,7 @@ Race_SetupActor:
                 move.w  d0,$3C(a1)
                 move.w  d0,$2C(a1)
                 move.w  d0,2(a1)
-                move.w  d0,$32(a1)
+                move.w  d0,RaceActor_CollisionOffset(a1)
                 move.w  $30(a1),d0
                 bpl.w   .loc_16E16
                 neg.w   d0

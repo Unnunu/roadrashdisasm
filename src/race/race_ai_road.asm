@@ -1380,7 +1380,7 @@ Race_BuildActorObjectList:
 .loc_F7E0:
                 move.l  4(a1),d0
                 move.w  $30(a1),d1
-                move.w  $32(a1),d2
+                move.w  RaceActor_CollisionOffset(a1),d2
                 bsr.w   Race_ProjectObject
                 tst.w   d0
                 bne.w   .loc_F802
@@ -1461,7 +1461,7 @@ Race_AddActorLeanObject:
 
 .loc_F8DC:
                 add.w   $30(a1),d1
-                move.w  $32(a1),d2
+                move.w  RaceActor_CollisionOffset(a1),d2
                 move.l  4(a1),d0
                 bsr.w   Race_ProjectObject
                 tst.w   d0
@@ -2130,7 +2130,7 @@ Race_ProjectActorObject:
 .loc_1000A:
                 andi.l  #$FFFF,d1
                 sub.w   d1,d5
-                sub.w   $32(a1),d5
+                sub.w   RaceActor_CollisionOffset(a1),d5
                 move.w  d5,d1
                 btst    #$F,d1
                 beq.w   .loc_10030

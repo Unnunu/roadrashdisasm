@@ -2779,7 +2779,7 @@ Race_CreateActors:
                 move.w  d1,RaceActor_XLow(a1)
                 move.w  d1,RaceActor_PosZ(a1)
                 move.w  d1,STRUCT_OFFSET_1C(a1)
-                move.w  d1,STRUCT_OFFSET_32(a1)
+                move.w  d1,RaceActor_CollisionOffset(a1)
                 move.w  d1,STRUCT_OFFSET_8(a1)
                 move.w  d1,STRUCT_OFFSET_A(a1)
                 move.w  d1,STRUCT_OFFSET_C(a1)

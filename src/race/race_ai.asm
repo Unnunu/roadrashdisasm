@@ -262,7 +262,7 @@ Race_UpdateActorAI:
 Race_AdvanceActorProgress:
                 move.l  d0,-(sp)
                 move.w  $30(a1),$1A(a1)
-                move.w  $32(a1),$1C(a1)
+                move.w  RaceActor_CollisionOffset(a1),$1C(a1)
                 move.l  $26(a1),d0
                 move.l  4(a1),d4
                 move.l  d4,RaceActor_PreviousX(a1)
@@ -280,7 +280,7 @@ Race_AdvanceActorProgress:
                 move.w  d1,2(a1)
                 bclr    #4,RaceActor_ControlFlags(a1)
                 move.b  #$FF,RaceActor_AnimState(a1)
-                move.w  #0,$32(a1)
+                move.w  #0,RaceActor_CollisionOffset(a1)
                 move.w  #0,$2E(a1)
                 bclr    #0,RaceActor_ControlFlags(a1)
                 move.w  #0,$2C(a1)
@@ -766,7 +766,7 @@ sub_113CA:
 Race_UpdateActorX:
                 movem.l d0-d7/a0-a6,-(sp)
                 move.w  $30(a1),$1A(a1)
-                move.w  $32(a1),$1C(a1)
+                move.w  RaceActor_CollisionOffset(a1),$1C(a1)
                 move.l  $26(a1),d0
                 move.l  4(a1),d4
                 move.l  d4,RaceActor_PreviousX(a1)
@@ -980,13 +980,13 @@ sub_115C6:
                 sub.w   d1,d2
                 mulu.w  (ram_FF1AA0).l,d2
                 lsr.l   #8,d2
-                move.w  d2,$32(a1)
+                move.w  d2,RaceActor_CollisionOffset(a1)
                 bra.w   .locret_116E0
 
 
 .loc_116AA:
                 move.w  d1,2(a1)
-                move.w  #0,$32(a1)
+                move.w  #0,RaceActor_CollisionOffset(a1)
                 btst    #0,RaceActor_ControlFlags(a1)
                 beq.w   .loc_116D4
                 tst.w   $2C(a1)
@@ -1013,7 +1013,7 @@ sub_115C6:
 Race_UpdateActorMovement:
                 movem.l d0-d7/a0-a6,-(sp)
                 move.w  $30(a1),$1A(a1)
-                move.w  $32(a1),$1C(a1)
+                move.w  RaceActor_CollisionOffset(a1),$1C(a1)
                 move.l  $26(a1),d0
                 move.l  4(a1),d4
                 move.l  d4,RaceActor_PreviousX(a1)
@@ -1277,7 +1277,7 @@ Race_UpdateActorFallMovement:
 
 .loc_1195A:
                 move.w  $30(a1),$1A(a1)
-                move.w  $32(a1),$1C(a1)
+                move.w  RaceActor_CollisionOffset(a1),$1C(a1)
                 move.l  $26(a1),d4
                 move.l  4(a1),d0
                 move.l  d0,RaceActor_PreviousX(a1)
@@ -2119,7 +2119,7 @@ sub_12070:
                 bpl.w   .loc_120A4
 
 .loc_12148:
-                cmp.w   $32(a1),d5
+                cmp.w   RaceActor_CollisionOffset(a1),d5
                 bmi.w   .loc_120A4
                 move.w  4(a5,d4.w),d4
                 asl.w   #2,d4
@@ -2433,7 +2433,7 @@ sub_12414:
 
 
 .loc_124C4:
-                cmp.w   $32(a1),d5
+                cmp.w   RaceActor_CollisionOffset(a1),d5
                 bmi.w   .loc_124DA
                 move.w  d2,(ram_FF1B14).l
                 bset    #4,RaceActor_ControlFlags(a1)
@@ -2672,9 +2672,9 @@ Race_UpdateActorPairCollision:
                 beq.w   .loc_1280A
 
 .loc_127EA:
-                move.w  $32(a1),d0
+                move.w  RaceActor_CollisionOffset(a1),d0
                 sub.w   (ram_FF303E).l,d0
-                sub.w   $32(a2),d0
+                sub.w   RaceActor_CollisionOffset(a2),d0
                 bpl.w   .loc_1280A
                 bset    #4,RaceActor_ControlFlags(a1)
                 bset    #4,RaceActor_ControlFlags(a2)
@@ -2820,7 +2820,7 @@ Race_InitExtraStaticActor:
                 move.w  d0,$1A(a1)
 
 .loc_1295A:
-                move.w  #0,$32(a1)
+                move.w  #0,RaceActor_CollisionOffset(a1)
                 move.w  #$1770,$12(a1)
                 swap    d1
                 clr.w   d1
@@ -4629,7 +4629,7 @@ sub_13A26:
                 move.w  d0,2(a2)
                 move.w  d0,$3C(a2)
                 move.w  d0,$3A(a2)
-                move.w  d0,$32(a2)
+                move.w  d0,RaceActor_CollisionOffset(a2)
                 move.l  (Race_ram_PlayerProgress).l,d0
                 addi.l  #$208000,d0
                 move.l  d0,4(a2)

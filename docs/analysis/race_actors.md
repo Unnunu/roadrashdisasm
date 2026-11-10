@@ -141,7 +141,7 @@ routines; `+$06` is its low word, not an independent X coordinate.
 | `+$2A` | word | screen/road Y offset; source derives from `+$02`/road value | `[dynamic]` `-$08` no-steer, `$223` steering; exact role TODO |
 | `+$2C`/`+$2E` | word | impact/speed fraction pair; source writes from Speed | `[static]`; zero in snapshots |
 | `+$30` | word | current road/target Y; `+$1A` keeps the previous value | `[dynamic]` steering `$35`; hard-left `$FFEA`; no-steer `$A0` |
-| `+$32` | word | road/target Y candidate; zero in snapshots | `[dynamic]` |
+| `+$32` | word | `RaceActor_CollisionOffset`; projected collision penetration; zero outside collisions | `[static/dynamic]`; R25 |
 | `+$36`/`+$38`/`+$3A`/`+$3C` | word | `$36` road-Y target offset, `$38` curve delta, `$3A` curve accumulator, `$3C` curve step | `[static/dynamic]` steering `5/$22B/3/0`; see `race_movement.md`; names deferred |
 | `+$3E`/`+$40`/`+$42` | word | curve/lean state; `$42` signed | `[confirmed]` `$42=-$49` left, `+$49` right; `$3E/$40` zero in test; R22/R23 names `Curve`/`LeanCurve` |
 | `+$46` | word | curve/direction sign; AI flips it | `[dynamic]` `-$03` under forced steering |
@@ -297,6 +297,8 @@ open semantic question, not a reason to rename the field.
 | `$1E` (literal) | `RaceActor_PreviousX` (long) | `Race_UpdateActorX` copies `+$04` here; `$04-$1E=$26` | high |
 | `$68` | `RaceActor_Flags` | bit6 active/update marker; multiple AI bits | medium |
 | `$5E`/`$60` | `ActorSpritePosX/Y` | graphics +$A/+$C | low |
+
+Applied in R25: `RaceActor_CollisionOffset` (`$32`).
 
 Applied in R23: `RaceActor_LeanCurve` (`$40`), `RaceActor_Palette` (`$73`).
 

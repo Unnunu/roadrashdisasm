@@ -1044,7 +1044,7 @@ Race_ApplyCollisionImpact:
                 move.w  2(a1),d0
                 add.w   (ram_FF303E).l,d0
                 move.w  d0,$2A(a1)
-                move.w  (ram_FF3040).l,$32(a1)
+                move.w  (ram_FF3040).l,RaceActor_CollisionOffset(a1)
                 bclr    #4,RaceActor_ControlFlags(a1)
                 bset    #0,RaceActor_ControlFlags(a1)
                 cmpa.l  #RacePlayerA,a1

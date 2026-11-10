@@ -389,7 +389,7 @@ STRUCT_OFFSET_24 equ $24
 RaceActor_FrameDistance equ $26 ; Speed * Race_ram_FrameDelay
 STRUCT_OFFSET_2C equ $2C
 RaceActor_PosY equ $30
-STRUCT_OFFSET_32 equ $32
+RaceActor_CollisionOffset equ $32
 STRUCT_OFFSET_36 equ $36
 STRUCT_OFFSET_38 equ $38
 STRUCT_OFFSET_3A equ $3A
