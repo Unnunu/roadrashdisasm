@@ -98,6 +98,29 @@ generated as `assets/images/ea_logo/data.bin`; the previously tracked root
 (`0x1E5CD`, `0x7203`). They are raw binaries; Z80 disassembly and sound-data
 parsing are tracked in `docs/analysis/audio.md`.
 
+## Stage B visual review
+
+Generated from the current ROM:
+
+```sh
+python3 tools/assets.py all
+```
+
+Newly rendered track backgrounds:
+
+| Asset ID | Source | Size | Preview |
+|---|---|---:|---|
+| `race_track_background_0` | `0x28A3E` `Track_Data6_0` | `0x1B56` | `assets/images/race_track_background_0/preview.png` |
+| `race_track_background_1` | `0x2CC8C` `Track_Data6_1` | `0x1848` | `assets/images/race_track_background_1/preview.png` |
+| `race_track_background_2` | `0x311B8` `Track_Data6_2` | `0x11CC` | `assets/images/race_track_background_2/preview.png` |
+| `race_track_background_3` | `0x35174` `Track_Data6_3` | `0x12B2` | `assets/images/race_track_background_3/preview.png` |
+| `race_track_background_4` | `0x3A2E0` `Track_Data6_4` | `0x1A6A` | `assets/images/race_track_background_4/preview.png` |
+
+All previews are indexed in the generated `assets/review.html` (local-only).
+The track backgrounds use the embedded image layout: tiles -> 128-byte palette ->
+`(w,h)` -> nametable; the `Data6-4/-2` header offsets point at the same nametable
+and palette regions.
+
 ## Deferred
 
 - `race_map_0` (`unk_9B2F0`, 40×17): base tile `$4180` points at VRAM `$3000`;
