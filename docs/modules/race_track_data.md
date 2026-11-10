@@ -1,7 +1,7 @@
 # Module card: `src/data/race_track_data.asm`
 
 - **ROM range:** `0x025EC0`–`0x03BF19` (`Road_ShapeTable` starts at `0x3BF1A`)
-- **Status:** records/labels + stream boundaries extracted; stream formats TODO
+- **Status:** records/labels + stream boundaries; Data2/3 decoder; Data4/5/6 formats analyzed (Data4 side bits TODO)
 - **Related:** `docs/analysis/race_track_data.md`, `docs/analysis/track_data.md`,
   `docs/analysis/race.md`, `docs/analysis/race_data_tables.md`,
   `docs/ram-map.md`
@@ -21,6 +21,6 @@ source.
 | `unk_25EC0` (track pointers) | `0x25EC0` | [x] | - | [x] | - | [x] | [ ] | analyzed |
 | `Track_Record0..4` | `0x25ED4`+ | [x] | - | [x] | - | [x] | [ ] | analyzed |
 | `Track_LevelWords0..4` | `0x25EEC`+ | [x] | - | [x] | - | [x] | [ ] | analyzed |
-| `Track_Data2..Data6_0..4` | stream ranges | [x] | - | [~] | - | [~] | [ ] | data-only |
+| `Track_Data2..Data6_0..4` | stream ranges | [x] | [~] | [~] | - | [~] | [~] | Data4/5/6 mapped |
 
 Detailed analysis: `docs/analysis/race_track_data.md`.

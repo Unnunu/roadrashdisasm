@@ -1,7 +1,7 @@
 # Module card: `src/race/race_spawn.asm`
 
 - **ROM range:** `0x0169B0`–`0x016E6F` (after `src/race/animation.asm`)
-- **Status:** analyzed (track data init/next chunk + dynamic spawn)
+- **Status:** analyzed (track data init/next chunk, Data5 record mapping, dynamic spawn/lists)
 - **Related:** `docs/analysis/race_spawn.md`, `docs/analysis/race_actors.md`,
   `src/data/race_actor_tables.asm`,
   `docs/ram-map.md`, `docs/modules/race.md`

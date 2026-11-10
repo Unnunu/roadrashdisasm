@@ -59,7 +59,7 @@ Priority is analytical impact, not address order.
 - [x] Phase 0: coverage baseline and work queue.
 - [ ] Phase 1: runtime, IRQ, input, RAM ownership.
 - [ ] Phase 2: race simulation semantics (movement, speed, collision in progress).
-- [ ] Phase 3: road/render and data formats (Data4/5/6 mapped; row/tile mapping in progress).
+- [~] Phase 3: road/render and data formats (Data4/5/6 mapped; row/tile mapping in progress).
 - [ ] Phase 4: screens and visual confirmation.
 - [ ] Phase 5: audio/Z80, separate.
 - [ ] Phase 6: asset tail catalogue.
