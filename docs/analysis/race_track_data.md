@@ -74,8 +74,9 @@ Level words:
 
 The shape selector `$7F` maps to `$205`, which the builder treats as a special
 control/skip entry. Other mapped shapes are written to `RoadObject_Shape` (`+8`).
-Track 0 starts `007F A000, 8039 01AC, 81FA 0015, 81FC 0016, ...`; the final
-`$FFFF` is followed by the six-byte Data6 header.
+Track 0 starts `007F A000, 8039 01AC, 81FA 0015, 81FC 0016, ...`; the stream ends with
+`$FFFF` (the following word is also `$FFFF` padding), then the six-byte Data6 header
+starts at `Data6-6`.
 
 ## Data5 spawn records
 
