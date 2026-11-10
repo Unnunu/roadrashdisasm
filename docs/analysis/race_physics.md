@@ -59,6 +59,25 @@ Forced left turn: `1E50=$0002`, `1E52=$0003`, `1E54=0`, `1E56=2`,
 `1E58=2`, `1E5A=1`. Hard-left/off-road-ish: `1E54=$017A`, `1E56=$20E4`,
 `1E58=$FFFE`, `1E5A=$FFFD`, `1E60=$FFEF`.
 
+## `Race_ProjectActorSprite` (`0xDAE2`)
+
+Builds a `Road_ObjectArray` record for one actor at the current
+`ram_FFDE72` index:
+
+- relative X = `(actor.X - Race_ram_PlayerProgress)` (negated and stored in the
+  distance list);
+- Y uses `RacePlayerA.PosY ± $10`, `$28` steps and the actor `$30`;
+- screen Y/X are scaled by `$E0`/`$100`-style factors, then clipped;
+- scale = `min($3FFF, $100000 / (relativeX + $80))`, tripled for the record;
+- flags = `(actor.$73 & 3) ror 4 + $4100`;
+- actor index `1` -> shape `$159`; `$10..$12` -> `$15A/$15C` special shapes;
+  other actors -> `sub_102E4` + `$154`;
+- visible objects (`x >= -$20`, right edge `< $160`) increment
+  `ram_FFDE72` and the object pointer.
+
+The record layout and clipping are confirmed by the dynamic `Road_DrawObjects`
+snapshot.
+
 ## `Race_UpdateNearestOpponent` (`0xE5EE`)
 
 - Returns immediately if PlayerA `$68` bit7 (finished).
