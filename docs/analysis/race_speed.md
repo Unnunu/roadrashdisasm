@@ -89,8 +89,8 @@ Captured at `Race_UpdateActorAI` entry for PlayerA, every 10th frame, demo race:
 | 120 | `$2F1F` | `$FFFB` | 0 | `$42` | `$04` | `$0018` | `$01C5` | `$0002` | `$0C` | `$0F` | `$FFFF` |
 
 `$32` (`RaceActor_CollisionOffset`) stayed 0 in all samples; it is set only by the
-collision/impact path. `$4C/$4E` track collision extents and flip between `$0D/$0D`
-and `$0C/$0F`.
+collision/impact path. `RaceActor_CollisionExtentUpper/Lower` (`$4C/$4E`) track collision extents and flip
+between `$0D/$0D` and `$0C/$0F`.
 
 ## Open points
 

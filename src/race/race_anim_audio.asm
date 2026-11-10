@@ -1632,8 +1632,8 @@ Race_ClampActorPairY:
                 move.w  $30(a2),d3
                 cmp.w   d1,d0
                 bpl.w   .loc_149A0
-                add.w   $4E(a1),d2
-                add.w   $4C(a2),d2
+                add.w   RaceActor_CollisionExtentLower(a1),d2
+                add.w   RaceActor_CollisionExtentUpper(a2),d2
                 addi.w  #$10,d2
                 cmp.w   d3,d2
                 bmi.w   .loc_149B6
@@ -1642,8 +1642,8 @@ Race_ClampActorPairY:
 
 
 .loc_149A0:
-                sub.w   $4C(a1),d2
-                sub.w   $4E(a2),d2
+                sub.w   RaceActor_CollisionExtentUpper(a1),d2
+                sub.w   RaceActor_CollisionExtentLower(a2),d2
                 subi.w  #$10,d2
                 cmp.w   d3,d2
                 bpl.w   .loc_149B6

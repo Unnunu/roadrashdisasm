@@ -399,6 +399,8 @@ RaceActor_LeanCurve equ $40
 RaceActor_Lean equ $42 ; signed lean/curve value
 RaceActor_CurveDirection equ $46
 RaceActor_CollisionExtent equ $4A
+RaceActor_CollisionExtentUpper equ $4C
+RaceActor_CollisionExtentLower equ $4E
 RaceActor_AttackReach equ $50
 RaceActor_AttackOverlap equ $52
 STRUCT_OFFSET_56 equ $56

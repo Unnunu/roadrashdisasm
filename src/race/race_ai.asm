@@ -1797,10 +1797,10 @@ sub_11CC8:
                 move.w  $C(a1),d2
                 move.w  #0,d3
                 bsr.w   Race_GetActorCollisionExtent
-                move.w  d0,$4C(a1)
+                move.w  d0,RaceActor_CollisionExtentUpper(a1)
                 move.w  #1,d3
                 bsr.w   Race_GetActorCollisionExtent
-                move.w  d0,$4E(a1)
+                move.w  d0,RaceActor_CollisionExtentLower(a1)
                 bclr    #4,RaceActor_ControlFlags(a1)
                 tst.b   RaceActor_AnimState(a1)
                 bmi.w   .loc_11D3C
@@ -2105,7 +2105,7 @@ sub_12070:
                 bpl.w   .loc_12134
                 add.w   d3,d2
                 move.w  d2,(ram_FF1B14).l
-                add.w   $4C(a1),d2
+                add.w   RaceActor_CollisionExtentUpper(a1),d2
                 cmp.w   $30(a1),d2
                 bmi.w   .loc_120A4
                 bra.w   .loc_12148
@@ -2114,7 +2114,7 @@ sub_12070:
 .loc_12134:
                 sub.w   d3,d2
                 move.w  d2,(ram_FF1B14).l
-                sub.w   $4E(a1),d2
+                sub.w   RaceActor_CollisionExtentLower(a1),d2
                 cmp.w   $30(a1),d2
                 bpl.w   .loc_120A4
 
@@ -2416,7 +2416,7 @@ sub_12414:
                 cmp.w   d4,d2
                 bpl.w   .loc_124AE
                 add.w   d0,d2
-                sub.w   $4C(a1),d3
+                sub.w   RaceActor_CollisionExtentUpper(a1),d3
                 bset    #1,RaceActor_StateFlags(a1)
                 cmp.w   d3,d2
                 bpl.w   .loc_124C4
@@ -2425,7 +2425,7 @@ sub_12414:
 
 .loc_124AE:
                 sub.w   d0,d2
-                add.w   $4E(a1),d3
+                add.w   RaceActor_CollisionExtentLower(a1),d3
                 bclr    #1,RaceActor_StateFlags(a1)
                 cmp.w   d3,d2
                 bmi.w   .loc_124C4
@@ -2484,7 +2484,7 @@ Race_UpdateActorPairCollision:
                 move.w  #0,RaceActor_AttackReach(a1)
                 bsr.w   Race_GetCollisionExtent
                 move.w  d0,RaceActor_CollisionExtent(a1)
-                move.w  d0,$4C(a1)
+                move.w  d0,RaceActor_CollisionExtentUpper(a1)
                 cmpa.l  #RacePlayerB,a2
                 bcc.w   .loc_125B0
                 btst    #4,RaceActor_StateFlags(a1)
@@ -2512,7 +2512,7 @@ Race_UpdateActorPairCollision:
                 move.w  #0,RaceActor_AttackReach(a2)
                 bsr.w   Race_GetCollisionExtent
                 move.w  d0,RaceActor_CollisionExtent(a2)
-                move.w  d0,$4E(a2)
+                move.w  d0,RaceActor_CollisionExtentLower(a2)
                 btst    #4,RaceActor_StateFlags(a2)
                 beq.w   .loc_1260E
                 cmpi.b  #1,RaceActor_AttackPhase(a2)
@@ -2583,7 +2583,7 @@ Race_UpdateActorPairCollision:
                 move.w  #0,RaceActor_AttackReach(a1)
                 bsr.w   Race_GetCollisionExtent
                 move.w  d0,RaceActor_CollisionExtent(a1)
-                move.w  d0,$4E(a1)
+                move.w  d0,RaceActor_CollisionExtentLower(a1)
                 cmpa.l  #RacePlayerB,a2
                 bcc.w   .loc_12706
                 btst    #4,RaceActor_StateFlags(a1)
@@ -2611,7 +2611,7 @@ Race_UpdateActorPairCollision:
                 move.w  #0,RaceActor_AttackReach(a2)
                 bsr.w   Race_GetCollisionExtent
                 move.w  d0,RaceActor_CollisionExtent(a2)
-                move.w  d0,$4C(a2)
+                move.w  d0,RaceActor_CollisionExtentUpper(a2)
                 btst    #4,RaceActor_StateFlags(a2)
                 beq.w   .loc_12764
                 cmpi.b  #1,RaceActor_AttackPhase(a2)

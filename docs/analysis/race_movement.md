@@ -65,23 +65,23 @@ The same logic appears in `Race_UpdateActorShadow` for the zero-speed case.
 
 ## Collision extents
 
-`$4C/$4E` are not left/right in the generic actor sense. They are **pair collision
-extents selected by side index**:
+`$4C/$4E` are **upper/lower pair collision extents** selected by side index:
 
 - `Race_UpdateActorPairCollision` calls `Race_GetCollisionExtent` with `d3 = 0` for
   one side and `d3 = 1` for the other.
-- The result is stored in `$4C` or `$4E` according to which actor is above/below.
+- The result is stored in `RaceActor_CollisionExtentUpper` (`$4C`) or
+`RaceActor_CollisionExtentLower` (`$4E`) according to which actor is above/below.
 - The same values are used to separate actors in `sub_12414`/`sub_12070`.
 
-Therefore the old left/right labels are too specific; keep `$4C/$4E` numeric until a
-dynamic test maps the side index to screen direction.
+Side index 0 is the upper side (used when the other actor is above), side index 1 is
+the lower side. `Race_ClampActorPairY` and `sub_12414` use the same mapping.
 
 ## Open points
 
 - `$32`: candidate Y copied to `$1C`; zero in normal snapshots. It is used as a
   threshold in the collision path. Role still TODO.
 - `$3C`: observed write-only; confirm whether any rendering/audio reader uses it.
-- `$4C/$4E`: need a forced pair test that logs `d3`, Y ordering, and screen direction.
+- `$4C/$4E`: mapping now static; dynamic pair test can still confirm edge clamping.
 - `$73`: now named `RaceActor_Palette`; its low 2 bits are shifted into the sprite
   attribute word.
 - `$40`: now named `RaceActor_LeanCurve`; `Race_UpdateLeanCurve` writes it from the
