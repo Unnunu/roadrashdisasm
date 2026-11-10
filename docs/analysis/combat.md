@@ -316,15 +316,29 @@ fall is `[refuted]` for these crash cases.
 identified as the transfer routine: player phase 1 + opponent phase 0 + opponent
 armed -> toggle `$6B` bit1, set both phases `2`/`$6D=$3C`, SFX `$15`, timer `$1E`.
 
+## SFX / impact IDs
+
+`ram_FF1AD6` is the per-frame event SFX ID; `sub_14E38` prioritizes it and only
+falls back to `$1AD7` when it is zero.
+
+| ID | Source path | Meaning |
+|---|---|---|
+| `$0E` | `$1AD7` in `Audio_UpdateEngine0` | armed attack phase 1 / swing, not a confirmed hit |
+| `$15` | `Race_StealClub`/Mirror | club takeover |
+| `$0D` / `$0F` | fall paths | knockdown/crash event candidates |
+| `$09` / `$11` / `$14` / `$16` | collision/attack branches | event IDs; hit-vs-miss mapping still TODO |
+
+This explains why audio cannot be used alone to prove hit/miss: `$1AD7=$0E` is
+attack-state sound, while `$1AD6` carries the impact/event selection.
+
 ## Open questions / next experiments
 
 - Confirm attack phase semantics (`$6C` 0..3), high/low/side bits, `$5A`.
 - Determine whether `sub_1634E`/`ram_FF1B24` is dead.
 - Map `$74` profiles to action handlers and enemy aggression.
-- Weapon visual is attack-only; club transfer timing is confirmed by the `$6B` branch (no idle sprite).
+- Weapon visual is attack-only; actual club transfer timing is still not dynamically observed.
 - Determine if punches damage `BikeDamage` or only knock/steer; player hit response.
-  Forced proximity/attack reached `$6C=2` but left `BikeDamage=0`; try a longer/natural
-  impact and an armed opponent.
+  Forced proximity/attack left `BikeDamage=0`; club attacks are a separate impact path.
 - Dynamic: race, press C/Up/Down near an opponent; breakpoints at `0x162B0`,
   `0x16732`, `0x16458`, `0x16612`, `0x1666A`, `0x16520`; inspect fields and
   opponent reaction. Test armed vs unarmed opponents.

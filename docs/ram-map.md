@@ -173,10 +173,12 @@ Dynamic snapshots `[dynamic]` (2026-11-09): active list = player A + 7 opponents
 | `+$5C` / `+$5E` / `+$60` | word | tile base / sprite graphics fields | `[dynamic]`/graphics table |
 | `+$66` | word | rating/skill; also spawn speed seed and recycle distance | `[dynamic]` lifecycle |
 | `+$68` | byte | flags; bit6 = active/update marker | `[dynamic]` active `$42`, inactive `$00` |
-| `+$69` | byte | state/attack flags; bit4/5/6 attack, bit2 set under steering | combat + dynamic |
-| `+$6B` | byte | bit0 high attack, bit1 armed/special | combat |
+| `+$69` | byte | state/attack flags; bit4/5/6 attack, bit2 steering | combat + dynamic |
+| `+$6A` | byte | weapon/animation state; low bits copied from `$6B`, bit2 set on attack | `[dynamic]`/patched ROM |
+| `+$6B` | byte | bit0 high attack, bit1 logical club armed (`WEAPON_CLUB`) | combat + patched ROM |
 | `+$6C` / `+$6D` | byte | attack phase / timer | combat |
 | `+$6E` / `+$6F` | byte | animation state/frame (`$FF` normal) | `[dynamic]` |
+| `+$70` | byte | attack/weapon animation timer; `$1E` on club transfer | `[static]`/patched ROM |
 | `+$71` | byte | `Index` | `[dynamic]` |
 | `+$72` | byte | animation frame/index (`Race_SetupActorSprite`) | `[dynamic]` |
 | `+$73` / `+$74` / `+$75` / `+$77` | byte | definition bytes 3/1/2/4; `+$74` AI profile, `+$75` graphics | `[confirmed]` |
@@ -228,7 +230,7 @@ Buffers: `Intro_TitleScrollTable`/`Intro_TitleScrollSpeed` (+$400 SAT),
 | `$FF1B24` | AI combat input | 1 | bits decoded by `sub_1634E`; writer unknown. |
 | `$FF1A68` | combat/graphics record | 4 | Actor graphics record used for ranges/cooldowns. |
 | `$FF1786` | nearest-target distance | 4 | Target distance used by AI actions. |
-| `$FF1AD6`/`$FF1AD7` | SFX IDs | 1 | Passed to `Audio_PlaySfx` (`$0E` on attack phase 1). |
+| `$FF1AD6`/`$FF1AD7` | SFX IDs | 1 | `$1AD6` event/impact/steal/fall; `$1AD7=$0E` armed attack phase 1 (not a confirmed hit). |
 | `$FF1906` | attack phase-1 flag | 2 | Set by attack state timer. |
 
 `Race_ActorDefinitionTable` byte1 -> `$74` (AI profile), byte2 low7 -> `$75`
