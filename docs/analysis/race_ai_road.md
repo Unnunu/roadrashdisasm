@@ -14,6 +14,9 @@ Applied in R4: `Race_BuildActorObjectList`, `Race_AddSpecialObject`,
 `Race_BuildTrackObjects`, `Race_ProjectTrackObject`,
 `Race_ProjectObject`, `Race_ProjectActorObject`.
 
+Applied in R18: `Race_AddActorLeanObject`, `Race_AddActorImpactObject`,
+`Race_AddActorFallObject`, `Race_AddActorWeaponObject`.
+
 Applied in R15: `Race_SelectActorObjectShape`, `Race_SelectActorSpeedShape`,
 `Race_SelectActorIdleShape`, `Race_SelectOpponentShape`,
 `Race_SelectPlayerFinishShape`, `Race_SelectExtraActorShape`,
