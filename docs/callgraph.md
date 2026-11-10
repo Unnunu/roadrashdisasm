@@ -210,7 +210,7 @@ flowchart LR
 | `Race_FinishFrame` | `0x0BD24` | `EndLevel_UpdateAnimation`, `Race_Update` | - |
 | `Race_GetInputDemo` | `0x0BE2C` | `Race_GameTick` | `GetInputPlayerA`, `GetInputPlayerB` |
 | `Race_GetInput` | `0x0BE56` | `Race_GameTick` | `AudioFunc18`, `Audio_StopMusic`, `GetInputPlayerA`, `GetInputPlayerB` |
-| `Race_Update` | `0x0C00C` | `Race_Init`, `TopLevel_Init` | `PiecewiseLinearInterpolation`, `RaceHud_Draw`, `Race_AddSpecialObject`, `Race_AddTrackObjects`, `Race_AddTrackStartObject`, `Race_BuildActorObjectList`, `Race_BuildHScrollTable`, `Race_BuildVScrollInfo`, `Race_ClearActorOnFootFlags`, `Race_DrawRearviewMirror`, `Race_DrawRoadEdges`, `Race_DrawRoadMarkingHud`, `Race_FinishFrame`, `Race_InitExtraStaticActor`, `Race_IntegrateTrackCurve`, `Race_SpawnTick`, `Race_UpdateActorAI`, `Race_UpdateActorActions`, `Race_UpdateActorSpeedState`, `Race_UpdateBikeLean`, `Race_UpdateCamera`, `Race_UpdateExtraStaticActor`, `Race_UpdateNearestOpponent`, `Race_UpdateNearestTarget`, `Race_UpdatePlayerAnimation`, `Race_UpdateSpeedDisplay`, `Race_UpdateStaticActions`, `Race_UpdateStaticActors`, `Race_UpdateTrackObjectCursor`, `RoadMarking_Draw`, `Road_BuildVisibleList`, `Road_DrawObjects`, `Road_FillProfileTables`, `sub_10DBE`, `sub_10DDA`, `sub_11C44`, `sub_11CC8`, `sub_1218C`, `sub_123A8`, `sub_1383E`, `sub_138CE`, `sub_13BF4`, `sub_13E94`, `sub_14E38` |
+| `Race_Update` | `0x0C00C` | `Race_Init`, `TopLevel_Init` | `PiecewiseLinearInterpolation`, `RaceHud_Draw`, `Race_AddSpecialObject`, `Race_AddStagedObjects`, `Race_AddTrackStartObject`, `Race_BuildActorObjectList`, `Race_BuildHScrollTable`, `Race_BuildVScrollInfo`, `Race_ClearActorOnFootFlags`, `Race_DrawRearviewMirror`, `Race_DrawRoadEdges`, `Race_DrawRoadMarkingHud`, `Race_FinishFrame`, `Race_InitExtraStaticActor`, `Race_IntegrateTrackCurve`, `Race_SpawnTick`, `Race_UpdateActorAI`, `Race_UpdateActorActions`, `Race_UpdateActorSpeedState`, `Race_UpdateBikeLean`, `Race_UpdateCamera`, `Race_UpdateExtraStaticActor`, `Race_UpdateNearestOpponent`, `Race_UpdateNearestTarget`, `Race_UpdatePlayerAnimation`, `Race_UpdateSpeedDisplay`, `Race_UpdateStaticActions`, `Race_UpdateStaticActors`, `Race_BuildTrackObjects`, `RoadMarking_Draw`, `Road_BuildVisibleList`, `Road_DrawObjects`, `Road_FillProfileTables`, `sub_10DBE`, `sub_10DDA`, `sub_11C44`, `sub_11CC8`, `sub_1218C`, `sub_123A8`, `sub_1383E`, `sub_138CE`, `sub_13BF4`, `sub_13E94`, `sub_14E38` |
 | `Race_SortResults` | `0x0C378` | `Race_ComputeResults` | - |
 | `Race_ComputeResults` | `0x0C3F8` | `TopLevel_Init` | `MenuPassword_CreatePassword`, `Race_BuildStandings`, `Race_SortResults`, `Race_UpdateHighScoreTable` |
 | `Race_UpdateHighScoreTable` | `0x0C598` | `Race_ComputeResults` | `Race_FormatMoney` |
@@ -264,9 +264,9 @@ flowchart LR
 | `sub_F9C4` | `0x0F9C4` | `Race_BuildActorObjectList` | `Race_ProjectObject` |
 | `sub_FA98` | `0x0FA98` | `Race_BuildActorObjectList` | `Race_ProjectObject` |
 | `Race_AddTrackStartObject` | `0x0FB1E` | `Race_Update` | `Race_ProjectObject`, `sub_15478` |
-| `Race_AddTrackObjects` | `0x0FC0E` | `Race_Update` | `Race_ProjectObject` |
+| `Race_AddStagedObjects` | `0x0FC0E` | `Race_Update` | `Race_ProjectObject` |
 | `Race_AddSpecialObject` | `0x0FD96` | `Race_Update` | - |
-| `Race_ProjectObject` | `0x0FE3A` | `Race_AddTrackObjects`, `Race_AddTrackStartObject`, `Race_BuildActorObjectList`, `sub_F842`, `sub_F90E`, `sub_F9C4`, `sub_FA98` | - |
+| `Race_ProjectObject` | `0x0FE3A` | `Race_AddStagedObjects`, `Race_AddTrackStartObject`, `Race_BuildActorObjectList`, `sub_F842`, `sub_F90E`, `sub_F9C4`, `sub_FA98` | - |
 | `Race_ProjectActorObject` | `0x0FF7E` | `Race_BuildActorObjectList` | - |
 | `sub_100D0` | `0x100D0` | `Race_BuildActorObjectList`, `sub_1030A`, `sub_10384` | `sub_101EA`, `sub_1022E`, `sub_1030A`, `sub_1081A` |
 | `sub_101EA` | `0x101EA` | `sub_100D0` | - |
@@ -281,8 +281,8 @@ flowchart LR
 | `sub_1081A` | `0x1081A` | `sub_100D0` | - |
 | `sub_108DA` | `0x108DA` | `Race_BuildActorObjectList` | - |
 | `Race_WriteSpriteTiles` | `0x10972` | `Race_GameTick` | `DmaWriteVRAM` |
-| `Race_UpdateTrackObjectCursor` | `0x109B6` | `Race_Update` | `Race_ProjectTrackObject` |
-| `Race_ProjectTrackObject` | `0x10C4E` | `Race_UpdateTrackObjectCursor` | - |
+| `Race_BuildTrackObjects` | `0x109B6` | `Race_Update` | `Race_ProjectTrackObject` |
+| `Race_ProjectTrackObject` | `0x10C4E` | `Race_BuildTrackObjects` | - |
 | `Road_BuildVisibleList` | `0x10D46` | `Race_Update` | - |
 | `sub_10DBE` | `0x10DBE` | `Race_Update` | `sub_10E00` |
 | `sub_10DDA` | `0x10DDA` | `Race_Update` | `sub_10E00` |

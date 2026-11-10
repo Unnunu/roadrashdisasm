@@ -1722,7 +1722,7 @@ Race_AddTrackStartObject:
 ; =============== S U B R O U T I N E =======================================
 
 
-Race_AddTrackObjects:
+Race_AddStagedObjects:
                 move.w  #0,(Race_ram_TrackObjectCount).l
                 lea     (Road_ObjectArray).l,a0
                 move.w  (ram_FFDE72).l,d0
@@ -1831,7 +1831,7 @@ Race_AddTrackObjects:
 
 .locret_FD6C:
                 rts
-; End of function Race_AddTrackObjects
+; End of function Race_AddStagedObjects
 
 
                 dc.b   0
@@ -3576,7 +3576,7 @@ Race_WriteSpriteTiles:
 ; =============== S U B R O U T I N E =======================================
 
 
-Race_UpdateTrackObjectCursor:
+Race_BuildTrackObjects:
                 move.w  #$FFFF,(ram_FF1B30).l
                 movea.l (Race_ram_TrackObjectCursor).l,a1
                 move.w  (a1),d0
@@ -3806,7 +3806,7 @@ Race_UpdateTrackObjectCursor:
 .loc_10C48:
                 move.w  #$FFFF,(a0)
                 rts
-; End of function Race_UpdateTrackObjectCursor
+; End of function Race_BuildTrackObjects
 
 
 ; =============== S U B R O U T I N E =======================================

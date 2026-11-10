@@ -138,7 +138,7 @@ This is the double/quad buffering that avoids tearing.
    `PiecewiseLinearInterpolation` passes (`Road_ram_XLeftArray`,
    `Road_ram_MarkingXArray`, `Road_ram_XRightArray`); `Road_FillProfileTables`;
    `Race_BuildVScrollInfo`; `Race_AddSpecialObject`/`Race_AddTrackStartObject`/`Race_BuildActorObjectList`; visible-object
-   lists via `Race_UpdateTrackObjectCursor`/`Race_AddTrackObjects`/`Road_BuildVisibleList`.
+   lists via `Race_BuildTrackObjects`/`Race_AddStagedObjects`/`Road_BuildVisibleList`.
 8. **Draw:** `sub_14E38`, `Race_DrawRoadMarkingHud`, `Race_DrawRoadEdges`; reset
    sprite/tile counters; `RaceHud_Draw`, `Road_DrawObjects`, `RoadMarking_Draw`;
    publish sprite/tile counts; `Race_DrawRearviewMirror`,
@@ -241,7 +241,7 @@ Actors/player structures:
 | Combat | `Race_UpdateNearestTarget` `0x1611A`, `Race_UpdatePlayerAttack`, action handlers, `Race_UpdateCollision` `0x16732` (`src/race/race_combat.asm`) |
 | Camera/scroll/rearview | `Race_UpdateCamera`, `Race_BuildVScrollInfo`/`HScrollTable`, `Race_DrawRearviewMirror`, `Race_DrawRoadMarkingHud`, `Race_UpdateNearestOpponent` (`src/race/race_physics.asm`) |
 | Physics/AI | `Race_UpdateSpeedDisplay`, `Race_SpawnTick`, `Race_UpdateBikeLean`..`Race_UpdateStaticActions` (TODO) |
-| Road/render | `PiecewiseLinearInterpolation`, `Road_FillProfileTables`, `Race_AddSpecialObject/FB1E/F40C`, `Race_UpdateTrackObjectCursor/FC0E`, `Road_BuildVisibleList`, `Road_DrawObjects` (`road_render`), `RoadMarking_Draw` |
+| Road/render | `PiecewiseLinearInterpolation`, `Road_FillProfileTables`, `Race_AddSpecialObject/FB1E/F40C`, `Race_BuildTrackObjects/FC0E`, `Road_BuildVisibleList`, `Road_DrawObjects` (`road_render`), `RoadMarking_Draw` |
 | HUD | `RaceHud_Draw` (`src/race/race_hud.asm`) |
 | Animation | `UpdateAnimation(2)` (`src/race/animation.asm`), `RiderSprites_Build` |
 | Outcome | `Race_ComputeResults` (`0xC3F8`), `Race_SortResults`, `Race_UpdateHighScoreTable`, password/highscore |

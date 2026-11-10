@@ -10,8 +10,8 @@
 
 ## Functions
 Applied in R4: `Race_BuildActorObjectList`, `Race_AddSpecialObject`,
-`Race_AddTrackStartObject`, `Race_AddTrackObjects`,
-`Race_UpdateTrackObjectCursor`, `Race_ProjectTrackObject`,
+`Race_AddTrackStartObject`, `Race_AddStagedObjects`,
+`Race_BuildTrackObjects`, `Race_ProjectTrackObject`,
 `Race_ProjectObject`, `Race_ProjectActorObject`.
 
 Applied in R5: `RoadObject_X/Y/Scale/Limit/Shape/Flags/XOffset/Shape2/Size`;
@@ -30,9 +30,9 @@ Applied in R5: `RoadObject_X/Y/Scale/Limit/Shape/Flags/XOffset/Shape2/Size`;
 | `Race_ComputeStandings` | `0xEFA4` | Race standings/results (top-level after the race). |
 | `Race_ScaleResultValue` | `0xF0E4` | Result/progress scaling with `RaceTrack_Data1`. |
 | `Race_UpdateSpeedDisplay`/`Race_FormatDecimal` | `0xF108`/`0xF11C` | Speed/decimal HUD. |
-| `Race_BuildActorObjectList`/`Race_AddSpecialObject`/`Race_AddTrackStartObject`/`Race_AddTrackObjects` | `0xF40C`+ | Road/object render helpers (TODO). |
+| `Race_BuildActorObjectList`/`Race_AddSpecialObject`/`Race_AddTrackStartObject`/`Race_AddStagedObjects` | `0xF40C`+ | Road/object render helpers (TODO). |
 | `Race_WriteSpriteTiles` | `0x10972` | Sprite-tile staging to VRAM. |
-| `Race_UpdateTrackObjectCursor`/`Race_ProjectTrackObject` | `0x109B6`/`0x10C4E` | Object/sprite tile copies (TODO). |
+| `Race_BuildTrackObjects`/`Race_ProjectTrackObject` | `0x109B6`/`0x10C4E` | Object/sprite tile copies (TODO). |
 | `Road_BuildVisibleList` | `0x10D46` | Visible object list (`ram_FF1B50`/`1C50`/`1D50`). |
 | `sub_10DBE`/`sub_10DDA` | `0x10DBE`/`0x10DDA` | Actor/visible-list helpers. |
 
@@ -101,34 +101,34 @@ still TODO.
 - `Race_AddTrackStartObject` (`0xFB1E`) appends the track-start object selected from
   `RaceTrack_Data1`/player progress, sets its record/flags, and projects it through
   `Race_ProjectObject`.
-- `Race_AddTrackObjects` (`0xFC0E`) walks the track object stream cursor `Race_ram_TrackObjectRecordCursor`, appends
+- `Race_AddStagedObjects` (`0xFC0E`) walks the track object stream cursor `Race_ram_TrackObjectRecordCursor`, appends
   visible objects with `Race_ProjectObject`, and stores the per-shape depth data from
   `ram_FFD77C`.
-- `Race_UpdateTrackObjectCursor` (`0x109B6`) advances/rewinds the track-object stream cursor
+- `Race_BuildTrackObjects` (`0x109B6`) advances/rewinds the track-object stream cursor
   `Race_ram_TrackObjectCursor`/`Race_ram_TrackObjectDistance` against player progress; `Race_ProjectTrackObject` consumes the
   resulting object/shape data into the object records.
 
 ### Track-stream dynamic snapshot
 
-At `Race_UpdateTrackObjectCursor` (`0x109C4`):
+At `Race_BuildTrackObjects` (`0x109C4`):
 
 - `PlayerProgress=$00078000`, `Race_ram_TrackObjectCursor=$00027984`, `Race_ram_TrackObjectDistance=0`;
 - ROM cursor bytes start `00 7F A0 00 80 39 01 AC 81 FA 00 15 ...`.
 
-At `Race_AddTrackObjects` (`0xFC5A`):
+At `Race_AddStagedObjects` (`0xFC5A`):
 
 - `Race_ram_TrackObjectRecordCursor=$00FFD7D4`, `ram_FFDE72=22`;
 - RAM-staged entries start `00 A7 02 18`, `01 A5 01 18`, `02 BC 05 0F`,
   `02 BE 02 0E`.
 
-This confirms that `Race_UpdateTrackObjectCursor` walks the ROM/pointer stream
-(`Race_ram_TrackObjectCursor`), while `Race_AddTrackObjects` consumes the RAM-staged 4-byte records
+This confirms that `Race_BuildTrackObjects` walks the ROM/pointer stream
+(`Race_ram_TrackObjectCursor`), while `Race_AddStagedObjects` consumes the RAM-staged 4-byte records
 at `Race_ram_TrackObjectRecordCursor`. In each staged word, the high word is the position key, `byte2`
 is the shape/type selector, and `byte3` is the length/row selector (working model).
 
-### `Race_UpdateTrackObjectCursor` field model
+### `Race_BuildTrackObjects` field model
 
-`Race_UpdateTrackObjectCursor` reads a 4-byte entry and builds `Road_ObjectArray`
+`Race_BuildTrackObjects` reads a 4-byte entry and builds `Road_ObjectArray`
 records directly:
 
 - word0 low 7 bits + `$186` selects the shape (with a range remap);
@@ -139,12 +139,12 @@ records directly:
 - the routine writes `$A` flags, second shape, shape IDs, and updates
   `Race_ram_TrackObjectCursor/Distance` and `ram_FFDE72`.
 
-This is distinct from the RAM-staged list consumed by `Race_AddTrackObjects`
+This is distinct from the RAM-staged list consumed by `Race_AddStagedObjects`
 (4-byte entries: high word position, byte2 type, byte3 length).
 
 ### Track-object stream format (static hypothesis)
 
-`Race_AddTrackObjects` reads 4-byte entries from the `Race_ram_TrackObjectRecordCursor` cursor (track stream in
+`Race_AddStagedObjects` reads 4-byte entries from the `Race_ram_TrackObjectRecordCursor` cursor (track stream in
 `RaceTrack_Data4`-adjacent data):
 
 - word at `+0`: position/progress key; compared with `Race_ram_PlayerProgress`;
@@ -156,13 +156,13 @@ This is distinct from the RAM-staged list consumed by `Race_AddTrackObjects`
 - record flags carry the shadow/priority/mirror bits already documented for
   `Road_DrawObject`.
 
-`Race_UpdateTrackObjectCursor` maintains the same stream cursor during normal play: it rewinds when
+`Race_BuildTrackObjects` maintains the same stream cursor during normal play: it rewinds when
 past entries are behind the player, advances when the next entry is visible, and
 keeps `Race_ram_TrackObjectDistance` as the accumulated stream distance. The exact nibble units and
 the `RaceTrack_Data4` terminator role are still TODO.
 
 These helpers are called from `Race_Update` around the road-profile/visible-list
-stage (`Race_AddSpecialObject`, `Race_AddTrackStartObject`, `Race_BuildActorObjectList`, `Race_UpdateTrackObjectCursor`, `Race_AddTrackObjects`).
+stage (`Race_AddSpecialObject`, `Race_AddTrackStartObject`, `Race_BuildActorObjectList`, `Race_BuildTrackObjects`, `Race_AddStagedObjects`).
 
 ### Dynamic object-list snapshot
 
@@ -191,7 +191,7 @@ by `Road_DrawObjects`/`Road_DrawStrip`.
 
 ## Open questions
 
-- Exact object/road-render helpers `Race_BuildActorObjectList`..`Race_AddTrackObjects`, `Race_UpdateTrackObjectCursor`/`Race_ProjectTrackObject`.
+- Exact object/road-render helpers `Race_BuildActorObjectList`..`Race_AddStagedObjects`, `Race_BuildTrackObjects`/`Race_ProjectTrackObject`.
 - The visible-list sort/list layout and the `Ram_FF1D50` ordering.
 - The standings/results data (`Race_ComputeStandings`/`Race_ScaleResultValue`).
 - Track/curve tables in the gap (can be dumped into the build if needed).

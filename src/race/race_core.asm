@@ -1943,11 +1943,11 @@ Race_Update:
                 jsr     (Race_AddTrackStartObject).l
                 jsr     (Race_BuildActorObjectList).l
                 move.w  (ram_FFDE72).l,(ram_FF1B48).l
-                jsr     (Race_UpdateTrackObjectCursor).l
+                jsr     (Race_BuildTrackObjects).l
                 move.w  (ram_FFDE72).l,d0
                 sub.w   (ram_FF1B48).l,d0
                 move.w  d0,(ram_FF1B4A).l
-                jsr     (Race_AddTrackObjects).l
+                jsr     (Race_AddStagedObjects).l
                 lea     (ram_FF1B50).l,a6
                 move.w  (ram_FFDE72).l,d7
                 asl.w   #2,d7
