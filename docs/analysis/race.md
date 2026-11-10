@@ -11,6 +11,7 @@
 - **Status:** partially analyzed (top-level flow, init/assets, input/loop, buffer
   rotation, initial struct inventory; actor/physics/AI and sub-module internals TODO)
 - **Related:** `docs/architecture.md`, `docs/ram-map.md`, `docs/hardware.md`,
+  `docs/analysis/coverage.md`, `docs/analysis/race_impact_map.md`,
   `docs/analysis/road_render.md`, `docs/analysis/track_data.md`, `docs/analysis/uncompress.md`
 
 ## Coverage matrix (top level)
