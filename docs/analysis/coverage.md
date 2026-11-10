@@ -47,7 +47,7 @@ Priority is analytical impact, not address order.
 | 3 | `Race_FindTargetActor`, `Race_SaveActorShadow` | target selection + shadow sync role | log target candidates/shadow state | target/shadow contract |
 | 4 | `Race_UpdateActorMovement/FallMovement`, `sub_115C6` | exact `$36–$3C` roles | normal/steer/off-road/fall snapshots | movement matrix update |
 | 5 | `Race_GetCurveSpeedLimit`, `Race_UpdateBikeCurve`, `Race_UpdateLeanCurve` | curve limit and `$40/$78` | high-speed steering trace | curve contract |
-| 6 | Road render helpers: `Race_ProjectObject`, `Race_ProjectActorObject`, `Road_DrawStrip`, `Road_WriteTileColumns` | projection/shape row bytes | object/shape samples + SAT/VSRAM | render/shape doc |
+| 6 | Road render helpers: `Race_ProjectObject`, `Race_ProjectActorObject`, `Road_DrawStrip`, `Road_WriteTileColumns` | exact row/tile mapping | **progress:** shape record layout + row start confirmed; SAT/VSRAM next | render/shape doc |
 | 7 | `Race_ApplyCollisionImpact`, `Race_ApplyCrashImpact`, impact chain | `$2A/$2C/$2E/$56` and damage timing | forced impact/fall trace | impact contract |
 | 8 | Track/shape data formats | stream channels, table fields | decode one full level; compare producers/consumers | format spec |
 | 9 | Screens flow | non-demo inputs/visuals | native screenshots + scripted states | screen state machines |

@@ -39,33 +39,33 @@ pointers = symmetric/mirrored shapes). The ordered first pointers are
 | `$1C4` | `$078CD4` | `09 46 13 2A` | `$2A13` |
 | `$15E` | `$069924` | `0A 47 1A 47` | `$471A` |
 
-Working model (static + dynamic, exact row bytes still partly TODO):
+Confirmed record layout (static + dynamic; exact row pixel mapping still TODO):
 
-- `P[0]` = left strip control; `P[1]` = right strip control;
-- `P[2]/P[3]` = fill/tile word (non-special path);
-- `P+4` onward = row/tile data consumed by `Road_WriteTileColumns`;
-- special/two-part path advances the pointer by 2, so its controls are
-  `P+2/P+3`, fill word `P+4/P+5`, row data `P+6`.
-- `Road_ScaleShape`/`Road_ProjectShape` use `P[0]`/`P[1]` and the mirror bit;
-  `P[2]` participates in the mirror-edge calculation.
+| Pointer | Non-special path | Special/two-part path (`$B` bit7) |
+|---|---|---|
+| `P+0` | left strip control | first-shape projection control |
+| `P+1` | right strip control | first-shape projection control |
+| `P+2` | fill/tile word high | left strip control |
+| `P+3` | fill/tile word low | right strip control |
+| `P+4` | row/tile data | fill/tile word high |
+| `P+5` | row/tile data | fill/tile word low |
+| `P+6` | row/tile data | row/tile data |
 
-Working layout (static + dynamic):
-
-- non-special path: `P[0..1]` is the first word copied to `ram_FFDE5E`;
-  `P[2]` controls the left strip count and `P[3]` the right strip count;
-  `P+2`/`P+4` onward is the row/tile data used by
-  `Road_WriteTileColumns`.
-- special path (`$B` bit7): `ram_FF1348` is advanced by 2, so `P+2` is the
-  fill/tile word and `P+4` is the row/tile data.
-- `Road_InterpolateLeftEdge` reads the single control byte at `P+2`
-  (non-special) and derives `ram_FF1332`; `Road_InterpolateRightEdge` reads
-  `P+3`. The remaining shape bytes feed the tile-column writer.
+- `Road_InterpolateLeftEdge` consumes `P+0` (or `P+2` in the special path).
+- `Road_InterpolateRightEdge` consumes `P+1` (or `P+3`).
+- `Road_DrawStrip` then reads the fill/tile word: `P+2/P+3` or `P+4/P+5`.
+- `Road_WriteTileColumns` starts at the next byte and consumes row/tile bytes;
+  the interpolators produce per-strip byte offsets in `ram_FF0D2E`/`ram_FF102E`.
+- `Road_ScaleShape` reads `P+0/P+1/P+2`; `Road_ProjectShape` reads `P+0`;
+  the mirror bit uses the `P+2` width delta.
 
 - `[dynamic]` At `Road_WriteTileColumns` the first two objects had
 `ram_FF0D2A=$059952`/`$059CEE` (shape pointer + 6; special/mirror offset), strip counts
-`ram_FF132E=4`/`3`, `ram_FF1330=$35`, and row/tile bytes dominated by `$00`/`$33`.
-This is consistent with header word + two control bytes followed by raw
-column/tile bytes.
+`ram_FF132E=4`/`3`, `ram_FF1330=$35`. Row bytes at `$059952`:
+`00 00 00 00 00 00 00 00 33 33 00 00 ...`; at `$059CEE`:
+`00 00 00 00 00 00 00 00 33 33 30 00 ... 32`. Tile data is therefore a byte
+sequence consumed with the interpolated per-strip offsets; exact tile/row mapping
+is still TODO.
 
 `[dynamic]` For `$56`, `Road_ScaleShape` sees `P=$05994C` and reads
 `10/37/20`; `Road_DrawStrip` then receives `a0=$05994E` (P+2), whose first word is
@@ -86,13 +86,15 @@ the word at `+2` becomes `ram_FFDE5E` (tile/fill base), and `+4` onward is the
 per-row strip data copied/interpolated into `ram_FF0D2E`/`ram_FF102E`.
 
 `[dynamic]` First demo `Road_DrawStrip`: shape id `$56`, pointer `$05994C`,
-bytes `10 37 20 36 00...`; `Road_ScaleShape` reads `10/37/20`, then
-`Road_DrawStrip` receives `a0=$05994E` and its first word is `$2036`. This confirms
-the `+2` handoff; exact row encoding is still TODO.
+bytes `10 37 20 36 00...`; `Road_ScaleShape` reads `10/37/20`, then the special path
+passes `a0=$05994E` (P+2): left control `$20`, right control `$36`, fill word
+`$2036` at P+4/P+5, and row data starts at `$059952` (P+6). This confirms the
+special-path table above; exact tile/row pixel mapping is still TODO from
+`Road_WriteTileColumns`.
 
 ## Open questions
 
-- Shape record format: header/edges/width and the `scale>>2` fields.
+- Exact row/tile byte mapping and the `Road_WriteTileColumns` 4-byte strip layout.
 - Which table entries are road pieces vs object/background shapes.
 - Why some pointers repeat (mirroring/aliasing) and how flags select them.
 - `unk_7DCA8`, `RaceHud_NeedleScript` (HUD needle script), `Shop_BikePalettes` and the remaining

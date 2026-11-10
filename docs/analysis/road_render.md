@@ -2,8 +2,8 @@
 
 - **Module:** race road-strip/tile renderer and visible-object sprite renderer
 - **ROM range:** `0x008FB4`–`0x0098C1` (`src/race/race_hud_debug.asm` starts at `0x98C2`)
-- **Status:** partially analyzed: object list/records, call graph and road-strip
-  structure confirmed; the exact shape/projection math is TODO
+- **Status:** partially analyzed: object list/records, call graph, shape record layout
+  and road-strip structure confirmed; exact row/tile mapping and projection edge cases TODO
 - **Source:** `src/race/road_render.asm`
 - **Related:** `docs/architecture.md`, `docs/hardware.md`, `docs/ram-map.md`,
   `docs/analysis/rider_sprites.md`
@@ -112,9 +112,13 @@ rendering each object and restores them on overflow.
   it at `0x10018`/`0x10352` too); `word_3C7EA` holds the shape count `$234`.
 - Shape data (`$3C7EC-$7DCA7`) is now extracted in `src/data/road_shapes.asm` (table/count from
   source, bytes raw; format TODO).
-- `Road_ScaleShape` reads shape bytes `(a2)`/`1(a2)` and uses `2(a2)` when the
-  mirror bit (`$A` bit15) is set: `d5/d6 = byte * (scale>>2) <<2 >>16`, i.e. a
-  fixed-point `byte * scale >> 16` pair.
+- `Road_ScaleShape` reads `P+0/P+1` and uses `P+2` when the mirror bit
+  (`$A` bit15) is set: `d5/d6 = byte * (scale>>2) <<2 >>16`, i.e. a fixed-point
+  `byte * scale >> 16` pair.
+- Non-special shape: `P+0` left control, `P+1` right control, `P+2/P+3` fill/tile
+  word, `P+4` row data. Special/two-part shape: the pointer is advanced by 2, so
+  `P+2/P+3` are controls, `P+4/P+5` fill word, `P+6` row data. See
+  `docs/analysis/road_shapes.md`.
 - `Road_ProjectShapeSpecial` multiplies shape byte0 by `scale>>2`, subtracts the
   edge (`d5`), adds object X, `$C0`, applies the mirror bit and clips; it returns
   the projected edge and sets `ram_FFDE62` when outside `0..edge`.
@@ -159,6 +163,6 @@ rendering each object and restores them on overflow.
   animation state with `RiderSprites_Build`/`src/race/animation.asm`. `[static]`
 - The object `+$E`/`+$10` words are not read here; they belong to the race-side object
   logic. `[static]`
-- TODO: exact shape-byte format, the `$C0/$200` constants and the interpolation;
-  map the 16 demo objects to their race roles (player/opponents/props).
+- TODO: exact row/tile mapping, the `$C0/$200` constants and interpolation edge
+  cases; map the 16 demo objects to their race roles (player/opponents/props).
 
