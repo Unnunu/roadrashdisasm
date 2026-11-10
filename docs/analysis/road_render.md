@@ -53,17 +53,17 @@ caller in the disassembled source; likely an unused/alternate strip generator.
 - Object array `Road_ObjectArray` (`$FFD37C`), 0x14 bytes per record. Fields used by this
   module:
 
-| Offset | Use |
-|---|---|
-| `+0` | signed x (road/object position). |
-| `+2` | y / vertical position. |
-| `+4` | scale (`<<2` -> `ram_FF1350`, movement per frame). |
-| `+6` | horizon/limit (`ram_FF136A`). |
-| `+8` | shape index into `Road_ShapeTable` -> `ram_FF1348`. |
-| `+$A` | flags: bit15 = shadow/overlay (`ram_FF133A`); bits 12-13 -> `ram_FF133E` (`<<1`); bit7 of `$B` = special/two-part path; low 3 bits = sprite rows to copy. |
-| `+$C` | sprite x offset. |
-| `+$E`,`+$10` | not read by this module (race-side data). |
-| `+$12` | second shape index (two-part object). |
+| Offset | Symbol | Use |
+|---|---|---|
+| `+0` | `RoadObject_X` | signed x (road/object position). |
+| `+2` | `RoadObject_Y` | y / vertical position. |
+| `+4` | `RoadObject_Scale` | scale (`<<2` -> `ram_FF1350`, movement per frame). |
+| `+6` | `RoadObject_Limit` | horizon/limit (`ram_FF136A`). |
+| `+8` | `RoadObject_Shape` | shape index into `Road_ShapeTable` -> `ram_FF1348`. |
+| `+$A` | `RoadObject_Flags` | bit15 = shadow/overlay (`ram_FF133A`); bits 12-13 -> `ram_FF133E` (`<<1`); bit7 of `$B` = special/two-part path; low 3 bits = sprite rows to copy. |
+| `+$C` | `RoadObject_XOffset` | sprite x offset. |
+| `+$E`,`+$10` | `RoadObject_ReservedE/10` | not read by this module (race-side data). |
+| `+$12` | `RoadObject_Shape2` | second shape index (two-part object). |
 
 `Road_DrawObjects` saves `Animation_ram_TileIndex/SpriteIndex` in `ram_FF1362/1364` before
 rendering each object and restores them on overflow.
