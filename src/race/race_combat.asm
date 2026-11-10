@@ -106,7 +106,7 @@ Race_UpdateNearestTarget:
                 cmpi.b  #1,$6C(a1)
                 bne.w   .loc_16248
                 move.w  #1,(ram_FF1904).l
-                bsr.w   Audio_UpdateEngine0
+                bsr.w   Race_TriggerArmedAttackSfx
 
 .loc_16248:
                 cmpi.b  #3,$6C(a1)
@@ -333,7 +333,7 @@ Race_DispatchActorAction:
 loc_1646E:
                 btst    #4,$69(a1)
                 beq.w   loc_1647C
-                bsr.w   Audio_UpdateEngineState
+                bsr.w   Race_UpdateAttackPhase
 
 loc_1647C:
                 bclr    #2,$69(a1)
@@ -396,14 +396,14 @@ locret_1651E:
 
 
  ; *************************************************
-; Function Audio_UpdateEngine0 (name TBD; likely attack SFX)
+; Function Race_TriggerArmedAttackSfx (name TBD; likely attack SFX)
 ; Sets the attack SFX/state flag when attack phase 1 is active.
 ; In:  a1 - actor $6C/$6B/$69
 ; Out: ram_FF1AD7=$0E
 ; Clobbers: d0
 ; *************************************************
 
-Audio_UpdateEngine0:
+Race_TriggerArmedAttackSfx:
                 cmpi.b  #1,$6C(a1)
                 bne.w   .locret_16546
                 btst    #1,$6B(a1)
@@ -414,21 +414,21 @@ Audio_UpdateEngine0:
 
 .locret_16546:
                 rts
-; End of function Audio_UpdateEngine0
+; End of function Race_TriggerArmedAttackSfx
 
 
 ; =============== S U B R O U T I N E =======================================
 
 
  ; *************************************************
-; Function Audio_UpdateEngineState (name TBD; likely attack state timer)
+; Function Race_UpdateAttackPhase (name TBD; likely attack state timer)
 ; Advances the attack phase/timer using unk_257E2/E8/EE timing tables.
 ; In:  a1 - actor $6B/$69/$6C/$6D; Race_ram_FrameDelay
 ; Out: actor $6C/$6D; ram_FF1906; ram_FF1AD7
 ; Clobbers: d0/a4
 ; *************************************************
 
-Audio_UpdateEngineState:
+Race_UpdateAttackPhase:
                 move.w  #0,(ram_FF1906).l
                 move.w  (Race_ram_FrameDelay).l,d0
                 sub.b   d0,$6D(a1)
@@ -437,7 +437,7 @@ Audio_UpdateEngineState:
                 cmpi.b  #1,$6C(a1)
                 bne.w   .loc_16578
                 move.w  #1,(ram_FF1906).l
-                bsr.s   Audio_UpdateEngine0
+                bsr.s   Race_TriggerArmedAttackSfx
 
 .loc_16578:
                 cmpi.b  #3,$6C(a1)
@@ -469,7 +469,7 @@ Audio_UpdateEngineState:
 
 .locret_165CE:
                 rts
-; End of function Audio_UpdateEngineState
+; End of function Race_UpdateAttackPhase
 
 
 ; =============== S U B R O U T I N E =======================================

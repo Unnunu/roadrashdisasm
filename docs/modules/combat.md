@@ -25,7 +25,7 @@ the club (`WEAPON_CLUB`). It is visible only during the attack animation.
 | `Race_StealClub`/Mirror | `0x149C4`/`0x14B04` | [x] | [~] | [x] | [x] | [x] | [~] | static transfer + patched-ROM visual |
 | `sub_1634E` AI input | `0x1634E` | [~] | [~] | [~] | [x] | [~] | [ ] | unreferenced |
 | `Race_DispatchActorAction` dispatcher | `0x16458` | [x] | [~] | [x] | [x] | [x] | [~] | static + forced dispatch |
-| `Audio_UpdateEngine0/State` | `0x16520`/`0x16548` | [x] | [~] | [x] | [x] | [~] | [ ] | name TBD |
+| `Race_TriggerArmedAttackSfx/State` | `0x16520`/`0x16548` | [x] | [~] | [x] | [x] | [~] | [ ] | name TBD |
 | action handlers | `0x165D0`–`0x166F0` | [~] | [~] | [x] | [x] | [~] | [ ] | static |
 | pair collision/knockback | `0x124E2`, `0x12A88`–`0x12B24` | [x] | [~] | [x] | [x] | [x] | [~] | static + forced armed/unarmed reach |
 | `Race_UpdateCollision` | `0x16732` | [x] | [~] | [x] | [x] | [x] | [~] | static + forced low/high armed |

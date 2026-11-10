@@ -69,8 +69,8 @@ is the only weapon in the game.
 
 `Race_UpdateNearestTarget` (`0x1611A`) also drives the attack timer: while
 `ram_FF1B22` is set it decrements `$6D`, advances `$6C`, calls
-`Audio_UpdateEngine0` at phase 1, and clears the attack at phase 3.
-`Audio_UpdateEngine0`/`Audio_UpdateEngineState` are probably **attack SFX/state**
+`Race_TriggerArmedAttackSfx` at phase 1, and clears the attack at phase 3.
+`Race_TriggerArmedAttackSfx`/`Race_UpdateAttackPhase` are probably **attack SFX/state**
 despite the current names; rename only after dynamic confirmation.
 
 ## Combat/AI action handlers
@@ -204,7 +204,7 @@ otherwise `abs(d0) >> 11` and stores it in `ram_FF1B28`.
 Whether a player punch changes the opponent’s bike-damage/knockdown only through
 these impact helpers is still a dynamic question.
 
-Attack SFX: `Audio_UpdateEngine0` sets `ram_FF1AD7=$0E` at attack phase 1;
+Attack SFX: `Race_TriggerArmedAttackSfx` sets `ram_FF1AD7=$0E` at attack phase 1;
 `sub_14E38` passes `ram_FF1AD6/AD7` to `Audio_PlaySfx`.
 
 ## Dynamic test 1 (player attack, native console)
@@ -323,7 +323,7 @@ falls back to `$1AD7` when it is zero.
 
 | ID | Source path | Meaning |
 |---|---|---|
-| `$0E` | `$1AD7` in `Audio_UpdateEngine0` | armed attack phase 1 / swing, not a confirmed hit |
+| `$0E` | `$1AD7` in `Race_TriggerArmedAttackSfx` | armed attack phase 1 / swing, not a confirmed hit |
 | `$15` | `Race_StealClub`/Mirror | club takeover |
 | `$0D` / `$0F` | fall paths | knockdown/crash event candidates |
 | `$09` / `$11` / `$14` / `$16` | collision/attack branches | event IDs; hit-vs-miss mapping still TODO |

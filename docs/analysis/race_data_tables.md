@@ -38,7 +38,7 @@ bridge.
 | `unk_25812` | `$25812` | `$44` | 34 words used by `src/race/race_ai.asm`. |
 
 `Race_InitPhysicsConstants` copies `unk_257D0` (9 words) and the two long pairs;
-`Audio_UpdateEngineState` reads `unk_257E2/E8/EE`; `race_ai` uses `unk_25812`.
+`Race_UpdateAttackPhase` reads `unk_257E2/E8/EE`; `race_ai` uses `unk_25812`.
 
 ## Actor / AI (`$259B6-$25EBF`)
 

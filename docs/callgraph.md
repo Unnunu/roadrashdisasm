@@ -386,12 +386,12 @@ flowchart LR
 | `sub_160B0` | `0x160B0` | `MainMenu_GameTick` | - |
 | `sub_160CC` | `0x160CC` | `MainMenu_GameTick` | - |
 | `Race_UpdatePlayerAnimation` | `0x160E2` | `Race_Update` | - |
-| `Race_UpdateNearestTarget` | `0x1611A` | `Race_Update` | `Audio_UpdateEngine0`, `Race_UpdatePlayerAttack`, `sub_14FB4` |
+| `Race_UpdateNearestTarget` | `0x1611A` | `Race_Update` | `Race_TriggerArmedAttackSfx`, `Race_UpdatePlayerAttack`, `sub_14FB4` |
 | `Race_UpdatePlayerAttack` | `0x162B0` | `Race_UpdateNearestTarget` | - |
 | `sub_1634E` | `0x1634E` | - | `Race_UpdateActorSpeedState` |
-| `Race_DispatchActorAction` | `0x16458` | - | `Audio_UpdateEngineState`, `Race_FindTargetActor`, `sub_13D44` |
-| `Audio_UpdateEngine0` | `0x16520` | `Audio_UpdateEngineState`, `Race_UpdateNearestTarget` | - |
-| `Audio_UpdateEngineState` | `0x16548` | `Race_DispatchActorAction` | `Audio_UpdateEngine0` |
+| `Race_DispatchActorAction` | `0x16458` | - | `Race_UpdateAttackPhase`, `Race_FindTargetActor`, `sub_13D44` |
+| `Race_TriggerArmedAttackSfx` | `0x16520` | `Race_UpdateAttackPhase`, `Race_UpdateNearestTarget` | - |
+| `Race_UpdateAttackPhase` | `0x16548` | `Race_DispatchActorAction` | `Race_TriggerArmedAttackSfx` |
 | `Race_ActorSteerRoadCenter` | `0x165D0` | - | `Race_UpdateActorSpeedGear`, `sub_1384C` |
 | `Race_ActorSteerThrottle` | `0x165E0` | `Race_ActorSteerCollide` | `Race_UpdateActorSpeedState`, `sub_1384C` |
 | `Race_ActorCollideSteer` | `0x16612` | `Race_ActorAttackIfClose`, `Race_ActorRandomCombatChoice` | `Race_UpdateActorSpeedGear`, `Race_UpdateCollision`, `sub_1333C` |

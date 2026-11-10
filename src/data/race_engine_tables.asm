@@ -8,7 +8,7 @@ unk_257D0:
     dc.w    $0100,$0600,$0E00,$0A00,$1100,$0A00,$0A00,$1000
     dc.w    $1000
 
-; unk_257E2/E8/EE: engine timing tables used by Audio_UpdateEngineState.
+; unk_257E2/E8/EE: engine timing tables used by Race_UpdateAttackPhase.
 unk_257E2:
     dc.w    $1E00,$1500,$1500
 
