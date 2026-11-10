@@ -1,7 +1,7 @@
 # Module card: `src/race/race_combat.asm`
 
 - **ROM range:** `0x01611A`–`0x01685F` (`src/race/animation.asm` starts at `0x16860`)
-- **Status:** club transfer/attack visuals dynamically confirmed; AI/damage edge cases remain
+- **Status:** club state/attack visuals dynamically confirmed; actual transfer static; AI/damage edge cases remain
 - **Files:** `src/race/race_combat.asm`; action table in `src/race/race_ai.asm`
   (`Race_ActorActionTable`); temporary enum in `src/race/combat_const.asm`
 - **Related:** `docs/analysis/combat.md`, `docs/analysis/race_ai.md`,
