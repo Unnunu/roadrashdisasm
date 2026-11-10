@@ -310,7 +310,7 @@ flowchart LR
 | `sub_12414` | `0x12414` | `sub_11CC8` | - |
 | `Race_UpdateActorPairCollision` | `0x124E2` | `sub_11CC8`, `sub_1218C`, `sub_123A8` | `Race_GetAttackerReach`, `Race_GetCollisionExtent`, `Race_GetDefenderReach` |
 | `Race_ClearActorOnFootFlags` | `0x1281E` | `Race_Update` | - |
-| `Race_UpdateStaticActors` | `0x12868` | `Race_Update` | `Race_UpdateActorFallMovement`, `Race_UpdateActorMovement`, `sub_113A4`, `sub_12C9A`, `Race_BuildTargetCandidates`, `sub_13DE0` |
+| `Race_UpdateStaticActors` | `0x12868` | `Race_Update` | `Race_BuildTargetCandidates`, `Race_UpdateActorFallMovement`, `Race_UpdateActorMovement`, `sub_113A4`, `sub_12C9A`, `sub_13DE0` |
 | `Race_InitExtraStaticActor` | `0x128E0` | `Race_Update` | `Rand_GetWord` |
 | `Race_UpdateExtraStaticActor` | `0x12974` | `Race_Update` | - |
 | `Race_GetCollisionExtent` | `0x12A88` | `Race_UpdateActorPairCollision` | `Race_GetActorCollisionExtent`, `Race_GetStaticCollisionExtent` |
@@ -337,7 +337,7 @@ flowchart LR
 | `Race_ScaleActorSpeed` | `0x136B6` | `Race_ApplyActorSpeedCorrection` | - |
 | `Race_SetupActorSprite` | `0x13746` | `Race_SetupActor`, `Race_UpdateActorAI` | `Race_AddTargetCandidate` |
 | `Race_BuildTargetCandidates` | `0x137E4` | `Race_UpdateStaticActors` | `Race_AddTargetCandidate` |
-| `Race_AddTargetCandidate` | `0x13812` | `Race_SetupActorSprite`, `Race_BuildTargetCandidates` | - |
+| `Race_AddTargetCandidate` | `0x13812` | `Race_BuildTargetCandidates`, `Race_SetupActorSprite` | - |
 | `sub_1383E` | `0x1383E` | `Race_Update` | - |
 | `Race_UpdateActorRoadSteering` | `0x1384C` | `Race_ActorNormalUpdate`, `Race_ActorNormalVariant`, `Race_ActorPursueAttack`, `Race_ActorSteerRoadCenter`, `Race_ActorSteerThrottle` | - |
 | `Race_SteerTowardTarget` | `0x13892` | `Race_UpdateActorSpeedCurve` | - |
