@@ -85,7 +85,12 @@ actors; it updates `$30` and the draw Y difference.
 Existing pair/combat captures (`analysis/capture_pair_*`,
 `analysis/capture_combat_*`) cover attack overlap and contact. A focused forced
 impact should log `$1C/$2A/$2C/$2E/$54/$5C` at `Race_ApplyCollisionImpact` and
-`Race_ApplyFallKnockdown`; this is the next cheap validation.
+`Race_ApplyFallKnockdown`.
+
+`[dynamic]` Demo pair reached `Race_ApplyCollisionImpact` (`0x14486`):
+`a1=$FF252A`, `a2=$FF2EAA`, pre-call `$1C=0`, `$2A=$1C39`, `$2C/$2E=0`,
+`$5C=$0500`, `$68=$52`, `$69=$04`. The call is live; post-call
+`$2A/$2C/$2E/$54/$5C` values still need a return-breakpoint capture.
 
 ## Open points
 

@@ -48,7 +48,7 @@ Priority is analytical impact, not address order.
 | 4 | `Race_UpdateActorMovement/FallMovement`, `sub_115C6` | exact `$36–$3C` roles | normal/steer/off-road/fall snapshots | movement matrix update |
 | 5 | `Race_GetCurveSpeedLimit`, `Race_UpdateBikeCurve`, `Race_UpdateLeanCurve` | **done:** curve/lean/gear contract; gear=0 edge TODO | high-speed steering trace | `race_speed.md` |
 | 6 | Road render helpers: `Race_ProjectObject`, `Race_ProjectActorObject`, `Road_DrawStrip`, `Road_WriteTileColumns` | exact row/tile mapping | **progress:** shape record layout + row start confirmed; SAT/VSRAM next | render/shape doc |
-| 7 | `Race_ApplyCollisionImpact`, `Race_ApplyCrashImpact`, impact chain | `$2A/$2C/$2E/$54/$5C` and damage timing | **progress:** contract documented; forced impact trace next | `race_impact.md` |
+| 7 | `Race_ApplyCollisionImpact`, `Race_ApplyCrashImpact`, impact chain | `$2A/$2C/$2E/$54/$5C` and damage timing | **progress:** contract + demo call hit; return-state trace next | `race_impact.md` |
 | 8 | Track/shape data formats | **done:** Data2/3 decoder, Data4/5/6 formats; remaining Data4 side bits | compare staged/service consumers | format spec |
 | 9 | Screens flow | non-demo inputs/visuals | **progress:** demo flow + menu entry; `screens_flow.md`; input injection next | screen state machines |
 | 10 | Asset tail | labels/bounds/consumers | inventory length/pointers/visuals | asset catalogue |
