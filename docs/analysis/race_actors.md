@@ -298,6 +298,9 @@ open semantic question, not a reason to rename the field.
 | `$68` | `RaceActor_Flags` | bit6 active/update marker; multiple AI bits | medium |
 | `$5E`/`$60` | `ActorSpritePosX/Y` | graphics +$A/+$C | low |
 
+Applied in R21: `RaceActor_AnimState`, `RaceActor_AnimFrame`,
+`RaceActor_AnimTimer`, `RaceActor_AnimIndex`.
+
 Applied in R19: `RaceActor_PreviousX`, `RaceActor_CollisionExtent`,
 `RaceActor_AttackReach`, `RaceActor_AttackOverlap`, `RaceActor_AttackCooldown`,
 `RaceActor_ControlFlags`, `RaceActor_StateFlags`, `RaceActor_WeaponAnimFlags`,

@@ -337,7 +337,7 @@ loc_1646E:
 
 loc_1647C:
                 bclr    #2,RaceActor_StateFlags(a1)
-                move.b  $72(a1),d0
+                move.b  RaceActor_AnimIndex(a1),d0
                 ext.w   d0
                 bsr.w   Race_FindTargetActor
                 movea.l (sp)+,a4
@@ -485,7 +485,7 @@ Race_UpdateAttackPhase:
 ; *************************************************
 
 Race_ActorSteerRoadCenter:
-                move.b  $72(a1),d0
+                move.b  RaceActor_AnimIndex(a1),d0
                 ext.w   d0
                 bsr.w   Race_UpdateActorRoadSteering
                 bsr.w   Race_UpdateActorSpeedGear
@@ -505,7 +505,7 @@ Race_ActorSteerRoadCenter:
 ; *************************************************
 
 Race_ActorSteerThrottle:
-                move.b  $72(a1),d0
+                move.b  RaceActor_AnimIndex(a1),d0
                 ext.w   d0
                 bset    #1,RaceActor_ControlFlags(a1)
                 bclr    #2,RaceActor_ControlFlags(a1)
@@ -644,7 +644,7 @@ Race_ActorPursueAttack:
                 bmi.w   .loc_166A6
 
 .loc_1669A:
-                move.b  $72(a1),d0
+                move.b  RaceActor_AnimIndex(a1),d0
                 ext.w   d0
                 bsr.w   Race_UpdateActorRoadSteering
                 rts
@@ -722,7 +722,7 @@ Race_ActorEvadePlayer:
 
 Race_ActorCombatResponse:
                 bclr    #2,RaceActor_StateFlags(a1)
-                move.b  $72(a1),d0
+                move.b  RaceActor_AnimIndex(a1),d0
                 ext.w   d0
                 bsr.w   Race_FindTargetActor
                 cmpa.l  #$FFFFFFFF,a2

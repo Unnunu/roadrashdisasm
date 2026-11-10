@@ -99,7 +99,7 @@ Race_DrawRearviewMirror:
                 bne.w   .loc_D9F8
                 swap    d1
 .loc_D9F8:
-                move.l  d1,$70(a2)
+                move.l  d1,RaceActor_AnimTimer(a2)
                 move.w  (RacePlayerA + RaceActor_PosY).l,d0
                 subi.w  #$10,d0
                 ext.l   d0
@@ -296,7 +296,7 @@ Race_ProjectActorSprite:
                 or.w    d1,$A(a0)
                 btst    #4,RaceActor_ControlFlags(a1)
                 beq.w   .loc_DC20
-                tst.b   $6E(a1)
+                tst.b   RaceActor_AnimState(a1)
                 bmi.w   .loc_DC20
                 move.w  4(a0),d0
                 lsr.w   #1,d0
@@ -722,7 +722,7 @@ Race_UpdateCamera:
                 beq.w   .loc_DF0A
                 tst.w   (Race_ram_State).l
                 bne.w   .loc_DF14
-                cmpi.b  #2,(RacePlayerA + STRUCT_OFFSET_6E).l
+                cmpi.b  #2,(RacePlayerA + RaceActor_AnimState).l
                 bmi.w   .loc_DED2
                 move.l  (Race_ram_CameraOffset).l,d0
                 asr.l   #2,d0

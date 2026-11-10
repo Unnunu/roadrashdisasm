@@ -412,10 +412,11 @@ RaceActor_WeaponAnimFlags equ $6A
 RaceActor_AttackFlags equ $6B
 RaceActor_AttackPhase equ $6C
 RaceActor_AttackTimer equ $6D
-STRUCT_OFFSET_6E equ $6E
-STRUCT_OFFSET_6F equ $6F
+RaceActor_AnimState equ $6E
+RaceActor_AnimFrame equ $6F
+RaceActor_AnimTimer equ $70
 RaceActor_Index equ $71
-STRUCT_OFFSET_72 equ $72
+RaceActor_AnimIndex equ $72
 STRUCT_OFFSET_73 equ $73
 RaceActor_ActionProfile equ $74
 RaceActor_GraphicsIndex equ $75

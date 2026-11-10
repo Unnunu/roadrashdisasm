@@ -541,7 +541,7 @@ Race_SetupActor:
                 bclr    #0,RaceActor_ControlFlags(a1)
                 move.w  #0,$2C(a1)
                 move.w  (ram_FF18A8).l,$5C(a1)
-                move.b  #$FF,$6E(a1)
+                move.b  #$FF,RaceActor_AnimState(a1)
                 move.w  #0,d0
                 move.w  d0,$A(a1)
                 move.w  d0,$36(a1)

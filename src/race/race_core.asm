@@ -2774,7 +2774,7 @@ Race_CreateActors:
                 ext.w   d1
                 mulu.w  #100,d1
                 move.w  d1,RaceActor_Rating(a1)
-                move.b  #$FF,STRUCT_OFFSET_6E(a1)
+                move.b  #$FF,RaceActor_AnimState(a1)
                 clr.l   d1
                 move.w  d1,RaceActor_XLow(a1)
                 move.w  d1,RaceActor_PosZ(a1)
@@ -2798,8 +2798,8 @@ Race_CreateActors:
                 move.b  d1,RaceActor_ControlFlags(a1)
                 move.b  d1,RaceActor_StateFlags(a1)
                 move.b  d1,RaceActor_WeaponAnimFlags(a1)
-                move.b  d1,STRUCT_OFFSET_72(a1)
-                move.b  #$FF,STRUCT_OFFSET_6F(a1)
+                move.b  d1,RaceActor_AnimIndex(a1)
+                move.b  #$FF,RaceActor_AnimFrame(a1)
                 move.b  d1,STRUCT_OFFSET_78(a1)
                 move.w  #$FFFF,STRUCT_OFFSET_56(a1)
                 bra.w   .loopCreateActor

@@ -548,7 +548,7 @@ HorizontalInterrupt:
 .loc_154E:
                 lea     (RacePlayerA).l,a1
                 move.w  #0,d0
-                tst.b   STRUCT_OFFSET_6E(a1)
+                tst.b   RaceActor_AnimState(a1)
                 bpl.w   .loc_1590
                 move.w  RaceActor_Acceleration(a1),d0
                 muls.w  (Race_ram_FrameCounter).l,d0
@@ -589,7 +589,7 @@ HorizontalInterrupt:
                 bpl.w   .loc_15E8
                 move.w  #0,d1
 .loc_15E8:
-                tst.b   STRUCT_OFFSET_6E(a1)
+                tst.b   RaceActor_AnimState(a1)
                 bmi.w   .loc_1616
                 lea     (RacePlayerB).l,a1
                 move.l  (Race_ram_PlayerProgress).l,d1
@@ -637,7 +637,7 @@ Audio_UpdateEngine:
                 bra.w   .return
 .loc_1664:
                 clr.w   d0
-                tst.b   $6E(a1) ; bit7 = engine-active flag?
+                tst.b   RaceActor_AnimState(a1) ; bit7 = engine-active flag?
                 bpl.w   .loc_169C
                 move.w  $14(a1),d0 ; speed multiplier
                 muls.w  (Race_ram_FrameCounter).l,d0 ; frame counter

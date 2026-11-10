@@ -792,9 +792,9 @@ sub_1438E:
 
 
 .loc_143BA:
-                move.b  #1,$6E(a1)
-                move.b  #0,$6F(a1)
-                move.b  #$FF,$70(a1)
+                move.b  #1,RaceActor_AnimState(a1)
+                move.b  #0,RaceActor_AnimFrame(a1)
+                move.b  #$FF,RaceActor_AnimTimer(a1)
                 move.b  #$F,(ram_FF1AD6).l
 
 .loc_143D4:
@@ -1012,7 +1012,7 @@ Race_ApplyCollisionImpact:
                 sub.w   8(a2),d0
                 sub.w   d0,8(a1)
                 move.w  8(a1),$C(a1)
-                tst.b   $6E(a1)
+                tst.b   RaceActor_AnimState(a1)
                 bmi.w   .locret_145EA
                 move.w  $30(a1),d0
                 sub.w   $30(a2),d0
@@ -1050,7 +1050,7 @@ Race_ApplyCollisionImpact:
                 cmpa.l  #RacePlayerA,a1
                 bne.w   .locret_145EA
                 move.b  #9,(ram_FF1AD6).l
-                tst.b   $6E(a1)
+                tst.b   RaceActor_AnimState(a1)
                 bmi.w   .locret_145EA
                 move.b  #$16,(ram_FF1AD6).l
 
@@ -1092,9 +1092,9 @@ Race_UpdateCollisionSpeedState:
                 bcc.w   .loc_14652
 
 .loc_1462E:
-                tst.b   $6E(a1)
+                tst.b   RaceActor_AnimState(a1)
                 bmi.w   .locret_14686
-                move.b  #1,$6E(a1)
+                move.b  #1,RaceActor_AnimState(a1)
                 cmpa.l  #RacePlayerA,a1
                 bne.w   .loc_1464E
                 move.b  #9,(ram_FF1AD6).l
@@ -1104,13 +1104,13 @@ Race_UpdateCollisionSpeedState:
 
 
 .loc_14652:
-                move.b  #0,$6E(a1)
+                move.b  #0,RaceActor_AnimState(a1)
                 cmpa.l  #RacePlayerA,a1
                 bne.w   .loc_1466A
                 move.b  #$A,(ram_FF1AD6).l
 
 .loc_1466A:
-                move.b  #$FF,$6F(a1)
+                move.b  #$FF,RaceActor_AnimFrame(a1)
                 asl.w   #1,d1
                 cmp.w   d1,d0
                 bcc.w   .loc_14682
@@ -1175,9 +1175,9 @@ Race_ApplyImpactSpeedLoss:
                 bclr    #0,RaceActor_ControlFlags(a1)
 
 .loc_14708:
-                cmpi.b  #0,$6E(a1)
+                cmpi.b  #0,RaceActor_AnimState(a1)
                 bne.w   .locret_14718
-                move.b  #1,$6E(a1)
+                move.b  #1,RaceActor_AnimState(a1)
 
 .locret_14718:
                 rts
@@ -1744,7 +1744,7 @@ Race_StealClub:
                 andi.b  #$FC,RaceActor_WeaponAnimFlags(a2)
                 or.b    d2,RaceActor_WeaponAnimFlags(a2)
                 bset    #2,RaceActor_WeaponAnimFlags(a2)
-                move.b  #$1E,$70(a2)
+                move.b  #$1E,RaceActor_AnimTimer(a2)
 
 .locret_14B02:
                 rts
@@ -1839,7 +1839,7 @@ Race_StealClubMirror:
                 andi.b  #$FC,RaceActor_WeaponAnimFlags(a1)
                 or.b    d2,RaceActor_WeaponAnimFlags(a1)
                 bset    #2,RaceActor_WeaponAnimFlags(a1)
-                move.b  #$1E,$70(a1)
+                move.b  #$1E,RaceActor_AnimTimer(a1)
 
 .locret_14C3A:
                 rts
@@ -1850,7 +1850,7 @@ Race_StealClubMirror:
 
 
 Race_ApplyFallKnockdown:
-                tst.b   $6E(a1)
+                tst.b   RaceActor_AnimState(a1)
                 bpl.w   .loc_14C8C
                 move.w  (Race_ram_PairImpactA).l,d0
                 beq.w   .loc_14C8C
@@ -1860,14 +1860,14 @@ Race_ApplyFallKnockdown:
                 move.w  #0,$5C(a1)
                 bset    #4,RaceActor_ControlFlags(a1)
                 move.w  #$11,$54(a1)
-                move.b  #0,$6E(a1)
-                move.b  #$FF,$6F(a1)
+                move.b  #0,RaceActor_AnimState(a1)
+                move.b  #$FF,RaceActor_AnimFrame(a1)
                 cmpa.l  #RacePlayerA,a1
                 bne.w   .loc_14C8C
                 move.b  #$F,(ram_FF1AD6).l
 
 .loc_14C8C:
-                tst.b   $6E(a2)
+                tst.b   RaceActor_AnimState(a2)
                 bpl.w   .locret_14CEA
                 move.w  (Race_ram_PairImpactB).l,d0
                 beq.w   .locret_14CEA
@@ -1877,8 +1877,8 @@ Race_ApplyFallKnockdown:
                 move.w  #0,$5C(a2)
                 bset    #4,RaceActor_ControlFlags(a2)
                 move.w  #$11,$54(a2)
-                move.b  #0,$6E(a2)
-                move.b  #$FF,$6F(a2)
+                move.b  #0,RaceActor_AnimState(a2)
+                move.b  #$FF,RaceActor_AnimFrame(a2)
                 exg     a1,a2
                 move.l  a2,-(sp)
                 jsr     (sub_11906).l
@@ -2106,7 +2106,7 @@ sub_14E38:
 
 
 .loc_14E9A:
-                cmpi.b  #1,(RacePlayerA + STRUCT_OFFSET_6E).l
+                cmpi.b  #1,(RacePlayerA + RaceActor_AnimState).l
                 bne.w   .loc_14ECE
                 btst    #0,(RacePlayerA + RaceActor_ControlFlags).l
                 bne.w   .loc_14ECE
@@ -2205,7 +2205,7 @@ sub_14FB4:
                 move.w  (ram_FF1ACE).l,d0
                 btst    #0,d0
                 beq.w   .loc_15000
-                tst.b   $6E(a1)
+                tst.b   RaceActor_AnimState(a1)
                 bpl.w   .loc_15000
                 cmpi.w  #5,(Race_ram_PlayerPlace).l
                 bpl.w   .loc_15000
@@ -2246,12 +2246,12 @@ sub_15014:
                 movea.l (a0,d0.w),a0
 
 .loc_15054:
-                move.b  $70(a1),d2
-                move.b  $6F(a1),d1
+                move.b  RaceActor_AnimTimer(a1),d2
+                move.b  RaceActor_AnimFrame(a1),d1
                 bpl.w   *+4
 
 .loc_15060:
-                move.b  $6E(a1),d0
+                move.b  RaceActor_AnimState(a1),d0
                 ext.w   d0
                 asl.w   #3,d0
                 movea.l (a0,d0.w),a3
@@ -2259,7 +2259,7 @@ sub_15014:
                 beq.w   .loc_151DE
                 movea.l 4(a0,d0.w),a5
                 movea.l a3,a4
-                cmpi.b  #3,$6E(a1)
+                cmpi.b  #3,RaceActor_AnimState(a1)
                 bne.w   .loc_150EE
                 move.w  #$B0,(ram_FF18BC).l
                 move.l  $26(a1),d3
@@ -2299,16 +2299,16 @@ sub_15014:
                 tst.w   d0
                 bpl.w   .loc_1510A
                 bsr.w   sub_151F0
-                cmpi.b  #$FF,$6E(a1)
+                cmpi.b  #$FF,RaceActor_AnimState(a1)
                 beq.w   .loc_151DE
                 bra.w   .loc_15054
 
 
 .loc_1510A:
                 move.w  d0,$58(a1)
-                move.b  d1,$6F(a1)
-                move.b  d2,$70(a1)
-                cmpi.b  #3,$6E(a1)
+                move.b  d1,RaceActor_AnimFrame(a1)
+                move.b  d2,RaceActor_AnimTimer(a1)
+                cmpi.b  #3,RaceActor_AnimState(a1)
                 bne.w   .loc_15148
                 move.l  $26(a1),d0
                 or.w    $22(a1),d0
@@ -2339,15 +2339,15 @@ sub_15014:
                 movea.l (a0,d0.w),a0
 
 .loc_1516C:
-                move.b  $70(a2),d2
-                move.b  $6F(a2),d1
-                move.b  $6E(a2),d0
+                move.b  RaceActor_AnimTimer(a2),d2
+                move.b  RaceActor_AnimFrame(a2),d1
+                move.b  RaceActor_AnimState(a2),d0
                 tst.w   $12(a2)
                 bne.w   .loc_15198
                 cmp.b   #4,d0
                 beq.w   .loc_15198
                 move.b  #3,d0
-                move.b  d0,$6E(a2)
+                move.b  d0,RaceActor_AnimState(a2)
                 move.b  #$FF,d1
                 move.b  #0,d2
 
@@ -2357,7 +2357,7 @@ sub_15014:
                 movea.l 4(a0,d0.w),a4
                 cmpa.l  #$FFFFFFFF,a4
                 bne.w   .loc_151B4
-                move.b  #$FF,$6E(a2)
+                move.b  #$FF,RaceActor_AnimState(a2)
                 bra.w   .loc_151EA
 
 
@@ -2366,21 +2366,21 @@ sub_15014:
                 tst.w   d0
                 bpl.w   .loc_151CA
                 bsr.w   sub_15446
-                move.b  #0,$70(a2)
+                move.b  #0,RaceActor_AnimTimer(a2)
                 bra.s   .loc_1516C
 
 
 .loc_151CA:
                 move.w  d0,$58(a2)
-                move.b  d1,$6F(a2)
-                move.b  d2,$70(a2)
+                move.b  d1,RaceActor_AnimFrame(a2)
+                move.b  d2,RaceActor_AnimTimer(a2)
                 move.b  d3,$76(a2)
                 bra.w   .loc_151EA
 
 
 .loc_151DE:
-                move.b  #$FF,$6E(a1)
-                move.b  #$FF,$6E(a2)
+                move.b  #$FF,RaceActor_AnimState(a1)
+                move.b  #$FF,RaceActor_AnimState(a2)
 
 .loc_151EA:
                 movem.l (sp)+,d1-d7/a0-a2
@@ -2393,28 +2393,28 @@ sub_15014:
 
 sub_151F0:
                 movem.l d0-d1,-(sp)
-                cmpi.b  #1,$6E(a1)
+                cmpi.b  #1,RaceActor_AnimState(a1)
                 bmi.w   .loc_1521C
                 bne.w   .loc_1522C
                 cmpi.w  #0,$12(a1)
                 bne.w   .loc_1521C
-                move.b  #2,$6E(a1)
-                move.b  #$FF,$6F(a1)
+                move.b  #2,RaceActor_AnimState(a1)
+                move.b  #$FF,RaceActor_AnimFrame(a1)
                 bra.w   .loc_15338
 
 
 .loc_1521C:
-                move.b  #1,$6E(a1)
-                move.b  #$FF,$6F(a1)
+                move.b  #1,RaceActor_AnimState(a1)
+                move.b  #$FF,RaceActor_AnimFrame(a1)
                 bra.w   .loc_15338
 
 
 .loc_1522C:
-                cmpi.b  #3,$6E(a1)
+                cmpi.b  #3,RaceActor_AnimState(a1)
                 blt.w   .loc_152AA
                 beq.w   .loc_1524A
-                move.b  #$FF,$6E(a1)
-                move.b  #$FF,$6F(a1)
+                move.b  #$FF,RaceActor_AnimState(a1)
+                move.b  #$FF,RaceActor_AnimFrame(a1)
                 bra.w   .loc_15338
 
 
@@ -2459,8 +2459,8 @@ sub_151F0:
                 move.w  #1,(Race_ram_GameEnded).l
 
 .loc_152C6:
-                move.b  #3,$6E(a1)
-                move.b  #$FF,$6F(a1)
+                move.b  #3,RaceActor_AnimState(a1)
+                move.b  #$FF,RaceActor_AnimFrame(a1)
                 bra.w   .loc_15338
 
 
@@ -2484,10 +2484,10 @@ sub_151F0:
                 move.w  0.w(a1),d0
                 add.w   d1,d0
                 move.w  d0,0.w(a2)
-                move.b  #4,$6E(a1)
-                move.b  #4,$6E(a2)
-                move.b  #$FF,$6F(a1)
-                move.b  #$FF,$6F(a2)
+                move.b  #4,RaceActor_AnimState(a1)
+                move.b  #4,RaceActor_AnimState(a2)
+                move.b  #$FF,RaceActor_AnimFrame(a1)
+                move.b  #$FF,RaceActor_AnimFrame(a2)
 
 .loc_15338:
                 movem.l (sp)+,d0-d1
@@ -2500,20 +2500,20 @@ sub_151F0:
 
 sub_1533E:
                 movem.l d0-d1,-(sp)
-                cmpi.b  #1,$6E(a1)
+                cmpi.b  #1,RaceActor_AnimState(a1)
                 bmi.w   .loc_15440
                 bne.w   .loc_1536A
                 cmpi.w  #0,$12(a1)
                 bne.w   .loc_15440
-                move.b  #2,$6E(a1)
-                move.b  #$FF,$6F(a1)
+                move.b  #2,RaceActor_AnimState(a1)
+                move.b  #$FF,RaceActor_AnimFrame(a1)
                 bra.w   .loc_15440
 
 
 .loc_1536A:
-                cmpi.b  #4,$6E(a1)
+                cmpi.b  #4,RaceActor_AnimState(a1)
                 beq.w   .loc_153FC
-                cmpi.b  #3,$6E(a1)
+                cmpi.b  #3,RaceActor_AnimState(a1)
                 bne.w   .loc_15440
                 move.l  RaceActor_PreviousX(a2),d0
                 sub.l   RaceActor_PreviousX(a1),d0
@@ -2549,10 +2549,10 @@ sub_1533E:
 
 .loc_153DE:
                 bclr    #3,RaceActor_StateFlags(a1)
-                move.b  #4,$6E(a1)
-                move.b  #4,$6E(a2)
-                move.b  #$FF,$6F(a1)
-                move.b  #$FF,$6F(a2)
+                move.b  #4,RaceActor_AnimState(a1)
+                move.b  #4,RaceActor_AnimState(a2)
+                move.b  #$FF,RaceActor_AnimFrame(a1)
+                move.b  #$FF,RaceActor_AnimFrame(a2)
 
 .loc_153FC:
                 move.w  #0,8(a1)
@@ -2585,7 +2585,7 @@ sub_1533E:
 
 sub_15446:
                 move.w  d0,-(sp)
-                move.b  $6E(a2),d0
+                move.b  RaceActor_AnimState(a2),d0
                 cmp.b   #3,d0
                 bne.w   .loc_15468
                 bra.w   .loc_1546E
@@ -2610,10 +2610,10 @@ sub_15446:
 
 .loc_15468:
                 addq.b  #1,d0
-                move.b  d0,$6E(a2)
+                move.b  d0,RaceActor_AnimState(a2)
 
 .loc_1546E:
-                move.b  #$FF,$6F(a2)
+                move.b  #$FF,RaceActor_AnimFrame(a2)
                 move.w  (sp)+,d0
                 rts
 ; End of function sub_15446
@@ -5555,7 +5555,7 @@ Race_UpdatePlayerAnimation:
                 lea     (RacePlayerA).l,a1
                 btst    #4,RaceActor_ControlFlags(a1)
                 beq.w   .loc_160FA
-                tst.b   $6E(a1)
+                tst.b   RaceActor_AnimState(a1)
                 bpl.w   .locret_16118
 
 .loc_160FA:

@@ -1134,11 +1134,11 @@ Race_BuildActorObjectList:
                 bne.w   .loc_F52E
                 btst    #4,RaceActor_ControlFlags(a1)
                 beq.w   .loc_F534
-                tst.b   $6E(a1)
+                tst.b   RaceActor_AnimState(a1)
                 bmi.w   .loc_F534
                 move.w  #0,$12(a0)
                 bsr.w   sub_15014
-                tst.b   $6E(a1)
+                tst.b   RaceActor_AnimState(a1)
                 bmi.w   .loc_F52E
                 move.w  d0,(ram_FF1B16).l
                 move.w  $58(a1),8(a0)
@@ -1295,7 +1295,7 @@ Race_BuildActorObjectList:
                 addi.w  #1,(ram_FFDE72).l
                 cmpa.l  #RacePlayerA,a1
                 bne.w   .loc_F6D6
-                cmpi.b  #2,$6E(a1)
+                cmpi.b  #2,RaceActor_AnimState(a1)
                 bne.w   .loc_F6D6
                 cmpi.w  #8,(Race_ram_ImpactScale).l
                 bmi.w   .loc_F6D6
@@ -1349,7 +1349,7 @@ Race_BuildActorObjectList:
                 move.w  (ram_FFDE72).l,d7
                 asl.w   #2,d7
                 move.l  4(a1),d0
-                cmpi.b  #4,$6E(a1)
+                cmpi.b  #4,RaceActor_AnimState(a1)
                 bne.w   .loc_F79A
                 addi.l  #$3000,d0
 
@@ -1395,9 +1395,9 @@ Race_BuildActorObjectList:
                 or.w    d3,$A(a0)
                 btst    #7,RaceActor_WeaponAnimFlags(a1)
                 beq.w   .loc_F834
-                tst.b   $6E(a1)
+                tst.b   RaceActor_AnimState(a1)
                 bne.w   .loc_F834
-                tst.b   $6F(a1)
+                tst.b   RaceActor_AnimFrame(a1)
                 bne.w   .loc_F834
                 bsr.w   Race_AddActorWeaponObject
                 bclr    #7,RaceActor_WeaponAnimFlags(a1)
@@ -1563,7 +1563,7 @@ Race_AddActorFallObject:
                 move.w  $30(a1),d1
                 move.w  #0,d2
                 lea     (unk_FA80).l,a6
-                move.b  $6F(a1),d7
+                move.b  RaceActor_AnimFrame(a1),d7
                 ext.w   d7
                 cmp.w   #6,d7
                 bcs.w   .loc_FA46
@@ -3384,9 +3384,9 @@ word_10802:     dc.w $12C
 
 sub_1081A:
                 move.w  (Race_ram_FrameDelay).l,d2
-                sub.b   d2,$70(a1)
+                sub.b   d2,RaceActor_AnimTimer(a1)
                 bgt.w   .loc_10834
-                move.b  #0,$70(a1)
+                move.b  #0,RaceActor_AnimTimer(a1)
                 bclr    #2,RaceActor_WeaponAnimFlags(a1)
 
 .loc_10834:
