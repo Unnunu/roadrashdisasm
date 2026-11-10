@@ -99,10 +99,9 @@ chain. The spawner adds/removes actors and the physics chain moves them.
 ## Open questions
 
 - `ram_FF1A08`/`Race_ram_ActiveActorList` overlap details; `ram_FF1B34/B36/B38` semantics.
-- `ram_FF1B34/B36/B38` semantics (level/cop).
 - The `Race_SetupActor` fields and `Race_SetupActorSprite` (actor sprite/animation) need the
   physics chain (`sub_13xxx`).
-- The traffic free list's initial population.
+- The traffic free list is empty at race init; first traffic spawn populates it.
 
 ## Applied renames
 
