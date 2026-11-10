@@ -59,6 +59,21 @@ Forced left turn: `1E50=$0002`, `1E52=$0003`, `1E54=0`, `1E56=2`,
 `1E58=2`, `1E5A=1`. Hard-left/off-road-ish: `1E54=$017A`, `1E56=$20E4`,
 `1E58=$FFFE`, `1E5A=$FFFD`, `1E60=$FFEF`.
 
+## `Race_UpdateNearestOpponent` (`0xE5EE`)
+
+- Returns immediately if PlayerA `$68` bit7 (finished).
+- Resets `Race_ram_NearestAheadDistance=$7FFFFFFF`,
+  `Race_ram_NearestBehindDistance=$80000000`.
+- Walks the active list after PlayerA; for each actor:
+  - `X = actor.X - PlayerA.X`;
+  - `X >= 0`: smallest positive distance -> ahead index/speed;
+  - `X < 0`: smallest negative distance -> behind index/speed;
+  - increments the place counter for actors behind PlayerA, skipping the first
+    opponent `$FF1F2A`.
+- `Race_ram_PlayerPlace = count` if `< 10`, otherwise `(count-10)|$10`.
+- Ahead speed = `distance / aheadActor.Speed`; behind speed =
+  `-distance / PlayerA.Speed`; no target -> index `$FFFF`, speed 0.
+
 ## RAM / fields
 
 - `Race_ram_VdpDmaControl` DMA control; `Race_ram_HIntVScroll`; `Race_ram_NearestBehindDistance`/`Race_ram_NearestAheadDistance` nearest distances.

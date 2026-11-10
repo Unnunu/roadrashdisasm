@@ -23,5 +23,6 @@ road-marking module. Called from `Race_GameTick`/`Race_Update` in `src/race/race
 | `DmaWriteVRAM` | `0xD8FA` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
 | actor/physics helpers | `0xD9DA`+ | [~] | [~] | [~] | [ ] | [~] | [~] | partial |
 | camera/road update | `0xDE9E` | [x] | [~] | [x] | [x] | [~] | [~] | static + snapshots |
+| nearest opponent | `0xE5EE` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
 
 Detailed flow: `docs/analysis/race.md`.
