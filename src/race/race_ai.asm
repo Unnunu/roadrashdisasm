@@ -991,7 +991,7 @@ sub_115C6:
                 beq.w   .loc_116D4
                 tst.w   $2C(a1)
                 beq.w   .loc_116CE
-                bsr.w   sub_146AC
+                bsr.w   Race_ApplyImpactSpeedLoss
                 bra.w   .locret_116E0
 
 
@@ -1850,7 +1850,7 @@ sub_11CC8:
 
 
 .loc_11DFE:
-                bsr.w   sub_1487C
+                bsr.w   Race_UpdateActorPairImpact
                 tst.b   (ram_FF1AD6).l
                 bne.w   .loc_11E14
                 move.b  #9,(ram_FF1AD6).l
@@ -2232,7 +2232,7 @@ sub_1218C:
 
 
 .loc_12272:
-                bsr.w   sub_1487C
+                bsr.w   Race_UpdateActorPairImpact
                 tst.w   (ram_FF1768).l
                 bne.w   .loc_12284
                 bsr.w   sub_11906

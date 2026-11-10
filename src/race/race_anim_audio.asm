@@ -954,7 +954,7 @@ Race_ApplyCollisionImpact:
                 cmp.w   (ram_FF303E).l,d0
                 bpl.w   .loc_14594
                 move.w  #$1000,d1
-                bsr.w   sub_145EC
+                bsr.w   Race_UpdateCollisionSpeedState
                 move.w  d0,(ram_FF18A6).l
                 cmpa.l  #RacePlayerA,a1
                 bne.w   .loc_144D4
@@ -1062,7 +1062,7 @@ Race_ApplyCollisionImpact:
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_145EC:
+Race_UpdateCollisionSpeedState:
                 move.w  $12(a1),d0
                 move.w  $12(a2),d4
                 cmpi.b  #$10,$71(a2)
@@ -1123,7 +1123,7 @@ sub_145EC:
 
 .locret_14686:
                 rts
-; End of function sub_145EC
+; End of function Race_UpdateCollisionSpeedState
 
 
 ; =============== S U B R O U T I N E =======================================
@@ -1146,7 +1146,7 @@ sub_14688:
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_146AC:
+Race_ApplyImpactSpeedLoss:
                 move.w  $2C(a1),d1
                 mulu.w  #$2000,d1
                 swap    d1
@@ -1181,7 +1181,7 @@ sub_146AC:
 
 .locret_14718:
                 rts
-; End of function sub_146AC
+; End of function Race_ApplyImpactSpeedLoss
 
 
 unk_1471A:      dc.b $E6
@@ -1541,7 +1541,7 @@ unk_147FC:      dc.b   0
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_1487C:
+Race_UpdateActorPairImpact:
                 clr.w   (ram_FF1A9A).l
                 clr.w   (ram_FF1A9C).l
                 clr.w   (ram_FF18B8).l
@@ -1564,7 +1564,7 @@ sub_1487C:
 
 
 .loc_148C0:
-                bsr.w   sub_1496C
+                bsr.w   Race_ClampActorPairY
                 btst    #4,$69(a1)
                 beq.w   .loc_148D6
                 tst.w   $50(a1)
@@ -1613,18 +1613,18 @@ sub_1487C:
                 bsr.w   Race_StealClubMirror
 
 .loc_14962:
-                bsr.w   sub_14D84
-                bsr.w   sub_14C3C
+                bsr.w   Race_AdjustActorTrackPositions
+                bsr.w   Race_ApplyFallKnockdown
 
 .locret_1496A:
                 rts
-; End of function sub_1487C
+; End of function Race_UpdateActorPairImpact
 
 
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_1496C:
+Race_ClampActorPairY:
                 movem.l d0-d3,-(sp)
                 move.w  $1A(a1),d0
                 move.w  $1A(a2),d1
@@ -1654,7 +1654,7 @@ sub_1496C:
                 sub.w   d3,0.w(a2)
                 movem.l (sp)+,d0-d3
                 rts
-; End of function sub_1496C
+; End of function Race_ClampActorPairY
 
 
 ; =============== S U B R O U T I N E =======================================
@@ -1849,7 +1849,7 @@ Race_StealClubMirror:
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_14C3C:
+Race_ApplyFallKnockdown:
                 tst.b   $6E(a1)
                 bpl.w   .loc_14C8C
                 move.w  (ram_FF18B8).l,d0
@@ -1890,7 +1890,7 @@ sub_14C3C:
 
 .locret_14CEA:
                 rts
-; End of function sub_14C3C
+; End of function Race_ApplyFallKnockdown
 
 
 ; =============== S U B R O U T I N E =======================================
@@ -1898,7 +1898,7 @@ sub_14C3C:
 
 Race_ExchangeCollisionSpeed:
                 move.w  #$1F40,d1
-                bsr.w   sub_145EC
+                bsr.w   Race_UpdateCollisionSpeedState
                 move.w  d0,(ram_FF18A6).l
                 move.w  $12(a2),d0
                 sub.w   $12(a1),d0
@@ -1945,7 +1945,7 @@ Race_ExchangeCollisionSpeed:
                 move.b  $69(a2),d0
                 andi.w  #8,d0
                 or.b    d0,$69(a1)
-                bsr.w   sub_14D84
+                bsr.w   Race_AdjustActorTrackPositions
                 rts
 ; End of function Race_ExchangeCollisionSpeed
 
@@ -1953,7 +1953,7 @@ Race_ExchangeCollisionSpeed:
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_14D84:
+Race_AdjustActorTrackPositions:
                 move.w  $22(a2),d0
                 sub.w   $22(a1),d0
                 ext.l   d0
@@ -1992,7 +1992,7 @@ sub_14D84:
                 move.w  d1,$C(a2)
                 move.w  d1,8(a2)
                 rts
-; End of function sub_14D84
+; End of function Race_AdjustActorTrackPositions
 
 
                 dc.b $30 ; 0

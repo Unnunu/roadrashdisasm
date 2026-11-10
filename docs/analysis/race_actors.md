@@ -177,7 +177,7 @@ lists.
 
 | Byte | Bit | Current meaning | Evidence / confidence |
 |---|---|---|---|
-| `$68` | 0 | collision/impact lock; blocks normal steering | `[static]` `sub_1438E`/`sub_145EC`; medium |
+| `$68` | 0 | collision/impact lock; blocks normal steering | `[static]` `sub_1438E`/`Race_UpdateCollisionSpeedState`; medium |
 | `$68` | 1 | throttle/B input; AI also sets it | `[static]` `Race_GetInput` B; active opponents `$42` |
 | `$68` | 2 | brake/A input; reduces acceleration | `[static]` `Race_GetInput` A + `Race_UpdateActorSpeedState`; medium |
 | `$68` | 3 | off-road/edge; reduces acceleration | `[static]` `Race_UpdateActorAI` edge tests |

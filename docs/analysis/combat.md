@@ -331,8 +331,8 @@ falls back to `$1AD7` when it is zero.
 | `$15` | `Race_StealClub`/Mirror | club takeover |
 | `$0D` / `$0F` | fall paths | knockdown/crash sounds |
 | `$09` / `$16`, `+9` variants | `Race_ApplyCollisionImpact` | collision severity; `$16` for heavier impact |
-| `$06` | `sub_1438E`/`sub_146AC` | speed/impact event candidate |
-| `$0A` | `sub_145EC` | non-player collision candidate |
+| `$06` | `sub_1438E`/`Race_ApplyImpactSpeedLoss` | speed/impact event candidate |
+| `$0A` | `Race_UpdateCollisionSpeedState` | non-player collision candidate |
 
 This explains why audio cannot be used alone to prove hit/miss: `$1AD7=$0E` is
 attack-state sound, while `$1AD6` carries the impact/event selection.
