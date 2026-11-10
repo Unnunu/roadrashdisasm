@@ -129,6 +129,8 @@ Applied in R6: `Race_InitExtraStaticActor`, `Race_UpdateExtraStaticActor`,
 `Race_UpdateActorSpeedState`, `Race_FindTargetActor`,
 `Race_ScanTargetDistance`.
 
+Applied in R10: `Race_TriggerArmedAttackSfx` and `Race_UpdateAttackPhase`.
+
 Applied in R7: `Race_StealClub`/`Race_StealClubMirror`; `WEAPON_NONE`/`WEAPON_CLUB`.
 
 Applied in R3c: `Race_ActorSteerRoadCenter`, `Race_ActorSteerThrottle`,
