@@ -57,11 +57,11 @@ from the raw shape payload:
 - changed range `0xFF511C..0xFF5573`;
 - palette line 1 (the `$2036` fill word selects line 1);
 - `assets/shapes/056/preview_runtime.png` (34 tiles, raw destination layout);
-- `assets/shapes/056/preview_sat_obj_line0.png` / `line1.png` — SAT entries 2..5
-  (the new shape chain) composed into a 16x40 image from runtime tile data.
-  The SAT x/y positions and tile indices come from `Race_ram_CurrentSpriteAttributeTable`;
-  the object chain starts at the saved sprite index 2. Palette line variants are
-  kept because the final attribute palette is still being checked.
+- `assets/shapes/056/preview_sat_size_line0.png` — SAT entries 2..5 composed with
+  the SAT size bits (H/V 4x4, 4x1, 3x4, 3x1) and runtime destination tile data,
+  palette line 0. This is the current best candidate for the full shape image.
+  The SAT x/y positions and tile indices come from
+  `Race_ram_CurrentSpriteAttributeTable`; the chain starts at saved sprite index 2.
 
 This is a runtime-derived tile/SAT composition, not a source-byte guess. The
 final crop/width/height still needs confirmation against the object's SAT chain. `preview_p4_line3.png` /
