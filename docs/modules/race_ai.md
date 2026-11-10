@@ -1,7 +1,7 @@
 # Module card: `src/race/race_ai.asm`
 
 - **ROM range:** `0x010E00`–`0x014055` (`src/race/race_anim_audio.asm` starts at `0x14056`)
-- **Status:** actor/AI/action dispatch and collision fields analyzed; remaining behavior dynamic tests/TODO
+- **Status:** actor/AI/action dispatch, movement/speed helpers and collision fields analyzed; some behavior dynamic tests/TODO
 - **Related:** `docs/analysis/race.md`, `docs/analysis/race_spawn.md`,
   `docs/ram-map.md`, `docs/modules/race.md`
 
