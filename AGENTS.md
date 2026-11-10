@@ -97,7 +97,7 @@ differing byte is reported. `baserom.md` is the only ROM file and is git-ignored
 | `src/race/race_physics.asm` | DmaWriteVRAM + actor/physics/AI functions. |
 | `src/race/road_marking.asm` | Road marking / sprite placement. |
 | `src/race/race_ai_road.asm` | Road profile/objects/standings/speed. |
-| `src/race/combat_const.asm` | Temporary `WEAPON_0`/`WEAPON_1` combat enum placeholders. |
+| `src/race/combat_const.asm` | Combat weapon states (`WEAPON_NONE`, `WEAPON_CLUB`). |
 | `src/race/race_ai.asm` | Actor/input/AI/physics. |
 | `src/race/race_anim_audio.asm` | Animations, random, audio/impact helpers ($14056-$16119). |
 | `src/race/race_combat.asm` | Player fist, AI combat, nearest-target/collision ($1611A-$1685F). |

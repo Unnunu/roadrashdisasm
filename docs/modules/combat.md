@@ -13,8 +13,8 @@
 Player fist attack input and state, AI attack/collision actions, high/low/side
 attack bits, attack phase/timer/SFX, armed-opponent flag, nearest-target
 selection, and the proximity rules that start a fight. The player starts unarmed
-(`WEAPON_0`); opponents with definition byte2 bit7 are armed/special (`WEAPON_1`
-placeholder pending weapon identification).
+(`WEAPON_NONE`); opponents with definition byte2 bit7 carry the only weapon,
+the club (`WEAPON_CLUB`). It is visible only during the attack animation.
 
 ## Coverage matrix
 

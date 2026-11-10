@@ -1,8 +1,8 @@
 ; *************************************************
-; combat_const.asm - temporary combat/weapon enum placeholders
-; Weapon identities are not confirmed yet; use these until the actor/animation
-; mapping is verified.
+; combat_const.asm - combat/weapon state values
+; WEAPON_NONE is the unarmed fist/kick state; WEAPON_CLUB is the armed
+; club state selected by actor definition byte2 bit7 (`$6B` bit1).
 ; *************************************************
 
-WEAPON_0 equ 0 ; unarmed / fist (player default)
-WEAPON_1 equ 1 ; armed / special attack (definition byte2 bit7)
+WEAPON_NONE equ 0
+WEAPON_CLUB equ 1

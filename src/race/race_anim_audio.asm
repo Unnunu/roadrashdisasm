@@ -1589,7 +1589,7 @@ sub_1487C:
 .loc_14910:
                 cmpi.b  #1,$6C(a1)
                 bne.w   .loc_1491E
-                bsr.w   sub_149C4
+                bsr.w   Race_StealClub
 
 .loc_1491E:
                 cmpa.l  #ram_FF1F2A,a2
@@ -1610,7 +1610,7 @@ sub_1487C:
 .loc_14954:
                 cmpi.b  #1,$6C(a2)
                 bne.w   .loc_14962
-                bsr.w   sub_14B04
+                bsr.w   Race_StealClubMirror
 
 .loc_14962:
                 bsr.w   sub_14D84
@@ -1660,7 +1660,7 @@ sub_1496C:
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_149C4:
+Race_StealClub:
                 move.w  $52(a1),d1
                 btst    #6,$69(a1)
                 beq.w   .loc_14A04
@@ -1748,13 +1748,13 @@ sub_149C4:
 
 .locret_14B02:
                 rts
-; End of function sub_149C4
+; End of function Race_StealClub
 
 
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_14B04:
+Race_StealClubMirror:
                 move.w  $52(a2),d1
                 btst    #6,$69(a2)
                 beq.w   .loc_14B44
@@ -1843,7 +1843,7 @@ sub_14B04:
 
 .locret_14C3A:
                 rts
-; End of function sub_14B04
+; End of function Race_StealClubMirror
 
 
 ; =============== S U B R O U T I N E =======================================

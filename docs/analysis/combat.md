@@ -24,9 +24,9 @@
   `RaceBike_ram_PhysicsConstants` (or `ram_FF1AC2` when `$6B` bit1 is set).
 
 The player definition (`$4B` "Player def") has definition byte2 = 0, so the player
-is **unarmed**; `WEAPON_0` is the initial fist placeholder. `$6B` bit1 is copied
-from the actor definition byte2 bit7 and marks armed/special opponents (`WEAPON_1`
-placeholder until the visual/weapon mapping is confirmed).
+is **unarmed**; `WEAPON_NONE` is the unarmed fist/kick state. `$6B` bit1 is copied from
+the actor definition byte2 bit7 and marks the club state (`WEAPON_CLUB`); the club
+is the only weapon in the game.
 
 ## State fields
 
@@ -163,7 +163,7 @@ the contact bit7 on the actual pair-collision path. `BikeDamage` still remains 0
 
 - byte1 -> `$74`: AI/action profile (`1..18`).
 - byte2 low7 -> `$75`: graphics index.
-- byte2 bit7 -> `$6B` bit1: armed/special flag (`WEAPON_1` placeholder).
+- byte2 bit7 -> `$6B` bit1: armed/club flag (`WEAPON_CLUB`).
 - byte3 -> `$73`, byte4 -> `$77`, byte5 -> `$66` (rating *100).
 
 Most opponents have byte2 bit7 set (Viper, Biff, Natasha, Helldog, ...);
@@ -274,12 +274,37 @@ Headless input injection by clearing `MainMenu_ram_DemoMode` and feeding C throu
 better input scenario. Forced pair-contacts already confirm armed/unarmed reach and
 contact; they do not add `BikeDamage`.
 
+## Dynamic test 6 (patched ROM, club state)
+
+A test copy of the ROM was patched with:
+
+- `0xD18C = 0x80` (player definition byte2 bit7 = armed);
+- `0x7FF98 = RTS` to bypass the custom ROM checksum.
+
+Results:
+
+- the game boots and the player can attack with the club;
+- C alone repeats the attack while held;
+- C+Up holds the windup while pressed and strikes on release;
+- the club is **not visible during normal riding**; it appears only in the
+  windup/strike animation and disappears after the attack;
+- armed opponents behave the same way — no idle club sprite;
+- the club did **not** disappear after crashes into a tree or car.
+
+This confirms `$6B` bit1 as the logical armed state, while `$6A`/`$6E`/`$6F`/`$70`
+drive the attack-only weapon animation. The Google claim that the club is lost on a
+fall is `[refuted]` for these crash cases.
+
+`Race_StealClub`/`Race_StealClubMirror` (`sub_149C4`/`sub_14B04`) are statically
+identified as the transfer routine: player phase 1 + opponent phase 0 + opponent
+armed -> toggle `$6B` bit1, set both phases `2`/`$6D=$3C`, SFX `$15`, timer `$1E`.
+
 ## Open questions / next experiments
 
 - Confirm attack phase semantics (`$6C` 0..3), high/low/side bits, `$5A`.
 - Determine whether `sub_1634E`/`ram_FF1B24` is dead.
 - Map `$74` profiles to action handlers and enemy aggression.
-- Identify weapon visuals (club/chain) vs `WEAPON_1`; whether player can pick up.
+- Weapon visual is attack-only; club transfer timing is confirmed by the `$6B` branch (no idle sprite).
 - Determine if punches damage `BikeDamage` or only knock/steer; player hit response.
   Forced proximity/attack reached `$6C=2` but left `BikeDamage=0`; try a longer/natural
   impact and an armed opponent.

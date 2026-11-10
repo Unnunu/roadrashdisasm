@@ -362,10 +362,10 @@ flowchart LR
 | `sub_145EC` | `0x145EC` | `Race_ApplyCollisionImpact`, `Race_ExchangeCollisionSpeed` | `sub_15538`, `sub_1555C` |
 | `sub_14688` | `0x14688` | `Race_ApplyCollisionImpact` | - |
 | `sub_146AC` | `0x146AC` | `sub_115C6` | - |
-| `sub_1487C` | `0x1487C` | `sub_11CC8`, `sub_1218C` | `Race_ExchangeCollisionSpeed`, `sub_1496C`, `sub_149C4`, `sub_14B04`, `sub_14C3C`, `sub_14D84` |
+| `sub_1487C` | `0x1487C` | `sub_11CC8`, `sub_1218C` | `Race_ExchangeCollisionSpeed`, `sub_1496C`, `Race_StealClub`, `Race_StealClubMirror`, `sub_14C3C`, `sub_14D84` |
 | `sub_1496C` | `0x1496C` | `sub_1487C` | - |
-| `sub_149C4` | `0x149C4` | `sub_1487C` | - |
-| `sub_14B04` | `0x14B04` | `sub_1487C` | - |
+| `Race_StealClub` | `0x149C4` | `sub_1487C` | - |
+| `Race_StealClubMirror` | `0x14B04` | `sub_1487C` | - |
 | `sub_14C3C` | `0x14C3C` | `sub_1487C` | `sub_11906` |
 | `Race_ExchangeCollisionSpeed` | `0x14CEC` | `sub_1487C` | `Race_ScaleImpactDamage`, `sub_145EC`, `sub_14D84` |
 | `sub_14D84` | `0x14D84` | `Race_ExchangeCollisionSpeed`, `sub_1487C` | - |
