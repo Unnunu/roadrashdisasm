@@ -145,10 +145,9 @@ rendering each object and restores them on overflow.
   - `$FFD390`: `FEBA 008A 4000 008A 0056 8081 ...` (shadow flag set).
   - `$FFD3A4`: `FE66 008A 4000 008A 0057 2081 ...`.
   - `$FFD430`: `FF30 0060 5174 0060 01C3 1184 FF56 0380 00AC 01C4`.
-- First `Road_DrawStrip`: `d0=d1=$10000`, shape data `$05994E` (`10 37 20 36 ...`);
-  shape pointer `$05994C` is advanced by `+2` from the projection header; the
-  first word `$2036` goes to `ram_FFDE5E`, then left/right interpolation consumes
-  the following row bytes.
+- First `Road_DrawStrip`: `d0=d1=$10000`, shape entry `$05994E` (`20 36 ...`);
+  the special path advances the shape pointer by `+2`, so controls/fill/row data
+  are read from the advanced pointer; `ram_FF0D2A` lands at shape+6 for this sample.
   `Animation_ram_TileIndex=4`, `Animation_ram_SpriteIndex=2`.
 - The object record layout and the list/SAT double-buffer are confirmed. The earlier `Road_DrawObject` breakpoint spam was a GDB `disable $bpnum` artifact, not a
   code issue.

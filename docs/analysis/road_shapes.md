@@ -1,7 +1,7 @@
 # Analysis: `src/data/road_shapes.asm` (road/object shape table + data)
 
 - **ROM range:** `0x03BF1A`–`0x07DCA7`
-- **Status:** table/count/data layout analyzed; shape record header/edges partly confirmed; row data TODO
+- **Status:** table/count/data layout analyzed; shape header/control/fill model confirmed; row-byte semantics partly TODO
 - **Source:** `src/data/road_shapes.asm` (table/count from source, data `binclude` from `baserom.md`)
 - **Related:** `docs/analysis/road_render.md`, `docs/analysis/race_track_data.md`,
   `docs/modules/road_shapes.md`, `docs/ram-map.md`
@@ -31,7 +31,7 @@ pointers = symmetric/mirrored shapes). The ordered first pointers are
 
 `Road_ScaleShape`/`Road_ProjectShape` were traced with the live object list:
 
-| Shape | Pointer | Header bytes | First DrawStrip word |
+| Shape | Pointer | Header bytes | Entry word |
 |---|---:|---|---:|
 | `$56` | `$05994C` | `10 37 20 36` | `$2036` |
 | `$57` | `$059CE8` | `0E 36 1E 36` | `$3636` (second shape path) |
@@ -39,14 +39,15 @@ pointers = symmetric/mirrored shapes). The ordered first pointers are
 | `$1C4` | `$078CD4` | `09 46 13 2A` | `$2A13` |
 | `$15E` | `$069924` | `0A 47 1A 47` | `$471A` |
 
-Working model (static + dynamic, exact row encoding still TODO):
+Working model (static + dynamic, exact row bytes still partly TODO):
 
-- `P[0]` is the primary edge/width used by `Road_ProjectShape`;
-- `P[1]` is the secondary edge/height;
-- `P[2]/P[3]` form the word read by `Road_DrawStrip` (tile/fill), and `P[2]`
-  is also the mirror-side edge used by `Road_ScaleShape`;
-- `P+4` onward is the per-row strip data consumed by
-  `Road_InterpolateLeftEdge`/`Road_InterpolateRightEdge`.
+- `P[0]` = left strip control; `P[1]` = right strip control;
+- `P[2]/P[3]` = fill/tile word (non-special path);
+- `P+4` onward = row/tile data consumed by `Road_WriteTileColumns`;
+- special/two-part path advances the pointer by 2, so its controls are
+  `P+2/P+3`, fill word `P+4/P+5`, row data `P+6`.
+- `Road_ScaleShape`/`Road_ProjectShape` use `P[0]`/`P[1]` and the mirror bit;
+  `P[2]` participates in the mirror-edge calculation.
 
 Working layout (static + dynamic):
 
@@ -61,7 +62,7 @@ Working layout (static + dynamic):
   `P+3`. The remaining shape bytes feed the tile-column writer.
 
 - `[dynamic]` At `Road_WriteTileColumns` the first two objects had
-`ram_FF0D2A=$059952`/`$059CEE` (shape pointer + 6), strip counts
+`ram_FF0D2A=$059952`/`$059CEE` (shape pointer + 6; special/mirror offset), strip counts
 `ram_FF132E=4`/`3`, `ram_FF1330=$35`, and row/tile bytes dominated by `$00`/`$33`.
 This is consistent with header word + two control bytes followed by raw
 column/tile bytes.
