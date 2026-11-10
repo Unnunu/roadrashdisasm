@@ -106,10 +106,15 @@ opponents. `Race_CreateActors` walks `Race_ActorList` and this id list in parall
 | `+$5C` player A | `ram_FF18AA` (tile base `$A00`); `+$5E/+$60` = `ram_FF18B2/B4` (`$400/$180`). |
 
 The player definition (`$4B`) is all zero; the player's real stats come from
-`Race_LoadBikeData`/`Race_InitPhysicsConstants` and the input/physics. `Race_CreateActors`
-chooses the opponent-id list via `Menu_ram_Player`; the player B struct `$FF26AA` is
-not in `Race_ActorList` and stayed zero in the demo. Its 2P role is therefore still
-unverified and needs a native 2P test.
+`Race_LoadBikeData`/`Race_InitPhysicsConstants` and the input/physics.
+
+`[dynamic]` 2P is **sequential, not split-screen**: the same race code runs once for
+player A, then for player B; only the HUD name changes. `Race_CreateActors` chooses
+`Menu_ram_PlayerA/BOpponents` via `Menu_ram_Player`, `Race_GetInput` selects pad A/B
+via `Race_ram_ActiveController`, and the HUD uses `Menu_ram_Player` for the name.
+`RacePlayerB` (`$FF26AA`) is not in `Race_ActorList` and stays zero; it is not a
+second live actor in this mode. The `cmpa.l #RacePlayerB` checks are pointer-range
+bounds around the player/actor region, not a concurrent player-B actor.
 
 ## Actor field matrix (current evidence)
 

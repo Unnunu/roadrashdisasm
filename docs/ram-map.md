@@ -130,6 +130,10 @@ The player state used by the password system: `Menu_ram_Player` `$FF0508`, level
 | `$FF1ADA` | `Race_ram_ActiveController` | 2 | 0/1: controller that exited the intro (used by the race). |
 | `$FF0508` | `Menu_ram_Player` | 2 | 0 = A, `$FFFF` = B. |
 | `$FF050C`/`$FF050E` | `Menu_ram_PlayerALevel/PlayerBLevel` | 2 each | Table level index (1..5). |
+
+2P is sequential: `Menu_ram_Player` switches the selected player's data/opponent list;
+both runs use the same `RacePlayerA` actor and `RacePlayerB` is a range marker, not a
+second live actor. `[dynamic]` HUD shows Player A/B but there is no split screen.
 | `$FF05DC` | `Menu_ram_CurrentTrackId` | 2 | 0,2,4,6,8 (five tracks). |
 | `$FFB62C` | `Menu_ram_FrameBuffer` | `$E00` | 64x28 window buffer DMA'd to `$7000`. |
 
