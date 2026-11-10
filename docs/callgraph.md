@@ -209,7 +209,7 @@ flowchart LR
 | `Race_SwapFrames` | `0x0BBFE` | `EndLevel_GameTick`, `Race_GameTick` | - |
 | `Race_FinishFrame` | `0x0BD24` | `EndLevel_UpdateAnimation`, `Race_Update` | - |
 | `Race_GetInputDemo` | `0x0BE2C` | `Race_GameTick` | `GetInputPlayerA`, `GetInputPlayerB` |
-| `Race_GetInput` | `0x0BE56` | `Race_GameTick` | `AudioFunc18`, `Audio_StopMusic`, `GetInputPlayerA`, `GetInputPlayerB` |
+| `Race_GetInput` | `0x0BE56` | `Race_GameTick` | `Audio_Resume`, `Audio_StopMusic`, `GetInputPlayerA`, `GetInputPlayerB` |
 | `Race_Update` | `0x0C00C` | `Race_Init`, `TopLevel_Init` | `PiecewiseLinearInterpolation`, `RaceHud_Draw`, `Race_AddSpecialObject`, `Race_AddStagedObjects`, `Race_AddTrackStartObject`, `Race_BuildActorObjectList`, `Race_BuildHScrollTable`, `Race_BuildVScrollInfo`, `Race_ClearActorOnFootFlags`, `Race_DrawRearviewMirror`, `Race_DrawRoadEdges`, `Race_DrawRoadMarkingHud`, `Race_FinishFrame`, `Race_InitExtraStaticActor`, `Race_IntegrateTrackCurve`, `Race_SpawnTick`, `Race_UpdateActorAI`, `Race_UpdateActorActions`, `Race_UpdateActorSpeedState`, `Race_UpdateBikeLean`, `Race_UpdateCamera`, `Race_UpdateExtraStaticActor`, `Race_UpdateNearestOpponent`, `Race_UpdateNearestTarget`, `Race_UpdatePlayerAnimation`, `Race_UpdateSpeedDisplay`, `Race_UpdateStaticActions`, `Race_UpdateStaticActors`, `Race_BuildTrackObjects`, `RoadMarking_Draw`, `Road_BuildVisibleList`, `Road_DrawObjects`, `Road_FillProfileTables`, `sub_10DBE`, `sub_10DDA`, `sub_11C44`, `sub_11CC8`, `sub_1218C`, `sub_123A8`, `sub_1383E`, `sub_138CE`, `sub_13BF4`, `sub_13E94`, `sub_14E38` |
 | `Race_SortResults` | `0x0C378` | `Race_ComputeResults` | - |
 | `Race_ComputeResults` | `0x0C3F8` | `TopLevel_Init` | `MenuPassword_CreatePassword`, `Race_BuildStandings`, `Race_SortResults`, `Race_UpdateHighScoreTable` |
@@ -369,7 +369,7 @@ flowchart LR
 | `Race_ApplyFallKnockdown` | `0x14C3C` | `Race_UpdateActorPairImpact` | `sub_11906` |
 | `Race_ExchangeCollisionSpeed` | `0x14CEC` | `Race_UpdateActorPairImpact` | `Race_ScaleImpactDamage`, `Race_UpdateCollisionSpeedState`, `Race_AdjustActorTrackPositions` |
 | `Race_AdjustActorTrackPositions` | `0x14D84` | `Race_ExchangeCollisionSpeed`, `Race_UpdateActorPairImpact` | - |
-| `sub_14E38` | `0x14E38` | `Race_Update` | `AudioFunc15`, `AudioFunc16`, `AudioFunc17`, `Audio_Engine1Stop`, `Audio_Engine2Stop`, `Audio_Engine3Stop`, `Audio_PlaySfx` |
+| `sub_14E38` | `0x14E38` | `Race_Update` | `Audio_StopMusicChannel3`, `Audio_SetEngineDistance`, `Audio_StopMusicChannel4`, `Audio_Engine1Stop`, `Audio_Engine2Stop`, `Audio_Engine3Stop`, `Audio_PlaySfx` |
 | `sub_14FB4` | `0x14FB4` | `Race_UpdateNearestTarget` | - |
 | `sub_15014` | `0x15014` | `Race_BuildActorObjectList` | `sub_151F0`, `sub_1533E`, `sub_15446`, `sub_154D2` |
 | `sub_151F0` | `0x151F0` | `sub_15014` | - |
@@ -437,9 +437,9 @@ flowchart LR
 | `Audio_Engine3Start` | `0x19F8E` | `Race_InitAudio` | - |
 | `Audio_Engine3Stop` | `0x19F92` | `Race_GameTick`, `sub_14E38` | - |
 | `Audio_Engine3Update` | `0x19F96` | `Race_InitAudio` | - |
-| `AudioFunc15` | `0x19F9A` | `sub_14E38` | - |
-| `AudioFunc16` | `0x19F9E` | `sub_14E38` | - |
-| `AudioFunc17` | `0x19FA2` | `sub_14E38` | - |
-| `AudioFunc18` | `0x19FA6` | `Race_GetInput` | - |
+| `Audio_StopMusicChannel3` | `0x19F9A` | `sub_14E38` | - |
+| `Audio_SetEngineDistance` | `0x19F9E` | `sub_14E38` | - |
+| `Audio_StopMusicChannel4` | `0x19FA2` | `sub_14E38` | - |
+| `Audio_Resume` | `0x19FA6` | `Race_GetInput` | - |
 | `TopLevel_Init` | `0x7E6A2` | `doStart` | `Audio_Init`, `EndLevel_Init`, `EndLevel_UpdateAnimation`, `Fade_InitFadeIn`, `Fade_InitFadeOut`, `HighScore_Init`, `Intro_Init`, `Menu_Init`, `RaceResults_Init`, `Race_ComputeResults`, `Race_ComputeStandings`, `Race_Init`, `Race_InitPhysicsConstants`, `Race_Update`, `RiderIntro_Init`, `Shop_Init`, `TrackData_DecodeNextChunk` |
 | `Boot_CheckRomChecksum` | `0x7FF98` | `doStart` | - |

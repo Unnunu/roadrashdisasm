@@ -2089,8 +2089,8 @@ sub_14E38:
                 beq.w   .loc_14E7A
 
 .loc_14E62:
-                jsr     (AudioFunc15).l
-                jsr     (AudioFunc17).l
+                jsr     (Audio_StopMusicChannel3).l
+                jsr     (Audio_StopMusicChannel4).l
                 move.b  #0,(ram_FF1AD5).l
                 bra.w   .loc_14FA2
 
@@ -2126,7 +2126,7 @@ sub_14E38:
                 tst.w   (ram_FF1AD4).l
                 beq.w   .loc_14EE6
                 move.b  #0,(ram_FF1AD4).l
-                jsr     (AudioFunc15).l
+                jsr     (Audio_StopMusicChannel3).l
 
 .loc_14EE6:
                 tst.w   (ram_FF1EA8).l
@@ -2178,7 +2178,7 @@ sub_14E38:
                 asl.w   #1,d0
                 add.w   d0,d1
                 addq.w  #6,d1
-                jsr     (AudioFunc16).l
+                jsr     (Audio_SetEngineDistance).l
                 moveq   #5,d0
                 cmp.b   (ram_FF1AD5).l,d0
                 beq.w   .loc_14FA2

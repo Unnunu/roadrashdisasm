@@ -1801,7 +1801,7 @@ Race_GetInput:
                 move.w  #-1,(ram_FF3698).l
                 tst.w   (ram_MusicEnabled).l
                 beq.w   .loc_BFC6
-                jsr     (AudioFunc18).l
+                jsr     (Audio_Resume).l
                 bra.w   .loc_BFC6
 .loc_BFA6:
                 move.w  #$16E,(ram_FF3698).l

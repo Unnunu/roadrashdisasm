@@ -1,7 +1,7 @@
 # Analysis: audio subsystem (68k interface, Z80 driver, sound data)
 
 - **ROM range:** `0x019F62`–`0x0257CF` (currently a raw bridge in `src/main.asm`)
-- **Status:** `AudioFunc1..14` renamed/analyzed; `AudioFunc15..18` retained (partial);
+- **Status:** `AudioFunc1..14` renamed/analyzed; `Audio_StopMusicChannel3..18` retained (partial);
   Z80 driver/sound-data formats pending
 - **Related:** `docs/modules/audio.md`, `docs/hardware.md`, `docs/ram-map.md`,
   `docs/analysis/main.md`, `docs/analysis/race_anim_audio.md`
@@ -10,7 +10,7 @@
 
 | Range | Contents |
 |---|---|
-| `$19F62-$19FA9` | 18 `bra.w` stubs: `Audio_Update`..`AudioFunc18`. |
+| `$19F62-$19FA9` | 18 `bra.w` stubs: `Audio_Update`..`Audio_Resume`. |
 | `$19FAA-$1A6C3` | 68k audio engine/interface (`Audio_Init`, `Audio_StartMusic`, `Audio_StopMusic`, helpers). |
 | `$1A6C4-$1B159` | `Audio_PlaySfx` SFX dispatcher + jump table + supporting code. |
 | `$1B15A-$1B2A9` | 12-entry song table (stride `$1C`), pointers relative to `Audio_Update`. |
@@ -38,14 +38,14 @@
 | `Audio_Engine3Start` | `$19F8E` | `$1A09A` | Engine channel 3 start: `$FF0214 = 1/3`. |
 | `Audio_Engine3Stop` | `$19F92` | `$1A0AE` | Engine channel 3 stop: `$FF0214 = 3`. |
 | `Audio_Engine3Update` | `$19F96` | `$1A0B8` | Engine channel 3 update: `$FF0210/$FF0215`. |
-| `AudioFunc15` | `$19F9A` | `$1A0FE` | Stop music channel state `$FF011C = 3`. |
-| `AudioFunc16` | `$19F9E` | `$1A108` | Set `$FF021B = d1` (distance-derived parameter). |
-| `AudioFunc17` | `$19FA2` | `$1A110` | Stop music channel state `$FF0164 = 3`; clear `$FF021D`. |
-| `AudioFunc18` | `$19FA6` | `$1A1E6` | Resume/continue audio unless `$FF01F4 == 1`; sets `$FF0000 = $FF`. |
+| `Audio_StopMusicChannel3` | `$19F9A` | `$1A0FE` | Stop music channel state `$FF011C = 3`. |
+| `Audio_SetEngineDistance` | `$19F9E` | `$1A108` | Set `$FF021B = d1` (distance-derived parameter). |
+| `Audio_StopMusicChannel4` | `$19FA2` | `$1A110` | Stop music channel state `$FF0164 = 3`; clear `$FF021D`. |
+| `Audio_Resume` | `$19FA6` | `$1A1E6` | Resume/continue audio unless `$FF01F4 == 1`; sets `$FF0000 = $FF`. |
 
 Evidence `[static]` from the 68k disassembly and call sites in `src/main.asm`,
 `src/race/race_core.asm`, `src/race/race_anim_audio.asm`, and the UI screens.
-`Audio_StopMusic` is evidenced by the stop-before-start call sites; `AudioFunc15..18`
+`Audio_StopMusic` is evidenced by the stop-before-start call sites; `Audio_StopMusicChannel3..18`
 stay numeric because their exact roles are partly `[hypothesis]` pending dynamic checks.
 
 ## 68k audio state (`$FF0000`)

@@ -40,12 +40,12 @@ The 68k audio control block starts at `$FFFF0000`; see
 | `$FF01B6` | current song id | 4 | Written by `Audio_StartMusic`. |
 | `$FF01BE` | command buffer | `$30` | Six 8-byte commands copied to Z80 `$A00256`. |
 | `$FF01EE` | special command | 5 | Copied to Z80 `$A000BB..BF` when `$FF01F3` is set. |
-| `$FF01F4` | resume flag | 1 | `1` prevents `AudioFunc18` from re-arming audio. |
+| `$FF01F4` | resume flag | 1 | `1` prevents `Audio_Resume` from re-arming audio. |
 | `$FF0202` | command-ready | 1 | Command block processed/ready flag. |
 | `$FF0204/$0208/$0209` | engine ch.1 | 1/1/1 | Parameter / start-stop / volume. |
 | `$FF020A/$020E/$020F` | engine ch.2 | 1/1/1 | Parameter / start-stop / volume. |
 | `$FF0210/$0214/$0215` | engine ch.3 | 1/1/1 | Parameter / start-stop / volume. |
-| `$FF021B` | engine parameter | 1 | Set by `AudioFunc16` (distance-derived). |
+| `$FF021B` | engine parameter | 1 | Set by `Audio_SetEngineDistance` (distance-derived). |
 | `$A000BB..BF` | Z80 mailbox | 5 | Special command bytes. |
 | `$A00256` | Z80 command block | `$30` | Six channel commands. |
 | `$A00286` | Z80 command flag | 1 | Written after the command block. |
