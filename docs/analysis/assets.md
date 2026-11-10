@@ -98,6 +98,18 @@ generated as `assets/images/ea_logo/data.bin`; the previously tracked root
 (`0x1E5CD`, `0x7203`). They are raw binaries; Z80 disassembly and sound-data
 parsing are tracked in `docs/analysis/audio.md`.
 
+## Verification status
+
+`race_track_background_0` is the first verified reference asset:
+
+```sh
+python3 tools/asset_verify.py --asset race_track_background_0
+```
+
+Raw slice, LZSS-B output, Data6 header offsets, parsed layout and the runtime
+`Intro_ram_ImageBuffer` dump all match. Details: `docs/analysis/asset_verification.md`.
+Shape previews remain candidate until `Road_WriteTileColumns` is captured the same way.
+
 ## Stage B visual review
 
 Generated from the current ROM:
