@@ -150,7 +150,7 @@ word_16AEC:     dc.w $B333
 ; *************************************************
 ; Function Race_SpawnTick
 ; Opponent/traffic spawn ticker: timer, active-count and speed gates.
-; In:  player A $68/Speed, Race_ram_SpawnTimer timer, ram_FF1A06 active count
+; In:  player A $68/Speed, Race_ram_SpawnTimer timer, Race_ram_ActiveActorCount active count
 ; Out: active/free lists; spawned actor; Race_ram_SpawnTimer next timer
 ; Clobbers: d0/a1
 ; *************************************************
@@ -171,7 +171,7 @@ Race_SpawnTick:
                 move.w  #0,(Race_ram_SpawnTimer).l
 
 .loc_16B2E:
-                cmpi.w  #6,(ram_FF1A06).l
+                cmpi.w  #6,(Race_ram_ActiveActorCount).l
                 bpl.w   .return
                 cmpi.w  #6000,(RacePlayerA + RaceActor_Speed).l
                 bmi.w   .loc_16B54
@@ -272,14 +272,14 @@ Race_GetActorDistance:
 ; Function Race_SpawnOpponent
 ; Pops a free opponent, checks it is not too far ahead, activates it and places it
 ; ahead of the player.
-; In:  ram_FF1982 free list, player A x
+; In:  Race_ram_OpponentFreeList free list, player A x
 ; Out: actor fields/active list; a1
 ; Clobbers: d0/a1/a2
 ; *************************************************
 
 Race_SpawnOpponent:
                 move.l  a2,-(sp)
-                lea     (ram_FF1982).l,a2
+                lea     (Race_ram_OpponentFreeList).l,a2
                 bsr.w   Race_PopFreeActor
                 cmpa.l  #$FFFFFFFF,a1
                 beq.w   .loc_16C16
@@ -305,14 +305,14 @@ Race_SpawnOpponent:
 ; *************************************************
 ; Function Race_SpawnTraffic
 ; Pops a free traffic actor, checks it is not too far behind, activates/sets it up.
-; In:  ram_FF19C4 free list, player A x
+; In:  Race_ram_TrafficFreeList free list, player A x
 ; Out: actor fields/active list; a1
 ; Clobbers: d0/a1/a2
 ; *************************************************
 
 Race_SpawnTraffic:
                 move.l  a2,-(sp)
-                lea     (ram_FF19C4).l,a2
+                lea     (Race_ram_TrafficFreeList).l,a2
                 bsr.w   Race_PopFreeActor
                 cmpa.l  #$FFFFFFFF,a1
                 beq.w   .loc_16C4A
@@ -372,13 +372,13 @@ Race_ApplyActorRating:
 ; Function Race_RecycleOpponent
 ; Pushes the actor to the opponent free list and removes it from the active list.
 ; In:  a1 - actor
-; Out: ram_FF1982/ram_FF1A0C/ram_FF1A06
+; Out: Race_ram_OpponentFreeList/Race_ram_ActiveActorList/Race_ram_ActiveActorCount
 ; Clobbers: a1/a2
 ; *************************************************
 
 Race_RecycleOpponent:
                 move.l  a2,-(sp)
-                lea     (ram_FF1982).l,a2
+                lea     (Race_ram_OpponentFreeList).l,a2
                 bsr.w   Race_PushFreeActor
                 bsr.w   Race_RemoveActiveActor
                 movea.l (sp)+,a2
@@ -391,7 +391,7 @@ Race_RecycleOpponent:
 
 ; *************************************************
 ; Function Race_RecycleActor
-; Removes an actor from the race, pushes traffic actors to ram_FF19C4 and handles
+; Removes an actor from the race, pushes traffic actors to Race_ram_TrafficFreeList and handles
 ; the first-opponent level transition.
 ; In:  a1 - actor
 ; Out: free/active lists; Race_ram_LevelIndex/34/36
@@ -414,7 +414,7 @@ Race_RecycleActor:
 
 
 .loc_16CE8:
-                lea     (ram_FF19C4).l,a2
+                lea     (Race_ram_TrafficFreeList).l,a2
                 bsr.w   Race_PushFreeActor
 
 .loc_16CF2:
@@ -434,19 +434,19 @@ Race_RecycleActor:
 ; Function Race_ActivateActor
 ; Appends the actor to the active list and increments the count.
 ; In:  a1 - actor
-; Out: ram_FF1A0C/ram_FF1A06
+; Out: Race_ram_ActiveActorList/Race_ram_ActiveActorCount
 ; Clobbers: a2
 ; *************************************************
 
 Race_ActivateActor:
                 move.l  a2,-(sp)
-                lea     (ram_FF1A0C).l,a2
+                lea     (Race_ram_ActiveActorList).l,a2
 .loc_16D12:
                 tst.l   (a2)+
                 bpl.s   .loc_16D12
                 move.l  a1,-4(a2)
                 move.l  #$FFFFFFFF,(a2)
-                addq.w  #1,(ram_FF1A06).l
+                addq.w  #1,(Race_ram_ActiveActorCount).l
                 movea.l (sp)+,a2
                 rts
 ; End of function Race_ActivateActor
@@ -571,13 +571,13 @@ Race_SetupActor:
 ; Function Race_RemoveActiveActor
 ; Removes the actor from the active list and decrements the count.
 ; In:  a1 - actor
-; Out: ram_FF1A0C/ram_FF1A06
+; Out: Race_ram_ActiveActorList/Race_ram_ActiveActorCount
 ; Clobbers: a2/a3
 ; *************************************************
 
 Race_RemoveActiveActor:
                 movem.l a2-a3,-(sp)
-                lea     (ram_FF1A0C).l,a2
+                lea     (Race_ram_ActiveActorList).l,a2
 
 .loc_16E30:
                 cmpa.l  (a2)+,a1
@@ -588,7 +588,7 @@ Race_RemoveActiveActor:
 .loc_16E38:
                 move.l  (a2)+,(a3)+
                 bpl.s   .loc_16E38
-                subq.w  #1,(ram_FF1A06).l
+                subq.w  #1,(Race_ram_ActiveActorCount).l
                 movem.l (sp)+,a2-a3
                 rts
 ; End of function Race_RemoveActiveActor

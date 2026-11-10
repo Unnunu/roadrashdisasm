@@ -1294,7 +1294,7 @@ Race_UpdateNearestOpponent:
                 lea     (ram_FF1A08).l,a0
                 movea.l (a0)+,a1
                 move.l  4(a1),d0
-                lea     (ram_FF1982).l,a2
+                lea     (Race_ram_OpponentFreeList).l,a2
                 move.w  (a2)+,d1
                 move.w  d1,d2
                 beq.w   .loc_E642

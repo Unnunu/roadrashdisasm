@@ -739,8 +739,8 @@ Race_ComputeStandings:
                 move.l  d0,(a2)
 
 .loc_EFEE:
-                lea     (ram_FF1A0C).l,a0
-                move.w  (ram_FF1A06).l,d7
+                lea     (Race_ram_ActiveActorList).l,a0
+                move.w  (Race_ram_ActiveActorCount).l,d7
                 subq.w  #2,d7
                 bmi.w   .loc_F036
 
@@ -766,7 +766,7 @@ Race_ComputeStandings:
                 dbf     d7,.loc_F000
 
 .loc_F036:
-                lea     (ram_FF1982).l,a0
+                lea     (Race_ram_OpponentFreeList).l,a0
                 move.w  (a0)+,d7
                 move.w  d7,d6
                 asl.w   #2,d6
@@ -801,7 +801,7 @@ Race_ComputeStandings:
                 dbf     d7,.loc_F054
 
 .loc_F09E:
-                lea     (ram_FF19C4).l,a0
+                lea     (Race_ram_TrafficFreeList).l,a0
                 move.w  (a0)+,d7
                 move.w  d7,d6
                 asl.w   #2,d6

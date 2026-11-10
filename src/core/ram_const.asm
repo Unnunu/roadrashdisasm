@@ -238,11 +238,11 @@ ram_FF1906 equ $FF1906
 Race_ram_NearestActor equ $FF1908
 Animation_ram_PosX equ $FF190C
 Animation_ram_PosY equ $FF190E
-ram_FF19C4 equ $FF19C4
-ram_FF1982 equ $FF1982
-ram_FF1A06 equ $FF1A06
+Race_ram_TrafficFreeList equ $FF19C4
+Race_ram_OpponentFreeList equ $FF1982
+Race_ram_ActiveActorCount equ $FF1A06
 ram_FF1A08 equ $FF1A08
-ram_FF1A0C equ $FF1A0C
+Race_ram_ActiveActorList equ $FF1A0C
 RaceTrack_Data1 equ $FF1A4C
 RaceTrack_Data2 equ $FF1A52
 RaceTrack_Data3 equ $FF1A56

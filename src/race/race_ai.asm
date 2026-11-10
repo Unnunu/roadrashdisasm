@@ -87,7 +87,7 @@ unk_10E3E:      dc.b $18
 ; Main actor AI loop: walks the actor list, applies speed/lean/movement and handles
 ; the player's on-foot/normal input branches.
 ; In:  ram_FF1A08 actor list; Race_ram_FrameDelay/CurrentButtons
-; Out: actor fields; ram_FF1A0C/1D50-related movement state
+; Out: actor fields; Race_ram_ActiveActorList/1D50-related movement state
 ; Clobbers: all
 ; *************************************************
 
@@ -2158,7 +2158,7 @@ sub_12070:
 
 
 sub_1218C:
-                lea     (ram_FF1A0C).l,a0
+                lea     (Race_ram_ActiveActorList).l,a0
 
 .loc_12192:
                 movea.l (a0)+,a1
@@ -2677,7 +2677,7 @@ Race_UpdateActorPairCollision:
 
 
 Race_ClearActorOnFootFlags:
-                lea     (ram_FF1A0C).l,a0
+                lea     (Race_ram_ActiveActorList).l,a0
 
 .loc_12824:
                 movea.l (a0)+,a1

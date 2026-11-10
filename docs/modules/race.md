@@ -80,8 +80,8 @@ marking/animation, and the race outcome. `src/core/top_level.asm` calls `Race_In
   `+$68` flags (bit1 throttle/B, bit2 brake/A, bit7 timer stop), `+$71 Index`.
 - `$FF2FAA`: a further actor-like instance used by `Race_UpdateStaticActors` (`$68` bit6), not in
   the static list; role/layout TODO (`docs/analysis/race_actors.md`).
-- Spawn lists: `ram_FF1A0C` active actors, `ram_FF1A06` count, `ram_FF1982` opponent
-  free list, `ram_FF19C4` traffic free list; `Race_ram_PlayerProgress` progress, `Race_ram_ActorDistanceScale`
+- Spawn lists: `Race_ram_ActiveActorList` active actors, `Race_ram_ActiveActorCount` count, `Race_ram_OpponentFreeList` opponent
+  free list, `Race_ram_TrafficFreeList` traffic free list; `Race_ram_PlayerProgress` progress, `Race_ram_ActorDistanceScale`
   distance scale, `Race_ram_SpawnTimer` spawn timer, `ram_FF1F2A` first opponent,
   `Race_ram_LevelIndex`/`ram_FF1B34`/`ram_FF1B36` level/recycle state; speed display `Race_ram_SpeedDisplay`.
   Details: `docs/analysis/race_spawn.md`.

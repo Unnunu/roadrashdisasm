@@ -1150,14 +1150,14 @@ Race_InitVariables:
 ; Function Race_InitActorLists
 ; Builds the actor/object pointer tables and counts from Race_ActorList/Race_ActorListMid.
 ; In:  -
-; Out: ram_FF1A08/ram_FF1982 lists; ram_FF1A06; sentinels
+; Out: ram_FF1A08/Race_ram_OpponentFreeList lists; Race_ram_ActiveActorCount; sentinels
 ; Clobbers: d0/a1/a2
 ; *************************************************
 
 Race_InitActorLists:
                 move.w  #0,(Race_ram_SpawnTimer).l
-                move.w  #0,(ram_FF19C4).l
-                move.w  #1,(ram_FF1A06).l
+                move.w  #0,(Race_ram_TrafficFreeList).l
+                move.w  #1,(Race_ram_ActiveActorCount).l
 ; first actor pointer (player A) then the second actor group
                 lea     (Race_ActorList).l,a1
                 lea     (ram_FF1A08).l,a2
@@ -1167,18 +1167,18 @@ Race_InitActorLists:
                 adda.w  #$24,a1
                 move.w  #6,d0
 .loc_B6F2:
-                addi.w  #1,(ram_FF1A06).l
+                addi.w  #1,(Race_ram_ActiveActorCount).l
                 move.l  (a1)+,(a2)+
                 dbf     d0,.loc_B6F2
 
                 move.l  #$FFFFFFFF,(a2)
-                lea     (ram_FF1982).l,a2
+                lea     (Race_ram_OpponentFreeList).l,a2
                 move.w  #0,(a2)+
 ; middle group (exact 8+7 split TODO)
                 lea     (Race_ActorListMid).l,a1
                 move.w  #6,d0
 .loc_B71A:
-                addi.w  #1,(ram_FF1982).l
+                addi.w  #1,(Race_ram_OpponentFreeList).l
                 move.l  (a1)+,(a2)+
                 dbf     d0,.loc_B71A
                 rts

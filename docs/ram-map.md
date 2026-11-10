@@ -201,7 +201,7 @@ Actor tables: `Race_ActorList` `$25856` (16 actor pointers + sentinel),
 `Race_ActorListMid` `$2585E`, `Race_StaticActorList` `$2589A`,
 `Race_ActorGraphicsTable` `$258EE`, `Race_ActorDefinitionTable` `$CCDA`
 (76 x 16-byte definitions; 5 levels x15 + player def `$4B`), `Race_ActorLevelBase`
-`$CCD0` (0,15,30,45,60). Actor screen groups: `ram_FF1A08`/`ram_FF1982`
+`$CCD0` (0,15,30,45,60). Actor screen groups: `ram_FF1A08`/`Race_ram_OpponentFreeList`
 (`Race_InitActorLists`/`Race_InitActorPositions`).
 
 Top-level state: `Race_ram_State` (0 running, non-zero paused/loading),
@@ -243,10 +243,10 @@ See `docs/analysis/combat.md`.
 
 | Address | Name | Size | Meaning |
 |---|---|---|---|
-| `$FF1A0C` | `ram_FF1A0C` | - | Active actor list (`FFFFFFFF`-terminated). |
-| `$FF1A06` | `ram_FF1A06` | 2 | Active actor count (spawn threshold `< 6`). |
-| `$FF1982` | `ram_FF1982` | - | Opponent free list (7 initial; push/pop). |
-| `$FF19C4` | `ram_FF19C4` | - | Traffic free list (push/pop; initial count TODO). |
+| `$FF1A0C` | `Race_ram_ActiveActorList` | - | Active actor list (`FFFFFFFF`-terminated). |
+| `$FF1A06` | `Race_ram_ActiveActorCount` | 2 | Active actor count (spawn threshold `< 6`). |
+| `$FF1982` | `Race_ram_OpponentFreeList` | - | Opponent free list (7 initial; push/pop). |
+| `$FF19C4` | `Race_ram_TrafficFreeList` | - | Traffic free list (push/pop; initial count TODO). |
 | `$FF1E68` | `Race_ram_PlayerProgress` | 4 | Player progress for ahead/behind checks. |
 | `$FF1E9C` | `Race_ram_ActorDistanceScale` | 2 | Actor-distance scale (`+$66 * scale >> 16`). |
 | `$FF1EA6` | `Race_ram_SpawnTimer` | 2 | Spawn timer (0..511 frames). |

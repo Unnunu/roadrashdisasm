@@ -20,7 +20,7 @@
 - Actor struct size: `$80`; player A `$FF1EAA`, player B `$FF26AA`; the 15 opponents
   `$FF1F2A`..`$FF262A`; the static actors `$FF2EAA/$FF2F2A`; `$FF2FAA` is a further
   actor-like struct used by `Race_UpdateStaticActors` but **not** in the static list (TODO).
-- `Race_InitActorLists` copies the actor pointers into `ram_FF1A08` / `ram_FF1982`
+- `Race_InitActorLists` copies the actor pointers into `ram_FF1A08` / `Race_ram_OpponentFreeList`
   (with the `Race_ActorListMid` sub-list); `Race_InitActorPositions` then sets the
   actor screen fields `+$1A/+$30` (alternating `$60±$40`, `$80000`, `$30000` steps).
 - `[dynamic]` The demo snapshot confirms the split: active count is 8 =

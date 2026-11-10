@@ -155,7 +155,7 @@ Dynamic confirmation of the call order is still TODO; source order is definitive
   `RaceTrack_Data1` = per-level word, `Data2/3` = the track-data decoder streams
   (`src/race/track_data.asm`), `Data4/5/6` = object/spawn/gfx data; initial time/position/state.
 - `Race_InitActorLists`/`Race_InitActorPositions`: actor pointer groups and their
-  initial screen fields (`ram_FF1A08`/`ram_FF1982`; exact 8+7 split TODO).
+  initial screen fields (`ram_FF1A08`/`Race_ram_OpponentFreeList`; exact 8+7 split TODO).
 - `Race_InitPhysicsConstants`: bike physics/steering/engine constants.
 - `Race_LoadTrackParams`: per-track parameters from `unk_1471A`.
 - `Race_LoadBikeData`: bike id -> `unk_25B50` (0x13 words at `RaceBike_ram_Parameters`) and
