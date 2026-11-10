@@ -75,6 +75,8 @@ The same logic appears in `Race_UpdateActorShadow` for the zero-speed case.
 
 Side index 0 is the upper side (used when the other actor is above), side index 1 is
 the lower side. `Race_ClampActorPairY` and `sub_12414` use the same mapping.
+`[dynamic]` Forced Y test: lower actor a1 (`$1A=$80`) / higher a2 (`$1A=$60`) calls
+`Race_GetCollisionExtent` with side 0 for a1 and side 1 for a2.
 
 ## Open points
 

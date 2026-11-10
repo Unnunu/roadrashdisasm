@@ -103,6 +103,11 @@ rendering each object and restores them on overflow.
 - `[dynamic]` First `Road_WriteTileColumns`: `ram_FF0D2A` points at shape+6
   (`$059952`), strip counts `ram_FF132E=4`, `ram_FF1330=$35`, `ram_FF0D28=1`;
   row bytes are raw tile/column data (`$33` etc.).
+- Writer contract: `a0` = row/tile byte pointer; `ram_FF0D2E`/`ram_FF102E` hold
+  per-strip byte offsets; the routine emits four destination bytes per inner step,
+  advances the source by those offsets, loops over `$1F` rows, then repeats for the
+  right strip. `ram_FF0D28` drives `Road_ClearEdgeTiles` for the remaining rows.
+  The exact tile/row pixel mapping and the `ram_FFDE66/68/6A` strides are still TODO.
 - `RiderSprites_Build` builds the rider/bike chain; the object x/y/scale/shape are fed from the
   `ram_FFDE*` fields.
 

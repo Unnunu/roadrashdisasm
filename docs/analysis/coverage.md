@@ -42,7 +42,7 @@ Priority is analytical impact, not address order.
 
 | # | Target | Unknown / why | Next experiment | Artifact |
 |---|---|---|---|---|
-| 1 | `Race_UpdateActorPairCollision`, `sub_12070`, `sub_12414`, `sub_11CC8` | `$32/$4C/$4E/$56`, side-extent mapping | **done:** `$4C` upper / `$4E` lower by Y ordering; `$32` collision offset; `$56` timer TODO | collision contract + field matrix |
+| 1 | `Race_UpdateActorPairCollision`, `sub_12070`, `sub_12414`, `sub_11CC8` | `$32/$4C/$4E/$56`, side-extent mapping | **done:** `$4C` upper / `$4E` lower by Y ordering (forced pair trace); `$32` offset; `$56` timer TODO | collision contract + field matrix |
 | 2 | `Race_UpdateActorSpeedState`, `Race_UpdateActorSpeedGear` | gear/speed/curve branch semantics | **done:** demo trace + `race_speed.md`; gear=0 remains TODO | speed/gear contract |
 | 3 | `Race_FindTargetActor`, `Race_SaveActorShadow` | target selection + shadow sync role | log target candidates/shadow state | target/shadow contract |
 | 4 | `Race_UpdateActorMovement/FallMovement`, `sub_115C6` | exact `$36–$3C` roles | normal/steer/off-road/fall snapshots | movement matrix update |
