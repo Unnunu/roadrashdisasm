@@ -26,12 +26,19 @@ Observed first writer call:
 The split files match this: `assets/shapes/056/data.bin` starts at `0x05994C`,
 contains the header `10 37 20 36`, and the writer consumes `P+6` as row data.
 
+A before/after capture of `0xFF509C..0xFF8000` confirms the writer actually
+modifies the destination region starting at `0xFF511C`; the changed range is
+`0xFF511C..0xFF5573` (local dumps `shape_writer_before.bin` /
+`shape_writer_after.bin`). This is the authoritative destination data for the
+next rendering model.
+
 ## What is verified
 
 - shape table ID → pointer → split byte range;
 - special/two-part pointer handoff `P+2` → `P+6`;
 - runtime source pointer and strip counts;
 - destination pointer calculation;
+- actual written destination range;
 - runtime dump availability for future comparisons.
 
 ## What is not verified
@@ -43,6 +50,8 @@ black padding are not trustworthy.
 
 ## Next experiment
 
-Use the captured destination bytes and the writer's offset arrays to model
-`Road_WriteTileColumns` exactly, then render the destination tile data with the
-actual palette line. Only that output should be shown as a shape preview.
+Use `shape_writer_after.bin`, the writer's offset arrays and the actual palette
+line to model `Road_WriteTileColumns` exactly, then render the destination tile
+data. Only that output should be shown as a shape preview. The current
+`preview_p4_line3.png`/`preview_p6_line3.png` are candidate split decodes and
+must not be treated as final shape art.
