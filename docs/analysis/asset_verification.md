@@ -47,6 +47,16 @@ analysis/golden/race_track_background_0_decompressed.bin
 - Map/tileset previews (`race_map_0/1`, `race_road`) stay deferred until a
   runtime VDP/tile-base capture is available.
 
+## Shape runtime checkpoint
+
+`Road_WriteTileColumns` was captured at `0x9318`/`0x93D0`. For shape `0x56`:
+`Race_ShapeTable[0x56]=0x05994C`, writer source `0x05994E` (P+2), row data
+`0x059952` (P+6), left count 4, right count `$35`, destination `$FF511C`.
+The split bytes and special handoff are verified; the current candidate
+`preview_p4_line3.png`/`preview_p6_line3.png` are **not** trusted until the
+writer destination and palette line are modeled.
+See `docs/analysis/shape_writer_verify.md`.
+
 ## Next verification targets
 
 1. `Road_WriteTileColumns` shape output: source pointer, strip counts, offset
