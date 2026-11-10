@@ -108,6 +108,7 @@ differing byte is reported. `baserom.md` is the only ROM file and is git-ignored
 | `tools/disasm.py` | Capstone-based ROM range -> project AS source generator. |
 | `tools/roundtrip.py` | Round-trip verifier for `disasm.py` (ROM -> AS -> assemble -> compare). |
 | `tools/callgraph.py` | Best-effort function index / call graph generator. |
+| `tools/field_usage.py` | Fan-in and actor-offset usage index; prioritizes deep dives. |
 | `tools/extract.py` | Legacy one-off asset extraction helper (Python 3 + Pillow). |
 | `tools/assets.py` | Split/render/check ROM assets; generates `assets/`. |
 | `tools/asset_specs.json` | Asset manifest (labels, addresses, sizes, palettes). |
@@ -254,6 +255,34 @@ Read and follow `docs/reverse-engineering.md` when analyzing code behavior.
 - Record verified facts, hypotheses, and experiments in the module card and, for complex
   routines, in `docs/analysis/<file>.md`.
 
+## Analysis efficiency
+
+Goal: maximize verified semantic information per token, not the amount of code read.
+
+- Start with the question and the evidence that would answer it. Do not read code
+  without a target.
+- Use the existing cache first: `docs/analysis/`, `docs/callgraph.md`, field matrices,
+  and `rg`/xref results. Do not re-derive documented facts.
+- Read the smallest function window that can answer the question. Whole files,
+  listings, and full disassembly dumps are navigation aids, not analysis output.
+- Analysis ladder: docs -> xref/offset usage -> L1/L2 contract -> one targeted dynamic
+  check -> L3 line-by-line. Stop at the first sufficient level.
+- Line-by-line analysis is justified only for an unresolved formula, timing, encoding,
+  or edge case. Otherwise record a TODO instead of narrating every instruction.
+- Batch unknowns: one experiment or snapshot should resolve several fields; one rename
+  batch gets one build and one commit.
+- Every deep dive must produce a durable artifact (table, doc, rename batch, or test)
+  and name the next cheapest experiment. If it cannot, do not start it.
+- Prefer tables and deltas over prose: `Offset | Meaning | Evidence | Confidence`,
+  `function | callers | unknown fields | next check`.
+- Answer with only the delta: findings, `file:line`, evidence tag, confidence, and next
+  step. Do not paste whole files or repeat established context.
+- If the next code block cannot change a contract, offset, name, or test, stop and
+  leave a TODO.
+- Dynamic-first for state/fields; static-first for control flow. No speculation.
+- Use `tools/field_usage.py` to rank functions by fan-in and actor-offset coverage
+  before starting a deep dive; promote repeated ad-hoc searches into tools.
+
 ## Documentation
 
 - `docs/architecture.md` — ROM map, boot/interrupt flow, module index, RAM overview.
@@ -307,4 +336,7 @@ The build must report `0 errors`. The only accepted warning class is the one abo
 - [ ] AS syntax rules above are respected.
 - [ ] `./build.sh` reports `0 errors` and `Matched OK: 786432 bytes`.
 - [ ] Module documentation updated when a module was studied/ported.
+- [ ] Analysis used the cheapest sufficient level; no whole-file/listing dump.
+- [ ] Deep dive produced a durable artifact or was stopped with a TODO.
+- [ ] The next cheapest experiment is named for every unresolved question.
 - [ ] No generated or ignored files staged.
