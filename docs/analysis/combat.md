@@ -266,6 +266,14 @@ A second armed run used a Y offset of `+$24` to hit the high branch:
 `$6D=$3C`. This confirms the armed high-attack timer. Neither run showed direct
 `BikeDamage` from the punch; that remains a dynamic question.
 
+## Natural gameplay / dynamic limit
+
+Headless input injection by clearing `MainMenu_ram_DemoMode` and feeding C through
+`Race_GetInput` leaves only the player active (`active=1`) and no nearest target
+(`$FFFFFFFF`). Natural punch/knockback therefore still needs a native pad or a
+better input scenario. Forced pair-contacts already confirm armed/unarmed reach and
+contact; they do not add `BikeDamage`.
+
 ## Open questions / next experiments
 
 - Confirm attack phase semantics (`$6C` 0..3), high/low/side bits, `$5A`.
