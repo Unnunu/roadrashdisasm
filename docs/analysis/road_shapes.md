@@ -114,8 +114,9 @@ Candidate visual previews:
 python3 tools/road_shapes.py render --ids 56,57,1C3,1C4,15E
 ```
 
-`preview_p4.png` starts at `P+4` (non-special), `preview_p6.png` at `P+6`
-(special/two-part). These are **candidate 4bpp tile decodes**, not yet confirmed
+`preview_p4_line3.png` starts at `P+4` (non-special),
+`preview_p6_line3.png` at `P+6` (special/two-part), using HUD palette line 3 with
+the magenta/transparent key shown dark gray. These are **candidate 4bpp tile decodes**, not yet confirmed
 row/tile rendering; use them only to identify shapes. The sample page is
 `assets/shapes/review.html`.
 

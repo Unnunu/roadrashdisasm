@@ -36,6 +36,7 @@ def main():
     ap.add_argument("--rom", default=str(ROM))
     ap.add_argument("--out", default=str(ROOT / "assets" / "shapes"))
     ap.add_argument("--ids", default="56,57,1C3,1C4,15E")
+    ap.add_argument("--palette-line", type=int, default=3)
     args = ap.parse_args()
 
     rom = Path(args.rom).read_bytes()
@@ -51,7 +52,7 @@ def main():
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
     if args.command == "render":
-        render(rom, out, args.ids, ptrs, sizes)
+        render(rom, out, args.ids, ptrs, sizes, args.palette_line)
         return
     aliases = {}
     for sid, p in enumerate(ptrs):
@@ -91,13 +92,16 @@ def main():
     print(f"index: {out / 'index.csv'}")
 
 
-def render(rom, out, ids, ptrs, sizes):
+def render(rom, out, ids, ptrs, sizes, palette_line=3):
     try:
         from PIL import Image
     except ImportError:
         raise SystemExit("Pillow required for render")
-    pal_path = ROOT / "assets" / "palettes" / "race_track0" / "palette.json"
-    pal = [tuple(c["rgb"]) for c in json.loads(pal_path.read_text())]
+    pal_path = ROOT / "assets" / "palettes" / "race_hud" / "palette.json"
+    allpal = [tuple(c["rgb"]) for c in json.loads(pal_path.read_text())]
+    pal = allpal[palette_line * 16:palette_line * 16 + 16]
+    # index 0 is the transparent/magenta key in race palettes; use dark gray
+    pal = [(20, 20, 20) if c == (255, 0, 255) else c for c in pal]
     for token in ids.split(","):
         token = token.strip()
         if not token:
@@ -128,7 +132,7 @@ def render(rom, out, ids, ptrs, sizes):
                         v = ((b0 >> bit) & 1) | (((b1 >> bit) & 1) << 1) | \
                             (((b2 >> bit) & 1) << 2) | (((b3 >> bit) & 1) << 3)
                         img.putpixel((bx + x, by + y), pal[v % len(pal)])
-            img.save(d / f"preview_{name}.png")
+            img.save(d / f"preview_{name}_line{palette_line}.png")
         print(f"rendered {sid:03X}")
 
 if __name__ == "__main__":
