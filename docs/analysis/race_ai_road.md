@@ -104,6 +104,24 @@ still TODO.
   `ram_FFD7C4`/`ram_FFD7C8` against player progress; `Race_ProjectTrackObject` consumes the
   resulting object/shape data into the object records.
 
+### Track-stream dynamic snapshot
+
+At `Race_UpdateTrackObjectCursor` (`0x109C4`):
+
+- `PlayerProgress=$00078000`, `ram_FFD7C4=$00027984`, `ram_FFD7C8=0`;
+- ROM cursor bytes start `00 7F A0 00 80 39 01 AC 81 FA 00 15 ...`.
+
+At `Race_AddTrackObjects` (`0xFC5A`):
+
+- `ram_FFD7CC=$00FFD7D4`, `ram_FFDE72=22`;
+- RAM-staged entries start `00 A7 02 18`, `01 A5 01 18`, `02 BC 05 0F`,
+  `02 BE 02 0E`.
+
+This confirms that `Race_UpdateTrackObjectCursor` walks the ROM/pointer stream
+(`ram_FFD7C4`), while `Race_AddTrackObjects` consumes the RAM-staged 4-byte records
+at `ram_FFD7CC`. In each staged word, the high word is the position key, `byte2`
+is the shape/type selector, and `byte3` is the length/row selector (working model).
+
 ### Track-object stream format (static hypothesis)
 
 `Race_AddTrackObjects` reads 4-byte entries from the `ram_FFD7CC` cursor (track stream in

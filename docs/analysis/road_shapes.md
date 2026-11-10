@@ -27,6 +27,31 @@ The table has 500 nonzero entries and 366 unique pointers (zeros = no shape; rep
 pointers = symmetric/mirrored shapes). The ordered first pointers are
 `$3C7EC,$3CC4C,$3D0BE,$3D55C,$3DA0E,$3DF28,...`.
 
+### Dynamic shape samples
+
+`Road_ScaleShape`/`Road_ProjectShape` were traced with the live object list:
+
+| Shape | Pointer | Header bytes | First DrawStrip word |
+|---|---:|---|---:|
+| `$56` | `$05994C` | `10 37 20 36` | `$2036` |
+| `$57` | `$059CE8` | `0E 36 1E 36` | `$3636` (second shape path) |
+| `$1C3` | `$078B0E` | `0F 1C 1E 1C` | `$1C1C` |
+| `$1C4` | `$078CD4` | `09 46 13 2A` | `$2A13` |
+| `$15E` | `$069924` | `0A 47 1A 47` | `$471A` |
+
+Working model (static + dynamic, exact row encoding still TODO):
+
+- `P[0]` is the primary edge/width used by `Road_ProjectShape`;
+- `P[1]` is the secondary edge/height;
+- `P[2]/P[3]` form the word read by `Road_DrawStrip` (tile/fill), and `P[2]`
+  is also the mirror-side edge used by `Road_ScaleShape`;
+- `P+4` onward is the per-row strip data consumed by
+  `Road_InterpolateLeftEdge`/`Road_InterpolateRightEdge`.
+
+`[dynamic]` For `$56`, `Road_ScaleShape` sees `P=$05994C` and reads
+`10/37/20`; `Road_DrawStrip` then receives `a0=$05994E` (P+2), whose first word is
+`$2036`. This confirms the P+2 handoff for the special/two-part path.
+
 ## Consumers
 
 - `Road_DrawObject`/`Road_ScaleShape`/`Road_ProjectShape*` (`src/race/road_render.asm`).
