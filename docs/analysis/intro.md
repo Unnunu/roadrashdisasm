@@ -4,7 +4,8 @@
 - **ROM range:** `0x001704`–`0x002445` (`src/screens/menu_password.asm` starts at `0x2446`)
 - **Status:** partially analyzed (VDP/text/scroll structure understood; exact title visuals TODO)
 - **Source:** `src/screens/intro.asm`
-- **Related:** `docs/architecture.md`, `docs/hardware.md`, `docs/ram-map.md`
+- **Related:** `docs/architecture.md`, `docs/hardware.md`, `docs/ram-map.md`,
+  `docs/analysis/screens_flow.md`
 
 ## Coverage matrix
 

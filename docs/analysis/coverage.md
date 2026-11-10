@@ -50,7 +50,7 @@ Priority is analytical impact, not address order.
 | 6 | Road render helpers: `Race_ProjectObject`, `Race_ProjectActorObject`, `Road_DrawStrip`, `Road_WriteTileColumns` | exact row/tile mapping | **progress:** shape record layout + row start confirmed; SAT/VSRAM next | render/shape doc |
 | 7 | `Race_ApplyCollisionImpact`, `Race_ApplyCrashImpact`, impact chain | `$2A/$2C/$2E/$56` and damage timing | forced impact/fall trace | impact contract |
 | 8 | Track/shape data formats | **done:** Data2/3 decoder, Data4/5/6 formats; remaining Data4 side bits | compare staged/service consumers | format spec |
-| 9 | Screens flow | non-demo inputs/visuals | native screenshots + scripted states | screen state machines |
+| 9 | Screens flow | non-demo inputs/visuals | **progress:** demo flow + menu entry; `screens_flow.md`; input injection next | screen state machines |
 | 10 | Asset tail | labels/bounds/consumers | inventory length/pointers/visuals | asset catalogue |
 | 11 | Audio (separate) | Z80 driver/sequencer/SFX | mailbox + music trace | audio spec |
 
@@ -60,7 +60,7 @@ Priority is analytical impact, not address order.
 - [ ] Phase 1: runtime, IRQ, input, RAM ownership.
 - [ ] Phase 2: race simulation semantics (movement, speed, collision in progress).
 - [~] Phase 3: road/render and data formats (Data4/5/6 mapped; row/tile mapping in progress).
-- [ ] Phase 4: screens and visual confirmation.
+- [~] Phase 4: screens and visual confirmation (flow mapped; non-demo/visual captures pending).
 - [ ] Phase 5: audio/Z80, separate.
 - [ ] Phase 6: asset tail catalogue.
 - [ ] Phase 7: consolidation and acceptance.

@@ -3,10 +3,10 @@
 - **Module / routine:** main menu (VDP setup, background, race selection, player info,
   music toggle, demo timer, password-screen entry)
 - **ROM range:** `0x003400`–`0x004225` (`src/screens/message.asm` starts at `0x4226`)
-- **Status:** analyzed (VDP/window/menu structure understood; exact card layout and demo
-  behaviour TODO)
+- **Status:** analyzed (VDP/window/menu structure; demo flow and forced Menu_Init entry confirmed; exact card layout TODO)
 - **Source:** `src/screens/menu_main.asm`
-- **Related:** `docs/architecture.md`, `docs/hardware.md`, `docs/ram-map.md`
+- **Related:** `docs/architecture.md`, `docs/hardware.md`, `docs/ram-map.md`,
+  `docs/analysis/screens_flow.md`
 
 ## Coverage matrix
 
