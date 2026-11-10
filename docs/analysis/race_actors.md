@@ -228,6 +228,12 @@ reuses the `$80`-byte slots with a phase-specific field layout or a different
 structure; do not apply normal actor names blindly to `$FF2EAA/$FF2F2A` until the
 static updater is analyzed.
 
+`[dynamic]` Forced activation test (`ProgressSnapshotB=$800`,
+`ram_FF1B30=$1C`) reached `Race_UpdateExtraStaticActor` with
+`$FF2FAA`: index `$12`, type `0`, speed `$1770`, Y `$FEBC`, X `$00220000`,
+`$68=$40` (active), `$69=0`. This confirms the late-race extra/static slot is
+initialized and updated by that path; visual role remains police/static.
+
 `[dynamic]` `$FF2FAA` is zero except `+$71=$12` in both demo snapshots; it is not in
 the active/free/static lists. `Race_CreateActors` writes `$12` at `$FF2FAA+$71`, so
 this is a third static-like slot; `Race_InitExtraStaticActor`/`Race_UpdateExtraStaticActor`/collision paths reference

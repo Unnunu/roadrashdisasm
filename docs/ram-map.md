@@ -190,8 +190,9 @@ structure before assigning an actor meaning.
 
 Actor instances (`$80` each): `RacePlayerA`/`RacePlayerB` (`$FF1EAA`/`$FF26AA`),
 15 opponents `$FF1F2A`..`$FF262A` (`Race_ActorList`), static actors
-`$FF2EAA`/`$FF2F2A` (type `$10`); `$FF2FAA` is a further actor-like instance used by
-`Race_UpdateStaticActors` (`$68` bit6), zero except `$71=$12` in the demo snapshots.
+`$FF2EAA`/`$FF2F2A` (type `$10`); `$FF2FAA` is a further static-like instance used by `Race_UpdateStaticActors`
+(`$68` bit6). Forced activation gives index `$12`, type 0, speed `$1770`,
+Y `$FEBC`, X `$00220000`, `$68=$40`, `$69=0`.
 After `Race_UpdateStaticActors` the static slots use a phase-specific layout
 (`$16=0`, `$30=$8000`), so do not apply normal actor names blindly.
 `Road_ObjectArray` (`$FFD37C`) is the separate 0x14-byte road object array
