@@ -126,6 +126,22 @@ This confirms that `Race_UpdateTrackObjectCursor` walks the ROM/pointer stream
 at `Race_ram_TrackObjectRecordCursor`. In each staged word, the high word is the position key, `byte2`
 is the shape/type selector, and `byte3` is the length/row selector (working model).
 
+### `Race_UpdateTrackObjectCursor` field model
+
+`Race_UpdateTrackObjectCursor` reads a 4-byte entry and builds `Road_ObjectArray`
+records directly:
+
+- word0 low 7 bits + `$186` selects the shape (with a range remap);
+- word0 bits 7/8 contribute flags; high byte `(word0 >> 8) & $1F` is the row count;
+- word2 high nibble `(word2 >> 4) & $F` is the length/step (+1); bits `$700`
+  are object flags; low byte is object data;
+- bit15/bit14 of word0 select mirror/alternate-object bits;
+- the routine writes `$A` flags, second shape, shape IDs, and updates
+  `Race_ram_TrackObjectCursor/Distance` and `ram_FFDE72`.
+
+This is distinct from the RAM-staged list consumed by `Race_AddTrackObjects`
+(4-byte entries: high word position, byte2 type, byte3 length).
+
 ### Track-object stream format (static hypothesis)
 
 `Race_AddTrackObjects` reads 4-byte entries from the `Race_ram_TrackObjectRecordCursor` cursor (track stream in

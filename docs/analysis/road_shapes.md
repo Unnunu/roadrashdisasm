@@ -48,7 +48,19 @@ Working model (static + dynamic, exact row encoding still TODO):
 - `P+4` onward is the per-row strip data consumed by
   `Road_InterpolateLeftEdge`/`Road_InterpolateRightEdge`.
 
-`[dynamic]` For `$56`, `Road_ScaleShape` sees `P=$05994C` and reads
+Working layout (static + dynamic):
+
+- non-special path: `P[0..1]` is the first word copied to `ram_FFDE5E`;
+  `P[2]` controls the left strip count and `P[3]` the right strip count;
+  `P+2`/`P+4` onward is the row/tile data used by
+  `Road_WriteTileColumns`.
+- special path (`$B` bit7): `ram_FF1348` is advanced by 2, so `P+2` is the
+  fill/tile word and `P+4` is the row/tile data.
+- `Road_InterpolateLeftEdge` reads the single control byte at `P+2`
+  (non-special) and derives `ram_FF1332`; `Road_InterpolateRightEdge` reads
+  `P+3`. The remaining shape bytes feed the tile-column writer.
+
+- `[dynamic]` For `$56`, `Road_ScaleShape` sees `P=$05994C` and reads
 `10/37/20`; `Road_DrawStrip` then receives `a0=$05994E` (P+2), whose first word is
 `$2036`. This confirms the P+2 handoff for the special/two-part path.
 
