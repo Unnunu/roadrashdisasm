@@ -1079,7 +1079,7 @@ Interp_dDivisorMap:
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_F40C:
+Race_BuildActorObjectList:
                 addi.b  #1,(ram_FF1AD9).l
                 andi.b  #3,(ram_FF1AD9).l
                 addi.b  #1,(ram_FF1ADC).l
@@ -1269,7 +1269,7 @@ sub_F40C:
                 move.w  (ram_FFDE72).l,d7
                 asl.w   #2,d7
                 move.l  d0,(a6,d7.w)
-                bsr.w   sub_FF7E
+                bsr.w   Race_ProjectActorObject
                 btst    #3,$68(a1)
                 beq.w   .loc_F684
                 move.w  $12(a1),d0
@@ -1381,7 +1381,7 @@ sub_F40C:
                 move.l  4(a1),d0
                 move.w  $30(a1),d1
                 move.w  $32(a1),d2
-                bsr.w   sub_FE3A
+                bsr.w   Race_ProjectObject
                 tst.w   d0
                 bne.w   .loc_F802
                 subi.w  #1,(ram_FFDE72).l
@@ -1412,7 +1412,7 @@ sub_F40C:
 .loc_F83C:
                 move.w  #$FFFF,(a0)
                 rts
-; End of function sub_F40C
+; End of function Race_BuildActorObjectList
 
 
 ; =============== S U B R O U T I N E =======================================
@@ -1463,7 +1463,7 @@ sub_F842:
                 add.w   $30(a1),d1
                 move.w  $32(a1),d2
                 move.l  4(a1),d0
-                bsr.w   sub_FE3A
+                bsr.w   Race_ProjectObject
                 tst.w   d0
                 bne.w   .loc_F8FE
                 subi.w  #1,(ram_FFDE72).l
@@ -1519,7 +1519,7 @@ sub_F90E:
                 move.w  #0,d2
                 move.l  4(a1),d0
                 subi.l  #$3000,d0
-                bsr.w   sub_FE3A
+                bsr.w   Race_ProjectObject
                 tst.w   d0
                 bne.w   .loc_F9B4
                 subi.w  #1,(ram_FFDE72).l
@@ -1576,7 +1576,7 @@ sub_F9C4:
                 add.w   2(a6),d2
                 move.l  4(a1),d0
                 subi.l  #$3000,d0
-                bsr.w   sub_FE3A
+                bsr.w   Race_ProjectObject
                 tst.w   d0
                 bne.w   .loc_FA70
                 subi.w  #1,(ram_FFDE72).l
@@ -1624,7 +1624,7 @@ sub_FA98:
                 move.w  $30(a1),d1
                 move.w  #0,d2
                 move.l  4(a1),d0
-                bsr.w   sub_FE3A
+                bsr.w   Race_ProjectObject
                 tst.w   d0
                 bne.w   .loc_FB10
                 subi.w  #1,(ram_FFDE72).l
@@ -1645,7 +1645,7 @@ sub_FA98:
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_FB1E:
+Race_AddTrackStartObject:
                 lea     (Road_ObjectArray).l,a0
                 cmpi.w  #$C,(Race_ram_PlayerProgress).l
                 bpl.w   .loc_FB42
@@ -1697,7 +1697,7 @@ sub_FB1E:
 .loc_FBD6:
                 move.w  #$180,d1
                 move.w  #0,d2
-                bsr.w   sub_FE3A
+                bsr.w   Race_ProjectObject
                 tst.w   d0
                 bne.w   .loc_FBF4
                 subi.w  #1,(ram_FFDE72).l
@@ -1716,13 +1716,13 @@ sub_FB1E:
 
 .locret_FC0C:
                 rts
-; End of function sub_FB1E
+; End of function Race_AddTrackStartObject
 
 
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_FC0E:
+Race_AddTrackObjects:
                 move.w  #0,(ram_FFD7CA).l
                 lea     (Road_ObjectArray).l,a0
                 move.w  (ram_FFDE72).l,d0
@@ -1800,7 +1800,7 @@ sub_FC0E:
                 asl.w   #5,d1
                 subi.w  #$100,d1
                 move.w  #0,d2
-                bsr.w   sub_FE3A
+                bsr.w   Race_ProjectObject
                 tst.w   d0
                 bne.w   .loc_FD2E
                 subi.w  #1,(ram_FFDE72).l
@@ -1831,7 +1831,7 @@ sub_FC0E:
 
 .locret_FD6C:
                 rts
-; End of function sub_FC0E
+; End of function Race_AddTrackObjects
 
 
                 dc.b   0
@@ -1878,7 +1878,7 @@ sub_FC0E:
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_FD96:
+Race_AddSpecialObject:
                 tst.w   (Race_CopIndex).l
                 beq.w   .loc_FDA8
                 move.w  #$170,d0
@@ -1914,13 +1914,13 @@ sub_FD96:
                 addi.w  #1,(ram_FF369A).l
 .return:
                 rts
-; End of function sub_FD96
+; End of function Race_AddSpecialObject
 
 
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_FE3A:
+Race_ProjectObject:
                 movem.l d4-d7/a0-a6,-(sp)
                 move.w  d0,d4
                 move.l  d0,d3
@@ -2064,13 +2064,13 @@ sub_FE3A:
 .loc_FF78:
                 movem.l (sp)+,d4-d7/a0-a6
                 rts
-; End of function sub_FE3A
+; End of function Race_ProjectObject
 
 
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_FF7E:
+Race_ProjectActorObject:
                 movem.l d0-d7/a0-a6,-(sp)
                 move.w  6(a1),d4
                 move.w  $A(a0),d2
@@ -2216,7 +2216,7 @@ sub_FF7E:
                 move.w  d5,(a0)
                 movem.l (sp)+,d0-d7/a0-a6
                 rts
-; End of function sub_FF7E
+; End of function Race_ProjectActorObject
 
 
 ; =============== S U B R O U T I N E =======================================
@@ -3576,7 +3576,7 @@ Race_WriteSpriteTiles:
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_109B6:
+Race_UpdateTrackObjectCursor:
                 move.w  #$FFFF,(ram_FF1B30).l
                 movea.l (ram_FFD7C4).l,a1
                 move.w  (a1),d0
@@ -3736,7 +3736,7 @@ sub_109B6:
                 move.l  d6,(a6,d7.w)
                 movem.l (sp)+,d6-d7
                 movem.l d0-d7/a1,-(sp)
-                bsr.w   sub_10C4E
+                bsr.w   Race_ProjectTrackObject
                 movem.l (sp)+,d0-d7/a1
                 adda.w  #$14,a0
                 btst    #$F,d1
@@ -3806,13 +3806,13 @@ sub_109B6:
 .loc_10C48:
                 move.w  #$FFFF,(a0)
                 rts
-; End of function sub_109B6
+; End of function Race_UpdateTrackObjectCursor
 
 
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_10C4E:
+Race_ProjectTrackObject:
                 move.w  $A(a0),d0
                 andi.w  #$1F,d0
                 move.w  d0,-(sp)
@@ -3901,7 +3901,7 @@ sub_10C4E:
                 move.w  d0,(a0)
                 addi.w  #1,(ram_FFDE72).l
                 rts
-; End of function sub_10C4E
+; End of function Race_ProjectTrackObject
 
 
 ; =============== S U B R O U T I N E =======================================

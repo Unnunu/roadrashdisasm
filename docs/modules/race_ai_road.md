@@ -10,7 +10,7 @@
 
 Road profile/interpolation, visible object lists, sprite-tile staging, race
 standings/results helpers and the speed display: `PiecewiseLinearInterpolation`,
-`Road_FillProfileTables`, `sub_F40C`..`sub_10DDA`, `Road_BuildVisibleList`,
+`Road_FillProfileTables`, `Race_BuildActorObjectList`..`sub_10DDA`, `Road_BuildVisibleList`,
 `Race_WriteSpriteTiles`, `Race_UpdateSpeedDisplay`, `Race_FormatDecimal`.
 
 ## Entry points & API

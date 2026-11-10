@@ -210,7 +210,7 @@ flowchart LR
 | `Race_FinishFrame` | `0x0BD24` | `EndLevel_UpdateAnimation`, `Race_Update` | - |
 | `Race_GetInputDemo` | `0x0BE2C` | `Race_GameTick` | `GetInputPlayerA`, `GetInputPlayerB` |
 | `Race_GetInput` | `0x0BE56` | `Race_GameTick` | `AudioFunc18`, `Audio_StopMusic`, `GetInputPlayerA`, `GetInputPlayerB` |
-| `Race_Update` | `0x0C00C` | `Race_Init`, `TopLevel_Init` | `PiecewiseLinearInterpolation`, `RaceHud_Draw`, `Race_BuildHScrollTable`, `Race_BuildVScrollInfo`, `Race_DrawRearviewMirror`, `Race_DrawRoadEdges`, `Race_DrawRoadMarkingHud`, `Race_FinishFrame`, `Race_IntegrateTrackCurve`, `Race_SpawnTick`, `Race_UpdateActorAI`, `Race_UpdateActorActions`, `Race_UpdateBikeLean`, `Race_UpdateCamera`, `Race_UpdateNearestOpponent`, `Race_UpdateNearestTarget`, `Race_UpdatePlayerAnimation`, `Race_UpdateSpeedDisplay`, `Race_UpdateStaticActions`, `Race_UpdateStaticActors`, `RoadMarking_Draw`, `Road_BuildVisibleList`, `Road_DrawObjects`, `Road_FillProfileTables`, `sub_109B6`, `sub_10DBE`, `sub_10DDA`, `sub_11C44`, `sub_11CC8`, `sub_1218C`, `sub_123A8`, `sub_1281E`, `sub_128E0`, `sub_12974`, `sub_1383E`, `sub_138CE`, `sub_13A92`, `sub_13BF4`, `sub_13E94`, `sub_14E38`, `sub_F40C`, `sub_FB1E`, `sub_FC0E`, `sub_FD96` |
+| `Race_Update` | `0x0C00C` | `Race_Init`, `TopLevel_Init` | `PiecewiseLinearInterpolation`, `RaceHud_Draw`, `Race_AddSpecialObject`, `Race_AddTrackObjects`, `Race_AddTrackStartObject`, `Race_BuildActorObjectList`, `Race_BuildHScrollTable`, `Race_BuildVScrollInfo`, `Race_DrawRearviewMirror`, `Race_DrawRoadEdges`, `Race_DrawRoadMarkingHud`, `Race_FinishFrame`, `Race_IntegrateTrackCurve`, `Race_SpawnTick`, `Race_UpdateActorAI`, `Race_UpdateActorActions`, `Race_UpdateBikeLean`, `Race_UpdateCamera`, `Race_UpdateNearestOpponent`, `Race_UpdateNearestTarget`, `Race_UpdatePlayerAnimation`, `Race_UpdateSpeedDisplay`, `Race_UpdateStaticActions`, `Race_UpdateStaticActors`, `Race_UpdateTrackObjectCursor`, `RoadMarking_Draw`, `Road_BuildVisibleList`, `Road_DrawObjects`, `Road_FillProfileTables`, `sub_10DBE`, `sub_10DDA`, `sub_11C44`, `sub_11CC8`, `sub_1218C`, `sub_123A8`, `sub_1281E`, `sub_128E0`, `sub_12974`, `sub_1383E`, `sub_138CE`, `sub_13A92`, `sub_13BF4`, `sub_13E94`, `sub_14E38` |
 | `Race_SortResults` | `0x0C378` | `Race_ComputeResults` | - |
 | `Race_ComputeResults` | `0x0C3F8` | `TopLevel_Init` | `MenuPassword_CreatePassword`, `Race_BuildStandings`, `Race_SortResults`, `Race_UpdateHighScoreTable` |
 | `Race_UpdateHighScoreTable` | `0x0C598` | `Race_ComputeResults` | `Race_FormatMoney` |
@@ -237,7 +237,7 @@ flowchart LR
 | `DmaWriteCRAM` | `0x0D96A` | `EndLevel_InitVictoryCharacter`, `FadeWithFunction_GameTick`, `Fade_GameTick`, `Race_GameTick`, `Shop_GameTick` | - |
 | `Race_DrawRearviewMirror` | `0x0D9DA` | `Race_LoadRoadImage`, `Race_Update` | `Race_DrawMirrorRoad` |
 | `Race_DrawMirrorRoad` | `0x0DA3E` | `Race_DrawRearviewMirror` | - |
-| `Race_ProjectActorSprite` | `0x0DAE2` | `sub_F40C` | `sub_102E4` |
+| `Race_ProjectActorSprite` | `0x0DAE2` | `Race_BuildActorObjectList` | `sub_102E4` |
 | `Race_DrawRoadMarkingHud` | `0x0DD84` | `Race_Update` | - |
 | `Race_UpdateCamera` | `0x0DE9E` | `Race_Update` | - |
 | `Race_BuildVScrollInfo` | `0x0E004` | `Race_Update` | - |
@@ -258,31 +258,31 @@ flowchart LR
 | `Race_FormatDecimal` | `0x0F11C` | `RaceDebug_ShowDistanceTravelled`, `RaceDebug_ShowFrameDelay`, `RaceDebug_ShowPosZ`, `Race_UpdateSpeedDisplay`, `sub_999E` | - |
 | `PiecewiseLinearInterpolation` | `0x0F180` | `Race_Update` | `FillLinearInterpArray` |
 | `FillLinearInterpArray` | `0x0F1AE` | `PiecewiseLinearInterpolation` | - |
-| `sub_F40C` | `0x0F40C` | `Race_Update` | `Race_ProjectActorSprite`, `sub_100D0`, `sub_10256`, `sub_10294`, `sub_108DA`, `sub_15014`, `sub_F842`, `sub_F90E`, `sub_F9C4`, `sub_FA98`, `sub_FE3A`, `sub_FF7E` |
-| `sub_F842` | `0x0F842` | `sub_F40C` | `sub_FE3A` |
-| `sub_F90E` | `0x0F90E` | `sub_F40C` | `sub_FE3A` |
-| `sub_F9C4` | `0x0F9C4` | `sub_F40C` | `sub_FE3A` |
-| `sub_FA98` | `0x0FA98` | `sub_F40C` | `sub_FE3A` |
-| `sub_FB1E` | `0x0FB1E` | `Race_Update` | `sub_15478`, `sub_FE3A` |
-| `sub_FC0E` | `0x0FC0E` | `Race_Update` | `sub_FE3A` |
-| `sub_FD96` | `0x0FD96` | `Race_Update` | - |
-| `sub_FE3A` | `0x0FE3A` | `sub_F40C`, `sub_F842`, `sub_F90E`, `sub_F9C4`, `sub_FA98`, `sub_FB1E`, `sub_FC0E` | - |
-| `sub_FF7E` | `0x0FF7E` | `sub_F40C` | - |
-| `sub_100D0` | `0x100D0` | `sub_1030A`, `sub_10384`, `sub_F40C` | `sub_101EA`, `sub_1022E`, `sub_1030A`, `sub_1081A` |
+| `Race_BuildActorObjectList` | `0x0F40C` | `Race_Update` | `Race_ProjectActorObject`, `Race_ProjectActorSprite`, `Race_ProjectObject`, `sub_100D0`, `sub_10256`, `sub_10294`, `sub_108DA`, `sub_15014`, `sub_F842`, `sub_F90E`, `sub_F9C4`, `sub_FA98` |
+| `sub_F842` | `0x0F842` | `Race_BuildActorObjectList` | `Race_ProjectObject` |
+| `sub_F90E` | `0x0F90E` | `Race_BuildActorObjectList` | `Race_ProjectObject` |
+| `sub_F9C4` | `0x0F9C4` | `Race_BuildActorObjectList` | `Race_ProjectObject` |
+| `sub_FA98` | `0x0FA98` | `Race_BuildActorObjectList` | `Race_ProjectObject` |
+| `Race_AddTrackStartObject` | `0x0FB1E` | `Race_Update` | `Race_ProjectObject`, `sub_15478` |
+| `Race_AddTrackObjects` | `0x0FC0E` | `Race_Update` | `Race_ProjectObject` |
+| `Race_AddSpecialObject` | `0x0FD96` | `Race_Update` | - |
+| `Race_ProjectObject` | `0x0FE3A` | `Race_AddTrackObjects`, `Race_AddTrackStartObject`, `Race_BuildActorObjectList`, `sub_F842`, `sub_F90E`, `sub_F9C4`, `sub_FA98` | - |
+| `Race_ProjectActorObject` | `0x0FF7E` | `Race_BuildActorObjectList` | - |
+| `sub_100D0` | `0x100D0` | `Race_BuildActorObjectList`, `sub_1030A`, `sub_10384` | `sub_101EA`, `sub_1022E`, `sub_1030A`, `sub_1081A` |
 | `sub_101EA` | `0x101EA` | `sub_100D0` | - |
 | `sub_1022E` | `0x1022E` | `sub_100D0` | - |
-| `sub_10256` | `0x10256` | `sub_F40C` | - |
-| `sub_10294` | `0x10294` | `sub_F40C` | - |
+| `sub_10256` | `0x10256` | `Race_BuildActorObjectList` | - |
+| `sub_10294` | `0x10294` | `Race_BuildActorObjectList` | - |
 | `sub_102E4` | `0x102E4` | `Race_ProjectActorSprite` | - |
 | `sub_1030A` | `0x1030A` | `sub_100D0` | `sub_100D0`, `sub_10384`, `sub_10762` |
 | `sub_10384` | `0x10384` | `sub_1030A` | `sub_100D0`, `sub_104E6` |
 | `sub_104E6` | `0x104E6` | `sub_10384` | - |
 | `sub_10762` | `0x10762` | `sub_1030A` | - |
 | `sub_1081A` | `0x1081A` | `sub_100D0` | - |
-| `sub_108DA` | `0x108DA` | `sub_F40C` | - |
+| `sub_108DA` | `0x108DA` | `Race_BuildActorObjectList` | - |
 | `Race_WriteSpriteTiles` | `0x10972` | `Race_GameTick` | `DmaWriteVRAM` |
-| `sub_109B6` | `0x109B6` | `Race_Update` | `sub_10C4E` |
-| `sub_10C4E` | `0x10C4E` | `sub_109B6` | - |
+| `Race_UpdateTrackObjectCursor` | `0x109B6` | `Race_Update` | `Race_ProjectTrackObject` |
+| `Race_ProjectTrackObject` | `0x10C4E` | `Race_UpdateTrackObjectCursor` | - |
 | `Road_BuildVisibleList` | `0x10D46` | `Race_Update` | - |
 | `sub_10DBE` | `0x10DBE` | `Race_Update` | `sub_10E00` |
 | `sub_10DDA` | `0x10DDA` | `Race_Update` | `sub_10E00` |
@@ -371,11 +371,11 @@ flowchart LR
 | `sub_14D84` | `0x14D84` | `sub_1487C`, `sub_14CEC` | - |
 | `sub_14E38` | `0x14E38` | `Race_Update` | `AudioFunc15`, `AudioFunc16`, `AudioFunc17`, `Audio_Engine1Stop`, `Audio_Engine2Stop`, `Audio_Engine3Stop`, `Audio_PlaySfx` |
 | `sub_14FB4` | `0x14FB4` | `Race_UpdateNearestTarget` | - |
-| `sub_15014` | `0x15014` | `sub_F40C` | `sub_151F0`, `sub_1533E`, `sub_15446`, `sub_154D2` |
+| `sub_15014` | `0x15014` | `Race_BuildActorObjectList` | `sub_151F0`, `sub_1533E`, `sub_15446`, `sub_154D2` |
 | `sub_151F0` | `0x151F0` | `sub_15014` | - |
 | `sub_1533E` | `0x1533E` | `sub_15014` | - |
 | `sub_15446` | `0x15446` | `sub_15014` | - |
-| `sub_15478` | `0x15478` | `sub_FB1E` | `sub_154D2` |
+| `sub_15478` | `0x15478` | `Race_AddTrackStartObject` | `sub_154D2` |
 | `sub_154D2` | `0x154D2` | `sub_15014`, `sub_15478` | - |
 | `sub_15538` | `0x15538` | `sub_11B7A`, `sub_12BD2`, `sub_145EC` | `Rand_GetWord` |
 | `sub_1555C` | `0x1555C` | `sub_12BD2`, `sub_145EC` | `Rand_GetWord` |

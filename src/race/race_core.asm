@@ -1939,15 +1939,15 @@ Race_Update:
                 jsr     (Road_FillProfileTables).l
                 jsr     (Race_BuildVScrollInfo).l
                 move.w  #0,(ram_FFDE72).l
-                jsr     (sub_FD96).l
-                jsr     (sub_FB1E).l
-                jsr     (sub_F40C).l
+                jsr     (Race_AddSpecialObject).l
+                jsr     (Race_AddTrackStartObject).l
+                jsr     (Race_BuildActorObjectList).l
                 move.w  (ram_FFDE72).l,(ram_FF1B48).l
-                jsr     (sub_109B6).l
+                jsr     (Race_UpdateTrackObjectCursor).l
                 move.w  (ram_FFDE72).l,d0
                 sub.w   (ram_FF1B48).l,d0
                 move.w  d0,(ram_FF1B4A).l
-                jsr     (sub_FC0E).l
+                jsr     (Race_AddTrackObjects).l
                 lea     (ram_FF1B50).l,a6
                 move.w  (ram_FFDE72).l,d7
                 asl.w   #2,d7
