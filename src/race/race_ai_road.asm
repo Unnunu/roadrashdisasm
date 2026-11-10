@@ -1234,7 +1234,7 @@ Race_BuildActorObjectList:
                 move.w  d0,$A(a0)
                 tst.w   (ram_FF3040).l
                 beq.w   .loc_F60E
-                bsr.w   sub_108DA
+                bsr.w   Race_SelectExtraActorShape
                 bra.w   .loc_F64A
 
 
@@ -1243,7 +1243,7 @@ Race_BuildActorObjectList:
                 bne.w   .loc_F64E
                 cmpa.l  #ram_FF1F2A,a1
                 bne.w   .loc_F62A
-                bsr.w   sub_10256
+                bsr.w   Race_SelectOpponentShape
                 bra.w   .loc_F64A
 
 
@@ -1252,12 +1252,12 @@ Race_BuildActorObjectList:
                 bne.w   .loc_F646
                 tst.w   (ram_FF1ACC).l
                 beq.w   .loc_F646
-                bsr.w   sub_10294
+                bsr.w   Race_SelectPlayerFinishShape
                 bra.w   .loc_F64A
 
 
 .loc_F646:
-                bsr.w   sub_100D0
+                bsr.w   Race_SelectActorObjectShape
 
 .loc_F64A:
                 move.w  d0,8(a0)
@@ -2222,13 +2222,13 @@ Race_ProjectActorObject:
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_100D0:
+Race_SelectActorObjectShape:
                 move.w  d3,-(sp)
                 bset    #7,$B(a0)
                 move.w  #0,$12(a0)
                 tst.w   $12(a1)
                 bne.w   .loc_100EE
-                bsr.w   sub_1022E
+                bsr.w   Race_SelectActorIdleShape
                 bra.w   .loc_101E6
 
 
@@ -2259,7 +2259,7 @@ sub_100D0:
                 beq.w   .loc_1014E
                 btst    #2,$68(a1)
                 bne.w   .loc_1014E
-                bsr.w   sub_101EA
+                bsr.w   Race_SelectActorSpeedShape
                 bra.w   .loc_101E6
 
 
@@ -2336,13 +2336,13 @@ sub_100D0:
 .loc_101E6:
                 move.w  (sp)+,d3
                 rts
-; End of function sub_100D0
+; End of function Race_SelectActorObjectShape
 
 
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_101EA:
+Race_SelectActorSpeedShape:
                 bclr    #$F,$A(a0)
                 move.w  $34(a1),d0
                 bpl.w   .loc_10200
@@ -2369,13 +2369,13 @@ sub_101EA:
 
 .locret_1022C:
                 rts
-; End of function sub_101EA
+; End of function Race_SelectActorSpeedShape
 
 
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_1022E:
+Race_SelectActorIdleShape:
                 bclr    #$F,$A(a0)
                 move.w  $34(a1),d0
                 bgt.w   .loc_10244
@@ -2390,13 +2390,13 @@ sub_1022E:
 .loc_10250:
                 addi.w  #$56,d0 ; 'V'
                 rts
-; End of function sub_1022E
+; End of function Race_SelectActorIdleShape
 
 
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_10256:
+Race_SelectOpponentShape:
                 bclr    #7,$B(a0)
                 move.w  #0,$12(a0)
                 bclr    #$F,$A(a0)
@@ -2416,13 +2416,13 @@ sub_10256:
 .loc_1028E:
                 addi.w  #$7F,d0
                 rts
-; End of function sub_10256
+; End of function Race_SelectOpponentShape
 
 
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_10294:
+Race_SelectPlayerFinishShape:
                 bset    #7,$B(a0)
                 bclr    #$F,$A(a0)
                 move.w  $34(a1),d0
@@ -2445,7 +2445,7 @@ sub_10294:
                 lea     (unk_102DE).l,a4
                 move.w  (a4,d0.w),d0
                 rts
-; End of function sub_10294
+; End of function Race_SelectPlayerFinishShape
 
 
 unk_102DE:  dc.w 3, 19, 35
@@ -2453,7 +2453,7 @@ unk_102DE:  dc.w 3, 19, 35
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_102E4:
+Race_GetActorShapeVariant:
                 movem.l d0/a4,-(sp)
                 move.w  #2,d1
                 lea     (ram_FFD33E).l,a4
@@ -2470,7 +2470,7 @@ sub_102E4:
 .loc_10304:
                 movem.l (sp)+,d0/a4
                 rts
-; End of function sub_102E4
+; End of function Race_GetActorShapeVariant
 
 
 ; =============== S U B R O U T I N E =======================================
@@ -2526,7 +2526,7 @@ sub_1030A:
                 bra.w   .locret_10382
 
                 bclr    #4,$69(a1)
-                bsr.w   sub_100D0
+                bsr.w   Race_SelectActorObjectShape
 
 .locret_10382:
                 rts
@@ -2674,7 +2674,7 @@ sub_10384:
 
 .loc_104DA:
                 bclr    #4,$69(a1)
-                bsr.w   sub_100D0
+                bsr.w   Race_SelectActorObjectShape
 
 .locret_104E4:
                 rts
@@ -3474,7 +3474,7 @@ unk_108C2:      dc.b   0
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_108DA:
+Race_SelectExtraActorShape:
                 move.w  #0,$12(a0)
                 cmpa.l  #ram_FF2FAA,a1
                 bne.w   .loc_1090C
@@ -3540,7 +3540,7 @@ sub_108DA:
 
 .locret_10970:
                 rts
-; End of function sub_108DA
+; End of function Race_SelectExtraActorShape
 
 
 ; =============== S U B R O U T I N E =======================================

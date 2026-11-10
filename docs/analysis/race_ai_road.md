@@ -97,7 +97,7 @@ still TODO.
   `ram_FF1AD9` (mod 4) and `ram_FF1ADC` (mod 8), walks `ram_FF1A08`,
   `Race_StaticActorList`, then `$FF2FAA`; projects each actor with
   `Race_ProjectActorSprite` or computes a projected X/Y from player progress; calls
-  `sub_15014`/`sub_10256`/`sub_100D0`/`sub_10294`/`sub_108DA`/`Race_ProjectActorObject`; appends
+  `sub_15014`/`Race_SelectOpponentShape`/`Race_SelectActorObjectShape`/`Race_SelectPlayerFinishShape`/`Race_SelectExtraActorShape`/`Race_ProjectActorObject`; appends
   records to `Road_ObjectArray` and distances to `ram_FF1B50`.
 - `Race_AddSpecialObject` (`0xFD96`) appends a special/cop/start object with fixed
   `$FEA0/$41/$4000` fields when `Race_CopIndex` or `ram_FF3698` requests it.

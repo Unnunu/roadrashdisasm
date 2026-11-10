@@ -305,7 +305,7 @@ Race_ProjectActorSprite:
 
 
 .loc_DC20:
-                jsr     (sub_102E4).l
+                jsr     (Race_GetActorShapeVariant).l
                 move.w  d1,d0
                 addi.w  #$154,d0
                 move.w  d0,8(a0)

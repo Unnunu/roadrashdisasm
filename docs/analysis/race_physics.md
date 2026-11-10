@@ -71,7 +71,7 @@ Builds a `Road_ObjectArray` record for one actor at the current
 - scale = `min($3FFF, $100000 / (relativeX + $80))`, tripled for the record;
 - flags = `(actor.$73 & 3) ror 4 + $4100`;
 - actor index `1` -> shape `$159`; `$10..$12` -> `$15A/$15C` special shapes;
-  other actors -> `sub_102E4` + `$154`;
+  other actors -> `Race_GetActorShapeVariant` + `$154`;
 - visible objects (`x >= -$20`, right edge `< $160`) increment
   `ram_FFDE72` and the object pointer.
 

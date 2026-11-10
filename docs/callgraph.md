@@ -237,7 +237,7 @@ flowchart LR
 | `DmaWriteCRAM` | `0x0D96A` | `EndLevel_InitVictoryCharacter`, `FadeWithFunction_GameTick`, `Fade_GameTick`, `Race_GameTick`, `Shop_GameTick` | - |
 | `Race_DrawRearviewMirror` | `0x0D9DA` | `Race_LoadRoadImage`, `Race_Update` | `Race_DrawMirrorRoad` |
 | `Race_DrawMirrorRoad` | `0x0DA3E` | `Race_DrawRearviewMirror` | - |
-| `Race_ProjectActorSprite` | `0x0DAE2` | `Race_BuildActorObjectList` | `sub_102E4` |
+| `Race_ProjectActorSprite` | `0x0DAE2` | `Race_BuildActorObjectList` | `Race_GetActorShapeVariant` |
 | `Race_DrawRoadMarkingHud` | `0x0DD84` | `Race_Update` | - |
 | `Race_UpdateCamera` | `0x0DE9E` | `Race_Update` | - |
 | `Race_BuildVScrollInfo` | `0x0E004` | `Race_Update` | - |
@@ -258,7 +258,7 @@ flowchart LR
 | `Race_FormatDecimal` | `0x0F11C` | `RaceDebug_ShowDistanceTravelled`, `RaceDebug_ShowFrameDelay`, `RaceDebug_ShowPosZ`, `Race_UpdateSpeedDisplay`, `sub_999E` | - |
 | `PiecewiseLinearInterpolation` | `0x0F180` | `Race_Update` | `FillLinearInterpArray` |
 | `FillLinearInterpArray` | `0x0F1AE` | `PiecewiseLinearInterpolation` | - |
-| `Race_BuildActorObjectList` | `0x0F40C` | `Race_Update` | `Race_ProjectActorObject`, `Race_ProjectActorSprite`, `Race_ProjectObject`, `sub_100D0`, `sub_10256`, `sub_10294`, `sub_108DA`, `sub_15014`, `sub_F842`, `sub_F90E`, `sub_F9C4`, `sub_FA98` |
+| `Race_BuildActorObjectList` | `0x0F40C` | `Race_Update` | `Race_ProjectActorObject`, `Race_ProjectActorSprite`, `Race_ProjectObject`, `Race_SelectActorObjectShape`, `Race_SelectOpponentShape`, `Race_SelectPlayerFinishShape`, `Race_SelectExtraActorShape`, `sub_15014`, `sub_F842`, `sub_F90E`, `sub_F9C4`, `sub_FA98` |
 | `sub_F842` | `0x0F842` | `Race_BuildActorObjectList` | `Race_ProjectObject` |
 | `sub_F90E` | `0x0F90E` | `Race_BuildActorObjectList` | `Race_ProjectObject` |
 | `sub_F9C4` | `0x0F9C4` | `Race_BuildActorObjectList` | `Race_ProjectObject` |
@@ -268,18 +268,18 @@ flowchart LR
 | `Race_AddSpecialObject` | `0x0FD96` | `Race_Update` | - |
 | `Race_ProjectObject` | `0x0FE3A` | `Race_AddStagedObjects`, `Race_AddTrackStartObject`, `Race_BuildActorObjectList`, `sub_F842`, `sub_F90E`, `sub_F9C4`, `sub_FA98` | - |
 | `Race_ProjectActorObject` | `0x0FF7E` | `Race_BuildActorObjectList` | - |
-| `sub_100D0` | `0x100D0` | `Race_BuildActorObjectList`, `sub_1030A`, `sub_10384` | `sub_101EA`, `sub_1022E`, `sub_1030A`, `sub_1081A` |
-| `sub_101EA` | `0x101EA` | `sub_100D0` | - |
-| `sub_1022E` | `0x1022E` | `sub_100D0` | - |
-| `sub_10256` | `0x10256` | `Race_BuildActorObjectList` | - |
-| `sub_10294` | `0x10294` | `Race_BuildActorObjectList` | - |
-| `sub_102E4` | `0x102E4` | `Race_ProjectActorSprite` | - |
-| `sub_1030A` | `0x1030A` | `sub_100D0` | `sub_100D0`, `sub_10384`, `sub_10762` |
-| `sub_10384` | `0x10384` | `sub_1030A` | `sub_100D0`, `sub_104E6` |
+| `Race_SelectActorObjectShape` | `0x100D0` | `Race_BuildActorObjectList`, `sub_1030A`, `sub_10384` | `Race_SelectActorSpeedShape`, `Race_SelectActorIdleShape`, `sub_1030A`, `sub_1081A` |
+| `Race_SelectActorSpeedShape` | `0x101EA` | `Race_SelectActorObjectShape` | - |
+| `Race_SelectActorIdleShape` | `0x1022E` | `Race_SelectActorObjectShape` | - |
+| `Race_SelectOpponentShape` | `0x10256` | `Race_BuildActorObjectList` | - |
+| `Race_SelectPlayerFinishShape` | `0x10294` | `Race_BuildActorObjectList` | - |
+| `Race_GetActorShapeVariant` | `0x102E4` | `Race_ProjectActorSprite` | - |
+| `sub_1030A` | `0x1030A` | `Race_SelectActorObjectShape` | `Race_SelectActorObjectShape`, `sub_10384`, `sub_10762` |
+| `sub_10384` | `0x10384` | `sub_1030A` | `Race_SelectActorObjectShape`, `sub_104E6` |
 | `sub_104E6` | `0x104E6` | `sub_10384` | - |
 | `sub_10762` | `0x10762` | `sub_1030A` | - |
-| `sub_1081A` | `0x1081A` | `sub_100D0` | - |
-| `sub_108DA` | `0x108DA` | `Race_BuildActorObjectList` | - |
+| `sub_1081A` | `0x1081A` | `Race_SelectActorObjectShape` | - |
+| `Race_SelectExtraActorShape` | `0x108DA` | `Race_BuildActorObjectList` | - |
 | `Race_WriteSpriteTiles` | `0x10972` | `Race_GameTick` | `DmaWriteVRAM` |
 | `Race_BuildTrackObjects` | `0x109B6` | `Race_Update` | `Race_ProjectTrackObject` |
 | `Race_ProjectTrackObject` | `0x10C4E` | `Race_BuildTrackObjects` | - |
