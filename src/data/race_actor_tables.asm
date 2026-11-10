@@ -33,7 +33,9 @@ Race_StaticActorList:
 ; unknown gap data between the static list and the graphics table
 unk_258A6:
     dc.b    $00,$FF,$2F,$AA,$FF,$FF,$FF,$FF
-unk_258AE:
+
+; Per-actor shadow/snapshot struct pointers indexed by actor +$71.
+Race_ActorShadowTable:
     dc.b    $00,$FF,$26,$AA,$00,$FF,$27,$2A,$00,$FF,$2B,$2A,$00,$FF,$28,$2A
     dc.b    $00,$FF,$28,$AA,$00,$FF,$29,$2A,$00,$FF,$29,$AA,$00,$FF,$2A,$2A
     dc.b    $00,$FF,$2A,$AA,$00,$FF,$27,$AA,$00,$FF,$2B,$AA,$00,$FF,$2C,$2A

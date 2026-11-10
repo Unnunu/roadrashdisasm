@@ -1,16 +1,16 @@
 # Race actor movement dataflow
 
 Scope: `Race_UpdateActorX`, `Race_UpdateActorMovement`,
-`Race_UpdateActorFallMovement`, `sub_115C6`, `sub_1180C`.
+`Race_UpdateActorFallMovement`, `sub_115C6`, `Race_UpdateActorShadow`.
 
 This is a targeted deep dive for `$32` and `$36–$3C`; it intentionally does not
 rename fields that have more than one plausible meaning.
 
 ## Frame order
 
-`sub_1180C` is the per-actor movement wrapper:
+`Race_UpdateActorShadow` is the per-actor movement wrapper:
 
-1. Back up the actor struct through `unk_258AE` (`$71` selects the slot).
+1. Back up the actor struct through `Race_ActorShadowTable` (`$71` selects the slot).
 2. Add acceleration (`$14 * FrameDelay`) to `Speed` (`$12`), clamped at zero.
 3. Compute `FrameDistance` (`$26 = Speed * FrameDelay`).
 4. If `StateFlags` bit3 is clear: `Race_UpdateActorMovement`; else:
@@ -52,7 +52,7 @@ After movement:
 - `$30` is set from the clamped target, so it is the **road Y output**, not the
   source accumulator.
 
-The same logic appears in `sub_1180C` for the zero-speed case.
+The same logic appears in `Race_UpdateActorShadow` for the zero-speed case.
 
 ## Fall/backward movement
 

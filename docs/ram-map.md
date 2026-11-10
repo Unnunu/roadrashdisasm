@@ -296,7 +296,7 @@ Actor fields: `$3E/$40/$42` lean, `$4A/$5A` collision/range, `$5C` tile base,
 
 Actor fields used by the AI: `$12` Speed, `$14`, `$16` type, `$22`/`$26`
 movement, `$30`/`$36/$38` Y/road, `$3E/$40/$42` lean, `$56`, `$68`/`$69` flags,
-`$6E`, `$71` index, `$73`, `$75`, `$78`. AI data: `unk_258AE`, `unk_25A10`,
+`$6E`, `$71` index, `$73`, `$75`, `$78`. AI data: `Race_ActorShadowTable`, `unk_25A10`,
 `unk_10E3E`, `unk_12B7C`, `unk_12D0A`, `unk_13A1A`; curve limit `unk_14056`.
 See `docs/analysis/race_ai.md`.
 

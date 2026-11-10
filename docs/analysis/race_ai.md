@@ -17,7 +17,7 @@
 | `Race_AdvanceActorProgress` | `0x1103A` | AI movement helper. |
 | `Race_HandleInputOnFoot` | `0x110AE` | On-foot input/AI (player A). |
 | `Race_AnotherInputOnFoot` | `0x111FA` | On-foot input/AI (other actor/pad). |
-| `sub_11268`/`sub_112C8`/`sub_113A4`/`sub_113CA`/`Race_UpdateActorX`/`sub_115C6`/`Race_UpdateActorMovement`/`sub_1180C`/`sub_11906`/`Race_UpdateActorFallMovement`/`Race_ApplyCrashImpact` | `0x11268`+ | Turn/movement/lean helpers. |
+| `sub_11268`/`sub_112C8`/`sub_113A4`/`sub_113CA`/`Race_UpdateActorX`/`sub_115C6`/`Race_UpdateActorMovement`/`Race_UpdateActorShadow`/`Race_SaveActorShadow`/`Race_UpdateActorFallMovement`/`Race_ApplyCrashImpact` | `0x11268`+ | Turn/movement/lean helpers. |
 | `sub_11C44`/`sub_11CC8`/`sub_12070`/`sub_1218C`/`sub_123A8`/`sub_12414`/`Race_UpdateActorPairCollision` | `0x11C44`+ | Opponent/AI logic. |
 | `Race_ClearActorOnFootFlags`/`Race_UpdateStaticActors`/`Race_InitExtraStaticActor`/`Race_UpdateExtraStaticActor` | `0x1281E`+ | Static/police actor AI. |
 | `sub_12...`/`sub_13...` | `0x12A88`+ | Road/actor movement, collision helpers. |
@@ -159,7 +159,7 @@ Actor fields used here: `$12` Speed, `$14` acceleration (`Speed += $14 * FrameDe
 after the speed/on-foot gates), `$16` type, `$1E` previous X, `$22`, `$26` frame
 distance = `Speed * FrameDelay`, `$30`/`$36/$38` Y/road, `$3E/$40/$42` lean, `$56`,
 `$68` flags (bit6 active/update marker confirmed in the demo), `$69` flags, `$6E`,
-`$71` index, `$73`, `$75`, `$78`. Data: `unk_258AE`/`unk_25A10` actor data,
+`$71` index, `$73`, `$75`, `$78`. Data: `Race_ActorShadowTable`/`unk_25A10` actor data,
 `unk_10E3E`, `unk_12B7C`, `unk_12D0A`, `unk_13A1A`, `Track_CurveBuffer`,
 `Race_ram_TrackParam0`/`Race_ram_TrackParam2`/`Race_ram_TrackParam3`, `word_14742`, `Race_ram_PlayerProgress`/`Race_ram_BestProgress`/`Race_ram_ProgressSnapshotB`, `Race_ram_FrameDelay`/
 `CurrentButtons`, `Race_StaticActorList`, `$FF2FAA`, `unk_14056` (race_anim_audio);

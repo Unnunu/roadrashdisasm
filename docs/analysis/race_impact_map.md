@@ -27,7 +27,7 @@ is already byte-exact; this map prioritizes **semantic hubs**, not line count.
 | 2 | `Race_UpdateActorPairCollision` / `sub_12070` / `sub_12414` / `sub_11CC8` | `$32`, `$4C`, `$4E`, `$56` | Collision-side extents and contact state; fan-in 9. Use forced pair tests and collision snapshots. |
 | 3 | `Race_UpdateBikeCurve` / `Race_UpdateLeanCurve` | `$40`, `$78` | Curve/lean output; steering snapshots already exist. Resolve `$40` vs `$3E/$42`. |
 | 4 | `Race_ProjectActorSprite` / `Race_AddActorImpactObject` | `$73` | Graphics/profile byte use in object records; compare SAT/object records. |
-| 5 | `sub_11906` | none directly | Fan-in 11; target/recovery hub. Map callers/contract before rename. |
+| 5 | `Race_SaveActorShadow` | none directly | Fan-in 11; target/recovery hub. Map callers/contract before rename. |
 | 6 | `Race_UpdateActorSpeedState` / `Race_UpdateActorSpeedGear` | none directly | Fan-in 9 each; gear/speed hub. Validate formula against dynamic speed/gear. |
 | 7 | `Race_UpdateStaticActors` / extra static | `$56`, `$73` | Static/police state; forced activation already captured. |
 
@@ -46,7 +46,7 @@ is already byte-exact; this map prioritizes **semantic hubs**, not line count.
 3. Curve: capture `$3E/$40/$42/$46/$78` during high-speed steering.
 4. Graphics: break at `Race_ProjectActorSprite` / `Race_AddActorImpactObject`; inspect
    `$73`, shape/base, and object record.
-5. Hubs: log `sub_11906` callers/target choice and speed/gear transitions.
+5. Hubs: log `Race_SaveActorShadow` callers/target choice and speed/gear transitions.
 
 ## Rename rule
 

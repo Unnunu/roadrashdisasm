@@ -1881,7 +1881,7 @@ Race_ApplyFallKnockdown:
                 move.b  #$FF,RaceActor_AnimFrame(a2)
                 exg     a1,a2
                 move.l  a2,-(sp)
-                jsr     (sub_11906).l
+                jsr     (Race_SaveActorShadow).l
                 movea.l a1,a2
                 movea.l (sp)+,a1
                 cmpa.l  #RacePlayerA,a1
@@ -2230,7 +2230,7 @@ sub_15014:
                 move.b  $71(a1),d0
                 ext.w   d0
                 asl.w   #2,d0
-                lea     (unk_258AE).l,a0
+                lea     (Race_ActorShadowTable).l,a0
                 movea.l (a0,d0.w),a2
                 move.l  a2,(ram_FF1AF6).l
                 bsr.w   sub_1533E

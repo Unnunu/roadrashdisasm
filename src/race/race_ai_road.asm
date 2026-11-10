@@ -1326,7 +1326,7 @@ Race_BuildActorObjectList:
                 move.b  $71(a1),d0
                 ext.w   d0
                 asl.w   #2,d0
-                lea     (unk_258AE).l,a1
+                lea     (Race_ActorShadowTable).l,a1
                 movea.l (a1,d0.w),a1
                 move.w  $58(a1),8(a0)
                 move.l  4(a1),d0

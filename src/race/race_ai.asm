@@ -245,7 +245,7 @@ Race_UpdateActorAI:
                 bpl.w   .loc_11034
                 btst    #4,RaceActor_ControlFlags(a1)
                 beq.w   .loc_11034
-                bsr.w   sub_1180C
+                bsr.w   Race_UpdateActorShadow
 
 .loc_11034:
                 bra.w   .loc_10E74
@@ -296,7 +296,7 @@ Race_AdvanceActorProgress:
  ; *************************************************
 ; Function Race_HandleInputOnFoot
 ; On-foot input/AI for player A: reads the pad and updates turn/speed/lean fields.
-; In:  a1 - actor; Race_ram_CurrentButtons/FrameDelay; unk_258AE
+; In:  a1 - actor; Race_ram_CurrentButtons/FrameDelay; Race_ActorShadowTable
 ; Out: actor fields 8/$12/$22/$26/$69
 ; Clobbers: d0-d3/a0
 ; *************************************************
@@ -306,7 +306,7 @@ Race_HandleInputOnFoot:
                 move.b  $71(a1),d0
                 ext.w   d0
                 asl.w   #2,d0
-                lea     (unk_258AE).l,a0
+                lea     (Race_ActorShadowTable).l,a0
                 movea.l (a0,d0.w),a0
                 clr.w   d3
                 move.w  $30(a0),d1
@@ -1131,10 +1131,18 @@ Race_UpdateActorMovement:
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_1180C:
+; *************************************************
+; Function Race_UpdateActorShadow
+; Advances the per-actor shadow/snapshot copy used for rendering and collision.
+; In:  a1 - actor; Race_ram_FrameDelay
+; Out: shadow actor movement fields; main actor unchanged
+; Clobbers: d0-d7/a0-a6
+; *************************************************
+
+Race_UpdateActorShadow:
                 movem.l d0-d7/a0-a6,-(sp)
                 move.l  4(a1),-(sp)
-                lea     (unk_258AE).l,a2
+                lea     (Race_ActorShadowTable).l,a2
                 move.b  $71(a1),d0
                 ext.w   d0
                 asl.w   #2,d0
@@ -1222,15 +1230,23 @@ sub_1180C:
 .loc_11900:
                 movem.l (sp)+,d0-d7/a0-a6
                 rts
-; End of function sub_1180C
+; End of function Race_UpdateActorShadow
 
 
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_11906:
+; *************************************************
+; Function Race_SaveActorShadow
+; Copies the actor state into its shadow/snapshot slot and marks it synced.
+; In:  a1 - actor
+; Out: shadow copy; ram_FF176A=1
+; Clobbers: d0/a0-a1
+; *************************************************
+
+Race_SaveActorShadow:
                 movem.l d0/a0-a1,-(sp)
-                lea     (unk_258AE).l,a0
+                lea     (Race_ActorShadowTable).l,a0
                 move.b  $71(a1),d0
                 ext.w   d0
                 asl.w   #2,d0
@@ -1246,7 +1262,7 @@ sub_11906:
                 move.w  #1,(ram_FF176A).l
                 movem.l (sp)+,d0/a0-a1
                 rts
-; End of function sub_11906
+; End of function Race_SaveActorShadow
 
 
 ; =============== S U B R O U T I N E =======================================
@@ -1702,13 +1718,13 @@ Race_ApplyCrashImpact:
                 tst.w   d0
                 bpl.w   .loc_11C20
                 jsr     (sub_15538).l
-                bsr.w   sub_11906
+                bsr.w   Race_SaveActorShadow
                 bra.w   .loc_11C2A
 
 
 .loc_11C20:
                 jsr     (sub_15538).l
-                bsr.w   sub_11906
+                bsr.w   Race_SaveActorShadow
 
 .loc_11C2A:
                 bclr    #7,RaceActor_WeaponAnimFlags(a1)
@@ -1813,7 +1829,7 @@ sub_11CC8:
                 move.b  $71(a2),d0
                 ext.w   d0
                 asl.w   #2,d0
-                lea     (unk_258AE).l,a3
+                lea     (Race_ActorShadowTable).l,a3
                 movea.l (a3,d0.w),a2
                 bsr.w   Race_UpdateActorPairCollision
                 btst    #4,RaceActor_ControlFlags(a1)
@@ -1866,7 +1882,7 @@ sub_11CC8:
                 bne.w   .loc_11E4A
                 tst.b   RaceActor_AnimState(a1)
                 bmi.w   .loc_1202E
-                bsr.w   sub_11906
+                bsr.w   Race_SaveActorShadow
                 bra.w   .loc_1202E
 
 
@@ -1887,7 +1903,7 @@ sub_11CC8:
                 move.b  #$FF,RaceActor_AnimState(a2)
                 tst.w   (ram_FF1768).l
                 bne.w   .loc_11E88
-                bsr.w   sub_11906
+                bsr.w   Race_SaveActorShadow
 
 .loc_11E88:
                 bra.w   .loc_1202E
@@ -1914,7 +1930,7 @@ sub_11CC8:
                 move.w  $C(a1),(RaceBike_ram_CurrentSteering).l
                 tst.w   (ram_FF1768).l
                 bne.w   .loc_1202E
-                bsr.w   sub_11906
+                bsr.w   Race_SaveActorShadow
                 bra.w   .loc_1202E
 
 
@@ -1934,7 +1950,7 @@ sub_11CC8:
                 move.w  $C(a1),(RaceBike_ram_CurrentSteering).l
                 tst.w   (ram_FF1768).l
                 bne.w   .loc_1202E
-                bsr.w   sub_11906
+                bsr.w   Race_SaveActorShadow
                 bra.w   .loc_1202E
 
                 dc.b $60
@@ -2199,7 +2215,7 @@ sub_1218C:
                 bne.w   .loc_12234
                 tst.b   RaceActor_AnimState(a2)
                 bmi.s   .loc_121DA
-                lea     (unk_258AE).l,a3
+                lea     (Race_ActorShadowTable).l,a3
                 cmpa.l  a3,a2
                 beq.s   .loc_121DA
                 move.b  $71(a2),d0
@@ -2235,7 +2251,7 @@ sub_1218C:
                 bsr.w   Race_UpdateActorPairImpact
                 tst.w   (ram_FF1768).l
                 bne.w   .loc_12284
-                bsr.w   sub_11906
+                bsr.w   Race_SaveActorShadow
 
 .loc_12284:
                 bra.w   .loc_12388
@@ -2265,7 +2281,7 @@ sub_1218C:
                 move.b  #$FF,RaceActor_AnimFrame(a1)
                 tst.w   (ram_FF1768).l
                 bne.w   .loc_122FA
-                bsr.w   sub_11906
+                bsr.w   Race_SaveActorShadow
 
 .loc_122FA:
                 lea     (Race_StaticActorList).l,a0
@@ -2299,7 +2315,7 @@ sub_1218C:
                 move.b  #$FF,RaceActor_AnimFrame(a1)
                 tst.w   (ram_FF1768).l
                 bne.w   .loc_12388
-                bsr.w   sub_11906
+                bsr.w   Race_SaveActorShadow
 
 .loc_12384:
                 bsr.w   sub_12070
@@ -3254,7 +3270,7 @@ sub_12BD2:
                 move.b  #0,RaceActor_AnimState(a1)
                 move.b  #$FF,RaceActor_AnimFrame(a1)
                 bset    #4,RaceActor_ControlFlags(a1)
-                bsr.w   sub_11906
+                bsr.w   Race_SaveActorShadow
                 bclr    #7,RaceActor_WeaponAnimFlags(a1)
 
 .locret_12C98:
