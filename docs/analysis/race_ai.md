@@ -191,6 +191,12 @@ Applied in R6: `Race_InitExtraStaticActor`, `Race_UpdateExtraStaticActor`,
 `Race_UpdateActorSpeedState`, `Race_FindTargetActor`,
 `Race_ScanTargetDistance`.
 
+Applied in R13: `Race_AdvanceActorProgress`, `Race_UpdateActorX`,
+`Race_UpdateActorMovement`, `Race_UpdateActorFallMovement`,
+`Race_UpdateActorChase`, `Race_ApplyActorSpeedCorrection`,
+`Race_UpdateActorSpeedCurve`, `Race_ScaleActorSpeed`,
+`Race_UpdateActorRoadSteering`.
+
 Applied in R3c: action handlers `Race_ActorSteerRoadCenter`,
 `Race_ActorSteerThrottle`, `Race_ActorCollideSteer`, `Race_ActorSteerCollide`,
 `Race_ActorRandomCombatChoice`, `Race_ActorProximityReaction`,
