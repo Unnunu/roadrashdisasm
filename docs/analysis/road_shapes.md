@@ -92,12 +92,32 @@ passes `a0=$05994E` (P+2): left control `$20`, right control `$36`, fill word
 special-path table above; exact tile/row pixel mapping is still TODO from
 `Road_WriteTileColumns`.
 
-## Shape ID lookup
+## Shape ID lookup / split
 
 Shape IDs are **not** in `assets/`; they are indices into `Road_ShapeTable` at
 `0x3BF1A` (`src/data/road_shapes.asm`), with data at `0x3C7EC..0x7DBA7`.
 The generated local lookup `assets/road_shapes.csv` lists ID, pointer and the first
 16 bytes. Sampled IDs are `$56`, `$57`, `$1C3`, `$1C4`, `$15E`.
+
+Per-ID split:
+
+```sh
+python3 tools/road_shapes.py split
+```
+
+This writes `assets/shapes/<id>/data.bin` and `meta.json`; `assets/shapes/index.csv`
+has ID/pointer/size/header/aliases. Repeated pointers are retained as aliases.
+
+Candidate visual previews:
+
+```sh
+python3 tools/road_shapes.py render --ids 56,57,1C3,1C4,15E
+```
+
+`preview_p4.png` starts at `P+4` (non-special), `preview_p6.png` at `P+6`
+(special/two-part). These are **candidate 4bpp tile decodes**, not yet confirmed
+row/tile rendering; use them only to identify shapes. The sample page is
+`assets/shapes/review.html`.
 
 ## Open questions
 

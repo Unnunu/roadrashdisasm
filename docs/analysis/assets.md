@@ -120,10 +120,10 @@ Reviewed from the generated previews (`[dynamic]`, user visual review):
 | `results_image_extra` | Result-screen extra tiles; preview generated with the result-panel palette. |
 | `endlevel_animation_tiles` | End-level animation tile atlas; see `atlas_line0.png`. |
 
-`race_map_0` remains unrendered because its `$4180` map base points at the
-unidentified VRAM `$3000` tileset. Five candidate previews using
-`race_tiles_0..4` were generated for comparison:
-`assets/maps/race_map_0/preview_tileset0..4.png`.
+`race_map_0`/`race_map_1` are nametable maps, not standalone images; their
+tileset/palette mapping is still unknown, so misleading previews were removed.
+`race_road` is a road-tile table, not a normal image map; its preview is disabled.
+Raw slices remain under `assets/maps/` and `assets/tilesets/` for later mapping.
 
 Newly rendered track backgrounds:
 
@@ -149,8 +149,8 @@ and palette regions.
 
 Shape IDs are not asset files. They are indices into `Road_ShapeTable`
 (`0x3BF1A`, 564 entries) in `src/data/road_shapes.asm`; the shape data is
-`0x3C7EC..0x7DBA7`. A local lookup was generated as `assets/road_shapes.csv`
-(ID, pointer, first 16 bytes). See `docs/analysis/road_shapes.md` for the sampled
-IDs (`$56`, `$57`, `$1C3`, `$1C4`, `$15E`).
+`0x3C7EC..0x7DBA7`. Use `python3 tools/road_shapes.py split` to generate
+`assets/shapes/<id>/data.bin` plus `assets/shapes/index.csv`; the sample visual
+page is `assets/shapes/review.html`. See `docs/analysis/road_shapes.md`.
 - `EndLevel_AnimationData`, road/sprite/object streams, audio: raw `.bin` with
   metadata; previews later.

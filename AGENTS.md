@@ -109,6 +109,7 @@ differing byte is reported. `baserom.md` is the only ROM file and is git-ignored
 | `tools/roundtrip.py` | Round-trip verifier for `disasm.py` (ROM -> AS -> assemble -> compare). |
 | `tools/callgraph.py` | Best-effort function index / call graph generator. |
 | `tools/field_usage.py` | Fan-in and actor-offset usage index; prioritizes deep dives. |
+| `tools/road_shapes.py` | Split/render `Road_ShapeTable` IDs into local `assets/shapes/`. |
 | `tools/extract.py` | Legacy one-off asset extraction helper (Python 3 + Pillow). |
 | `tools/assets.py` | Split/render/check ROM assets; generates `assets/`. |
 | `tools/asset_specs.json` | Asset manifest (labels, addresses, sizes, palettes). |
