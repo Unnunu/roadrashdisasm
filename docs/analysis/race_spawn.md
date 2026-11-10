@@ -104,6 +104,11 @@ chain. The spawner adds/removes actors and the physics chain moves them.
   physics chain (`sub_13xxx`).
 - The traffic free list's initial population.
 
+## Applied renames
+
+- R11: `Race_ram_ActiveActorList`, `Race_ram_ActiveActorCount`,
+  `Race_ram_OpponentFreeList`, `Race_ram_TrafficFreeList`.
+
 ## Rename proposals (apply only on request)
 
 | Current | Proposed | Evidence | Confidence |
