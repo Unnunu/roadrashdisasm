@@ -23,7 +23,8 @@
 
 The club is rendered only during the attack animation (windup/strike), not while
 riding; this was confirmed with the patched ROM. `$6A/$6E/$6F/$70` carry the
-weapon animation state.
+weapon animation state; `Race_AddActorWeaponObject` appends the `$172` club overlay
+while `$6A` bit7 is set.
 
 ## Player input / fist
 
