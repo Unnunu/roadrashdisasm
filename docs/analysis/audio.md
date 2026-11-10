@@ -48,6 +48,20 @@ Evidence `[static]` from the 68k disassembly and call sites in `src/main.asm`,
 `Audio_StopMusic` is evidenced by the stop-before-start call sites; `Audio_StopMusicChannel3..18`
 stay numeric because their exact roles are partly `[hypothesis]` pending dynamic checks.
 
+## Z80 driver entry
+
+The raw Z80 driver (`assets/audio/z80_driver/data.bin`, `$1DA12`–`$1E5CC`) starts:
+
+```text
+0000: jp $0038
+0038: di; ld sp,$1FFF; im 0
+003E: ld a,[$0287]; or a
+0042: jr z,$0054; jp m,$0068
+```
+
+It consumes the `$A00287` mailbox byte after reset and selects a command path.
+Full disassembly/IRQ/sound-data format: `docs/analysis/z80_driver.md`.
+
 ## 68k audio state (`$FF0000`)
 
 `Audio_Init` clears `$21F` bytes at `$FFFF0000`. The engine treats it as:
@@ -119,6 +133,11 @@ channel counts/tempo; exact field meaning is TODO.
 
 Callers use IDs `1`, `2`, `5` for engine/skid/near-player state; exact ID names
 remain TODO.
+
+## Applied renames
+
+- R17: `Audio_StopMusicChannel3`, `Audio_SetEngineDistance`,
+  `Audio_StopMusicChannel4`, `Audio_Resume`.
 
 ## Open questions
 

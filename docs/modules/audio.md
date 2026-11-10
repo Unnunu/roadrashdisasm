@@ -23,7 +23,7 @@ FM/PSG playback runs in the Z80 driver loaded from `$1DA12` (`$BBB` bytes).
 | `Audio_PlaySfx` | `0x19F72`/`0x1A6C4` | [x] | [x] | [x] | [x] | [x] | [ ] | partial |
 | `Audio_Engine1Start..Audio_Engine3Update` | `0x19F76`+ | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
 | `Audio_StopMusicChannel3..18` | `0x19F9A`+ | [x] | [~] | [x] | [x] | [~] | [ ] | partial |
-| Z80 driver | `0x1DA12` | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | TODO |
+| Z80 driver | `0x1DA12` | [~] | [~] | [x] | [x] | [~] | [ ] | loader/entry analyzed |
 | Sound data | `0x1E5CD` | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | TODO |
 
-Detailed analysis: `docs/analysis/audio.md`.
+Detailed analysis: `docs/analysis/audio.md`, `docs/analysis/z80_driver.md`.

@@ -210,7 +210,7 @@ flowchart LR
 | `Race_FinishFrame` | `0x0BD24` | `EndLevel_UpdateAnimation`, `Race_Update` | - |
 | `Race_GetInputDemo` | `0x0BE2C` | `Race_GameTick` | `GetInputPlayerA`, `GetInputPlayerB` |
 | `Race_GetInput` | `0x0BE56` | `Race_GameTick` | `Audio_Resume`, `Audio_StopMusic`, `GetInputPlayerA`, `GetInputPlayerB` |
-| `Race_Update` | `0x0C00C` | `Race_Init`, `TopLevel_Init` | `PiecewiseLinearInterpolation`, `RaceHud_Draw`, `Race_AddSpecialObject`, `Race_AddStagedObjects`, `Race_AddTrackStartObject`, `Race_BuildActorObjectList`, `Race_BuildHScrollTable`, `Race_BuildVScrollInfo`, `Race_ClearActorOnFootFlags`, `Race_DrawRearviewMirror`, `Race_DrawRoadEdges`, `Race_DrawRoadMarkingHud`, `Race_FinishFrame`, `Race_InitExtraStaticActor`, `Race_IntegrateTrackCurve`, `Race_SpawnTick`, `Race_UpdateActorAI`, `Race_UpdateActorActions`, `Race_UpdateActorSpeedState`, `Race_UpdateBikeLean`, `Race_UpdateCamera`, `Race_UpdateExtraStaticActor`, `Race_UpdateNearestOpponent`, `Race_UpdateNearestTarget`, `Race_UpdatePlayerAnimation`, `Race_UpdateSpeedDisplay`, `Race_UpdateStaticActions`, `Race_UpdateStaticActors`, `Race_BuildTrackObjects`, `RoadMarking_Draw`, `Road_BuildVisibleList`, `Road_DrawObjects`, `Road_FillProfileTables`, `sub_10DBE`, `sub_10DDA`, `sub_11C44`, `sub_11CC8`, `sub_1218C`, `sub_123A8`, `sub_1383E`, `sub_138CE`, `sub_13BF4`, `sub_13E94`, `sub_14E38` |
+| `Race_Update` | `0x0C00C` | `Race_Init`, `TopLevel_Init` | `PiecewiseLinearInterpolation`, `RaceHud_Draw`, `Race_AddSpecialObject`, `Race_AddStagedObjects`, `Race_AddTrackStartObject`, `Race_BuildActorObjectList`, `Race_BuildHScrollTable`, `Race_BuildTrackObjects`, `Race_BuildVScrollInfo`, `Race_ClearActorOnFootFlags`, `Race_DrawRearviewMirror`, `Race_DrawRoadEdges`, `Race_DrawRoadMarkingHud`, `Race_FinishFrame`, `Race_InitExtraStaticActor`, `Race_IntegrateTrackCurve`, `Race_SpawnTick`, `Race_UpdateActorAI`, `Race_UpdateActorActions`, `Race_UpdateActorSpeedState`, `Race_UpdateBikeLean`, `Race_UpdateCamera`, `Race_UpdateExtraStaticActor`, `Race_UpdateNearestOpponent`, `Race_UpdateNearestTarget`, `Race_UpdatePlayerAnimation`, `Race_UpdateSpeedDisplay`, `Race_UpdateStaticActions`, `Race_UpdateStaticActors`, `RoadMarking_Draw`, `Road_BuildVisibleList`, `Road_DrawObjects`, `Road_FillProfileTables`, `sub_10DBE`, `sub_10DDA`, `sub_11C44`, `sub_11CC8`, `sub_1218C`, `sub_123A8`, `sub_1383E`, `sub_138CE`, `sub_13BF4`, `sub_13E94`, `sub_14E38` |
 | `Race_SortResults` | `0x0C378` | `Race_ComputeResults` | - |
 | `Race_ComputeResults` | `0x0C3F8` | `TopLevel_Init` | `MenuPassword_CreatePassword`, `Race_BuildStandings`, `Race_SortResults`, `Race_UpdateHighScoreTable` |
 | `Race_UpdateHighScoreTable` | `0x0C598` | `Race_ComputeResults` | `Race_FormatMoney` |
@@ -258,7 +258,7 @@ flowchart LR
 | `Race_FormatDecimal` | `0x0F11C` | `RaceDebug_ShowDistanceTravelled`, `RaceDebug_ShowFrameDelay`, `RaceDebug_ShowPosZ`, `Race_UpdateSpeedDisplay`, `sub_999E` | - |
 | `PiecewiseLinearInterpolation` | `0x0F180` | `Race_Update` | `FillLinearInterpArray` |
 | `FillLinearInterpArray` | `0x0F1AE` | `PiecewiseLinearInterpolation` | - |
-| `Race_BuildActorObjectList` | `0x0F40C` | `Race_Update` | `Race_ProjectActorObject`, `Race_ProjectActorSprite`, `Race_ProjectObject`, `Race_SelectActorObjectShape`, `Race_SelectOpponentShape`, `Race_SelectPlayerFinishShape`, `Race_SelectExtraActorShape`, `sub_15014`, `sub_F842`, `sub_F90E`, `sub_F9C4`, `sub_FA98` |
+| `Race_BuildActorObjectList` | `0x0F40C` | `Race_Update` | `Race_ProjectActorObject`, `Race_ProjectActorSprite`, `Race_ProjectObject`, `Race_SelectActorObjectShape`, `Race_SelectExtraActorShape`, `Race_SelectOpponentShape`, `Race_SelectPlayerFinishShape`, `sub_15014`, `sub_F842`, `sub_F90E`, `sub_F9C4`, `sub_FA98` |
 | `sub_F842` | `0x0F842` | `Race_BuildActorObjectList` | `Race_ProjectObject` |
 | `sub_F90E` | `0x0F90E` | `Race_BuildActorObjectList` | `Race_ProjectObject` |
 | `sub_F9C4` | `0x0F9C4` | `Race_BuildActorObjectList` | `Race_ProjectObject` |
@@ -268,7 +268,7 @@ flowchart LR
 | `Race_AddSpecialObject` | `0x0FD96` | `Race_Update` | - |
 | `Race_ProjectObject` | `0x0FE3A` | `Race_AddStagedObjects`, `Race_AddTrackStartObject`, `Race_BuildActorObjectList`, `sub_F842`, `sub_F90E`, `sub_F9C4`, `sub_FA98` | - |
 | `Race_ProjectActorObject` | `0x0FF7E` | `Race_BuildActorObjectList` | - |
-| `Race_SelectActorObjectShape` | `0x100D0` | `Race_BuildActorObjectList`, `sub_1030A`, `sub_10384` | `Race_SelectActorSpeedShape`, `Race_SelectActorIdleShape`, `sub_1030A`, `sub_1081A` |
+| `Race_SelectActorObjectShape` | `0x100D0` | `Race_BuildActorObjectList`, `sub_1030A`, `sub_10384` | `Race_SelectActorIdleShape`, `Race_SelectActorSpeedShape`, `sub_1030A`, `sub_1081A` |
 | `Race_SelectActorSpeedShape` | `0x101EA` | `Race_SelectActorObjectShape` | - |
 | `Race_SelectActorIdleShape` | `0x1022E` | `Race_SelectActorObjectShape` | - |
 | `Race_SelectOpponentShape` | `0x10256` | `Race_BuildActorObjectList` | - |
@@ -287,30 +287,30 @@ flowchart LR
 | `sub_10DBE` | `0x10DBE` | `Race_Update` | `sub_10E00` |
 | `sub_10DDA` | `0x10DDA` | `Race_Update` | `sub_10E00` |
 | `sub_10E00` | `0x10E00` | `sub_10DBE`, `sub_10DDA` | - |
-| `Race_UpdateActorAI` | `0x10E66` | `Race_Update` | `Race_ApplyCrashImpact`, `Race_HandleInputOnFoot`, `Race_SetupActorSprite`, `Race_UpdateBikeCurve`, `Race_AdvanceActorProgress`, `sub_113A4`, `sub_113CA`, `Race_UpdateActorX`, `Race_UpdateActorMovement`, `sub_1180C`, `Race_UpdateActorFallMovement`, `sub_12BD2` |
+| `Race_UpdateActorAI` | `0x10E66` | `Race_Update` | `Race_AdvanceActorProgress`, `Race_ApplyCrashImpact`, `Race_HandleInputOnFoot`, `Race_SetupActorSprite`, `Race_UpdateActorFallMovement`, `Race_UpdateActorMovement`, `Race_UpdateActorX`, `Race_UpdateBikeCurve`, `sub_113A4`, `sub_113CA`, `sub_1180C`, `sub_12BD2` |
 | `Race_AdvanceActorProgress` | `0x1103A` | `Race_UpdateActorAI` | `sub_12BD2` |
-| `Race_HandleInputOnFoot` | `0x110AE` | `Race_UpdateActorAI` | `Race_AnotherInputOnFoot`, `sub_11268`, `Race_UpdateActorX`, `Race_UpdateActorMovement`, `Race_UpdateActorFallMovement` |
+| `Race_HandleInputOnFoot` | `0x110AE` | `Race_UpdateActorAI` | `Race_AnotherInputOnFoot`, `Race_UpdateActorFallMovement`, `Race_UpdateActorMovement`, `Race_UpdateActorX`, `sub_11268` |
 | `Race_AnotherInputOnFoot` | `0x111FA` | `Race_HandleInputOnFoot` | `sub_11268` |
 | `sub_11268` | `0x11268` | `Race_AnotherInputOnFoot`, `Race_HandleInputOnFoot` | `sub_112C8` |
 | `sub_112C8` | `0x112C8` | `sub_11268` | - |
 | `sub_113A4` | `0x113A4` | `Race_UpdateActorAI`, `Race_UpdateStaticActors` | `Race_UpdateLeanCurve` |
 | `sub_113CA` | `0x113CA` | `Race_UpdateActorAI` | `Race_UpdateLeanCurve` |
 | `Race_UpdateActorX` | `0x11448` | `Race_HandleInputOnFoot`, `Race_UpdateActorAI` | `sub_115C6` |
-| `sub_115C6` | `0x115C6` | `Race_UpdateActorX`, `Race_UpdateActorMovement`, `Race_UpdateActorFallMovement` | `Race_ApplyImpactSpeedLoss` |
+| `sub_115C6` | `0x115C6` | `Race_UpdateActorFallMovement`, `Race_UpdateActorMovement`, `Race_UpdateActorX` | `Race_ApplyImpactSpeedLoss` |
 | `Race_UpdateActorMovement` | `0x116E2` | `Race_HandleInputOnFoot`, `Race_UpdateActorAI`, `Race_UpdateStaticActors`, `sub_1180C` | `sub_115C6` |
-| `sub_1180C` | `0x1180C` | `Race_UpdateActorAI` | `Race_UpdateActorMovement`, `Race_UpdateActorFallMovement`, `sub_13BD8` |
-| `sub_11906` | `0x11906` | `Race_ApplyCrashImpact`, `sub_11CC8`, `sub_1218C`, `sub_12BD2`, `Race_ApplyFallKnockdown` | - |
+| `sub_1180C` | `0x1180C` | `Race_UpdateActorAI` | `Race_UpdateActorFallMovement`, `Race_UpdateActorMovement`, `sub_13BD8` |
+| `sub_11906` | `0x11906` | `Race_ApplyCrashImpact`, `Race_ApplyFallKnockdown`, `sub_11CC8`, `sub_1218C`, `sub_12BD2` | - |
 | `Race_UpdateActorFallMovement` | `0x11940` | `Race_HandleInputOnFoot`, `Race_UpdateActorAI`, `Race_UpdateStaticActors`, `sub_1180C` | `sub_115C6` |
 | `Race_ApplyCrashImpact` | `0x11B7A` | `Race_UpdateActorAI` | `Race_ScaleImpactDamage`, `sub_11906`, `sub_15538` |
 | `sub_11C44` | `0x11C44` | `Race_Update` | - |
-| `sub_11CC8` | `0x11CC8` | `Race_Update` | `Race_ApplyCollisionImpact`, `Race_GetActorCollisionExtent`, `Race_UpdateActorPairCollision`, `sub_11906`, `sub_12070`, `sub_12414`, `sub_1438E`, `Race_UpdateActorPairImpact` |
+| `sub_11CC8` | `0x11CC8` | `Race_Update` | `Race_ApplyCollisionImpact`, `Race_GetActorCollisionExtent`, `Race_UpdateActorPairCollision`, `Race_UpdateActorPairImpact`, `sub_11906`, `sub_12070`, `sub_12414`, `sub_1438E` |
 | `sub_12070` | `0x12070` | `sub_11CC8`, `sub_1218C` | - |
-| `sub_1218C` | `0x1218C` | `Race_Update` | `Race_ApplyCollisionImpact`, `Race_UpdateActorPairCollision`, `sub_11906`, `sub_12070`, `sub_1438E`, `Race_UpdateActorPairImpact` |
+| `sub_1218C` | `0x1218C` | `Race_Update` | `Race_ApplyCollisionImpact`, `Race_UpdateActorPairCollision`, `Race_UpdateActorPairImpact`, `sub_11906`, `sub_12070`, `sub_1438E` |
 | `sub_123A8` | `0x123A8` | `Race_Update` | `Race_UpdateActorPairCollision` |
 | `sub_12414` | `0x12414` | `sub_11CC8` | - |
 | `Race_UpdateActorPairCollision` | `0x124E2` | `sub_11CC8`, `sub_1218C`, `sub_123A8` | `Race_GetAttackerReach`, `Race_GetCollisionExtent`, `Race_GetDefenderReach` |
 | `Race_ClearActorOnFootFlags` | `0x1281E` | `Race_Update` | - |
-| `Race_UpdateStaticActors` | `0x12868` | `Race_Update` | `sub_113A4`, `Race_UpdateActorMovement`, `Race_UpdateActorFallMovement`, `sub_12C9A`, `sub_137E4`, `sub_13DE0` |
+| `Race_UpdateStaticActors` | `0x12868` | `Race_Update` | `Race_UpdateActorFallMovement`, `Race_UpdateActorMovement`, `sub_113A4`, `sub_12C9A`, `sub_137E4`, `sub_13DE0` |
 | `Race_InitExtraStaticActor` | `0x128E0` | `Race_Update` | `Rand_GetWord` |
 | `Race_UpdateExtraStaticActor` | `0x12974` | `Race_Update` | - |
 | `Race_GetCollisionExtent` | `0x12A88` | `Race_UpdateActorPairCollision` | `Race_GetActorCollisionExtent`, `Race_GetStaticCollisionExtent` |
@@ -318,14 +318,14 @@ flowchart LR
 | `Race_GetStaticCollisionExtent` | `0x12AF8` | `Race_GetCollisionExtent` | - |
 | `Race_GetAttackerReach` | `0x12B0C` | `Race_UpdateActorPairCollision` | - |
 | `Race_GetDefenderReach` | `0x12B24` | `Race_UpdateActorPairCollision` | - |
-| `sub_12BD2` | `0x12BD2` | `Race_UpdateActorAI`, `Race_AdvanceActorProgress` | `sub_11906`, `sub_12CCE`, `sub_15538`, `sub_1555C` |
+| `sub_12BD2` | `0x12BD2` | `Race_AdvanceActorProgress`, `Race_UpdateActorAI` | `sub_11906`, `sub_12CCE`, `sub_15538`, `sub_1555C` |
 | `sub_12C9A` | `0x12C9A` | `Race_UpdateStaticActors` | - |
 | `sub_12CCE` | `0x12CCE` | `sub_12BD2` | - |
 | `Race_UpdateActorActions` | `0x12EA2` | `Race_Update` | `Race_RecycleActor`, `Race_RecycleOpponent`, `Race_UpdateActorSpeedState` |
-| `Race_ActorStateCollision` | `0x12FE4` | - | `Race_UpdateActorSpeedState`, `Race_UpdateActorSpeedCurve` |
-| `Race_ActorFollowPath` | `0x13004` | - | `Race_UpdateActorSpeedGear`, `Race_UpdateActorSpeedCurve` |
-| `Race_ActorNormalUpdate` | `0x1300E` | `Race_ActorRecovery` | `Race_FindTargetActor`, `Race_GetCurveSpeedLimit`, `Race_UpdateActorSpeedState`, `Race_UpdateActorSpeedCurve`, `Race_UpdateActorRoadSteering`, `sub_13D44` |
-| `Race_ActorNormalVariant` | `0x1307C` | - | `Race_FindTargetActor`, `Race_UpdateActorSpeedGear`, `Race_UpdateActorSpeedCurve`, `Race_UpdateActorRoadSteering`, `sub_13D44` |
+| `Race_ActorStateCollision` | `0x12FE4` | - | `Race_UpdateActorSpeedCurve`, `Race_UpdateActorSpeedState` |
+| `Race_ActorFollowPath` | `0x13004` | - | `Race_UpdateActorSpeedCurve`, `Race_UpdateActorSpeedGear` |
+| `Race_ActorNormalUpdate` | `0x1300E` | `Race_ActorRecovery` | `Race_FindTargetActor`, `Race_GetCurveSpeedLimit`, `Race_UpdateActorRoadSteering`, `Race_UpdateActorSpeedCurve`, `Race_UpdateActorSpeedState`, `sub_13D44` |
+| `Race_ActorNormalVariant` | `0x1307C` | - | `Race_FindTargetActor`, `Race_UpdateActorRoadSteering`, `Race_UpdateActorSpeedCurve`, `Race_UpdateActorSpeedGear`, `sub_13D44` |
 | `Race_ActorRecovery` | `0x130D2` | - | `Race_ActorNormalUpdate` |
 | `Race_UpdateStaticActions` | `0x13106` | `Race_Update` | - |
 | `Race_UpdateActorSpeedGear` | `0x131BE` | `Race_ActorAttackIfClose`, `Race_ActorCollideSteer`, `Race_ActorCombatResponse`, `Race_ActorFollowPath`, `Race_ActorNormalVariant`, `Race_ActorProximityReaction`, `Race_ActorPursueAttack`, `Race_ActorSteerRoadCenter` | `Race_GetCurveSpeedLimit`, `Race_UpdateActorSpeedState` |
@@ -343,7 +343,7 @@ flowchart LR
 | `sub_13892` | `0x13892` | `Race_UpdateActorSpeedCurve` | - |
 | `sub_138CE` | `0x138CE` | `Race_Update` | `Rand_GetWord`, `sub_13A26` |
 | `sub_13A26` | `0x13A26` | `sub_138CE` | - |
-| `Race_UpdateActorSpeedState` | `0x13A92` | `Race_ActorNormalUpdate`, `Race_ActorStateCollision`, `Race_ActorSteerThrottle`, `Race_Update`, `Race_UpdateActorActions`, `Race_UpdateActorSpeedGear`, `Race_UpdateActorChase`, `sub_1634E` | `sub_13BBC` |
+| `Race_UpdateActorSpeedState` | `0x13A92` | `Race_ActorNormalUpdate`, `Race_ActorStateCollision`, `Race_ActorSteerThrottle`, `Race_Update`, `Race_UpdateActorActions`, `Race_UpdateActorChase`, `Race_UpdateActorSpeedGear`, `sub_1634E` | `sub_13BBC` |
 | `sub_13BBC` | `0x13BBC` | `Race_UpdateActorSpeedState` | - |
 | `sub_13BD8` | `0x13BD8` | `sub_1180C` | - |
 | `sub_13BF4` | `0x13BF4` | `Race_Update` | `sub_13CFE` |
@@ -353,23 +353,23 @@ flowchart LR
 | `sub_13E94` | `0x13E94` | `Race_Update` | `Race_GetCurveSpeedLimit` |
 | `Race_UpdateBikeLean` | `0x13EA0` | `Race_Update` | - |
 | `Race_UpdateBikeCurve` | `0x13EFA` | `Race_UpdateActorAI` | - |
-| `Race_GetCurveSpeedLimit` | `0x13FE6` | `Race_ActorNormalUpdate`, `Race_InitOpponentActor`, `Race_InitTrafficActor`, `Race_UpdateActorSpeedGear`, `Race_UpdateActorChase`, `sub_13CFE`, `sub_13E94` | - |
+| `Race_GetCurveSpeedLimit` | `0x13FE6` | `Race_ActorNormalUpdate`, `Race_InitOpponentActor`, `Race_InitTrafficActor`, `Race_UpdateActorChase`, `Race_UpdateActorSpeedGear`, `sub_13CFE`, `sub_13E94` | - |
 | `Race_UpdateLeanCurve` | `0x1406A` | `sub_113A4`, `sub_113CA` | - |
 | `sub_142D8` | `0x142D8` | `Race_ApplyCollisionImpact` | - |
 | `Race_ScaleImpactDamage` | `0x1434A` | `Race_ApplyCollisionImpact`, `Race_ApplyCrashImpact`, `Race_ExchangeCollisionSpeed` | - |
 | `sub_1438E` | `0x1438E` | `sub_11CC8`, `sub_1218C` | - |
-| `Race_ApplyCollisionImpact` | `0x14486` | `sub_11CC8`, `sub_1218C` | `Race_ScaleImpactDamage`, `sub_142D8`, `Race_UpdateCollisionSpeedState`, `sub_14688` |
+| `Race_ApplyCollisionImpact` | `0x14486` | `sub_11CC8`, `sub_1218C` | `Race_ScaleImpactDamage`, `Race_UpdateCollisionSpeedState`, `sub_142D8`, `sub_14688` |
 | `Race_UpdateCollisionSpeedState` | `0x145EC` | `Race_ApplyCollisionImpact`, `Race_ExchangeCollisionSpeed` | `sub_15538`, `sub_1555C` |
 | `sub_14688` | `0x14688` | `Race_ApplyCollisionImpact` | - |
 | `Race_ApplyImpactSpeedLoss` | `0x146AC` | `sub_115C6` | - |
-| `Race_UpdateActorPairImpact` | `0x1487C` | `sub_11CC8`, `sub_1218C` | `Race_ExchangeCollisionSpeed`, `Race_ClampActorPairY`, `Race_StealClub`, `Race_StealClubMirror`, `Race_ApplyFallKnockdown`, `Race_AdjustActorTrackPositions` |
+| `Race_UpdateActorPairImpact` | `0x1487C` | `sub_11CC8`, `sub_1218C` | `Race_AdjustActorTrackPositions`, `Race_ApplyFallKnockdown`, `Race_ClampActorPairY`, `Race_ExchangeCollisionSpeed`, `Race_StealClub`, `Race_StealClubMirror` |
 | `Race_ClampActorPairY` | `0x1496C` | `Race_UpdateActorPairImpact` | - |
 | `Race_StealClub` | `0x149C4` | `Race_UpdateActorPairImpact` | - |
 | `Race_StealClubMirror` | `0x14B04` | `Race_UpdateActorPairImpact` | - |
 | `Race_ApplyFallKnockdown` | `0x14C3C` | `Race_UpdateActorPairImpact` | `sub_11906` |
-| `Race_ExchangeCollisionSpeed` | `0x14CEC` | `Race_UpdateActorPairImpact` | `Race_ScaleImpactDamage`, `Race_UpdateCollisionSpeedState`, `Race_AdjustActorTrackPositions` |
+| `Race_ExchangeCollisionSpeed` | `0x14CEC` | `Race_UpdateActorPairImpact` | `Race_AdjustActorTrackPositions`, `Race_ScaleImpactDamage`, `Race_UpdateCollisionSpeedState` |
 | `Race_AdjustActorTrackPositions` | `0x14D84` | `Race_ExchangeCollisionSpeed`, `Race_UpdateActorPairImpact` | - |
-| `sub_14E38` | `0x14E38` | `Race_Update` | `Audio_StopMusicChannel3`, `Audio_SetEngineDistance`, `Audio_StopMusicChannel4`, `Audio_Engine1Stop`, `Audio_Engine2Stop`, `Audio_Engine3Stop`, `Audio_PlaySfx` |
+| `sub_14E38` | `0x14E38` | `Race_Update` | `Audio_Engine1Stop`, `Audio_Engine2Stop`, `Audio_Engine3Stop`, `Audio_PlaySfx`, `Audio_SetEngineDistance`, `Audio_StopMusicChannel3`, `Audio_StopMusicChannel4` |
 | `sub_14FB4` | `0x14FB4` | `Race_UpdateNearestTarget` | - |
 | `sub_15014` | `0x15014` | `Race_BuildActorObjectList` | `sub_151F0`, `sub_1533E`, `sub_15446`, `sub_154D2` |
 | `sub_151F0` | `0x151F0` | `sub_15014` | - |
@@ -377,8 +377,8 @@ flowchart LR
 | `sub_15446` | `0x15446` | `sub_15014` | - |
 | `sub_15478` | `0x15478` | `Race_AddTrackStartObject` | `sub_154D2` |
 | `sub_154D2` | `0x154D2` | `sub_15014`, `sub_15478` | - |
-| `sub_15538` | `0x15538` | `Race_ApplyCrashImpact`, `sub_12BD2`, `Race_UpdateCollisionSpeedState` | `Rand_GetWord` |
-| `sub_1555C` | `0x1555C` | `sub_12BD2`, `Race_UpdateCollisionSpeedState` | `Rand_GetWord` |
+| `sub_15538` | `0x15538` | `Race_ApplyCrashImpact`, `Race_UpdateCollisionSpeedState`, `sub_12BD2` | `Rand_GetWord` |
+| `sub_1555C` | `0x1555C` | `Race_UpdateCollisionSpeedState`, `sub_12BD2` | `Rand_GetWord` |
 | `Rand_Init` | `0x15FE8` | `Intro_Init` | - |
 | `Rand_GetWord` | `0x16034` | `EndLevel_InitVictoryCharacter`, `MainMenu_GameTick`, `RaceResults_DrawBusted`, `RaceResults_DrawRepair`, `Race_ActorRandomCombatChoice`, `Race_ComputeStandings`, `Race_InitExtraStaticActor`, `Race_SpawnOpponents`, `Race_SpawnTick`, `RiderIntro_Init`, `sub_138CE`, `sub_15538`, `sub_1555C`, `sub_1607C` | - |
 | `sub_1607C` | `0x1607C` | - | `Rand_GetWord` |
@@ -389,19 +389,19 @@ flowchart LR
 | `Race_UpdateNearestTarget` | `0x1611A` | `Race_Update` | `Race_TriggerArmedAttackSfx`, `Race_UpdatePlayerAttack`, `sub_14FB4` |
 | `Race_UpdatePlayerAttack` | `0x162B0` | `Race_UpdateNearestTarget` | - |
 | `sub_1634E` | `0x1634E` | - | `Race_UpdateActorSpeedState` |
-| `Race_DispatchActorAction` | `0x16458` | - | `Race_UpdateAttackPhase`, `Race_FindTargetActor`, `sub_13D44` |
+| `Race_DispatchActorAction` | `0x16458` | - | `Race_FindTargetActor`, `Race_UpdateAttackPhase`, `sub_13D44` |
 | `Race_TriggerArmedAttackSfx` | `0x16520` | `Race_UpdateAttackPhase`, `Race_UpdateNearestTarget` | - |
 | `Race_UpdateAttackPhase` | `0x16548` | `Race_DispatchActorAction` | `Race_TriggerArmedAttackSfx` |
-| `Race_ActorSteerRoadCenter` | `0x165D0` | - | `Race_UpdateActorSpeedGear`, `Race_UpdateActorRoadSteering` |
-| `Race_ActorSteerThrottle` | `0x165E0` | `Race_ActorSteerCollide` | `Race_UpdateActorSpeedState`, `Race_UpdateActorRoadSteering` |
-| `Race_ActorCollideSteer` | `0x16612` | `Race_ActorAttackIfClose`, `Race_ActorRandomCombatChoice` | `Race_UpdateActorSpeedGear`, `Race_UpdateCollision`, `Race_ApplyActorSpeedCorrection` |
+| `Race_ActorSteerRoadCenter` | `0x165D0` | - | `Race_UpdateActorRoadSteering`, `Race_UpdateActorSpeedGear` |
+| `Race_ActorSteerThrottle` | `0x165E0` | `Race_ActorSteerCollide` | `Race_UpdateActorRoadSteering`, `Race_UpdateActorSpeedState` |
+| `Race_ActorCollideSteer` | `0x16612` | `Race_ActorAttackIfClose`, `Race_ActorRandomCombatChoice` | `Race_ApplyActorSpeedCorrection`, `Race_UpdateActorSpeedGear`, `Race_UpdateCollision` |
 | `Race_ActorSteerCollide` | `0x16624` | - | `Race_ActorSteerThrottle`, `Race_UpdateCollision` |
 | `Race_ActorRandomCombatChoice` | `0x1662C` | `Race_ActorProximityReaction` | `Race_ActorCollideSteer`, `Race_ActorPursueAttack`, `Rand_GetWord` |
-| `Race_ActorProximityReaction` | `0x16644` | - | `Race_ActorRandomCombatChoice`, `Race_UpdateActorSpeedGear`, `Race_ApplyActorSpeedCorrection` |
-| `Race_ActorPursueAttack` | `0x1666A` | `Race_ActorRandomCombatChoice` | `Race_UpdateActorSpeedGear`, `Race_ApplyActorSpeedCorrection`, `Race_UpdateActorRoadSteering` |
-| `Race_ActorAttackIfClose` | `0x166B0` | - | `Race_ActorCollideSteer`, `Race_UpdateActorSpeedGear`, `Race_ApplyActorSpeedCorrection` |
-| `Race_ActorEvadePlayer` | `0x166DC` | - | `Race_UpdateActorChase`, `Race_ApplyActorSpeedCorrection` |
-| `Race_ActorCombatResponse` | `0x166F0` | - | `Race_FindTargetActor`, `Race_UpdateActorSpeedGear`, `Race_UpdateCollision`, `Race_ApplyActorSpeedCorrection`, `Race_UpdateActorSpeedCurve` |
+| `Race_ActorProximityReaction` | `0x16644` | - | `Race_ActorRandomCombatChoice`, `Race_ApplyActorSpeedCorrection`, `Race_UpdateActorSpeedGear` |
+| `Race_ActorPursueAttack` | `0x1666A` | `Race_ActorRandomCombatChoice` | `Race_ApplyActorSpeedCorrection`, `Race_UpdateActorRoadSteering`, `Race_UpdateActorSpeedGear` |
+| `Race_ActorAttackIfClose` | `0x166B0` | - | `Race_ActorCollideSteer`, `Race_ApplyActorSpeedCorrection`, `Race_UpdateActorSpeedGear` |
+| `Race_ActorEvadePlayer` | `0x166DC` | - | `Race_ApplyActorSpeedCorrection`, `Race_UpdateActorChase` |
+| `Race_ActorCombatResponse` | `0x166F0` | - | `Race_ApplyActorSpeedCorrection`, `Race_FindTargetActor`, `Race_UpdateActorSpeedCurve`, `Race_UpdateActorSpeedGear`, `Race_UpdateCollision` |
 | `Race_UpdateCollision` | `0x16732` | `Race_ActorCollideSteer`, `Race_ActorCombatResponse`, `Race_ActorSteerCollide` | - |
 | `UpdateAnimation` | `0x16860` | `RaceHud_DrawRPMArrow`, `RaceHud_DrawSpeedArrow` | - |
 | `UpdateAnimation2` | `0x16926` | `EndLevel_UpdateAnimation` | - |
