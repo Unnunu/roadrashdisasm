@@ -1,7 +1,7 @@
 # Analysis: `src/data/race_track_data.asm` (per-track records + streams)
 
 - **ROM range:** `0x025EC0`–`0x03BF19` (`Road_ShapeTable`/shape data follows in `src/data/road_shapes.asm`)
-- **Status:** records/level tables and stream boundaries analyzed; stream formats TODO
+- **Status:** records/level tables, Data2/3 decoder, Data4 object runs, Data5 spawn records and Data6 bundle header analyzed; exact Data4 side/second-shape bits partly TODO
 - **Source:** `src/data/race_track_data.asm` (record/level tables from source, streams
   `binclude` from `baserom.md`)
 - **Related:** `docs/analysis/track_data.md`, `docs/analysis/race.md`,
@@ -57,12 +57,75 @@ Level words:
 - `Race_DrawTrackBackground` (via `RaceTrack_Data6`) loads background graphics/palette.
 - `Menu_BuildRaceTooltip`: level word -> `*$10/$210` -> decimal in the tooltip.
 
+## Data4 object-run stream
+
+`Race_BuildTrackObjects` walks 4-byte entries at `RaceTrack_Data4`; a word
+`$FFFF` terminates the stream and wraps back to `Data4` start.
+
+| Offset | Field | Evidence |
+|---|---|---|
+| `+$00` bits 0-6 | object/shape selector; mapped to `shape = value + $186` | `[static]` `10AA6` |
+| `+$00` bits 8-12 | run count minus 1 (0..31) | `[static]` `10A1A`, `10A5E` |
+| `+$00` bits 14-15 | side/mirror flags; bit7 also feeds the side flag | `[static]` `10A78`; exact pairing TODO |
+| `+$02` high nibble | spacing divisor minus 1 (`d2 = nibble + 1`) | `[static]` `10A1A` |
+| `+$02` bits 8-10 | flags ORed into `RoadObject_Flags` | `[static]` `10AFC-10B48` |
+| `+$02` low byte | object parameter stored at record `+$10` | `[static]` `10B48` |
+| `+$02` remaining bits | second-shape/parameter source | TODO |
+
+The shape selector `$7F` maps to `$205`, which the builder treats as a special
+control/skip entry. Other mapped shapes are written to `RoadObject_Shape` (`+8`).
+Track 0 starts `007F A000, 8039 01AC, 81FA 0015, 81FC 0016, ...`; the final
+`$FFFF` is followed by the six-byte Data6 header.
+
+## Data5 spawn records
+
+`Race_SpawnOpponents` expands 4-byte records into the normal list at
+`ram_FFD7D4` and the special/traffic list at `ram_FFDBD8`; `$FFFFFFFF` terminates.
+
+| Bits | Meaning | Evidence |
+|---|---|---|
+| high word | progress/distance threshold | `[static]` `sub_13BF4`, `Race_AddStagedObjects` |
+| bit4 | randomize low nibble (0..15) | `[static]` `B934` |
+| bit5 | special/traffic list; append colour byte | `[static]` `B94A` |
+| bits 8-11 | level/type index | `[static]` `sub_13BF4`; staged object uses byte2 as type |
+| bits 0-3 | lane/spawn offset (`*$20 - $100`) | `[static]` `sub_13BF4`, `Race_AddStagedObjects` |
+| other bits | flag bits preserved in the record | TODO |
+
+The per-level gates are `word_B976` (random acceptance threshold), `word_B980`
+(max coloured entries), and `off_B98A` (colour lists). Normal records are used by
+the level/opponent event path and the staged-object builder; the special list
+records have byte 2 replaced by the colour byte.
+
+`[dynamic]` Demo normal list starts `00A7 0218, 01A5 0118, 02BC 050F, ...`;
+special list starts `02D6 022F` then `FFFFFFFF`. This matches progress-high /
+lane-low / level-byte field mapping.
+
+## Data6 background bundle
+
+`RaceTrack_Data6` points at the `UncompressB` source stream; the six bytes
+immediately before it are physically the tail of Data4 and form its header:
+
+| Word | Meaning | Track 0 | Track 1 |
+|---|---|---|---|
+| `Data6-6` | tile-data offset (normally 0) | `$0000` | `$0000` |
+| `Data6-4` | nametable offset in decompressed image | `$2024` | `$1F64` |
+| `Data6-2` | palette offset in decompressed image | `$1FA4` | `$1EE4` |
+
+`Race_LoatTrackGfx` decompresses Data6 into `Intro_ram_ImageBuffer`, then:
+- tiles at `base + (Data6-6)` -> VRAM `$1000`;
+- nametable at `base + (Data6-4) + 4` -> BG/FG planes;
+- palette at `base + (Data6-2) + $22` -> `Global_ram_PalettePtr + $22`.
+
+`Race_LoadMoreTrackGfx` loads additional per-track plane data; it is separate from
+the Data6 bundle.
+
 ## Open questions
 
-- Formats of `Data2..Data6` (compressed streams, spawn records, graphics).
+- Data4 side/mirror bit pairing, the `+$02` remaining bits and second-shape
+  generation.
+- Data5 other flag bits and the exact normal-vs-special consumer split.
 - Meaning of the level word and the `*$10/$210` scaling.
-- Exact `Data4`/`Data6` consumers and the shape format in `src/data/road_shapes.asm`.
-- Dynamic verification of track selection/loading.
+- Dynamic verification of Data6 decompression offsets and palette rows.
 
 ## Rename proposals
 

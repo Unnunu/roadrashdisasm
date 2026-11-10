@@ -96,6 +96,25 @@ chain. The spawner adds/removes actors and the physics chain moves them.
 `Race_FormatDecimal` (`0xF11C`): converts a 16-bit value to a packed 5-digit decimal
 (used by the debug readouts, speed and other HUD values).
 
+## Data5 spawn record format
+
+`Race_SpawnOpponents` consumes 4-byte records from `RaceTrack_Data5` and writes
+normal entries to `ram_FFD7D4` or special/traffic entries to `ram_FFDBD8`.
+`$FFFFFFFF` terminates the stream.
+
+| Field | Meaning |
+|---|---|
+| high word | progress/distance threshold |
+| bit4 | randomize low nibble of the low word |
+| bit5 | use the special/traffic list; append a colour byte at record `+2` |
+| bits 8-11 | level/type index |
+| bits 0-3 | lane/spawn offset (`*$20 - $100`) |
+| other bits | preserved flags; consumers still TODO |
+
+The normal list is also consumed by `sub_13BF4`/`Race_AddStagedObjects`; the latter
+treats record byte 2 as an object type and the low nibble as lane offset. See
+`docs/analysis/race_track_data.md` for the dynamic sample.
+
 ## Open questions
 
 - `ram_FF1A08`/`Race_ram_ActiveActorList` overlap details; `ram_FF1B34/B36/B38` semantics.
