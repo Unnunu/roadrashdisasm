@@ -156,7 +156,7 @@ word_16AEC:     dc.w $B333
 ; *************************************************
 
 Race_SpawnTick:
-                btst    #7,(RacePlayerA + STRUCT_OFFSET_68).l
+                btst    #7,(RacePlayerA + RaceActor_ControlFlags).l
                 bne.w   .return
                 tst.w   (Race_ram_SpawnTimer).l
                 beq.w   .loc_16B2E
@@ -288,7 +288,7 @@ Race_SpawnOpponent:
                 beq.w   .loc_16C16
                 cmpa.l  #ram_FF1F2A,a1
                 bne.w   .loc_16C0E
-                btst    #6,$68(a1)
+                btst    #6,RaceActor_ControlFlags(a1)
                 bne.w   .loc_16C16
 .loc_16C0E:
                 bsr.w   Race_ActivateActor
@@ -499,7 +499,7 @@ Race_InitTrafficActor:
                 move.l  RaceActor_X(a2),d0
                 subi.l  #$100000,d0
                 move.l  d0,4(a1)
-                move.l  d0,$1E(a1)
+                move.l  d0,RaceActor_PreviousX(a1)
                 move.w  RaceActor_Rating(a1),d0
                 move.w  d0,$12(a1)
                 bsr.w   Race_SetupActor
@@ -528,7 +528,7 @@ Race_InitTrafficActor:
 Race_SetupActor:
                 lea     (Track_CurveBuffer).l,a4
                 move.l  4(a1),d0
-                move.l  d0,$1E(a1)
+                move.l  d0,RaceActor_PreviousX(a1)
                 andi.w  #$FF,d0
                 asl.w   #1,d0
                 addi.w  #$C,d0
@@ -537,8 +537,8 @@ Race_SetupActor:
                 ext.w   d0
                 move.w  d0,$C(a1)
                 move.w  d0,8(a1)
-                bclr    #4,$68(a1)
-                bclr    #0,$68(a1)
+                bclr    #4,RaceActor_ControlFlags(a1)
+                bclr    #0,RaceActor_ControlFlags(a1)
                 move.w  #0,$2C(a1)
                 move.w  (ram_FF18A8).l,$5C(a1)
                 move.b  #$FF,$6E(a1)

@@ -16,3 +16,14 @@ ATTACK_CONTACT equ $80
 ; actor $6B attack bits
 ATTACK_HIGH equ $01
 ATTACK_ARMED equ $02
+
+; attack phase values for RaceActor_AttackPhase ($6C)
+ATTACK_PHASE_WINDUP equ 0
+ATTACK_PHASE_STRIKE equ 1
+ATTACK_PHASE_RECOVERY equ 2
+ATTACK_PHASE_END equ 3
+
+; static actor indices
+RACE_ACTOR_INDEX_STATIC0 equ $10
+RACE_ACTOR_INDEX_STATIC1 equ $11
+RACE_ACTOR_INDEX_EXTRA equ $12

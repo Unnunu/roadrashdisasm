@@ -383,6 +383,7 @@ RaceActor_Acceleration equ $14 ; signed per-frame acceleration
 RaceActor_Type equ $16
 RaceActor_Gear equ $18
 STRUCT_OFFSET_1C equ $1C
+RaceActor_PreviousX equ $1E ; previous/start-of-frame X
 STRUCT_OFFSET_22 equ $22
 STRUCT_OFFSET_24 equ $24
 RaceActor_FrameDistance equ $26 ; Speed * Race_ram_FrameDelay
@@ -396,21 +397,27 @@ STRUCT_OFFSET_3C equ $3C
 STRUCT_OFFSET_3E equ $3E
 RaceActor_Lean equ $42 ; signed lean/curve value
 STRUCT_OFFSET_46 equ $46
+RaceActor_CollisionExtent equ $4A
+RaceActor_AttackReach equ $50
+RaceActor_AttackOverlap equ $52
 STRUCT_OFFSET_56 equ $56
+RaceActor_AttackCooldown equ $5A
 RaceActor_TileBase equ $5C ; current animation/tile base
 STRUCT_OFFSET_5E equ $5E
 STRUCT_OFFSET_60 equ $60
 RaceActor_Rating equ $66 ; definition byte5*100; also spawn/recycle distance
-STRUCT_OFFSET_68 equ $68
-STRUCT_OFFSET_69 equ $69
-STRUCT_OFFSET_6A equ $6A
-STRUCT_OFFSET_6B equ $6B
+RaceActor_ControlFlags equ $68
+RaceActor_StateFlags equ $69
+RaceActor_WeaponAnimFlags equ $6A
+RaceActor_AttackFlags equ $6B
+RaceActor_AttackPhase equ $6C
+RaceActor_AttackTimer equ $6D
 STRUCT_OFFSET_6E equ $6E
 STRUCT_OFFSET_6F equ $6F
 RaceActor_Index equ $71
 STRUCT_OFFSET_72 equ $72
 STRUCT_OFFSET_73 equ $73
-STRUCT_OFFSET_74 equ $74
+RaceActor_ActionProfile equ $74
 RaceActor_GraphicsIndex equ $75
 STRUCT_OFFSET_77 equ $77
 STRUCT_OFFSET_78 equ $78

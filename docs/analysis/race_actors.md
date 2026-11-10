@@ -298,6 +298,12 @@ open semantic question, not a reason to rename the field.
 | `$68` | `RaceActor_Flags` | bit6 active/update marker; multiple AI bits | medium |
 | `$5E`/`$60` | `ActorSpritePosX/Y` | graphics +$A/+$C | low |
 
+Applied in R19: `RaceActor_PreviousX`, `RaceActor_CollisionExtent`,
+`RaceActor_AttackReach`, `RaceActor_AttackOverlap`, `RaceActor_AttackCooldown`,
+`RaceActor_ControlFlags`, `RaceActor_StateFlags`, `RaceActor_WeaponAnimFlags`,
+`RaceActor_AttackFlags`, `RaceActor_AttackPhase`, `RaceActor_AttackTimer`,
+`RaceActor_ActionProfile`. Added `ATTACK_PHASE_*` and static actor-index enums.
+
 Applied in Batch 3a: `+$02/+$04/+$06/+$12/+$16/+$18/+$30/+$71/+$75` ->
 `RaceActor_PosZ/X/XLow/Speed/Type/Gear/PosY/Index/GraphicsIndex`.
 

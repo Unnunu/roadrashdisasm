@@ -92,17 +92,17 @@ unk_10E3E:      dc.b $18
 ; *************************************************
 
 Race_UpdateActorAI:
-                bset    #6,(RacePlayerA + STRUCT_OFFSET_68).l
+                bset    #6,(RacePlayerA + RaceActor_ControlFlags).l
                 lea     (ram_FF1A08).l,a2
 
 .loc_10E74:
                 movea.l (a2)+,a1
                 cmpa.w  #$FFFF,a1
                 beq.w   .locret_11038
-                btst    #7,$68(a1)
+                btst    #7,RaceActor_ControlFlags(a1)
                 move.w  $14(a1),d1
                 beq.w   .loc_10EB8
-                btst    #3,$68(a1)
+                btst    #3,RaceActor_ControlFlags(a1)
                 beq.w   .loc_10E9C
                 move.w  d1,d0
                 asr.w   #2,d0
@@ -126,7 +126,7 @@ Race_UpdateActorAI:
                 bne.w   .loc_10F2A
                 tst.w   (MainMenu_ram_DemoMode).l
                 bne.w   .loc_10F2A
-                btst    #4,$68(a1)
+                btst    #4,RaceActor_ControlFlags(a1)
                 beq.w   .loc_10EF8
                 cmpi.b  #3,$6E(a1)
                 bne.w   .loc_10EF8
@@ -137,13 +137,13 @@ Race_UpdateActorAI:
 .loc_10EF8:
                 bsr.w   sub_113CA
                 bsr.w   Race_UpdateBikeCurve
-                btst    #4,$68(a1)
+                btst    #4,RaceActor_ControlFlags(a1)
                 beq.w   .loc_10F14
-                btst    #3,$69(a1)
+                btst    #3,RaceActor_StateFlags(a1)
                 bne.w   .loc_10F22
 
 .loc_10F14:
-                bclr    #3,$68(a1)
+                bclr    #3,RaceActor_ControlFlags(a1)
                 bsr.w   Race_UpdateActorX
                 bra.w   .loc_10F6C
 
@@ -154,14 +154,14 @@ Race_UpdateActorAI:
 
 
 .loc_10F2A:
-                btst    #6,$68(a1)
+                btst    #6,RaceActor_ControlFlags(a1)
                 bne.w   .loc_10F3C
                 bsr.w   Race_AdvanceActorProgress
                 bra.w   .loc_11034
 
 
 .loc_10F3C:
-                btst    #4,$68(a1)
+                btst    #4,RaceActor_ControlFlags(a1)
                 beq.w   .loc_10F58
                 cmpi.b  #3,$6E(a1)
                 bne.w   .loc_10F58
@@ -195,7 +195,7 @@ Race_UpdateActorAI:
 .loc_10F9A:
                 cmp.w   #$FF20,d1
                 bpl.w   .loc_10FD8
-                bset    #3,$68(a1)
+                bset    #3,RaceActor_ControlFlags(a1)
                 bra.w   .loc_10FDE
 
 
@@ -211,12 +211,12 @@ Race_UpdateActorAI:
 .loc_10FC6:
                 cmp.w   #$E0,d1
                 bmi.w   .loc_10FD8
-                bset    #3,$68(a1)
+                bset    #3,RaceActor_ControlFlags(a1)
                 bra.w   .loc_10FDE
 
 
 .loc_10FD8:
-                bclr    #3,$68(a1)
+                bclr    #3,RaceActor_ControlFlags(a1)
 
 .loc_10FDE:
                 neg.w   d1
@@ -243,7 +243,7 @@ Race_UpdateActorAI:
 .loc_1101C:
                 cmpi.b  #$10,$71(a1)
                 bpl.w   .loc_11034
-                btst    #4,$68(a1)
+                btst    #4,RaceActor_ControlFlags(a1)
                 beq.w   .loc_11034
                 bsr.w   sub_1180C
 
@@ -265,24 +265,24 @@ Race_AdvanceActorProgress:
                 move.w  $32(a1),$1C(a1)
                 move.l  $26(a1),d0
                 move.l  4(a1),d4
-                move.l  d4,$1E(a1)
+                move.l  d4,RaceActor_PreviousX(a1)
                 add.l   d4,d0
                 move.l  d0,4(a1)
                 swap    d4
                 cmp.w   (RaceTrack_Data1).l,d4
                 bmi.w   .loc_1107E
-                btst    #7,$68(a1)
+                btst    #7,RaceActor_ControlFlags(a1)
                 bne.w   .loc_1107E
-                bset    #7,$68(a1)
+                bset    #7,RaceActor_ControlFlags(a1)
                 move.l  (Race_ram_ProgressSnapshotB).l,$62(a1)
 
 .loc_1107E:
                 move.w  d1,2(a1)
-                bclr    #4,$68(a1)
+                bclr    #4,RaceActor_ControlFlags(a1)
                 move.b  #$FF,$6E(a1)
                 move.w  #0,$32(a1)
                 move.w  #0,$2E(a1)
-                bclr    #0,$68(a1)
+                bclr    #0,RaceActor_ControlFlags(a1)
                 move.w  #0,$2C(a1)
                 bsr.w   sub_12BD2
                 move.l  (sp)+,d0
@@ -339,21 +339,21 @@ Race_HandleInputOnFoot:
                 move.w  d1,8(a1)
                 tst.w   d2
                 bmi.w   .loc_1114A
-                bclr    #3,$69(a1)
+                bclr    #3,RaceActor_StateFlags(a1)
                 asl.w   #8,d2
                 move.w  d2,$12(a1)
                 bra.w   .loc_1119E
 .loc_1114A:
-                bset    #3,$69(a1)
+                bset    #3,RaceActor_StateFlags(a1)
                 neg.w   d2
                 asl.w   #8,d2
                 move.w  d2,$12(a1)
                 bra.w   .loc_1119E
 .loc_1115C:
-                bclr    #3,$69(a1)
+                bclr    #3,RaceActor_StateFlags(a1)
                 tst.w   d2
                 bpl.w   .loc_1116E
-                bset    #3,$69(a1)
+                bset    #3,RaceActor_StateFlags(a1)
 .loc_1116E:
                 move.w  #0,d1
                 move.w  d1,8(a1)
@@ -378,7 +378,7 @@ Race_HandleInputOnFoot:
                 mulu.w  (Race_ram_FrameDelay).l,d2
                 move.l  d2,$26(a1)
                 move.l  d2,d0
-                btst    #3,$69(a1)
+                btst    #3,RaceActor_StateFlags(a1)
                 bne.w   .loc_111DC
                 cmpa.l  #RacePlayerA,a1
                 bne.w   .loc_111D4
@@ -439,10 +439,10 @@ Race_AnotherInputOnFoot:
                 move.w  d1,8(a1)
                 btst    #1,d3
                 beq.w   .loc_1125A
-                bset    #3,$69(a1)
+                bset    #3,RaceActor_StateFlags(a1)
                 bra.w   .loc_11260
 .loc_1125A:
-                bclr    #3,$69(a1)
+                bclr    #3,RaceActor_StateFlags(a1)
 .loc_11260:
                 asl.w   #8,d2
                 move.w  d2,$12(a1)
@@ -691,7 +691,7 @@ sub_113A4:
                 move.w  8(a1),d1
                 muls.w  d1,d0
                 asr.l   #8,d0
-                btst    #5,$68(a1)
+                btst    #5,RaceActor_ControlFlags(a1)
                 beq.w   .loc_113C0
                 bsr.w   Race_UpdateLeanCurve
 
@@ -712,10 +712,10 @@ sub_113CA:
                 muls.w  $42(a1),d0
                 asr.l   #8,d0
                 move.w  d0,$C(a1)
-                btst    #0,$68(a1)
+                btst    #0,RaceActor_ControlFlags(a1)
                 beq.w   .loc_113F2
                 clr.l   d0
-                bclr    #5,$68(a1)
+                bclr    #5,RaceActor_ControlFlags(a1)
                 bra.w   .loc_1143E
 
 
@@ -735,7 +735,7 @@ sub_113CA:
                 exg     d0,d1
                 muls.w  d1,d0
                 asr.l   #8,d0
-                btst    #5,$68(a1)
+                btst    #5,RaceActor_ControlFlags(a1)
                 beq.w   .loc_11424
                 bsr.w   Race_UpdateLeanCurve
 
@@ -769,7 +769,7 @@ Race_UpdateActorX:
                 move.w  $32(a1),$1C(a1)
                 move.l  $26(a1),d0
                 move.l  4(a1),d4
-                move.l  d4,$1E(a1)
+                move.l  d4,RaceActor_PreviousX(a1)
                 add.l   d4,d0
                 move.l  d0,4(a1)
                 swap    d0
@@ -798,7 +798,7 @@ Race_UpdateActorX:
                 move.w  #$16F,(ram_FF3698).l
                 tst.w   (ram_FF1ACC).l
                 bne.w   .loc_114F8
-                bset    #7,$68(a1)
+                bset    #7,RaceActor_ControlFlags(a1)
                 move.l  (Race_ram_ProgressSnapshotB).l,$62(a1)
                 move.w  #1,(ram_FF1ACC).l
                 move.w  #0,(ram_FF1ACE).l
@@ -824,7 +824,7 @@ Race_UpdateActorX:
 .loc_1151E:
                 ext.w   d5
                 add.w   d5,d7
-                btst    #0,$68(a1)
+                btst    #0,RaceActor_ControlFlags(a1)
                 bne.w   .loc_11548
                 cmp.w   $2C(a1),d5
                 bmi.w   .loc_11548
@@ -914,7 +914,7 @@ sub_115C6:
                 cmpa.l  #ram_FF2EAA,a1
                 bcc.w   .loc_116AA
                 move.w  (Race_ram_FrameDelay).l,d4
-                btst    #0,$68(a1)
+                btst    #0,RaceActor_ControlFlags(a1)
                 bne.w   .loc_11652
                 move.w  #0,$2E(a1)
                 tst.w   $12(a1)
@@ -976,7 +976,7 @@ sub_115C6:
                 cmp.w   d2,d1
                 bpl.w   .loc_116AA
                 move.w  d2,2(a1)
-                bset    #0,$68(a1)
+                bset    #0,RaceActor_ControlFlags(a1)
                 sub.w   d1,d2
                 mulu.w  (ram_FF1AA0).l,d2
                 lsr.l   #8,d2
@@ -987,7 +987,7 @@ sub_115C6:
 .loc_116AA:
                 move.w  d1,2(a1)
                 move.w  #0,$32(a1)
-                btst    #0,$68(a1)
+                btst    #0,RaceActor_ControlFlags(a1)
                 beq.w   .loc_116D4
                 tst.w   $2C(a1)
                 beq.w   .loc_116CE
@@ -996,7 +996,7 @@ sub_115C6:
 
 
 .loc_116CE:
-                bclr    #0,$68(a1)
+                bclr    #0,RaceActor_ControlFlags(a1)
 
 .loc_116D4:
                 move.w  #0,$2E(a1)
@@ -1016,7 +1016,7 @@ Race_UpdateActorMovement:
                 move.w  $32(a1),$1C(a1)
                 move.l  $26(a1),d0
                 move.l  4(a1),d4
-                move.l  d4,$1E(a1)
+                move.l  d4,RaceActor_PreviousX(a1)
                 add.l   d4,d0
                 move.l  d0,4(a1)
                 swap    d0
@@ -1041,9 +1041,9 @@ Race_UpdateActorMovement:
                 bpl.w   .loc_11806
                 cmp.w   (RaceTrack_Data1).l,d2
                 bmi.w   .loc_11762
-                btst    #7,$68(a1)
+                btst    #7,RaceActor_ControlFlags(a1)
                 bne.w   .loc_11762
-                bset    #7,$68(a1)
+                bset    #7,RaceActor_ControlFlags(a1)
                 move.l  (Race_ram_ProgressSnapshotB).l,$62(a1)
 
 .loc_11762:
@@ -1065,7 +1065,7 @@ Race_UpdateActorMovement:
 .loc_11788:
                 ext.w   d5
                 add.w   d5,d7
-                btst    #0,$68(a1)
+                btst    #0,RaceActor_ControlFlags(a1)
                 bne.w   .loc_117B6
                 cmp.w   $2C(a1),d5
                 ble.w   .loc_117B6
@@ -1160,7 +1160,7 @@ sub_1180C:
                 mulu.w  d2,d0
                 move.l  d0,$26(a1)
                 move.l  a2,-(sp)
-                btst    #3,$69(a1)
+                btst    #3,RaceActor_StateFlags(a1)
                 bne.w   .loc_11880
                 bsr.w   Race_UpdateActorMovement
                 bra.w   .loc_11884
@@ -1217,7 +1217,7 @@ sub_1180C:
 
 .loc_118F8:
                 move.l  d1,4(a1)
-                move.l  d1,$1E(a1)
+                move.l  d1,RaceActor_PreviousX(a1)
 
 .loc_11900:
                 movem.l (sp)+,d0-d7/a0-a6
@@ -1264,7 +1264,7 @@ Race_UpdateActorFallMovement:
                 move.w  $32(a1),$1C(a1)
                 move.l  $26(a1),d4
                 move.l  4(a1),d0
-                move.l  d0,$1E(a1)
+                move.l  d0,RaceActor_PreviousX(a1)
                 move.l  d0,d1
                 sub.l   d4,d0
                 move.l  d0,4(a1)
@@ -1663,7 +1663,7 @@ Race_ApplyCrashImpact:
                 asl.w   #1,d0
                 adda.w  d0,a4
                 move.b  1(a4),d0
-                btst    #0,$68(a1)
+                btst    #0,RaceActor_ControlFlags(a1)
                 beq.w   .loc_11BA8
                 cmpi.w  #$2D,$2E(a1) ; '-'
                 bmi.w   .loc_11BAE
@@ -1674,7 +1674,7 @@ Race_ApplyCrashImpact:
                 move.w  d0,$A(a1)
 
 .loc_11BAE:
-                btst    #0,$68(a1)
+                btst    #0,RaceActor_ControlFlags(a1)
                 bne.w   .locret_11C42
                 tst.b   $6E(a1)
                 bpl.w   .locret_11C42
@@ -1694,11 +1694,11 @@ Race_ApplyCrashImpact:
                 add.w   d1,d2
                 cmp.w   (ram_FFD33E).l,d2
                 bmi.w   .locret_11C42
-                btst    #4,$68(a1)
+                btst    #4,RaceActor_ControlFlags(a1)
                 bne.w   .locret_11C42
                 move.b  #0,$6E(a1)
                 move.b  #$FF,$6F(a1)
-                bset    #4,$68(a1)
+                bset    #4,RaceActor_ControlFlags(a1)
                 tst.w   d0
                 bpl.w   .loc_11C20
                 jsr     (sub_15538).l
@@ -1711,7 +1711,7 @@ Race_ApplyCrashImpact:
                 bsr.w   sub_11906
 
 .loc_11C2A:
-                bclr    #7,$6A(a1)
+                bclr    #7,RaceActor_WeaponAnimFlags(a1)
                 move.w  $12(a1),d0
                 jsr     (Race_ScaleImpactDamage).l
                 lsr.w   #2,d0
@@ -1776,7 +1776,7 @@ sub_11CC8:
                 move.w  #$40,(ram_FF303E).l ; '@'
                 lea     (ram_FF1A08).l,a0
                 movea.l (a0)+,a1
-                move.w  #0,$50(a1)
+                move.w  #0,RaceActor_AttackReach(a1)
                 move.w  8(a1),d1
                 move.w  $C(a1),d2
                 move.w  #0,d3
@@ -1785,7 +1785,7 @@ sub_11CC8:
                 move.w  #1,d3
                 bsr.w   Race_GetActorCollisionExtent
                 move.w  d0,$4E(a1)
-                bclr    #4,$68(a1)
+                bclr    #4,RaceActor_ControlFlags(a1)
                 tst.b   $6E(a1)
                 bmi.w   .loc_11D3C
                 cmpi.b  #4,$6E(a1)
@@ -1801,10 +1801,10 @@ sub_11CC8:
                 movea.l (a0)+,a2
                 cmpa.l  #$FFFFFFFF,a2
                 beq.w   .loc_11E8C
-                btst    #6,$68(a2)
+                btst    #6,RaceActor_ControlFlags(a2)
                 beq.s   .loc_11D44
                 bsr.w   Race_UpdateActorPairCollision
-                btst    #4,$68(a1)
+                btst    #4,RaceActor_ControlFlags(a1)
                 bne.w   .loc_11D92
                 cmpa.l  #ram_FF1F2A,a2
                 beq.s   .loc_11D44
@@ -1816,7 +1816,7 @@ sub_11CC8:
                 lea     (unk_258AE).l,a3
                 movea.l (a3,d0.w),a2
                 bsr.w   Race_UpdateActorPairCollision
-                btst    #4,$68(a1)
+                btst    #4,RaceActor_ControlFlags(a1)
                 beq.s   .loc_11D44
 
 .loc_11D92:
@@ -1906,10 +1906,10 @@ sub_11CC8:
                 cmpi.w  #$FFFF,$56(a2)
                 bne.s   .loc_11EAC
                 bsr.w   Race_UpdateActorPairCollision
-                btst    #4,$68(a1)
+                btst    #4,RaceActor_ControlFlags(a1)
                 beq.s   .loc_11EAC
                 bsr.w   Race_ApplyCollisionImpact
-                btst    #4,$68(a1)
+                btst    #4,RaceActor_ControlFlags(a1)
                 beq.w   .loc_11EF4
                 move.w  $C(a1),(RaceBike_ram_CurrentSteering).l
                 tst.w   (ram_FF1768).l
@@ -1923,13 +1923,13 @@ sub_11CC8:
                 move.l  #$3700,(ram_FF3038).l
                 move.w  #$40,(ram_FF303E).l ; '@'
                 lea     (ram_FF2FAA).l,a2
-                btst    #6,$68(a2)
+                btst    #6,RaceActor_ControlFlags(a2)
                 beq.w   .loc_11F58
                 bsr.w   Race_UpdateActorPairCollision
-                btst    #4,$68(a1)
+                btst    #4,RaceActor_ControlFlags(a1)
                 beq.w   .loc_11F58
                 bsr.w   Race_ApplyCollisionImpact
-                btst    #4,$68(a1)
+                btst    #4,RaceActor_ControlFlags(a1)
                 beq.w   .loc_1202E
                 move.w  $C(a1),(RaceBike_ram_CurrentSteering).l
                 tst.w   (ram_FF1768).l
@@ -1945,7 +1945,7 @@ sub_11CC8:
 
 .loc_11F58:
                 bsr.w   sub_12070
-                btst    #4,$68(a1)
+                btst    #4,RaceActor_ControlFlags(a1)
                 bne.w   .loc_1202E
                 move.l  #$6000,(ram_FF3038).l
                 move.w  #$10,(ram_FF303C).l
@@ -1954,7 +1954,7 @@ sub_11CC8:
                 move.w  (ram_FF1B48).l,d0
                 mulu.w  #$14,d0
                 adda.w  d0,a0
-                move.l  $1E(a1),d0
+                move.l  RaceActor_PreviousX(a1),d0
                 sub.l   (Race_ram_PlayerProgress).l,d0
                 lsr.l   #8,d0
                 move.l  4(a1),d1
@@ -1970,7 +1970,7 @@ sub_11CC8:
                 move.w  d7,-(sp)
                 bsr.w   sub_12414
                 adda.l  #$14,a0
-                btst    #4,$68(a1)
+                btst    #4,RaceActor_ControlFlags(a1)
                 bne.w   .loc_11FE0
                 move.w  (sp)+,d7
                 dbf     d7,.loc_11FB8
@@ -2007,13 +2007,13 @@ sub_11CC8:
 .loc_1202E:
                 tst.b   $6E(a1)
                 bmi.w   .loc_12068
-                bset    #4,$68(a1)
+                bset    #4,RaceActor_ControlFlags(a1)
                 tst.w   (ram_FF176A).l
                 bne.w   .locret_12066
                 move.w  #1,(ram_FF176A).l
                 move.w  #1,(ram_FF1768).l
                 lea     (RacePlayerB).l,a1
-                bclr    #4,$68(a1)
+                bclr    #4,RaceActor_ControlFlags(a1)
                 bra.w   .loc_11E8C
 
 
@@ -2022,7 +2022,7 @@ sub_11CC8:
 
 
 .loc_12068:
-                bclr    #4,$68(a1)
+                bclr    #4,RaceActor_ControlFlags(a1)
                 rts
 ; End of function sub_11CC8
 
@@ -2037,7 +2037,7 @@ sub_12070:
                 movea.l (Race_ram_TrackObjectRecordCursor).l,a2
                 move.l  4(a1),d0
                 addi.l  #$6000,d0
-                move.l  $1E(a1),d1
+                move.l  RaceActor_PreviousX(a1),d1
                 addi.l  #$6000,d1
                 lea     (Road_ShapeTable).l,a6
                 lea     (Race_TrackObjectTypeTable).l,a5
@@ -2164,14 +2164,14 @@ sub_1218C:
                 movea.l (a0)+,a1
                 cmpa.l  #$FFFFFFFF,a1
                 beq.w   .locret_123A6
-                btst    #4,$68(a1)
+                btst    #4,RaceActor_ControlFlags(a1)
                 beq.w   .loc_121B4
                 tst.b   $6E(a1)
                 bmi.s   .loc_12192
-                bclr    #4,$68(a1)
+                bclr    #4,RaceActor_ControlFlags(a1)
 
 .loc_121B4:
-                btst    #6,$68(a1)
+                btst    #6,RaceActor_ControlFlags(a1)
                 beq.s   .loc_12192
                 move.w  #0,(ram_FF1768).l
                 move.l  a0,-(sp)
@@ -2187,7 +2187,7 @@ sub_1218C:
                 beq.w   .loc_12288
 
 .loc_121E6:
-                btst    #6,$68(a2)
+                btst    #6,RaceActor_ControlFlags(a2)
                 beq.s   .loc_121DA
                 tst.b   $6E(a1)
                 bmi.w   .loc_121FE
@@ -2195,7 +2195,7 @@ sub_1218C:
 
 .loc_121FE:
                 bsr.w   Race_UpdateActorPairCollision
-                btst    #4,$68(a1)
+                btst    #4,RaceActor_ControlFlags(a1)
                 bne.w   .loc_12234
                 tst.b   $6E(a2)
                 bmi.s   .loc_121DA
@@ -2207,7 +2207,7 @@ sub_1218C:
                 asl.w   #2,d0
                 movea.l (a3,d0.w),a2
                 bsr.w   Race_UpdateActorPairCollision
-                btst    #4,$68(a1)
+                btst    #4,RaceActor_ControlFlags(a1)
                 beq.s   .loc_121DA
 
 .loc_12234:
@@ -2246,16 +2246,16 @@ sub_1218C:
                 move.l  #$3700,(ram_FF3038).l
                 move.w  #$40,(ram_FF303E).l ; '@'
                 lea     (ram_FF2FAA).l,a2
-                btst    #6,$68(a2)
+                btst    #6,RaceActor_ControlFlags(a2)
                 beq.w   .loc_122FA
                 bsr.w   Race_UpdateActorPairCollision
-                btst    #4,$68(a1)
+                btst    #4,RaceActor_ControlFlags(a1)
                 beq.w   .loc_122FA
                 move.w  4(a2),d0
                 sub.w   (Race_ram_PlayerProgress).l,d0
                 cmp.w   #$10,d0
                 bmi.w   .loc_122DC
-                bclr    #4,$68(a1)
+                bclr    #4,RaceActor_ControlFlags(a1)
                 bra.w   .loc_12388
 
 
@@ -2280,19 +2280,19 @@ sub_1218C:
                 cmpi.w  #$FFFF,$56(a2)
                 bne.s   .loc_1231A
                 bsr.w   Race_UpdateActorPairCollision
-                btst    #4,$68(a1)
+                btst    #4,RaceActor_ControlFlags(a1)
                 beq.s   .loc_1231A
                 move.w  4(a2),d0
                 sub.w   (Race_ram_PlayerProgress).l,d0
                 cmp.w   #$10,d0
                 bmi.w   .loc_12356
-                bclr    #4,$68(a1)
+                bclr    #4,RaceActor_ControlFlags(a1)
                 bra.w   .loc_12388
 
 
 .loc_12356:
                 bsr.w   Race_ApplyCollisionImpact
-                btst    #4,$68(a1)
+                btst    #4,RaceActor_ControlFlags(a1)
                 beq.w   .loc_12384
                 move.w  #0,$54(a1)
                 move.b  #0,$6E(a1)
@@ -2305,11 +2305,11 @@ sub_1218C:
                 bsr.w   sub_12070
 
 .loc_12388:
-                btst    #4,$68(a1)
+                btst    #4,RaceActor_ControlFlags(a1)
                 bne.w   .loc_123A0
                 tst.b   $6E(a1)
                 bmi.w   .loc_123A0
-                bset    #4,$68(a1)
+                bset    #4,RaceActor_ControlFlags(a1)
 
 .loc_123A0:
                 movea.l (sp)+,a0
@@ -2327,19 +2327,19 @@ sub_1218C:
 sub_123A8:
                 lea     (ram_FF2EAA).l,a1
                 lea     (ram_FF2F2A).l,a2
-                btst    #6,$68(a1)
+                btst    #6,RaceActor_ControlFlags(a1)
                 beq.w   .locret_12412
-                btst    #6,$68(a2)
+                btst    #6,RaceActor_ControlFlags(a2)
                 beq.w   .locret_12412
                 move.l  #$6000,(ram_FF3038).l
                 move.w  #$37,(ram_FF303C).l ; '7'
                 move.w  #$40,(ram_FF303E).l ; '@'
                 bsr.w   Race_UpdateActorPairCollision
-                btst    #4,$68(a1)
+                btst    #4,RaceActor_ControlFlags(a1)
                 beq.w   .locret_12412
                 move.l  4(a1),d0
                 move.l  #$C014,d1
-                btst    #0,$69(a1)
+                btst    #0,RaceActor_StateFlags(a1)
                 beq.w   .loc_12406
                 neg.l   d1
 
@@ -2401,7 +2401,7 @@ sub_12414:
                 bpl.w   .loc_124AE
                 add.w   d0,d2
                 sub.w   $4C(a1),d3
-                bset    #1,$69(a1)
+                bset    #1,RaceActor_StateFlags(a1)
                 cmp.w   d3,d2
                 bpl.w   .loc_124C4
                 bra.w   .loc_124DA
@@ -2410,7 +2410,7 @@ sub_12414:
 .loc_124AE:
                 sub.w   d0,d2
                 add.w   $4E(a1),d3
-                bclr    #1,$69(a1)
+                bclr    #1,RaceActor_StateFlags(a1)
                 cmp.w   d3,d2
                 bmi.w   .loc_124C4
                 bra.w   .loc_124DA
@@ -2420,12 +2420,12 @@ sub_12414:
                 cmp.w   $32(a1),d5
                 bmi.w   .loc_124DA
                 move.w  d2,(ram_FF1B14).l
-                bset    #4,$68(a1)
+                bset    #4,RaceActor_ControlFlags(a1)
                 rts
 
 
 .loc_124DA:
-                bclr    #4,$68(a1)
+                bclr    #4,RaceActor_ControlFlags(a1)
                 rts
 ; End of function sub_12414
 
@@ -2436,10 +2436,10 @@ sub_12414:
 Race_UpdateActorPairCollision:
                 move.w  #0,(ram_FF1766).l
                 move.w  #0,(ram_FF1B16).l
-                move.l  $1E(a1),d0
-                cmp.l   $1E(a2),d0
+                move.l  RaceActor_PreviousX(a1),d0
+                cmp.l   RaceActor_PreviousX(a2),d0
                 bcs.w   .loc_1251A
-                bset    #0,$69(a1)
+                bset    #0,RaceActor_StateFlags(a1)
                 move.l  4(a1),d0
                 sub.l   (ram_FF3038).l,d0
                 cmp.l   4(a2),d0
@@ -2448,7 +2448,7 @@ Race_UpdateActorPairCollision:
 
 
 .loc_1251A:
-                bclr    #0,$69(a1)
+                bclr    #0,RaceActor_StateFlags(a1)
                 move.l  4(a1),d0
                 addi.l  #$6000,d0
                 cmp.l   4(a2),d0
@@ -2460,97 +2460,97 @@ Race_UpdateActorPairCollision:
                 move.w  $1A(a1),d0
                 cmp.w   $1A(a2),d0
                 bmi.w   .loc_12698
-                bset    #1,$69(a1)
+                bset    #1,RaceActor_StateFlags(a1)
                 move.w  8(a1),d1
                 move.w  $C(a1),d2
                 move.w  #0,d3
                 move.b  $71(a1),d4
-                move.w  #0,$50(a1)
+                move.w  #0,RaceActor_AttackReach(a1)
                 bsr.w   Race_GetCollisionExtent
-                move.w  d0,$4A(a1)
+                move.w  d0,RaceActor_CollisionExtent(a1)
                 move.w  d0,$4C(a1)
                 cmpa.l  #RacePlayerB,a2
                 bcc.w   .loc_125B0
-                btst    #4,$69(a1)
+                btst    #4,RaceActor_StateFlags(a1)
                 beq.w   .loc_125B0
-                cmpi.b  #1,$6C(a1)
+                cmpi.b  #1,RaceActor_AttackPhase(a1)
                 bne.w   .loc_125B0
-                btst    #5,$69(a1)
+                btst    #5,RaceActor_StateFlags(a1)
                 beq.w   .loc_125B0
-                btst    #6,$69(a1)
+                btst    #6,RaceActor_StateFlags(a1)
                 bne.w   .loc_125A8
                 bsr.w   Race_GetAttackerReach
-                move.w  d0,$50(a1)
+                move.w  d0,RaceActor_AttackReach(a1)
                 bra.w   .loc_125B0
 
 
 .loc_125A8:
                 bsr.w   Race_GetDefenderReach
-                move.w  d0,$50(a1)
+                move.w  d0,RaceActor_AttackReach(a1)
 
 .loc_125B0:
                 move.w  8(a2),d1
                 move.w  $C(a2),d2
                 move.w  #1,d3
                 move.b  $71(a2),d4
-                move.w  #0,$50(a2)
+                move.w  #0,RaceActor_AttackReach(a2)
                 bsr.w   Race_GetCollisionExtent
-                move.w  d0,$4A(a2)
+                move.w  d0,RaceActor_CollisionExtent(a2)
                 move.w  d0,$4E(a2)
-                btst    #4,$69(a2)
+                btst    #4,RaceActor_StateFlags(a2)
                 beq.w   .loc_1260E
-                cmpi.b  #1,$6C(a2)
+                cmpi.b  #1,RaceActor_AttackPhase(a2)
                 bne.w   .loc_1260E
-                btst    #5,$69(a2)
+                btst    #5,RaceActor_StateFlags(a2)
                 bne.w   .loc_1260E
-                btst    #6,$69(a2)
+                btst    #6,RaceActor_StateFlags(a2)
                 bne.w   .loc_12606
                 bsr.w   Race_GetAttackerReach
-                move.w  d0,$50(a2)
+                move.w  d0,RaceActor_AttackReach(a2)
                 bra.w   .loc_1260E
 
 
 .loc_12606:
                 bsr.w   Race_GetDefenderReach
-                move.w  d0,$50(a2)
+                move.w  d0,RaceActor_AttackReach(a2)
 
 .loc_1260E:
                 move.w  $30(a1),d0
-                sub.w   $4A(a1),d0
-                sub.w   $4A(a2),d0
+                sub.w   RaceActor_CollisionExtent(a1),d0
+                sub.w   RaceActor_CollisionExtent(a2),d0
                 sub.w   $30(a2),d0
                 move.w  d0,d1
-                sub.w   $50(a1),d0
+                sub.w   RaceActor_AttackReach(a1),d0
                 bmi.w   .loc_1263A
                 move.w  #0,d0
-                move.w  d0,$52(a1)
-                bclr    #7,$69(a1)
+                move.w  d0,RaceActor_AttackOverlap(a1)
+                bclr    #7,RaceActor_StateFlags(a1)
                 bra.w   .loc_12654
 
 
 .loc_1263A:
                 move.w  #1,(ram_FF1B16).l
-                move.w  d0,$52(a1)
-                tst.w   $50(a1)
+                move.w  d0,RaceActor_AttackOverlap(a1)
+                tst.w   RaceActor_AttackReach(a1)
                 beq.w   .loc_12654
-                bset    #7,$69(a1)
+                bset    #7,RaceActor_StateFlags(a1)
 
 .loc_12654:
-                sub.w   $50(a2),d1
+                sub.w   RaceActor_AttackReach(a2),d1
                 bmi.w   .loc_1266E
                 move.w  #0,d1
-                move.w  d1,$52(a2)
-                bclr    #7,$69(a2)
+                move.w  d1,RaceActor_AttackOverlap(a2)
+                bclr    #7,RaceActor_StateFlags(a2)
                 bra.w   .loc_1268A
 
 
 .loc_1266E:
                 move.w  #1,(ram_FF1B16).l
                 neg.w   d1
-                move.w  d1,$52(a2)
-                tst.w   $50(a2)
+                move.w  d1,RaceActor_AttackOverlap(a2)
+                tst.w   RaceActor_AttackReach(a2)
                 beq.w   .loc_1268A
-                bset    #7,$69(a2)
+                bset    #7,RaceActor_StateFlags(a2)
 
 .loc_1268A:
                 tst.w   (ram_FF1B16).l
@@ -2559,97 +2559,97 @@ Race_UpdateActorPairCollision:
 
 
 .loc_12698:
-                bclr    #1,$69(a1)
+                bclr    #1,RaceActor_StateFlags(a1)
                 move.w  8(a1),d1
                 move.w  $C(a1),d2
                 move.w  #1,d3
                 move.b  $71(a1),d4
-                move.w  #0,$50(a1)
+                move.w  #0,RaceActor_AttackReach(a1)
                 bsr.w   Race_GetCollisionExtent
-                move.w  d0,$4A(a1)
+                move.w  d0,RaceActor_CollisionExtent(a1)
                 move.w  d0,$4E(a1)
                 cmpa.l  #RacePlayerB,a2
                 bcc.w   .loc_12706
-                btst    #4,$69(a1)
+                btst    #4,RaceActor_StateFlags(a1)
                 beq.w   .loc_12706
-                cmpi.b  #1,$6C(a1)
+                cmpi.b  #1,RaceActor_AttackPhase(a1)
                 bne.w   .loc_12706
-                btst    #5,$69(a1)
+                btst    #5,RaceActor_StateFlags(a1)
                 bne.w   .loc_12706
-                btst    #6,$69(a1)
+                btst    #6,RaceActor_StateFlags(a1)
                 bne.w   .loc_126FE
                 bsr.w   Race_GetAttackerReach
-                move.w  d0,$50(a1)
+                move.w  d0,RaceActor_AttackReach(a1)
                 bra.w   .loc_12706
 
 
 .loc_126FE:
                 bsr.w   Race_GetDefenderReach
-                move.w  d0,$50(a1)
+                move.w  d0,RaceActor_AttackReach(a1)
 
 .loc_12706:
                 move.w  8(a2),d1
                 move.w  $C(a2),d2
                 move.w  #0,d3
                 move.b  $71(a2),d4
-                move.w  #0,$50(a2)
+                move.w  #0,RaceActor_AttackReach(a2)
                 bsr.w   Race_GetCollisionExtent
-                move.w  d0,$4A(a2)
+                move.w  d0,RaceActor_CollisionExtent(a2)
                 move.w  d0,$4C(a2)
-                btst    #4,$69(a2)
+                btst    #4,RaceActor_StateFlags(a2)
                 beq.w   .loc_12764
-                cmpi.b  #1,$6C(a2)
+                cmpi.b  #1,RaceActor_AttackPhase(a2)
                 bne.w   .loc_12764
-                btst    #5,$69(a2)
+                btst    #5,RaceActor_StateFlags(a2)
                 beq.w   .loc_12764
-                btst    #6,$69(a2)
+                btst    #6,RaceActor_StateFlags(a2)
                 bne.w   .loc_1275C
                 bsr.w   Race_GetAttackerReach
-                move.w  d0,$50(a2)
+                move.w  d0,RaceActor_AttackReach(a2)
                 bra.w   .loc_12764
 
 
 .loc_1275C:
                 bsr.w   Race_GetDefenderReach
-                move.w  d0,$50(a2)
+                move.w  d0,RaceActor_AttackReach(a2)
 
 .loc_12764:
                 move.w  $30(a1),d0
-                add.w   $4A(a1),d0
-                add.w   $4A(a2),d0
+                add.w   RaceActor_CollisionExtent(a1),d0
+                add.w   RaceActor_CollisionExtent(a2),d0
                 sub.w   $30(a2),d0
                 move.w  d0,d1
-                add.w   $50(a1),d0
+                add.w   RaceActor_AttackReach(a1),d0
                 bpl.w   .loc_12790
                 move.w  #0,d0
-                move.w  d0,$52(a1)
-                bclr    #7,$69(a1)
+                move.w  d0,RaceActor_AttackOverlap(a1)
+                bclr    #7,RaceActor_StateFlags(a1)
                 bra.w   .loc_127AA
 
 
 .loc_12790:
                 move.w  #1,(ram_FF1B16).l
-                move.w  d0,$52(a1)
-                tst.w   $50(a1)
+                move.w  d0,RaceActor_AttackOverlap(a1)
+                tst.w   RaceActor_AttackReach(a1)
                 beq.w   .loc_127AA
-                bset    #7,$69(a1)
+                bset    #7,RaceActor_StateFlags(a1)
 
 .loc_127AA:
-                add.w   $50(a2),d1
+                add.w   RaceActor_AttackReach(a2),d1
                 bpl.w   .loc_127C4
                 move.w  #0,d1
-                move.w  d1,$52(a2)
-                bclr    #7,$69(a2)
+                move.w  d1,RaceActor_AttackOverlap(a2)
+                bclr    #7,RaceActor_StateFlags(a2)
                 bra.w   .loc_127E0
 
 
 .loc_127C4:
                 move.w  #1,(ram_FF1B16).l
                 neg.w   d1
-                move.w  d1,$52(a2)
-                tst.w   $50(a2)
+                move.w  d1,RaceActor_AttackOverlap(a2)
+                tst.w   RaceActor_AttackReach(a2)
                 beq.w   .loc_127E0
-                bset    #7,$69(a2)
+                bset    #7,RaceActor_StateFlags(a2)
 
 .loc_127E0:
                 tst.w   (ram_FF1B16).l
@@ -2660,15 +2660,15 @@ Race_UpdateActorPairCollision:
                 sub.w   (ram_FF303E).l,d0
                 sub.w   $32(a2),d0
                 bpl.w   .loc_1280A
-                bset    #4,$68(a1)
-                bset    #4,$68(a2)
+                bset    #4,RaceActor_ControlFlags(a1)
+                bset    #4,RaceActor_ControlFlags(a2)
                 rts
 
 
 .loc_1280A:
-                bclr    #4,$68(a1)
-                bclr    #7,$69(a1)
-                bclr    #7,$69(a2)
+                bclr    #4,RaceActor_ControlFlags(a1)
+                bclr    #7,RaceActor_StateFlags(a1)
+                bclr    #7,RaceActor_StateFlags(a2)
                 rts
 ; End of function Race_UpdateActorPairCollision
 
@@ -2685,7 +2685,7 @@ Race_ClearActorOnFootFlags:
                 beq.w   .loc_1283E
                 cmpi.b  #$FF,$6E(a1)
                 bne.s   .loc_12824
-                bclr    #4,$68(a1)
+                bclr    #4,RaceActor_ControlFlags(a1)
                 bra.s   .loc_12824
 
 
@@ -2698,7 +2698,7 @@ Race_ClearActorOnFootFlags:
                 beq.w   .loc_1285E
                 cmpi.b  #$FF,$6E(a1)
                 bne.s   .loc_12844
-                bclr    #4,$68(a1)
+                bclr    #4,RaceActor_ControlFlags(a1)
                 bra.s   .loc_12844
 
 
@@ -2728,7 +2728,7 @@ Race_UpdateStaticActors:
                 beq.w   .locret_128DE
                 cmpi.w  #$FFFF,$56(a1)
                 bne.s   .loc_1286E
-                btst    #6,$68(a1)
+                btst    #6,RaceActor_ControlFlags(a1)
                 beq.s   .loc_1286E
                 move.w  $16(a1),d0
                 asl.w   #2,d0
@@ -2739,7 +2739,7 @@ Race_UpdateStaticActors:
                 mulu.w  d1,d0
                 move.l  d0,$26(a1)
                 bsr.w   sub_113A4
-                btst    #3,$69(a1)
+                btst    #3,RaceActor_StateFlags(a1)
                 bne.w   .loc_128BE
                 bsr.w   Race_UpdateActorMovement
                 bra.w   .loc_128C2
@@ -2769,7 +2769,7 @@ Race_UpdateStaticActors:
 Race_InitExtraStaticActor:
                 cmpi.l  #$708,(Race_ram_ProgressSnapshotB).l
                 bcs.w   .locret_12972
-                bset    #6,$68(a1)
+                bset    #6,RaceActor_ControlFlags(a1)
                 jsr     (Rand_GetWord).l
                 move.w  (Race_ram_PlayerProgress).l,d1
                 add.w   (ram_FF1B30).l,d1
@@ -2789,14 +2789,14 @@ Race_InitExtraStaticActor:
                 addq.w  #1,d1
                 andi.w  #$7FF,d0
                 move.w  d0,$30(a1)
-                bset    #3,$69(a1)
+                bset    #3,RaceActor_StateFlags(a1)
                 move.w  d0,0.w(a1)
                 move.w  d0,$1A(a1)
                 bra.w   .loc_1295A
 
 
 .loc_12942:
-                bclr    #3,$69(a1)
+                bclr    #3,RaceActor_StateFlags(a1)
                 andi.w  #$7FF,d0
                 neg.w   d0
                 move.w  d0,$30(a1)
@@ -2809,7 +2809,7 @@ Race_InitExtraStaticActor:
                 swap    d1
                 clr.w   d1
                 move.l  d1,4(a1)
-                move.l  d1,$1E(a1)
+                move.l  d1,RaceActor_PreviousX(a1)
 
 .locret_12972:
                 rts
@@ -2823,15 +2823,15 @@ Race_UpdateExtraStaticActor:
                 lea     (ram_FF2FAA).l,a1
                 cmpi.l  #$708,(Race_ram_ProgressSnapshotB).l
                 bcc.w   .loc_12992
-                bclr    #6,$68(a1)
+                bclr    #6,RaceActor_ControlFlags(a1)
                 bra.w   .locret_12A86
 
 
 .loc_12992:
-                btst    #6,$68(a1)
+                btst    #6,RaceActor_ControlFlags(a1)
                 beq.w   .locret_12A86
                 move.w  $30(a1),d0
-                btst    #3,$69(a1)
+                btst    #3,RaceActor_StateFlags(a1)
                 beq.w   .loc_129AC
                 neg.w   d0
 
@@ -2847,7 +2847,7 @@ Race_UpdateExtraStaticActor:
                 move.l  4(a2),d1
                 sub.l   4(a1),d1
                 bpl.w   .loc_129E4
-                btst    #3,$69(a2)
+                btst    #3,RaceActor_StateFlags(a2)
                 bne.s   .loc_129B8
                 cmp.l   #$FFF00000,d1
                 bmi.s   .loc_129B8
@@ -2855,7 +2855,7 @@ Race_UpdateExtraStaticActor:
 
 
 .loc_129E4:
-                btst    #3,$69(a2)
+                btst    #3,RaceActor_StateFlags(a2)
                 beq.s   .loc_129B8
                 cmp.l   #$100000,d1
                 bpl.s   .loc_129B8
@@ -2906,7 +2906,7 @@ Race_UpdateExtraStaticActor:
                 move.w  d0,$12(a1)
                 mulu.w  d2,d0
                 lsr.l   #8,d0
-                btst    #3,$69(a1)
+                btst    #3,RaceActor_StateFlags(a1)
                 beq.w   .loc_12A7C
                 neg.w   d0
 
@@ -3000,7 +3000,7 @@ Race_GetStaticCollisionExtent:
 
 
 Race_GetAttackerReach:
-                btst    #1,$6B(a1)
+                btst    #1,RaceActor_AttackFlags(a1)
                 beq.w   .loc_12B1E
                 move.w  #$28,d0 ; '('
                 bra.w   .locret_12B22
@@ -3209,7 +3209,7 @@ sub_12BD2:
                 andi.w  #$FF,d0
                 asl.w   #1,d0
                 move.b  1(a4,d0.w),d1
-                btst    #0,$68(a1)
+                btst    #0,RaceActor_ControlFlags(a1)
                 beq.w   .loc_12C16
                 cmpi.w  #$1E,$2E(a1)
                 bmi.w   .loc_12C1C
@@ -3225,7 +3225,7 @@ sub_12BD2:
                 move.b  2(a4,d0.w),d0
                 ext.w   d0
                 move.w  d0,$44(a1)
-                btst    #2,$69(a1)
+                btst    #2,RaceActor_StateFlags(a1)
                 beq.w   .loc_12C3C
                 add.w   $46(a1),d0
 
@@ -3241,7 +3241,7 @@ sub_12BD2:
                 bmi.w   .locret_12C98
                 cmpi.b  #$FF,$6E(a1)
                 bne.w   .locret_12C98
-                btst    #4,$68(a1)
+                btst    #4,RaceActor_ControlFlags(a1)
                 bne.w   .loc_12C76
                 jsr     (sub_15538).l
                 bra.w   .loc_12C7C
@@ -3253,9 +3253,9 @@ sub_12BD2:
 .loc_12C7C:
                 move.b  #0,$6E(a1)
                 move.b  #$FF,$6F(a1)
-                bset    #4,$68(a1)
+                bset    #4,RaceActor_ControlFlags(a1)
                 bsr.w   sub_11906
-                bclr    #7,$6A(a1)
+                bclr    #7,RaceActor_WeaponAnimFlags(a1)
 
 .locret_12C98:
                 rts
@@ -3359,7 +3359,7 @@ Race_UpdateActorActions:
                 movea.l (a0)+,a1
                 cmpa.l  #$FFFFFFFF,a1
                 beq.w   .locret_12FE2
-                btst    #4,$68(a1)
+                btst    #4,RaceActor_ControlFlags(a1)
                 beq.w   .loc_12EE4
                 tst.b   $6E(a1)
                 bmi.w   .loc_12EE4
@@ -3385,14 +3385,14 @@ Race_UpdateActorActions:
 .loc_12F14:
                 move.w  d0,$5C(a1)
                 move.l  a0,-(sp)
-                btst    #7,(RacePlayerA + STRUCT_OFFSET_68).l
+                btst    #7,(RacePlayerA + RaceActor_ControlFlags).l
                 bne.w   .loc_12F60
                 move.w  4(a1),d0
                 sub.w   (RacePlayerA + RaceActor_X).l,d0
                 bpl.w   .loc_12F4A
                 cmp.w   #$FFEE,d0
                 bpl.w   .loc_12F60
-                bclr    #6,$68(a1)
+                bclr    #6,RaceActor_ControlFlags(a1)
                 bsr.w   Race_RecycleActor
                 bra.w   .loc_12FDC
 
@@ -3400,14 +3400,14 @@ Race_UpdateActorActions:
 .loc_12F4A:
                 cmp.w   #$22,d0 ; '"'
                 bmi.w   .loc_12F60
-                bclr    #6,$68(a1)
+                bclr    #6,RaceActor_ControlFlags(a1)
                 bsr.w   Race_RecycleOpponent
                 bra.w   .loc_12FDC
 
 
 .loc_12F60:
-                bset    #6,$68(a1)
-                move.b  $74(a1),d2
+                bset    #6,RaceActor_ControlFlags(a1)
+                move.b  RaceActor_ActionProfile(a1),d2
                 ext.w   d2
                 asl.w   #2,d2
                 lea     (Race_ActorProfileTable).l,a4
@@ -3458,10 +3458,10 @@ Race_UpdateActorActions:
 
 Race_ActorStateCollision:
                 bsr.w       Race_UpdateActorSpeedCurve
-                btst.b      #$5,$68(a1)
+                btst.b      #$5,RaceActor_ControlFlags(a1)
                 beq.w       loc_12FFE
-                bset.b      #$2,$68(a1)
-                bclr.b      #$1,$68(a1)
+                bset.b      #$2,RaceActor_ControlFlags(a1)
+                bclr.b      #$1,RaceActor_ControlFlags(a1)
 loc_12FFE:
                 bsr.w       Race_UpdateActorSpeedState
                 rts
@@ -3470,8 +3470,8 @@ Race_ActorFollowPath:
                 bsr.w       Race_UpdateActorSpeedGear
                 rts
 Race_ActorNormalUpdate:
-                bclr.b      #$4,$69(a1)
-                bclr.b      #$2,$69(a1)
+                bclr.b      #$4,RaceActor_StateFlags(a1)
+                bclr.b      #$2,RaceActor_StateFlags(a1)
                 move.b      $72(a1),d0
                 ext.w       d0
                 bsr.w       Race_FindTargetActor
@@ -3483,24 +3483,24 @@ loc_13036:
                 bsr.w       sub_13D44
                 tst.w       (ram_FF18A4).l
                 bne.w       loc_13054
-                bset.b      #$1,$68(a1)
-                bclr.b      #$2,$68(a1)
+                bset.b      #$1,RaceActor_ControlFlags(a1)
+                bclr.b      #$2,RaceActor_ControlFlags(a1)
                 bsr.w       Race_UpdateActorRoadSteering
 loc_13054:
-                btst.b      #$5,$68(a1)
+                btst.b      #$5,RaceActor_ControlFlags(a1)
                 bne.w       loc_1306A
                 bsr.w       Race_GetCurveSpeedLimit
                 cmp.w       $12(a1),d0
                 bpl.w       loc_13076
 loc_1306A:
-                bset.b      #$2,$68(a1)
-                bclr.b      #$1,$68(a1)
+                bset.b      #$2,RaceActor_ControlFlags(a1)
+                bclr.b      #$1,RaceActor_ControlFlags(a1)
 loc_13076:
                 bsr.w       Race_UpdateActorSpeedState
                 rts
 Race_ActorNormalVariant:
-                bclr.b      #$4,$69(a1)
-                bclr.b      #$2,$69(a1)
+                bclr.b      #$4,RaceActor_StateFlags(a1)
+                bclr.b      #$2,RaceActor_StateFlags(a1)
                 move.b      $72(a1),d0
                 ext.w       d0
                 bsr.w       Race_FindTargetActor
@@ -3516,10 +3516,10 @@ loc_130B2:
 loc_130B6:
                 bsr.w       Race_UpdateActorSpeedGear
 loc_130BA:
-                btst.b      #$5,$68(a1)
+                btst.b      #$5,RaceActor_ControlFlags(a1)
                 beq.w       loc_130D0
-                bset.b      #$2,$68(a1)
-                bclr.b      #$1,$68(a1)
+                bset.b      #$2,RaceActor_ControlFlags(a1)
+                bclr.b      #$1,RaceActor_ControlFlags(a1)
 loc_130D0:
                 rts
 Race_ActorRecovery:
@@ -3546,7 +3546,7 @@ Race_UpdateStaticActions:
                 movea.l (a0)+,a1
                 cmpa.l  #$FFFFFFFF,a1
                 beq.w   .locret_1312E
-                move.b  $74(a1),d0
+                move.b  RaceActor_ActionProfile(a1),d0
                 ext.w   d0
                 asl.w   #3,d0
                 lea     (Race_StaticActionTable).l,a2
@@ -3566,7 +3566,7 @@ Race_ClampActorY:
 loc_13140:
                 cmp.l       #$210000,d0
                 blt.w       loc_13154
-                bclr.b      #$6,$68(a1)
+                bclr.b      #$6,RaceActor_ControlFlags(a1)
                 bra.w       loc_131B8
 loc_13154:
                 move.w      $46(a1),d0
@@ -3575,7 +3575,7 @@ loc_13154:
                 mulu.w      (Race_ram_FrameDelay).l,d0
                 move.w      $30(a1),d2
                 add.w       d2,d0
-                btst.b      #$3,$69(a1)
+                btst.b      #$3,RaceActor_StateFlags(a1)
                 bne.w       loc_13194
                 cmp.w       #$A9,d0
                 bpl.w       loc_1318C
@@ -3619,7 +3619,7 @@ Race_UpdateActorSpeedGear:
                 move.l  4(a1),d7
                 sub.l   4(a2),d7
                 bmi.w   .loc_13248
-                btst    #4,$68(a2)
+                btst    #4,RaceActor_ControlFlags(a2)
                 beq.w   .loc_13202
                 tst.b   $6E(a2)
                 bpl.w   .loc_1325E
@@ -3643,8 +3643,8 @@ Race_UpdateActorSpeedGear:
                 add.l   d0,d6
                 cmp.l   d6,d5
                 blt.w   .loc_1325E
-                bclr    #1,$68(a1)
-                bclr    #1,$68(a1)
+                bclr    #1,RaceActor_ControlFlags(a1)
+                bclr    #1,RaceActor_ControlFlags(a1)
                 bra.w   .loc_1328C
 
 
@@ -3659,17 +3659,17 @@ Race_UpdateActorSpeedGear:
                 bmi.w   .loc_13280
 
 .loc_1325E:
-                bset    #1,$68(a1)
-                bclr    #2,$68(a1)
-                btst    #5,$68(a1)
+                bset    #1,RaceActor_ControlFlags(a1)
+                bclr    #2,RaceActor_ControlFlags(a1)
+                btst    #5,RaceActor_ControlFlags(a1)
                 bne.w   .loc_13280
                 bsr.w   Race_GetCurveSpeedLimit
                 cmp.w   $12(a1),d0
                 bpl.w   .loc_1328C
 
 .loc_13280:
-                bset    #2,$68(a1)
-                bclr    #1,$68(a1)
+                bset    #2,RaceActor_ControlFlags(a1)
+                bclr    #1,RaceActor_ControlFlags(a1)
 
 .loc_1328C:
                 bsr.w   Race_UpdateActorSpeedState
@@ -3721,17 +3721,17 @@ Race_UpdateActorChase:
                 bmi.w   .loc_1332A
 
 .loc_13308:
-                bset    #1,$68(a1)
-                bclr    #2,$68(a1)
-                btst    #5,$68(a1)
+                bset    #1,RaceActor_ControlFlags(a1)
+                bclr    #2,RaceActor_ControlFlags(a1)
+                btst    #5,RaceActor_ControlFlags(a1)
                 bne.w   .loc_1332A
                 bsr.w   Race_GetCurveSpeedLimit
                 cmp.w   $12(a1),d0
                 bpl.w   .loc_13336
 
 .loc_1332A:
-                bset    #2,$68(a1)
-                bclr    #1,$68(a1)
+                bset    #2,RaceActor_ControlFlags(a1)
+                bclr    #1,RaceActor_ControlFlags(a1)
 
 .loc_13336:
                 bsr.w   Race_UpdateActorSpeedState
@@ -3814,7 +3814,7 @@ Race_ApplyActorSpeedCorrection:
 
 .loc_133E4:
                 move.w  d0,$46(a1)
-                bset    #2,$69(a1)
+                bset    #2,RaceActor_StateFlags(a1)
 
 .locret_133EE:
                 rts
@@ -3993,8 +3993,8 @@ Race_UpdateActorSpeedCurve:
 
 
 .loc_135C2:
-                bclr    #1,$68(a1)
-                bset    #2,$68(a1)
+                bclr    #1,RaceActor_ControlFlags(a1)
+                bset    #2,RaceActor_ControlFlags(a1)
                 bra.w   .locret_135E6
 
 
@@ -4004,8 +4004,8 @@ Race_UpdateActorSpeedCurve:
 
 .loc_135D6:
                 bsr.w   sub_13892
-                bset    #1,$68(a1)
-                bclr    #2,$68(a1)
+                bset    #1,RaceActor_ControlFlags(a1)
+                bclr    #2,RaceActor_ControlFlags(a1)
 
 .locret_135E6:
                 rts
@@ -4080,13 +4080,13 @@ Race_ScanTargetDistance:
                 asl.w   #2,d2
                 movea.l (a0,d2.w),a2
                 move.w  $12(a1),d2
-                btst    #3,$69(a1)
+                btst    #3,RaceActor_StateFlags(a1)
                 beq.w   .loc_1367C
                 neg.w   d2
 
 .loc_1367C:
                 move.w  $12(a2),d4
-                btst    #3,$69(a2)
+                btst    #3,RaceActor_StateFlags(a2)
                 beq.w   .loc_1368C
                 neg.w   d4
 
@@ -4112,13 +4112,13 @@ Race_ScanTargetDistance:
 
 Race_ScaleActorSpeed:
                 move.w  $12(a1),d1
-                btst    #3,$69(a1)
+                btst    #3,RaceActor_StateFlags(a1)
                 beq.w   .loc_136C6
                 neg.w   d1
 
 .loc_136C6:
                 move.w  $12(a2),d2
-                btst    #3,$69(a2)
+                btst    #3,RaceActor_StateFlags(a2)
                 beq.w   .loc_136D6
                 neg.w   d2
 
@@ -4376,7 +4376,7 @@ Race_UpdateActorRoadSteering:
                 divs.w  d2,d0
                 asr.w   #8,d0
                 move.w  d0,STRUCT_OFFSET_46(a1)
-                bset    #2,STRUCT_OFFSET_69(a1)
+                bset    #2,RaceActor_StateFlags(a1)
 .return:
                 rts
 ; End of function Race_UpdateActorRoadSteering
@@ -4403,7 +4403,7 @@ sub_13892:
                 divs.w  d1,d0
                 asr.w   #8,d0
                 move.w  d0,STRUCT_OFFSET_46(a1)
-                bset    #2,STRUCT_OFFSET_69(a1)
+                bset    #2,RaceActor_StateFlags(a1)
 .return:
                 rts
 ; End of function sub_13892
@@ -4414,7 +4414,7 @@ sub_13892:
 
 sub_138CE:
                 lea     (RacePlayerA).l,a1
-                btst    #4,$68(a1)
+                btst    #4,RaceActor_ControlFlags(a1)
                 bne.w   .return
                 lea     (Race_StaticActorList).l,a0
 
@@ -4422,11 +4422,11 @@ sub_138CE:
                 movea.l (a0)+,a2
                 cmpa.w  #$FFFF,a2
                 beq.w   .return
-                btst    #6,$68(a2)
+                btst    #6,RaceActor_ControlFlags(a2)
                 bne.s   .loc_138E4
                 cmpi.w  #$FFFF,$56(a2)
                 bne.w   .loc_13982
-                bclr    #4,$68(a2)
+                bclr    #4,RaceActor_ControlFlags(a2)
                 bsr.w   Rand_GetWord
                 andi.w  #$FFF,d0
                 lea     (unk_13A1A).l,a4
@@ -4445,19 +4445,19 @@ sub_138CE:
                 move.b  d1,$73(a2)
                 btst    #2,d0
                 bne.w   .loc_13952
-                bclr    #3,$69(a2)
+                bclr    #3,RaceActor_StateFlags(a2)
                 move.w  #$70,$30(a2) ; 'p'
                 bra.w   .loc_1395E
 
 
 .loc_13952:
-                bset    #3,$69(a2)
+                bset    #3,RaceActor_StateFlags(a2)
                 move.w  #$FF90,$30(a2)
 
 .loc_1395E:
                 andi.w  #$F0,d0
                 lsr.w   #4,d0
-                move.b  d0,$74(a2)
+                move.b  d0,RaceActor_ActionProfile(a2)
                 ext.w   d0
                 lea     (Race_StaticActionTable).l,a3
                 asl.w   #3,d0
@@ -4608,7 +4608,7 @@ unk_13A1A:      dc.b $FF
 
 
 sub_13A26:
-                bclr    #0,$68(a2)
+                bclr    #0,RaceActor_ControlFlags(a2)
                 move.w  #0,d0
                 move.w  d0,2(a2)
                 move.w  d0,$3C(a2)
@@ -4617,8 +4617,8 @@ sub_13A26:
                 move.l  (Race_ram_PlayerProgress).l,d0
                 addi.l  #$208000,d0
                 move.l  d0,4(a2)
-                move.l  d0,$1E(a2)
-                bset    #6,$68(a2)
+                move.l  d0,RaceActor_PreviousX(a2)
+                bset    #6,RaceActor_ControlFlags(a2)
                 rts
 ; End of function sub_13A26
 
@@ -4684,12 +4684,12 @@ sub_13A26:
 ; *************************************************
 
 Race_UpdateActorSpeedState:
-                btst    #7,STRUCT_OFFSET_68(a1)
+                btst    #7,RaceActor_ControlFlags(a1)
                 beq.w   .loc_13AA6
                 move.w  #$FFEC,RaceActor_Acceleration(a1)
                 bra.w   .locret_13BBA
 .loc_13AA6:
-                btst    #4,STRUCT_OFFSET_68(a1)
+                btst    #4,RaceActor_ControlFlags(a1)
                 beq.w   .loc_13AC2
                 cmpi.b  #3,STRUCT_OFFSET_6E(a1)
                 beq.w   .locret_13BBA
@@ -4702,11 +4702,11 @@ Race_UpdateActorSpeedState:
                 lea     (unk_25A10).l,a0
                 movea.l (a0,d0.w),a0
                 move.w  RaceActor_Speed(a1),d0
-                btst    #0,STRUCT_OFFSET_68(a1)
+                btst    #0,RaceActor_ControlFlags(a1)
                 bne.w   .loc_13B68
-                btst    #4,STRUCT_OFFSET_68(a1)
+                btst    #4,RaceActor_ControlFlags(a1)
                 bne.w   .loc_13B3A
-                btst    #1,STRUCT_OFFSET_68(a1)
+                btst    #1,RaceActor_ControlFlags(a1)
                 beq.w   .loc_13B30
                 move.w  RaceActor_Gear(a1),d1
                 move.w  d1,d2
@@ -4730,16 +4730,16 @@ Race_UpdateActorSpeedState:
 .loc_13B2C:
                 move.w  2(a0,d2.w),d1
 .loc_13B30:
-                btst    #2,STRUCT_OFFSET_68(a1)
+                btst    #2,RaceActor_ControlFlags(a1)
                 beq.w   .loc_13B3E
 .loc_13B3A: 
                 addi.w  #-$40,d1
 .loc_13B3E:
-                btst    #1,STRUCT_OFFSET_68(a1)
+                btst    #1,RaceActor_ControlFlags(a1)
                 bne.w   .loc_13B4C
                 addi.w  #-5,d1
 .loc_13B4C:
-                btst    #5,STRUCT_OFFSET_68(a1)
+                btst    #5,RaceActor_ControlFlags(a1)
                 beq.w   .loc_13B6C
                 move.w  STRUCT_OFFSET_3E(a1),d0
                 neg.w   d0
@@ -4750,7 +4750,7 @@ Race_UpdateActorSpeedState:
 .loc_13B68:
                 move.w  #$FFFB,d1
 .loc_13B6C:
-                btst    #3,STRUCT_OFFSET_68(a1)
+                btst    #3,RaceActor_ControlFlags(a1)
                 beq.w   .loc_13B84
                 tst.w   d1
                 bmi.w   .loc_13B8A
@@ -4784,7 +4784,7 @@ Race_UpdateActorSpeedState:
 ; *************************************************
 
 sub_13BBC:
-                btst    #0,STRUCT_OFFSET_68(a1)
+                btst    #0,RaceActor_ControlFlags(a1)
                 bne.w   .loc_13BCE
                 move.w  #-64,d1
                 bra.w   .loc_13BD2
@@ -4800,7 +4800,7 @@ sub_13BBC:
 
 
 sub_13BD8:
-                btst    #0,$68(a1)
+                btst    #0,RaceActor_ControlFlags(a1)
                 bne.w   .loc_13BEA
                 move.w  #$FFD0,d1
                 bra.w   .loc_13BEE
@@ -4828,7 +4828,7 @@ sub_13BF4:
                 move.w  #0,(ram_FF1B32).l
 
 .loc_13C1C:
-                btst    #6,$68(a1)
+                btst    #6,RaceActor_ControlFlags(a1)
                 bne.w   .locret_13CFC
                 move.w  RaceActor_Rating(a1),d0
                 move.w  (Race_ram_ActorDistanceScale).l,d1
@@ -4865,7 +4865,7 @@ sub_13BF4:
                 cmp.l   #$200000,d0
                 bpl.w   .locret_13CFC
                 addi.l  #4,(ram_FFDBD4).l
-                btst    #6,$68(a1)
+                btst    #6,RaceActor_ControlFlags(a1)
                 bne.w   .locret_13CFC
                 move.w  d1,d2
                 lsr.w   #8,d2
@@ -5091,7 +5091,7 @@ sub_13DE0:
                 clr.w   d1
                 move.l  d1,d2
                 sub.l   4(a1),d2
-                btst    #3,$69(a1)
+                btst    #3,RaceActor_StateFlags(a1)
                 beq.w   .loc_13E12
                 neg.l   d2
 
@@ -5216,7 +5216,7 @@ Race_UpdateBikeLean:
 
 Race_UpdateBikeCurve:
                 movem.l d0-d1,-(sp)
-                btst    #0,$68(a1)
+                btst    #0,RaceActor_ControlFlags(a1)
                 bne.w   .loc_13FE0
                 move.w  $12(a1),d1
                 beq.w   .loc_13FCE
@@ -5255,9 +5255,9 @@ Race_UpdateBikeCurve:
 
 
 .loc_13F6E:
-                btst    #5,$68(a1)
+                btst    #5,RaceActor_ControlFlags(a1)
                 beq.w   .loc_13F96
-                btst    #3,$68(a1)
+                btst    #3,RaceActor_ControlFlags(a1)
                 beq.w   .loc_13F8C
                 move.w  (Race_ram_TrackParam3).l,d1
                 bra.w   .loc_13FB0
@@ -5269,7 +5269,7 @@ Race_UpdateBikeCurve:
 
 
 .loc_13F96:
-                btst    #3,$68(a1)
+                btst    #3,RaceActor_ControlFlags(a1)
                 beq.w   .loc_13FAA
                 move.w  (Race_ram_TrackParam2).l,d1
                 bra.w   .loc_13FB0
@@ -5288,12 +5288,12 @@ Race_UpdateBikeCurve:
 
 .loc_13FC0:
                 move.w  d1,$3E(a1)
-                bset    #5,$68(a1)
+                bset    #5,RaceActor_ControlFlags(a1)
                 bra.w   .loc_13FE0
 
 
 .loc_13FCE:
-                bclr    #5,$68(a1)
+                bclr    #5,RaceActor_ControlFlags(a1)
                 move.w  #0,$40(a1)
                 move.w  #0,$3E(a1)
 
@@ -5317,7 +5317,7 @@ Race_UpdateBikeCurve:
 Race_GetCurveSpeedLimit:
                 movem.l d1-d2/a0-a2,-(sp)
                 clr.l   d0
-                btst    #3,$68(a1)
+                btst    #3,RaceActor_ControlFlags(a1)
                 beq.w   .loc_14000
                 move.w  (Race_ram_TrackParam2).l,d0
                 bra.w   .loc_14006

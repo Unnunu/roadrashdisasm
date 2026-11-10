@@ -294,7 +294,7 @@ Race_ProjectActorSprite:
                 move.w  d0,d1
                 andi.w  #$8000,d1
                 or.w    d1,$A(a0)
-                btst    #4,$68(a1)
+                btst    #4,RaceActor_ControlFlags(a1)
                 beq.w   .loc_DC20
                 tst.b   $6E(a1)
                 bmi.w   .loc_DC20
@@ -320,7 +320,7 @@ Race_ProjectActorSprite:
 
 .loc_DC40:
                 move.w  #$15A,d0
-                btst    #3,$69(a1)
+                btst    #3,RaceActor_StateFlags(a1)
                 beq.w   .loc_DC50
                 addq.w  #2,d0
 
@@ -718,7 +718,7 @@ Race_DrawRoadMarkingHud:
 ; *************************************************
 
 Race_UpdateCamera:
-                btst    #4,(RacePlayerA + STRUCT_OFFSET_68).l
+                btst    #4,(RacePlayerA + RaceActor_ControlFlags).l
                 beq.w   .loc_DF0A
                 tst.w   (Race_ram_State).l
                 bne.w   .loc_DF14
@@ -731,7 +731,7 @@ Race_UpdateCamera:
 .loc_DED2:
                 move.l  (RacePlayerA + RaceActor_FrameDistance).l,d0
                 lsr.l   #4,d0
-                btst    #3,(RacePlayerA + STRUCT_OFFSET_69).l
+                btst    #3,(RacePlayerA + RaceActor_StateFlags).l
                 beq.w   .loc_DEE8
                 neg.l   d0
 .loc_DEE8:
@@ -1287,7 +1287,7 @@ Race_BuildHScrollTable:
 
 Race_UpdateNearestOpponent:
                 movem.l d0-d3/a0-a4,-(sp)
-                btst    #7,(RacePlayerA + STRUCT_OFFSET_68).l
+                btst    #7,(RacePlayerA + RaceActor_ControlFlags).l
                 bne.w   .loc_E72C
                 move.l  #$7FFFFFFF,(Race_ram_NearestAheadDistance).l
                 move.l  #$80000000,(Race_ram_NearestBehindDistance).l

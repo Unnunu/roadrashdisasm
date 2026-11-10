@@ -1206,7 +1206,7 @@ Race_InitActorPositions:
                 move.w  d3,$1A(a1)
                 move.w  d3,$30(a1)
                 move.l  d2,4(a1)
-                move.l  d2,$1E(a1)
+                move.l  d2,RaceActor_PreviousX(a1)
                 neg.w   d1
                 btst    #0,d0
                 bne.w   .loc_B76A
@@ -1441,7 +1441,7 @@ Race_ResetFrameTimers:
 
 Race_UpdateTime:
                 addi.l  #1,(Race_ram_ProgressSnapshotA).l
-                btst    #7,(RacePlayerA + STRUCT_OFFSET_68).l
+                btst    #7,(RacePlayerA + RaceActor_ControlFlags).l
                 bne.w   .return
 
                 addi.w  #1,(Race_ram_TimeTicks).l
@@ -1774,17 +1774,17 @@ Race_GetInput:
 .loc_BF24:
                 btst    #4,d0 ; check B
                 beq.w   .loc_BF38
-                bset    #1,(RacePlayerA + STRUCT_OFFSET_68).l
+                bset    #1,(RacePlayerA + RaceActor_ControlFlags).l
                 bra.w   .loc_BF40
 .loc_BF38:
-                bclr    #1,(RacePlayerA + STRUCT_OFFSET_68).l
+                bclr    #1,(RacePlayerA + RaceActor_ControlFlags).l
 .loc_BF40:
                 btst    #6,d0 ; check A
                 beq.w   .loc_BF54
-                bset    #2,(RacePlayerA + STRUCT_OFFSET_68).l
+                bset    #2,(RacePlayerA + RaceActor_ControlFlags).l
                 bra.w   .loc_BF5C
 .loc_BF54:
-                bclr    #2,(RacePlayerA + STRUCT_OFFSET_68).l
+                bclr    #2,(RacePlayerA + RaceActor_ControlFlags).l
 .loc_BF5C:
                 btst    #5,d0 ; check C
                 bne.w   .loc_BF68
@@ -1821,8 +1821,8 @@ Race_GetInput:
                 add.w   d1,(RaceBike_ram_CurrentSteering).l
                 bcc.w   .loc_BFF2
 .loc_BFF2:
-                bclr    #1,(RacePlayerA + STRUCT_OFFSET_68).l
-                bclr    #2,(RacePlayerA + STRUCT_OFFSET_68).l
+                bclr    #1,(RacePlayerA + RaceActor_ControlFlags).l
+                bclr    #2,(RacePlayerA + RaceActor_ControlFlags).l
                 move.w  #0,(ram_FF368E).l
 .return:
                 rts
@@ -1880,10 +1880,10 @@ Race_Update:
                 bpl.w   .loc_C0F6
                 tst.w   d0
                 bpl.w   .loc_C106
-                bclr    #6,$68(a1)
+                bclr    #6,RaceActor_ControlFlags(a1)
                 bra.w   .loc_C10C
 .loc_C0F6:
-                btst    #6,$68(a1)
+                btst    #6,RaceActor_ControlFlags(a1)
                 bne.w   .loc_C106
                 jsr     (Race_InitExtraStaticActor).l
 .loc_C106:
@@ -2747,12 +2747,12 @@ Race_CreateActors:
 ; definition byte 0 -> actor type/sprite; byte 1 -> +$74
                 move.b  (a2)+,d2
                 move.w  d2,RaceActor_Type(a1)
-                move.b  (a2)+,STRUCT_OFFSET_74(a1)
-                bclr    #1,STRUCT_OFFSET_6B(a1)
+                move.b  (a2)+,RaceActor_ActionProfile(a1)
+                bclr    #1,RaceActor_AttackFlags(a1)
                 move.b  (a2)+,d2
                 bpl.w   .loc_CB50
                 andi.b  #$7F,d2
-                bset    #1,STRUCT_OFFSET_6B(a1)
+                bset    #1,RaceActor_AttackFlags(a1)
 .loc_CB50:
 ; byte 2 low 7 bits -> +$75 (graphics index); bit 7 -> +$6B bit1
                 move.b  d2,RaceActor_GraphicsIndex(a1)
@@ -2795,9 +2795,9 @@ Race_CreateActors:
                 move.w  d1,RaceActor_Speed(a1)
                 move.w  d1,RaceActor_Acceleration(a1)
                 move.w  d1,RaceActor_Gear(a1)
-                move.b  d1,STRUCT_OFFSET_68(a1)
-                move.b  d1,STRUCT_OFFSET_69(a1)
-                move.b  d1,STRUCT_OFFSET_6A(a1)
+                move.b  d1,RaceActor_ControlFlags(a1)
+                move.b  d1,RaceActor_StateFlags(a1)
+                move.b  d1,RaceActor_WeaponAnimFlags(a1)
                 move.b  d1,STRUCT_OFFSET_72(a1)
                 move.b  #$FF,STRUCT_OFFSET_6F(a1)
                 move.b  d1,STRUCT_OFFSET_78(a1)
@@ -2828,11 +2828,11 @@ Race_CreateActors:
                 beq.w   .loc_CCC6
                 move.b  d0,$71(a1)
                 move.w  #$10,$16(a1)
-                move.b  #0,$74(a1)
+                move.b  #0,RaceActor_ActionProfile(a1)
                 move.b  #0,$75(a1)
-                move.b  #0,$68(a1)
-                move.b  #0,$69(a1)
-                move.b  #0,$6A(a1)
+                move.b  #0,RaceActor_ControlFlags(a1)
+                move.b  #0,RaceActor_StateFlags(a1)
+                move.b  #0,RaceActor_WeaponAnimFlags(a1)
                 move.w  #$FFFF,$56(a1)
                 addq.w  #1,d0
                 bra.s   .loc_CC88

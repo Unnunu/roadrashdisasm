@@ -81,61 +81,61 @@ Race_UpdateNearestTarget:
                 beq.w   .loc_162AA
                 btst    #5,(Race_ram_CurrentButtons).l
                 beq.w   .loc_1621E
-                btst    #6,$69(a1)
+                btst    #6,RaceActor_StateFlags(a1)
                 bne.w   .loc_161FC
-                btst    #0,$6B(a1)
+                btst    #0,RaceActor_AttackFlags(a1)
                 beq.w   .loc_1621E
 
 .loc_161FC:
                 move.w  (Race_ram_FrameDelay).l,d0
-                sub.b   d0,$6D(a1)
+                sub.b   d0,RaceActor_AttackTimer(a1)
                 bgt.w   .locret_162AE
-                cmpi.b  #0,$6C(a1)
+                cmpi.b  #0,RaceActor_AttackPhase(a1)
                 bne.w   .loc_1622C
-                move.b  #0,$6D(a1)
+                move.b  #0,RaceActor_AttackTimer(a1)
                 bra.w   .locret_162AE
 
 
 .loc_1621E:
                 move.w  (Race_ram_FrameDelay).l,d0
-                sub.b   d0,$6D(a1)
+                sub.b   d0,RaceActor_AttackTimer(a1)
                 bgt.w   .locret_162AE
 
 .loc_1622C:
-                addi.b  #1,$6C(a1)
-                cmpi.b  #1,$6C(a1)
+                addi.b  #1,RaceActor_AttackPhase(a1)
+                cmpi.b  #1,RaceActor_AttackPhase(a1)
                 bne.w   .loc_16248
                 move.w  #1,(ram_FF1904).l
                 bsr.w   Race_TriggerArmedAttackSfx
 
 .loc_16248:
-                cmpi.b  #3,$6C(a1)
+                cmpi.b  #3,RaceActor_AttackPhase(a1)
                 bpl.w   .loc_16298
-                btst    #6,$69(a1)
+                btst    #6,RaceActor_StateFlags(a1)
                 bne.w   .loc_16282
                 lea     (RaceBike_ram_PhysicsConstants).l,a4
-                btst    #1,$6B(a1)
+                btst    #1,RaceActor_AttackFlags(a1)
                 beq.w   .loc_16272
                 lea     (ram_FF1AC2).l,a4
 
 .loc_16272:
-                move.b  $6C(a1),d0
+                move.b  RaceActor_AttackPhase(a1),d0
                 asl.w   #1,d0
-                move.b  (a4,d0.w),$6D(a1)
+                move.b  (a4,d0.w),RaceActor_AttackTimer(a1)
                 bra.w   .locret_162AE
 
 
 .loc_16282:
                 lea     (ram_FF1ABC).l,a4
-                move.b  $6C(a1),d0
+                move.b  RaceActor_AttackPhase(a1),d0
                 asl.w   #1,d0
-                move.b  (a4,d0.w),$6D(a1)
+                move.b  (a4,d0.w),RaceActor_AttackTimer(a1)
                 bra.w   .locret_162AE
 
 
 .loc_16298:
                 move.b  #0,(ram_FF1B22).l
-                bclr    #4,$69(a1)
+                bclr    #4,RaceActor_StateFlags(a1)
                 bra.w   .locret_162AE
 
 
@@ -164,28 +164,28 @@ Race_UpdatePlayerAttack:
                 move.b  (Race_ram_CurrentButtons).l,d0
                 btst    #5,d0
                 beq.w   .locret_1634C
-                bset    #4,$69(a1)
+                bset    #4,RaceActor_StateFlags(a1)
                 bset    #0,(ram_FF1B22).l
-                move.b  #0,$6C(a1)
-                move.b  (RaceBike_ram_PhysicsConstants).l,$6D(a1)
-                btst    #1,$6B(a1)
+                move.b  #0,RaceActor_AttackPhase(a1)
+                move.b  (RaceBike_ram_PhysicsConstants).l,RaceActor_AttackTimer(a1)
+                btst    #1,RaceActor_AttackFlags(a1)
                 beq.w   .loc_162EC
-                move.b  (ram_FF1AC2).l,$6D(a1)
+                move.b  (ram_FF1AC2).l,RaceActor_AttackTimer(a1)
 
 .loc_162EC:
-                bclr    #0,$6B(a1)
-                bclr    #6,$69(a1)
+                bclr    #0,RaceActor_AttackFlags(a1)
+                bclr    #6,RaceActor_StateFlags(a1)
                 btst    #0,d0
                 beq.w   .loc_1630A
-                bset    #0,$6B(a1)
+                bset    #0,RaceActor_AttackFlags(a1)
                 bra.w   .loc_16320
 
 
 .loc_1630A:
                 btst    #1,d0
                 beq.w   .loc_16320
-                bset    #6,$69(a1)
-                move.b  (ram_FF1ABC).l,$6D(a1)
+                bset    #6,RaceActor_StateFlags(a1)
+                move.b  (ram_FF1ABC).l,RaceActor_AttackTimer(a1)
 
 .loc_16320:
                 movea.l (Race_ram_NearestActor).l,a0
@@ -194,12 +194,12 @@ Race_UpdatePlayerAttack:
                 move.w  $30(a1),d1
                 cmp.w   $30(a0),d1
                 bpl.w   .loc_16346
-                bclr    #5,$69(a1)
+                bclr    #5,RaceActor_StateFlags(a1)
                 bra.w   .locret_1634C
 
 
 .loc_16346:
-                bset    #5,$69(a1)
+                bset    #5,RaceActor_StateFlags(a1)
 
 .locret_1634C:
                 rts
@@ -240,26 +240,26 @@ loc_1637E:
                 beq.w   locret_16456
                 btst    #0,d0
                 beq.w   loc_163CC
-                bset    #4,$69(a1)
+                bset    #4,RaceActor_StateFlags(a1)
                 move.w  $30(a1),d2
                 cmp.w   $30(a2),d2
                 bmi.w   loc_163AE
-                bset    #5,$69(a1)
+                bset    #5,RaceActor_StateFlags(a1)
                 bra.w   loc_163B4
 ; ---------------------------------------------------------------------------
 
 loc_163AE:
-                bclr    #5,$69(a1)
+                bclr    #5,RaceActor_StateFlags(a1)
 
 loc_163B4:
                 btst    #1,d0
                 bne.w   loc_163C6
-                bclr    #6,$69(a1)
+                bclr    #6,RaceActor_StateFlags(a1)
                 bra.w   loc_163CC
 ; ---------------------------------------------------------------------------
 
 loc_163C6:
-                bset    #6,$69(a1)
+                bset    #6,RaceActor_StateFlags(a1)
 
 loc_163CC:
                 bra.w   loc_16428
@@ -270,8 +270,8 @@ loc_163CC:
                 sub.l   4(a2),d2
                 cmp.l   #$20000,d0
                 bpl.w   loc_16428
-                bset    #1,$68(a1)
-                bclr    #2,$68(a1)
+                bset    #1,RaceActor_ControlFlags(a1)
+                bclr    #2,RaceActor_ControlFlags(a1)
                 bsr.w   Race_UpdateActorSpeedState
                 bra.w   loc_16428
 ; ---------------------------------------------------------------------------
@@ -283,8 +283,8 @@ loc_163FE:
                 sub.l   4(a1),d2
                 cmp.l   #$8000,d0
                 bpl.w   loc_16428
-                bclr    #1,$68(a1)
-                bset    #2,$68(a1)
+                bclr    #1,RaceActor_ControlFlags(a1)
+                bset    #2,RaceActor_ControlFlags(a1)
                 bsr.w   Race_UpdateActorSpeedState
 
 loc_16428:
@@ -326,17 +326,17 @@ locret_16456:
 Race_DispatchActorAction:
                 move.l  a4,-(sp)
                 move.w  (Race_ram_FrameDelay).l,d0
-                sub.w   d0,$5A(a1)
+                sub.w   d0,RaceActor_AttackCooldown(a1)
                 bgt.w   loc_1646E
-                move.w  #0,$5A(a1)
+                move.w  #0,RaceActor_AttackCooldown(a1)
 
 loc_1646E:
-                btst    #4,$69(a1)
+                btst    #4,RaceActor_StateFlags(a1)
                 beq.w   loc_1647C
                 bsr.w   Race_UpdateAttackPhase
 
 loc_1647C:
-                bclr    #2,$69(a1)
+                bclr    #2,RaceActor_StateFlags(a1)
                 move.b  $72(a1),d0
                 ext.w   d0
                 bsr.w   Race_FindTargetActor
@@ -358,7 +358,7 @@ loc_164AA:
 loc_164C0:
                 cmpa.l  #ram_FF1F2A,a1
                 beq.w   loc_16518
-                btst    #4,$69(a1)
+                btst    #4,RaceActor_StateFlags(a1)
                 bne.w   loc_16518
                 move.l  4(a2),d0
                 sub.l   4(a1),d0
@@ -378,7 +378,7 @@ loc_164E2:
 loc_164FE:
                 cmpa.l  (Race_ram_NearestActor).l,a1
                 bne.w   loc_16510
-                tst.w   $5A(a1)
+                tst.w   RaceActor_AttackCooldown(a1)
                 ble.w   loc_16518
 loc_16510:
                 movea.l 8(a4),a6
@@ -404,11 +404,11 @@ locret_1651E:
 ; *************************************************
 
 Race_TriggerArmedAttackSfx:
-                cmpi.b  #1,$6C(a1)
+                cmpi.b  #1,RaceActor_AttackPhase(a1)
                 bne.w   .locret_16546
-                btst    #1,$6B(a1)
+                btst    #1,RaceActor_AttackFlags(a1)
                 beq.w   .locret_16546
-                btst    #6,$69(a1)
+                btst    #6,RaceActor_StateFlags(a1)
                 bne.w   .locret_16546
                 move.b  #$E,(ram_FF1AD7).l
 
@@ -431,41 +431,41 @@ Race_TriggerArmedAttackSfx:
 Race_UpdateAttackPhase:
                 move.w  #0,(ram_FF1906).l
                 move.w  (Race_ram_FrameDelay).l,d0
-                sub.b   d0,$6D(a1)
+                sub.b   d0,RaceActor_AttackTimer(a1)
                 bgt.w   .locret_165CE
-                addi.b  #1,$6C(a1)
-                cmpi.b  #1,$6C(a1)
+                addi.b  #1,RaceActor_AttackPhase(a1)
+                cmpi.b  #1,RaceActor_AttackPhase(a1)
                 bne.w   .loc_16578
                 move.w  #1,(ram_FF1906).l
                 bsr.s   Race_TriggerArmedAttackSfx
 
 .loc_16578:
-                cmpi.b  #3,$6C(a1)
+                cmpi.b  #3,RaceActor_AttackPhase(a1)
                 bpl.w   .loc_165C8
-                btst    #6,$69(a1)
+                btst    #6,RaceActor_StateFlags(a1)
                 bne.w   .loc_165B2
                 lea     (unk_257E8).l,a4
-                btst    #1,$6B(a1)
+                btst    #1,RaceActor_AttackFlags(a1)
                 beq.w   .loc_165A2
                 lea     (unk_257E2).l,a4
 
 .loc_165A2:
-                move.b  $6C(a1),d0
+                move.b  RaceActor_AttackPhase(a1),d0
                 asl.w   #1,d0
-                move.b  (a4,d0.w),$6D(a1)
+                move.b  (a4,d0.w),RaceActor_AttackTimer(a1)
                 bra.w   .locret_165CE
 
 
 .loc_165B2:
                 lea     (unk_257EE).l,a4
-                move.b  $6C(a1),d0
+                move.b  RaceActor_AttackPhase(a1),d0
                 asl.w   #1,d0
-                move.b  (a4,d0.w),$6D(a1)
+                move.b  (a4,d0.w),RaceActor_AttackTimer(a1)
                 bra.w   .locret_165CE
 
 
 .loc_165C8:
-                bclr    #4,$69(a1)
+                bclr    #4,RaceActor_StateFlags(a1)
 
 .locret_165CE:
                 rts
@@ -507,13 +507,13 @@ Race_ActorSteerRoadCenter:
 Race_ActorSteerThrottle:
                 move.b  $72(a1),d0
                 ext.w   d0
-                bset    #1,$68(a1)
-                bclr    #2,$68(a1)
+                bset    #1,RaceActor_ControlFlags(a1)
+                bclr    #2,RaceActor_ControlFlags(a1)
                 bsr.w   Race_UpdateActorRoadSteering
-                btst    #5,$68(a1)
+                btst    #5,RaceActor_ControlFlags(a1)
                 beq.w   .loc_1660C
-                bset    #2,$68(a1)
-                bclr    #1,$68(a1)
+                bset    #2,RaceActor_ControlFlags(a1)
+                bclr    #1,RaceActor_ControlFlags(a1)
 
 .loc_1660C:
                 bsr.w   Race_UpdateActorSpeedState
@@ -631,9 +631,9 @@ Race_ActorPursueAttack:
                 bsr.w   Race_UpdateActorSpeedGear
                 move.l  (ram_FF1786).l,d0
                 movea.l (ram_FF1A68).l,a4
-                btst    #4,$68(a1)
+                btst    #4,RaceActor_ControlFlags(a1)
                 beq.w   .loc_1668E
-                move.w  8(a4),$5A(a1)
+                move.w  8(a4),RaceActor_AttackCooldown(a1)
                 bra.w   .loc_1669A
 
 
@@ -721,7 +721,7 @@ Race_ActorEvadePlayer:
 ; *************************************************
 
 Race_ActorCombatResponse:
-                bclr    #2,$69(a1)
+                bclr    #2,RaceActor_StateFlags(a1)
                 move.b  $72(a1),d0
                 ext.w   d0
                 bsr.w   Race_FindTargetActor
@@ -759,11 +759,11 @@ Race_ActorCombatResponse:
 ; *************************************************
 
 Race_UpdateCollision:
-                btst    #4,$69(a1)
+                btst    #4,RaceActor_StateFlags(a1)
                 bne.w   .locret_1685E
                 lea     (RacePlayerA).l,a2
-                move.w  $4A(a1),d1
-                add.w   $4A(a2),d1
+                move.w  RaceActor_CollisionExtent(a1),d1
+                add.w   RaceActor_CollisionExtent(a2),d1
                 move.w  d1,d2
                 addi.w  #$10,d1
                 addq.w  #8,d2
@@ -784,59 +784,59 @@ Race_UpdateCollision:
                 neg.w   d0
                 cmp.w   d1,d0
                 bpl.w   .loc_16858
-                move.w  8(a4),$5A(a1)
-                move.b  #0,$6C(a1)
-                bclr    #0,$6B(a1)
-                bset    #4,$69(a1)
-                bset    #5,$69(a1)
+                move.w  8(a4),RaceActor_AttackCooldown(a1)
+                move.b  #0,RaceActor_AttackPhase(a1)
+                bclr    #0,RaceActor_AttackFlags(a1)
+                bset    #4,RaceActor_StateFlags(a1)
+                bset    #5,RaceActor_StateFlags(a1)
                 cmp.w   d2,d0
                 bpl.w   .loc_167BC
-                bset    #6,$69(a1)
-                move.b  (ram_FF1ABC).l,$6D(a1)
+                bset    #6,RaceActor_StateFlags(a1)
+                move.b  (ram_FF1ABC).l,RaceActor_AttackTimer(a1)
                 bra.w   .locret_1685E
 
 
 .loc_167BC:
-                bclr    #6,$69(a1)
-                move.b  (RaceBike_ram_PhysicsConstants).l,$6D(a1)
+                bclr    #6,RaceActor_StateFlags(a1)
+                move.b  (RaceBike_ram_PhysicsConstants).l,RaceActor_AttackTimer(a1)
                 move.w  (Race_ram_ActorDistanceScale).l,d0
                 andi.b  #1,d0
-                or.b    d0,$6B(a1)
-                btst    #1,$6B(a1)
+                or.b    d0,RaceActor_AttackFlags(a1)
+                btst    #1,RaceActor_AttackFlags(a1)
                 beq.w   .locret_1685E
-                move.b  #$3C,$6D(a1) ; '<'
+                move.b  #$3C,RaceActor_AttackTimer(a1) ; '<'
                 bra.w   .locret_1685E
 
 
 .loc_167EC:
                 cmp.w   d1,d0
                 bpl.w   .loc_16858
-                move.w  8(a4),$5A(a1)
-                move.b  #0,$6C(a1)
-                bclr    #0,$6B(a1)
-                bset    #4,$69(a1)
-                bclr    #5,$69(a1)
+                move.w  8(a4),RaceActor_AttackCooldown(a1)
+                move.b  #0,RaceActor_AttackPhase(a1)
+                bclr    #0,RaceActor_AttackFlags(a1)
+                bset    #4,RaceActor_StateFlags(a1)
+                bclr    #5,RaceActor_StateFlags(a1)
                 cmp.w   d2,d0
                 bpl.w   .loc_16828
-                bset    #6,$69(a1)
-                move.b  (ram_FF1ABC).l,$6D(a1)
+                bset    #6,RaceActor_StateFlags(a1)
+                move.b  (ram_FF1ABC).l,RaceActor_AttackTimer(a1)
                 bra.w   .locret_1685E
 
 
 .loc_16828:
-                bclr    #6,$69(a1)
-                move.b  (RaceBike_ram_PhysicsConstants).l,$6D(a1)
+                bclr    #6,RaceActor_StateFlags(a1)
+                move.b  (RaceBike_ram_PhysicsConstants).l,RaceActor_AttackTimer(a1)
                 move.w  (Race_ram_ActorDistanceScale).l,d0
                 andi.b  #1,d0
-                or.b    d0,$6B(a1)
-                btst    #1,$6B(a1)
+                or.b    d0,RaceActor_AttackFlags(a1)
+                btst    #1,RaceActor_AttackFlags(a1)
                 beq.w   .locret_1685E
-                move.b  #$3C,$6D(a1) ; '<'
+                move.b  #$3C,RaceActor_AttackTimer(a1) ; '<'
                 bra.w   .locret_1685E
 
 
 .loc_16858:
-                bclr    #4,$69(a1)
+                bclr    #4,RaceActor_StateFlags(a1)
 
 .locret_1685E:
                 rts

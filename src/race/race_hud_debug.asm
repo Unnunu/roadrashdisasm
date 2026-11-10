@@ -162,7 +162,7 @@ RaceDebug_ShowState:
                 movea.l (Race_ram_CurrentHudBuffer).l,a0
                 jsr     (RaceHud_WriteDigit4).l
 
-                move.w  (RacePlayerA + STRUCT_OFFSET_68).l,d0
+                move.w  (RacePlayerA + RaceActor_ControlFlags).l,d0
                 move.w  #$1418,d1
                 move.w  #0,d2
                 movea.l (Race_ram_CurrentHudBuffer).l,a0

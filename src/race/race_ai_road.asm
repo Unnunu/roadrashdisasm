@@ -724,7 +724,7 @@ Race_IntegrateTrackCurve:
 Race_ComputeStandings:
                 lea     (RacePlayerA).l,a1
                 lea     (Race_EventBuffer).l,a2
-                btst    #7,$68(a1)
+                btst    #7,RaceActor_ControlFlags(a1)
                 bne.w   .loc_EFD6
                 move.l  (Race_ram_ProgressSnapshotB).l,(Race_ram_ProgressSnapshotC).l
                 move.w  4(a1),(ram_FF1762).l
@@ -751,7 +751,7 @@ Race_ComputeStandings:
                 move.w  4(a1),d0
                 move.b  $71(a1),d1
                 ext.w   d1
-                btst    #7,$68(a1)
+                btst    #7,RaceActor_ControlFlags(a1)
                 bne.w   .loc_F028
                 bsr.w   Race_ScaleResultValue
                 bra.w   .loc_F032
@@ -1114,7 +1114,7 @@ Race_BuildActorObjectList:
                 movea.l (a2)+,a1
                 cmpa.w  #$FFFF,a1
                 beq.w   .loc_F83C
-                btst    #6,$68(a1)
+                btst    #6,RaceActor_ControlFlags(a1)
                 beq.w   .loc_F83C
                 move.l  4(a1),d0
                 sub.l   (Race_ram_PlayerProgress).l,d0
@@ -1132,7 +1132,7 @@ Race_BuildActorObjectList:
                 beq.w   .loc_F52E
                 tst.w   (ram_FF3040).l
                 bne.w   .loc_F52E
-                btst    #4,$68(a1)
+                btst    #4,RaceActor_ControlFlags(a1)
                 beq.w   .loc_F534
                 tst.b   $6E(a1)
                 bmi.w   .loc_F534
@@ -1146,7 +1146,7 @@ Race_BuildActorObjectList:
 
 
 .loc_F52E:
-                bclr    #4,$68(a1)
+                bclr    #4,RaceActor_ControlFlags(a1)
 
 .loc_F534:
                 move.l  4(a1),d0
@@ -1199,7 +1199,7 @@ Race_BuildActorObjectList:
 
 .loc_F5B4:
                 add.w   8(a1),d1
-                btst    #5,$68(a1)
+                btst    #5,RaceActor_ControlFlags(a1)
                 beq.w   .loc_F5C6
                 add.w   $40(a1),d1
 
@@ -1270,7 +1270,7 @@ Race_BuildActorObjectList:
                 asl.w   #2,d7
                 move.l  d0,(a6,d7.w)
                 bsr.w   Race_ProjectActorObject
-                btst    #3,$68(a1)
+                btst    #3,RaceActor_ControlFlags(a1)
                 beq.w   .loc_F684
                 move.w  $12(a1),d0
                 andi.w  #3,d0
@@ -1304,14 +1304,14 @@ Race_BuildActorObjectList:
 .loc_F6D6:
                 tst.w   (ram_FF1B16).l
                 bne.w   .loc_F704
-                btst    #0,$68(a1)
+                btst    #0,RaceActor_ControlFlags(a1)
                 beq.w   .loc_F6F2
                 bsr.w   Race_AddActorImpactObject
                 bra.w   .loc_F834
 
 
 .loc_F6F2:
-                btst    #5,$68(a1)
+                btst    #5,RaceActor_ControlFlags(a1)
                 beq.w   .loc_F834
                 bsr.w   Race_AddActorLeanObject
                 bra.w   .loc_F834
@@ -1393,14 +1393,14 @@ Race_BuildActorObjectList:
                 move.w  d1,(a0)
                 move.w  d2,2(a0)
                 or.w    d3,$A(a0)
-                btst    #7,$6A(a1)
+                btst    #7,RaceActor_WeaponAnimFlags(a1)
                 beq.w   .loc_F834
                 tst.b   $6E(a1)
                 bne.w   .loc_F834
                 tst.b   $6F(a1)
                 bne.w   .loc_F834
                 bsr.w   Race_AddActorWeaponObject
-                bclr    #7,$6A(a1)
+                bclr    #7,RaceActor_WeaponAnimFlags(a1)
 
 .loc_F834:
                 adda.w  #$14,a0
@@ -1428,7 +1428,7 @@ Race_AddActorLeanObject:
                 move.w  d0,$A(a0)
                 move.l  d0,$C(a0)
                 move.l  d0,$10(a0)
-                btst    #3,$68(a1)
+                btst    #3,RaceActor_ControlFlags(a1)
                 beq.w   .loc_F872
                 move.b  #$10,d0
 
@@ -2233,10 +2233,10 @@ Race_SelectActorObjectShape:
 
 
 .loc_100EE:
-                btst    #2,$6A(a1)
+                btst    #2,RaceActor_WeaponAnimFlags(a1)
                 beq.w   .loc_10110
                 move.b  #3,d0
-                and.b   $6A(a1),d0
+                and.b   RaceActor_WeaponAnimFlags(a1),d0
                 cmp.b   #2,d0
                 bpl.w   .loc_10110
                 bsr.w   sub_1081A
@@ -2244,7 +2244,7 @@ Race_SelectActorObjectShape:
 
 
 .loc_10110:
-                btst    #4,$69(a1)
+                btst    #4,RaceActor_StateFlags(a1)
                 beq.w   .loc_10122
                 bsr.w   sub_1030A
                 bra.w   .loc_101E6
@@ -2255,9 +2255,9 @@ Race_SelectActorObjectShape:
                 bne.w   .loc_1014E
                 tst.w   $12(a1)
                 beq.w   .loc_1014E
-                btst    #1,$68(a1)
+                btst    #1,RaceActor_ControlFlags(a1)
                 beq.w   .loc_1014E
-                btst    #2,$68(a1)
+                btst    #2,RaceActor_ControlFlags(a1)
                 bne.w   .loc_1014E
                 bsr.w   Race_SelectActorSpeedShape
                 bra.w   .loc_101E6
@@ -2514,7 +2514,7 @@ sub_1030A:
                 move.w  d2,d1
                 addq.w  #2,d1
                 move.w  d1,(ram_FF1764).l
-                btst    #6,$69(a1)
+                btst    #6,RaceActor_StateFlags(a1)
                 beq.w   .loc_10370
                 move.w  #2,d1
                 bsr.w   sub_10762
@@ -2525,7 +2525,7 @@ sub_1030A:
                 bsr.w   sub_10384
                 bra.w   .locret_10382
 
-                bclr    #4,$69(a1)
+                bclr    #4,RaceActor_StateFlags(a1)
                 bsr.w   Race_SelectActorObjectShape
 
 .locret_10382:
@@ -2545,7 +2545,7 @@ sub_10384:
                 bne.w   .loc_103CA
                 btst    #$F,$A(a0)
                 beq.w   .loc_103B4
-                btst    #5,$69(a1)
+                btst    #5,RaceActor_StateFlags(a1)
                 beq.w   .loc_104DA
                 subq.w  #2,d1
                 bpl.w   .loc_103B0
@@ -2556,7 +2556,7 @@ sub_10384:
 
 
 .loc_103B4:
-                btst    #5,$69(a1)
+                btst    #5,RaceActor_StateFlags(a1)
                 bne.w   .loc_104DA
                 subq.w  #2,d1
                 bpl.w   .loc_103C6
@@ -2567,7 +2567,7 @@ sub_10384:
 
 
 .loc_103CA:
-                btst    #5,$69(a1)
+                btst    #5,RaceActor_StateFlags(a1)
                 beq.w   .loc_103EE
                 subq.w  #2,d1
                 neg.w   d1
@@ -2596,14 +2596,14 @@ sub_10384:
                 bset    #$F,$A(a0)
 
 .loc_10410:
-                cmpi.b  #1,$6C(a1)
+                cmpi.b  #1,RaceActor_AttackPhase(a1)
                 beq.w   .loc_10446
                 bmi.w   .loc_10428
-                btst    #1,$6B(a1)
+                btst    #1,RaceActor_AttackFlags(a1)
                 beq.w   .loc_1043C
 
 .loc_10428:
-                btst    #0,$6B(a1)
+                btst    #0,RaceActor_AttackFlags(a1)
                 beq.w   .loc_1043C
                 lea     (unk_106A2).l,a2
                 bra.w   .loc_1049A
@@ -2626,14 +2626,14 @@ sub_10384:
                 bclr    #$F,$A(a0)
 
 .loc_1045E:
-                cmpi.b  #1,$6C(a1)
+                cmpi.b  #1,RaceActor_AttackPhase(a1)
                 beq.w   .loc_10494
                 bmi.w   .loc_10476
-                btst    #1,$6B(a1)
+                btst    #1,RaceActor_AttackFlags(a1)
                 beq.w   .loc_1048A
 
 .loc_10476:
-                btst    #0,$6B(a1)
+                btst    #0,RaceActor_AttackFlags(a1)
                 beq.w   .loc_1048A
                 lea     (unk_10702).l,a2
                 bra.w   .loc_1049A
@@ -2656,7 +2656,7 @@ sub_10384:
                 asl.w   #2,d1
                 move.w  (a2,d1.w),d0
                 move.w  2(a2,d1.w),d1
-                btst    #1,$6B(a1)
+                btst    #1,RaceActor_AttackFlags(a1)
                 beq.w   .loc_104CA
                 addi.w  #$102,d1
                 move.b  #1,(ram_FF1ADD).l
@@ -2673,7 +2673,7 @@ sub_10384:
 
 
 .loc_104DA:
-                bclr    #4,$69(a1)
+                bclr    #4,RaceActor_StateFlags(a1)
                 bsr.w   Race_SelectActorObjectShape
 
 .locret_104E4:
@@ -2690,7 +2690,7 @@ sub_104E6:
                 bne.w   .loc_10502
                 tst.w   $12(a1)
                 beq.w   .loc_10502
-                btst    #1,$68(a1)
+                btst    #1,RaceActor_ControlFlags(a1)
                 bne.w   .loc_1051A
 
 .loc_10502:
@@ -3292,7 +3292,7 @@ unk_10702:      dc.b   0
 
 
 sub_10762:
-                btst    #5,$69(a1)
+                btst    #5,RaceActor_StateFlags(a1)
                 beq.w   .loc_1077A
                 btst    #$F,$A(a0)
                 beq.w   .loc_1079C
@@ -3334,7 +3334,7 @@ sub_10762:
                 addq.w  #4,d0
 
 .loc_107CE:
-                cmpi.b  #1,$6C(a1)
+                cmpi.b  #1,RaceActor_AttackPhase(a1)
                 beq.w   .loc_107DA
                 addq.w  #2,d0
 
@@ -3387,7 +3387,7 @@ sub_1081A:
                 sub.b   d2,$70(a1)
                 bgt.w   .loc_10834
                 move.b  #0,$70(a1)
-                bclr    #2,$6A(a1)
+                bclr    #2,RaceActor_WeaponAnimFlags(a1)
 
 .loc_10834:
                 bclr    #$F,$A(a0)
@@ -3421,7 +3421,7 @@ sub_1081A:
 
 .loc_10880:
                 move.w  d0,d1
-                btst    #0,$6A(a1)
+                btst    #0,RaceActor_WeaponAnimFlags(a1)
                 beq.w   .loc_10894
                 addi.w  #$148,d1
                 bra.w   .loc_10898
@@ -3437,7 +3437,7 @@ sub_1081A:
                 move.w  (a4,d0.w),d0
                 tst.w   $34(a1)
                 bne.w   .locret_108C0
-                btst    #1,$68(a1)
+                btst    #1,RaceActor_ControlFlags(a1)
                 bne.w   .locret_108C0
                 bset    #$F,$A(a0)
 
@@ -3479,7 +3479,7 @@ Race_SelectExtraActorShape:
                 cmpa.l  #ram_FF2FAA,a1
                 bne.w   .loc_1090C
                 move.w  #$87,d0
-                btst    #3,$69(a1)
+                btst    #3,RaceActor_StateFlags(a1)
                 bne.w   .loc_10902
                 bclr    #$F,$A(a0)
                 bra.w   .locret_10970
@@ -3529,7 +3529,7 @@ Race_SelectExtraActorShape:
 .loc_10958:
                 addq.w  #1,d1
                 add.w   d1,d0
-                btst    #3,$69(a1)
+                btst    #3,RaceActor_StateFlags(a1)
                 bne.w   .loc_1096C
                 addi.w  #$5F,d0 ; '_'
                 rts
