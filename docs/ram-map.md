@@ -219,8 +219,8 @@ Buffers: `Intro_TitleScrollTable`/`Intro_TitleScrollSpeed` (+$400 SAT),
 | Address | Name | Size | Meaning |
 |---|---|---|---|
 | actor `$69` bit4/5/6 | attack flags | 1 | active / side / low attack. |
-| actor `$6B` bit0/bit1 | attack flags | 1 | high attack / armed-special (`WEAPON_CLUB`). |
-| actor `$6C` | attack phase | 1 | 0..3 (windup/hit/recovery hypothesis). |
+| actor `$6B` bit0/bit1 | attack flags | 1 | high attack / logical club armed (`WEAPON_CLUB`); idle sprite is attack-only. |
+| actor `$6C` | attack phase | 1 | 0 windup, 1 strike, 2 recovery, 3 end. |
 | actor `$6D` | attack timer | 1 | countdown from attack timing tables. |
 | actor `$5A` | attack cooldown | 2 | hit/attack recovery timer. |
 | actor `$4A` | attack/collision range | 2 | proximity range used by `Race_UpdateCollision`. |

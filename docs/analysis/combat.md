@@ -10,6 +10,21 @@
   `docs/analysis/race_anim_audio.md`, `docs/analysis/race_physics.md`,
   `docs/analysis/race_actors.md`, `docs/ram-map.md`
 
+## Attack phase model
+
+`$6C` / `$6D` are the shared attack phase/timer:
+
+| Phase | Meaning |
+|---|---|
+| 0 | windup / charge; held C+Up/C+Down stay here until release |
+| 1 | strike/contact window; armed phase-1 SFX and club-transfer checks |
+| 2 | recovery/follow-through |
+| 3 | end; attack active bit is cleared |
+
+The club is rendered only during the attack animation (windup/strike), not while
+riding; this was confirmed with the patched ROM. `$6A/$6E/$6F/$70` carry the
+weapon animation state.
+
 ## Player input / fist
 
 `Race_GetInput` stores the pad state in `Race_ram_CurrentButtons` (`SACBRLDU`).
@@ -113,6 +128,8 @@ Applied in R6: `Race_InitExtraStaticActor`, `Race_UpdateExtraStaticActor`,
 `Race_ApplyCollisionImpact`, `Race_ExchangeCollisionSpeed`,
 `Race_UpdateActorSpeedState`, `Race_FindTargetActor`,
 `Race_ScanTargetDistance`.
+
+Applied in R7: `Race_StealClub`/`Race_StealClubMirror`; `WEAPON_NONE`/`WEAPON_CLUB`.
 
 Applied in R3c: `Race_ActorSteerRoadCenter`, `Race_ActorSteerThrottle`,
 `Race_ActorCollideSteer`, `Race_ActorSteerCollide`,
