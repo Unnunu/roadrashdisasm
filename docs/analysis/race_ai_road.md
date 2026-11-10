@@ -14,6 +14,8 @@ Applied in R4: `Race_BuildActorObjectList`, `Race_AddSpecialObject`,
 `Race_BuildTrackObjects`, `Race_ProjectTrackObject`,
 `Race_ProjectObject`, `Race_ProjectActorObject`.
 
+Applied in R20: `Race_ram_EventProgress`, `Race_ram_SpeedTier`.
+
 Applied in R18: `Race_AddActorLeanObject`, `Race_AddActorImpactObject`,
 `Race_AddActorFallObject`, `Race_AddActorWeaponObject`.
 

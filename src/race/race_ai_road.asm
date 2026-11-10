@@ -727,14 +727,14 @@ Race_ComputeStandings:
                 btst    #7,RaceActor_ControlFlags(a1)
                 bne.w   .loc_EFD6
                 move.l  (Race_ram_ProgressSnapshotB).l,(Race_ram_ProgressSnapshotC).l
-                move.w  4(a1),(ram_FF1762).l
+                move.w  4(a1),(Race_ram_EventProgress).l
                 move.l  #$FFFFFFFF,(a2)
                 bra.w   .loc_EFEE
 
 
 .loc_EFD6:
                 move.l  $62(a1),(Race_ram_ProgressSnapshotC).l
-                move.w  (RaceTrack_Data1).l,(ram_FF1762).l
+                move.w  (RaceTrack_Data1).l,(Race_ram_EventProgress).l
                 move.l  $62(a1),d0
                 move.l  d0,(a2)
 
@@ -773,7 +773,7 @@ Race_ComputeStandings:
                 adda.w  d6,a0
                 subq.w  #1,d7
                 bmi.w   .loc_F09E
-                move.w  (ram_FF1762).l,d2
+                move.w  (Race_ram_EventProgress).l,d2
                 addi.w  #$20,d2 ; ' '
 
 .loc_F054:
@@ -808,7 +808,7 @@ Race_ComputeStandings:
                 adda.w  d6,a0
                 subq.w  #1,d7
                 bmi.w   .locret_F0E2
-                move.w  (ram_FF1762).l,d2
+                move.w  (Race_ram_EventProgress).l,d2
                 subi.w  #$10,d2
 
 .loc_F0BC:
@@ -1297,7 +1297,7 @@ Race_BuildActorObjectList:
                 bne.w   .loc_F6D6
                 cmpi.b  #2,$6E(a1)
                 bne.w   .loc_F6D6
-                cmpi.w  #8,(ram_FF1B28).l
+                cmpi.w  #8,(Race_ram_ImpactScale).l
                 bmi.w   .loc_F6D6
                 bsr.w   Race_AddActorFallObject
 
@@ -1451,7 +1451,7 @@ Race_AddActorLeanObject:
 
 .loc_F8BC:
                 asl.w   #3,d0
-                add.w   (ram_FF1764).l,d0
+                add.w   (Race_ram_SpeedTier).l,d0
                 move.b  (a4,d0.w),d1
                 ext.w   d1
                 btst    #7,-$A(a0)
@@ -2330,7 +2330,7 @@ Race_SelectActorObjectShape:
 
 .loc_101DC:
                 addq.w  #3,d1
-                move.w  d1,(ram_FF1764).l
+                move.w  d1,(Race_ram_SpeedTier).l
                 add.w   d1,d0
 
 .loc_101E6:
@@ -2513,7 +2513,7 @@ sub_1030A:
 .loc_10350:
                 move.w  d2,d1
                 addq.w  #2,d1
-                move.w  d1,(ram_FF1764).l
+                move.w  d1,(Race_ram_SpeedTier).l
                 btst    #6,RaceActor_StateFlags(a1)
                 beq.w   .loc_10370
                 move.w  #2,d1

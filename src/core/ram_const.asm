@@ -201,8 +201,8 @@ RoadMarking_SpriteVerticalSize equ $FF175A
 RoadMarking_SpritePosX equ $FF175C
 RoadMarking_ColumnSizeBytes equ $FF175E
 RoadMarking_TileOffset equ $FF1760
-ram_FF1762 equ $FF1762
-ram_FF1764 equ $FF1764
+Race_ram_EventProgress equ $FF1762
+Race_ram_SpeedTier equ $FF1764
 ram_FF1766 equ $FF1766
 ram_FF1768 equ $FF1768
 ram_FF176A equ $FF176A
@@ -227,8 +227,8 @@ ram_FF18B0 equ $FF18B0
 ram_FF18B2 equ $FF18B2
 ram_FF18B4 equ $FF18B4
 ram_FF18B6 equ $FF18B6
-ram_FF18B8 equ $FF18B8
-ram_FF18BA equ $FF18BA
+Race_ram_PairImpactA equ $FF18B8
+Race_ram_PairImpactB equ $FF18BA
 ram_FF18BC equ $FF18BC
 ram_FF18BE equ $FF18BE
 ram_FF18FE equ $FF18FE
@@ -255,8 +255,8 @@ Race_ram_TrackScaleTable equ $FF1A6C
 RaceBike_ram_Parameters equ $FF1A70
 ram_FF1A96 equ $FF1A96
 ram_FF1A98 equ $FF1A98
-ram_FF1A9A equ $FF1A9A
-ram_FF1A9C equ $FF1A9C
+Race_ram_PairSpeedDeltaA equ $FF1A9A
+Race_ram_PairSpeedDeltaB equ $FF1A9C
 ram_FF1A9E equ $FF1A9E
 ram_FF1AA0 equ $FF1AA0
 Race_ram_PlayerRpmDivisor equ $FF1AA2
@@ -317,7 +317,7 @@ Race_ram_Started equ $FF1B20
 ram_FF1B22 equ $FF1B22
 ram_FF1B24 equ $FF1B24
 Race_ram_BikeDamage equ $FF1B26
-ram_FF1B28 equ $FF1B28
+Race_ram_ImpactScale equ $FF1B28
 ram_FF1B2E equ $FF1B2E
 ram_FF1B30 equ $FF1B30
 ram_FF1B32 equ $FF1B32
@@ -369,7 +369,7 @@ Race_ram_TimeTicks equ $FF1EA2
 Race_ram_TimeMinutes equ $FF1EA4 ; bcd
 Race_ram_TimeSeconds equ $FF1EA5 ; bcd
 Race_ram_SpawnTimer equ $FF1EA6
-ram_FF1EA8 equ $FF1EA8
+Race_ram_EventTimer equ $FF1EA8
 
 RacePlayerA equ $FF1EAA ; struct of size $80
 RaceActor_PosZ equ $2

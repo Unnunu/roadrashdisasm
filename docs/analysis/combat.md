@@ -130,6 +130,9 @@ Applied in R6: `Race_InitExtraStaticActor`, `Race_UpdateExtraStaticActor`,
 `Race_UpdateActorSpeedState`, `Race_FindTargetActor`,
 `Race_ScanTargetDistance`.
 
+Applied in R20: `Race_ram_PairSpeedDeltaA/B`, `Race_ram_PairImpactA/B`,
+`Race_ram_ImpactScale`, `Race_ram_EventTimer`.
+
 Applied in R14: `Race_UpdateActorPairImpact`, `Race_ClampActorPairY`,
 `Race_ApplyFallKnockdown`, `Race_AdjustActorTrackPositions`,
 `Race_UpdateCollisionSpeedState`, `Race_ApplyImpactSpeedLoss`.
@@ -199,7 +202,7 @@ and attack timing tables (`ram_FF1AC2`, `ram_FF1ABC`, `unk_257E2/E8/EE`).
 ## Damage
 
 `Race_ScaleImpactDamage` is the impact scale: if `ram_FF1768` is non-zero it returns 0;
-otherwise `abs(d0) >> 11` and stores it in `ram_FF1B28`.
+otherwise `abs(d0) >> 11` and stores it in `Race_ram_ImpactScale`.
 
 | Source | Added to `Race_ram_BikeDamage` | Notes |
 |---|---|---|

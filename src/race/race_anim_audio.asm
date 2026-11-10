@@ -736,7 +736,7 @@ Race_ScaleImpactDamage:
 .loc_14362:
                 lsr.w   #8,d0
                 lsr.w   #3,d0
-                move.w  d0,(ram_FF1B28).l
+                move.w  d0,(Race_ram_ImpactScale).l
 
 .locret_1436C:
                 rts
@@ -1542,10 +1542,10 @@ unk_147FC:      dc.b   0
 
 
 Race_UpdateActorPairImpact:
-                clr.w   (ram_FF1A9A).l
-                clr.w   (ram_FF1A9C).l
-                clr.w   (ram_FF18B8).l
-                clr.w   (ram_FF18BA).l
+                clr.w   (Race_ram_PairSpeedDeltaA).l
+                clr.w   (Race_ram_PairSpeedDeltaB).l
+                clr.w   (Race_ram_PairImpactA).l
+                clr.w   (Race_ram_PairImpactB).l
                 move.l  RaceActor_PreviousX(a1),d0
                 sub.l   RaceActor_PreviousX(a2),d0
                 bpl.w   .loc_148AE
@@ -1574,7 +1574,7 @@ Race_UpdateActorPairImpact:
                 move.w  RaceActor_AttackOverlap(a1),d1
                 add.w   d1,$22(a1)
                 move.w  #0,RaceActor_AttackOverlap(a1)
-                move.w  #0,(ram_FF18BA).l
+                move.w  #0,(Race_ram_PairImpactB).l
                 bra.w   .loc_1491E
 
 
@@ -1603,7 +1603,7 @@ Race_UpdateActorPairImpact:
                 move.w  RaceActor_AttackOverlap(a2),d1
                 add.w   d1,$22(a2)
                 move.w  #0,RaceActor_AttackOverlap(a2)
-                move.w  #0,(ram_FF18B8).l
+                move.w  #0,(Race_ram_PairImpactA).l
                 bra.w   .loc_14962
 
 
@@ -1670,7 +1670,7 @@ Race_StealClub:
                 move.w  d1,RaceActor_AttackOverlap(a1)
                 cmpa.l  #RacePlayerA,a1
                 bne.w   .locret_14B02
-                move.w  d1,(ram_FF1A9A).l
+                move.w  d1,(Race_ram_PairSpeedDeltaA).l
                 tst.w   (ram_FF1904).l
                 beq.w   .locret_14B02
                 move.b  #$14,(ram_FF1AD6).l
@@ -1712,7 +1712,7 @@ Race_StealClub:
 .loc_14A62:
                 cmpa.l  #ram_FF1F2A,a2
                 beq.w   .locret_14B02
-                move.w  d1,(ram_FF18BA).l
+                move.w  d1,(Race_ram_PairImpactB).l
 
 .loc_14A72:
                 cmpa.l  #ram_FF1F2A,a2
@@ -1734,7 +1734,7 @@ Race_StealClub:
                 clr.b   RaceActor_AttackFlags(a2)
                 move.b  #$3C,RaceActor_AttackTimer(a2) ; '<'
                 move.b  #$15,(ram_FF1AD6).l
-                move.w  #$1E,(ram_FF1EA8).l
+                move.w  #$1E,(Race_ram_EventTimer).l
                 bra.w   .locret_14B02
 
 
@@ -1762,7 +1762,7 @@ Race_StealClubMirror:
                 muls.w  d0,d1
                 asr.l   #8,d1
                 move.w  d1,RaceActor_AttackOverlap(a2)
-                move.w  d1,(ram_FF1A9C).l
+                move.w  d1,(Race_ram_PairSpeedDeltaB).l
                 cmpa.l  (Race_ram_NearestActor).l,a2
                 bne.w   .locret_14C3A
                 tst.w   (ram_FF1906).l
@@ -1809,7 +1809,7 @@ Race_StealClubMirror:
                 move.w  #$50,d1 ; 'P'
 
 .loc_14BAE:
-                move.w  d1,(ram_FF18B8).l
+                move.w  d1,(Race_ram_PairImpactA).l
 
 .loc_14BB4:
                 btst    #6,RaceActor_StateFlags(a2)
@@ -1829,7 +1829,7 @@ Race_StealClubMirror:
                 move.b  #2,RaceActor_AttackPhase(a2)
                 move.b  #$3C,RaceActor_AttackTimer(a2) ; '<'
                 move.b  #$15,(ram_FF1AD6).l
-                move.w  #$1E,(ram_FF1EA8).l
+                move.w  #$1E,(Race_ram_EventTimer).l
                 bra.w   .locret_14C3A
 
 
@@ -1852,7 +1852,7 @@ Race_StealClubMirror:
 Race_ApplyFallKnockdown:
                 tst.b   $6E(a1)
                 bpl.w   .loc_14C8C
-                move.w  (ram_FF18B8).l,d0
+                move.w  (Race_ram_PairImpactA).l,d0
                 beq.w   .loc_14C8C
                 mulu.w  (ram_FF18AC).l,d0
                 sub.w   d0,$5C(a1)
@@ -1869,7 +1869,7 @@ Race_ApplyFallKnockdown:
 .loc_14C8C:
                 tst.b   $6E(a2)
                 bpl.w   .locret_14CEA
-                move.w  (ram_FF18BA).l,d0
+                move.w  (Race_ram_PairImpactB).l,d0
                 beq.w   .locret_14CEA
                 mulu.w  (ram_FF18AC).l,d0
                 sub.w   d0,$5C(a2)
@@ -1972,9 +1972,9 @@ Race_AdjustActorTrackPositions:
 
 .loc_14DB0:
                 move.w  $C(a1),d1
-                add.w   (ram_FF1A9A).l,d1
+                add.w   (Race_ram_PairSpeedDeltaA).l,d1
                 move.w  $C(a2),d2
-                add.w   (ram_FF1A9C).l,d2
+                add.w   (Race_ram_PairSpeedDeltaB).l,d2
                 btst    #1,RaceActor_StateFlags(a1)
                 beq.w   .loc_14DD6
                 add.w   d0,d2
@@ -2129,19 +2129,19 @@ sub_14E38:
                 jsr     (Audio_StopMusicChannel3).l
 
 .loc_14EE6:
-                tst.w   (ram_FF1EA8).l
+                tst.w   (Race_ram_EventTimer).l
                 beq.w   .loc_14F1E
-                move.w  (ram_FF1EA8).l,d0
+                move.w  (Race_ram_EventTimer).l,d0
                 sub.w   (Race_ram_FrameDelay).l,d0
                 ble.w   .loc_14F16
-                move.w  d0,(ram_FF1EA8).l
+                move.w  d0,(Race_ram_EventTimer).l
                 cmpi.b  #$15,(ram_FF1AD6).l
                 beq.w   .loc_14F1E
                 bra.w   .loc_14F58
 
 
 .loc_14F16:
-                move.w  #0,(ram_FF1EA8).l
+                move.w  #0,(Race_ram_EventTimer).l
 
 .loc_14F1E:
                 clr.l   d0
