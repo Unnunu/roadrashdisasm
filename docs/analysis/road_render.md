@@ -108,11 +108,19 @@ rendering each object and restores them on overflow.
 - `Road_ShapeTable` (`0x3BF1A`) is a table of 564 shape-data pointers (`src/race/race.asm` uses
   it at `0x10018`/`0x10352` too); `word_3C7EA` holds the shape count `$234`.
 - Shape data (`$3C7EC-$7DCA7`) is now extracted in `src/data/road_shapes.asm` (table/count from
-  source, bytes raw; format TODO). `Road_ScaleShape` reads `(a2)`, `1(a2)`, `2(a2)` and
-  scales them by `scale>>2`; `Road_ProjectShapeSpecial`/`Road_ProjectShape` add the object x and the `$C0`/`$200`
-  constants, apply the mirror bit (bit15 of `$A(a0)`), and set `ram_FFDE62` when the
-  object leaves the range. The exact shape-byte format and projection formulas are
-  **TODO** (needs the shape data + race-side record writers).
+  source, bytes raw; format TODO).
+- `Road_ScaleShape` reads shape bytes `(a2)`/`1(a2)` and uses `2(a2)` when the
+  mirror bit (`$A` bit15) is set: `d5/d6 = byte * (scale>>2) <<2 >>16`, i.e. a
+  fixed-point `byte * scale >> 16` pair.
+- `Road_ProjectShapeSpecial` multiplies shape byte0 by `scale>>2`, subtracts the
+  edge (`d5`), adds object X, `$C0`, applies the mirror bit and clips; it returns
+  the projected edge and sets `ram_FFDE62` when outside `0..edge`.
+- `Road_ProjectShape` is the non-special variant: it uses half the width, stores
+  the clip in `ram_FF135E`, and also sets `ram_FFDE62` on overflow.
+- `Road_DrawObject` calls the special path when `$B` bit7 is set (two-part object),
+  storing `ram_FF1356/1358` (first edge) and `ram_FF135A/135C/135E/1360`
+  (second shape). The exact shape-byte format and the `$C0/$200` constants are
+  still under verification.
 
 ## RAM summary
 
