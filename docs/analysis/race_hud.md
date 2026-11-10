@@ -70,6 +70,10 @@ table/tile array for the two needles via `UpdateAnimation`).
 - `RaceHud_DrawNumber4Digits` callers (possibly unused in race).
 - Dynamic verification of the name/place timer and bar colors.
 
+## Applied renames
+
+- R16: `RaceHud_NeedleScript` (speed/RPM script), `RaceHud_ram_OdometerFont`.
+
 ## Rename proposals
 
 Applied: `unk_D58E` -> `RaceHud_dRankStrings`. Remaining data/fields are TODO.
