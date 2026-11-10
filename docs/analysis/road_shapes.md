@@ -60,7 +60,13 @@ Working layout (static + dynamic):
   (non-special) and derives `ram_FF1332`; `Road_InterpolateRightEdge` reads
   `P+3`. The remaining shape bytes feed the tile-column writer.
 
-- `[dynamic]` For `$56`, `Road_ScaleShape` sees `P=$05994C` and reads
+- `[dynamic]` At `Road_WriteTileColumns` the first two objects had
+`ram_FF0D2A=$059952`/`$059CEE` (shape pointer + 6), strip counts
+`ram_FF132E=4`/`3`, `ram_FF1330=$35`, and row/tile bytes dominated by `$00`/`$33`.
+This is consistent with header word + two control bytes followed by raw
+column/tile bytes.
+
+`[dynamic]` For `$56`, `Road_ScaleShape` sees `P=$05994C` and reads
 `10/37/20`; `Road_DrawStrip` then receives `a0=$05994E` (P+2), whose first word is
 `$2036`. This confirms the P+2 handoff for the special/two-part path.
 

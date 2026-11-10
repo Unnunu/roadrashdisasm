@@ -100,6 +100,9 @@ rendering each object and restores them on overflow.
   edge tiles.
 - The special road section (`ram_FF1354/56/58`) handles the elevated/overpass edge
   offset.
+- `[dynamic]` First `Road_WriteTileColumns`: `ram_FF0D2A` points at shape+6
+  (`$059952`), strip counts `ram_FF132E=4`, `ram_FF1330=$35`, `ram_FF0D28=1`;
+  row bytes are raw tile/column data (`$33` etc.).
 - `RiderSprites_Build` builds the rider/bike chain; the object x/y/scale/shape are fed from the
   `ram_FFDE*` fields.
 
