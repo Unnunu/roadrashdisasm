@@ -1,7 +1,7 @@
 # Analysis: asset splitting and preview pipeline
 
-- **Status:** Phase A (tail images/palettes) + confirmed race HUD/track palettes;
-  `race_map_0` tileset and audio remain deferred
+- **Status:** Phase A (tail images/palettes) + race HUD/track palettes; visual IDs for
+  track backgrounds/clouds/overlay recorded; `race_map_0` tileset and audio remain deferred
 - **Tool:** `tools/assets.py` + `tools/asset_specs.json`
 - **Generated:** `assets/` (git-ignored; never committed because the extracted
   artwork is copyrighted)
@@ -106,6 +106,25 @@ Generated from the current ROM:
 python3 tools/assets.py all
 ```
 
+### Visual identifications
+
+Reviewed from the generated previews (`[dynamic]`, user visual review):
+
+| Asset | Identification |
+|---|---|
+| `race_track_background_0..4` | One stacked strip split into upper/lower halves: upper = distant background (sky/mountains/forest), lower = nearer background. The game parallax-scrolls both layers. |
+| `race_image_0` | Cloud layer; scrolls horizontally as the track turns. |
+| `intro_natasha_overlay` | Natasha face overlay; previously rendered with the wrong intro palette, now uses the Natasha portrait palette (`portrait0`). |
+| `race_road` | Road-tile/side strip; previews rendered for all five track palettes. |
+| `results_busted` | Result/busted panel strip; preview generated with the result-panel palette. |
+| `results_image_extra` | Result-screen extra tiles; preview generated with the result-panel palette. |
+| `endlevel_animation_tiles` | End-level animation tile atlas; see `atlas_line0.png`. |
+
+`race_map_0` remains unrendered because its `$4180` map base points at the
+unidentified VRAM `$3000` tileset. Five candidate previews using
+`race_tiles_0..4` were generated for comparison:
+`assets/maps/race_map_0/preview_tileset0..4.png`.
+
 Newly rendered track backgrounds:
 
 | Asset ID | Source | Size | Preview |
@@ -124,9 +143,14 @@ and palette regions.
 ## Deferred
 
 - `race_map_0` (`unk_9B2F0`, 40×17): base tile `$4180` points at VRAM `$3000`;
-  the tile source/layout is still unknown, so the preview is disabled.
-- `race_road` (`unk_9DDCC`): the `(8,24)` block at `+$724` is a road-tile table,
-  not a normal nametable; preview deferred.
-- `results_busted`, `results_image_extra`: palette TODO.
+  the tile source/layout is still unknown. Candidate previews exist, but the
+  correct tileset is not confirmed.
+- `endlevel_animation_data` (`0x8BF12`): animation stream, raw data; format TODO.
+
+Shape IDs are not asset files. They are indices into `Road_ShapeTable`
+(`0x3BF1A`, 564 entries) in `src/data/road_shapes.asm`; the shape data is
+`0x3C7EC..0x7DBA7`. A local lookup was generated as `assets/road_shapes.csv`
+(ID, pointer, first 16 bytes). See `docs/analysis/road_shapes.md` for the sampled
+IDs (`$56`, `$57`, `$1C3`, `$1C4`, `$15E`).
 - `EndLevel_AnimationData`, road/sprite/object streams, audio: raw `.bin` with
   metadata; previews later.

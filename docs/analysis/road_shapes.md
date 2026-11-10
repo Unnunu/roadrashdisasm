@@ -92,6 +92,13 @@ passes `a0=$05994E` (P+2): left control `$20`, right control `$36`, fill word
 special-path table above; exact tile/row pixel mapping is still TODO from
 `Road_WriteTileColumns`.
 
+## Shape ID lookup
+
+Shape IDs are **not** in `assets/`; they are indices into `Road_ShapeTable` at
+`0x3BF1A` (`src/data/road_shapes.asm`), with data at `0x3C7EC..0x7DBA7`.
+The generated local lookup `assets/road_shapes.csv` lists ID, pointer and the first
+16 bytes. Sampled IDs are `$56`, `$57`, `$1C3`, `$1C4`, `$15E`.
+
 ## Open questions
 
 - Exact row/tile byte mapping and the `Road_WriteTileColumns` 4-byte strip layout.

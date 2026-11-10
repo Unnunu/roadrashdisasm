@@ -56,8 +56,8 @@
       "address": "0x7ED66",
       "size": "0x2C6",
       "category": "images",
-      "preview": false,
-      "palette_group": null,
+      "preview": true,
+      "palette_group": "results",
       "variants": null,
       "atlas_lines": null,
       "transparent0": false,
@@ -371,14 +371,14 @@
       "address": "0x9DDCC",
       "size": "0x5D6",
       "category": "tilesets",
-      "preview": false,
-      "palette_group": null,
+      "preview": true,
+      "palette_group": "race",
       "variants": null,
       "atlas_lines": null,
       "transparent0": false,
       "compression": "w",
       "palette_groups": null,
-      "race_tracks": null,
+      "race_tracks": 5,
       "tileset_asset": null
     },
     {
@@ -691,8 +691,8 @@
       "address": "0xAF26C",
       "size": "0x696",
       "category": "tilesets",
-      "preview": false,
-      "palette_group": null,
+      "preview": true,
+      "palette_group": "results",
       "variants": null,
       "atlas_lines": null,
       "transparent0": false,
@@ -726,7 +726,7 @@
       "size": "0x9DC",
       "category": "images",
       "preview": true,
-      "palette_group": "intro",
+      "palette_group": "portrait0",
       "variants": null,
       "atlas_lines": [
         0
@@ -1047,6 +1047,16 @@
     "endlevel": {
       "asset": "endlevel_window",
       "offset": "0x2E4",
+      "colors": 64
+    },
+    "results": {
+      "asset": "result_panel",
+      "offset": "0xE4",
+      "colors": 64
+    },
+    "portrait0": {
+      "asset": "portrait_0",
+      "offset": "0xEE4",
       "colors": 64
     }
   },
