@@ -162,6 +162,8 @@ Dynamic snapshots `[dynamic]` (2026-11-09): active list = player A + 7 opponents
 | `+$2A` | word | screen/road Y offset (TODO) | `[dynamic]` `-$08`/`$223` |
 | `+$30` | word | current road/target Y | `[dynamic]`; HUD/HInt |
 | `+$4A` / `+$4C` / `+$4E` | word | collision/sprite extents (TODO) | `[dynamic]` `$0D` |
+| `+$50` | word | attack reach/knockback (armed `$28`, unarmed `$19`) | `[dynamic]` |
+| `+$52` | word | attack overlap/penetration | `[dynamic]` |
 | `+$56` | word | sentinel/timer; normal actors `$FFFF` | `[dynamic]` |
 | `+$5A` | word | attack/impact cooldown | combat |
 | `+$5C` / `+$5E` / `+$60` | word | tile base / sprite graphics fields | `[dynamic]`/graphics table |

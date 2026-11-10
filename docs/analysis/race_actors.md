@@ -106,8 +106,10 @@ opponents. `Race_CreateActors` walks `Race_ActorList` and this id list in parall
 | `+$5C` player A | `ram_FF18AA` (tile base `$A00`); `+$5E/+$60` = `ram_FF18B2/B4` (`$400/$180`). |
 
 The player definition (`$4B`) is all zero; the player's real stats come from
-`Race_LoadBikeData`/`Race_InitPhysicsConstants` and the input/physics. The player B
-struct `$FF26AA` is not in `Race_ActorList` (2P/inactive state; TODO).
+`Race_LoadBikeData`/`Race_InitPhysicsConstants` and the input/physics. `Race_CreateActors`
+chooses the opponent-id list via `Menu_ram_Player`; the player B struct `$FF26AA` is
+not in `Race_ActorList` and stayed zero in the demo. Its 2P role is therefore still
+unverified and needs a native 2P test.
 
 ## Actor field matrix (current evidence)
 
@@ -140,6 +142,8 @@ routines; `+$06` is its low word, not an independent X coordinate.
 | `+$46` | word | curve/direction sign; AI flips it | `[dynamic]` `-$03` under forced steering |
 | `+$4A` | word | collision/proximity extent | `[dynamic]` `$0D` active, `$0E` hard-left; `[static]` `Race_UpdateCollision` |
 | `+$4C`/`+$4E` | word | left/right sprite/collision extents | `[dynamic]` `$0C/$0F` hard-left; exact role TODO |
+| `+$50` | word | attack reach/knockback | `[dynamic]` armed `$28`, unarmed `$19`; `Race_GetAttackerReach` |
+| `+$52` | word | overlap/penetration | `[dynamic]` `$42` armed / `$33` unarmed |
 | `+$56` | word | sentinel/timer; `$FFFF` normal actors | `[dynamic]` `$FFFF`; static `$E2/$17` |
 | `+$5A` | word | attack/impact cooldown | `[static]/[dynamic]` combat; zero in demo |
 | `+$5C` | word | tile/animation base | `[confirmed]` Player `$A00 -> $507`; graphics table |
@@ -176,16 +180,18 @@ lists.
 | `$68` | 5 | lean/curve update enable | `[static]` `Race_UpdateLeanCurve` calls |
 | `$68` | 6 | active/update marker | `[dynamic]` active `$42`, inactive `$00`; confirmed |
 | `$68` | 7 | finish/timer stop | `[static]` race timer/finish paths; medium |
-| `$69` | 0/1 | turn/heading state; exact split TODO | `[dynamic]` 0/2/3/7 under steering |
+| `$69` | 0/1 | ahead/behind and above/below state | `[static]` `Race_UpdateActorPairCollision`; dynamic 0/2/3 |
 | `$69` | 2 | steering active | `[dynamic]` forced steering `$04`/`$07` |
 | `$69` | 3 | on-foot direction/stance | `[static]` `Race_HandleInputOnFoot`; medium |
 | `$69` | 4/5/6 | attack active/side/low | `[confirmed]` combat tests |
-| `$69` | 7 | direction/curve state | `[static]` AI `Race_UpdateActorPairCollision`; TODO |
+| `$69` | 7 | contact/knockback flag | `[dynamic]` `$91` after pair contact; source pair collision |
 
 `$FF2FAA` is aliased by `$FF2FAA+$71 = $FF301B`; `Race_CreateActors` writes
 `$12` there, so it is the **third static-like actor slot** (indices `$10/$11` are the
-static list). Its other fields remain zero in the demo; the owner/updater (`sub_12974`
-and collision paths) is still TODO.
+static list). Its other fields remain zero in the demo. `sub_128E0` initializes it
+after `ProgressSnapshotB >= $708`; `sub_12974` updates it; collision paths also read
+it. This is the best-supported **late-race police/static actor**, but the final role
+is still a hypothesis.
 
 ## Graphics table (`Race_ActorGraphicsTable`, `0x258EE`)
 
