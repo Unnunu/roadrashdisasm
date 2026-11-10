@@ -99,6 +99,25 @@ still TODO.
   `ram_FFD7C4`/`ram_FFD7C8` against player progress; `sub_10C4E` consumes the
   resulting object/shape data into the object records.
 
+### Track-object stream format (static hypothesis)
+
+`sub_FC0E` reads 4-byte entries from the `ram_FFD7CC` cursor (track stream in
+`RaceTrack_Data4`-adjacent data):
+
+- word at `+0`: position/progress key; compared with `Race_ram_PlayerProgress`;
+- byte at `+2`: low nibble selects an object/shape entry; high nibble is a length
+  multiplier used by the cursor/stream advance;
+- `sub_FE3A` projects the object into the current `Road_ObjectArray` record; the
+  shape index is `byte2_low + $173`, the per-shape depth comes from
+  `ram_FFD77C`, and the type data comes from the 8-byte `unk_14764` records;
+- record flags carry the shadow/priority/mirror bits already documented for
+  `Road_DrawObject`.
+
+`sub_109B6` maintains the same stream cursor during normal play: it rewinds when
+past entries are behind the player, advances when the next entry is visible, and
+keeps `ram_FFD7C8` as the accumulated stream distance. The exact nibble units and
+the `RaceTrack_Data4` terminator role are still TODO.
+
 These helpers are called from `Race_Update` around the road-profile/visible-list
 stage (`sub_FD96`, `sub_FB1E`, `sub_F40C`, `sub_109B6`, `sub_FC0E`).
 

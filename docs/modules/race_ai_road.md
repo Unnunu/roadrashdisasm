@@ -39,8 +39,9 @@ standings/results helpers and the speed display: `PiecewiseLinearInterpolation`,
 | Function | Address | Contract | Algorithm | Data | Hardware | Why | Dynamic | Status |
 |----------|---------|----------|-----------|------|----------|-----|---------|--------|
 | speed/decimal | `0xF108`/`0xF11C` | [x] | [x] | [x] | - | [x] | [ ] | analyzed |
-| visible list | `0x10D46` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
+| visible list | `0x10D46` | [x] | [x] | [x] | [x] | [x] | [~] | analyzed + object snapshot |
 | road profile fill | `0xECE0` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
+| track-object stream | `0xFC0E`/`0x109B6` | [~] | [~] | [~] | [x] | [~] | [~] | format hypothesis + snapshot |
 | object-list/render helpers | `0xF40C`+ | [~] | [~] | [x] | [x] | [~] | [~] | partial + object snapshot |
 | road/profile/objects | `0xF40C`+ | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | TODO |
 
