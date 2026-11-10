@@ -17,7 +17,7 @@ image/nametable/palette pointer tables.
 | Data | Address | Contract | Algorithm | Data | Hardware | Why | Dynamic | Status |
 |------|---------|----------|-----------|------|----------|-----|---------|--------|
 | `unk_7DCA8` | `0x7DCA8` | [x] | [~] | [x] | - | [~] | [ ] | partial |
-| `unk_7DEAA` (needle script) | `0x7DEAA` | [x] | [~] | [x] | [x] | [x] | [ ] | partial |
+| `RaceHud_NeedleScript` (needle script) | `0x7DEAA` | [x] | [~] | [x] | [x] | [x] | [ ] | partial |
 | `Shop_BikePalettes` | `0x7E370` | [x] | - | [x] | [x] | [x] | [ ] | analyzed |
 | `unk_7E470` (actor palettes) | `0x7E470` | [x] | - | [x] | [x] | [x] | [ ] | analyzed |
 | `unk_7E670/684/68E/698` | `0x7E670`+ | [x] | - | [x] | [x] | [x] | [ ] | analyzed |

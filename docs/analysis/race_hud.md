@@ -32,11 +32,11 @@
 SpeedArrow, RPMArrow, Odometer. All write `Race_ram_CurrentHudBuffer` (or the sprite
 table/tile array for the two needles via `UpdateAnimation`).
 
-- Needles use `unk_7DEAA` (animation script at `0x7DEAA`, gap) with
+- Needles use `RaceHud_NeedleScript` (animation script at `0x7DEAA`, gap) with
   `UpdateAnimation`; speed `d0 = min(speed/453,31)` at `X=$88,Y=$80`; RPM divisor comes
   from the gear curve `RaceBike_ram_Parameters[gear]` (`Race_ram_PlayerRpmDivisor`), frame = `(speed/divisor)/682`.
 - Odometer reads `RacePlayerA+POSX_HIGH`, divides by 330 and draws three digits from
-  the `ram_FF352C` font into `CurrentHudBuffer+$E00`.
+  the `RaceHud_ram_OdometerFont` font into `CurrentHudBuffer+$E00`.
 - Stamina: opponent (`Race_ram_NearestActor` `$5C/5`) at `+$9B8` (`y=19,x=28`), player
   (`RacePlayerA+$5C/5`) at `+$984` (`y=19,x=2`); colors `$E5FF`/`$A427`/`$842F`.
 - Bike HP: `$20 - Race_ram_BikeDamage` clamped, at `+$99C` (`y=19,x=14`).
@@ -54,10 +54,10 @@ table/tile array for the two needles via `UpdateAnimation`).
 ## Data / RAM
 
 - `RaceHud_dRankStrings` (`0xD58E`): `" 1st"`..`"16th"` (4 bytes each).
-- `unk_7DEAA`: speed/RPM needle animation script (now `src/data/race_misc_data.asm`), frames/tilemap
+- `RaceHud_NeedleScript`: speed/RPM needle animation script (now `src/data/race_misc_data.asm`), frames/tilemap
   still TODO.
 - `RaceBike_ram_Parameters`: gear curve (divisor source); `Race_ram_PlayerRpmDivisor`: RPM divisor.
-- `ram_FF352C`: odometer digit font (8 longs/digit).
+- `RaceHud_ram_OdometerFont`: odometer digit font (8 longs/digit).
 - `Race_ram_PlayerPlace`: place; `Race_ram_NearestActor`: nearest actor; `Race_ram_BikeDamage $FF1B26`.
 - `RaceHud_ram_NameTimer`/`RaceHud_ram_LastPlace`/`RaceHud_ram_Rank`: name timer / last place / rank; `RaceHud_ram_TextDescriptor`: text descriptor.
 - `Race_ram_CurrentHudBuffer $FF38C8`; `CurrentSpriteAttributeTable $FF38AC`;
@@ -65,8 +65,8 @@ table/tile array for the two needles via `UpdateAnimation`).
 
 ## Open questions
 
-- `unk_7DEAA` script layout and the `RaceBike_ram_Parameters` gear curve.
-- `ram_FF352C` font layout and the exact HUD palette/colors.
+- `RaceHud_NeedleScript` script layout and the `RaceBike_ram_Parameters` gear curve.
+- `RaceHud_ram_OdometerFont` font layout and the exact HUD palette/colors.
 - `RaceHud_DrawNumber4Digits` callers (possibly unused in race).
 - Dynamic verification of the name/place timer and bar colors.
 

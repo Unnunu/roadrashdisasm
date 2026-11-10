@@ -420,7 +420,7 @@ alternate HUD. See `docs/analysis/race_hud_debug.md`.
 | `$FF1A70` | gear curve | - | RPM-arrow divisor source. |
 | `$FF1AA2` | RPM divisor | 2 | `speed/divisor/682`. |
 | `$D58E` | `RaceHud_dRankStrings` | 64 | `" 1st"`..`"16th"`, 4 bytes each. |
-| `$7DEAA` | `unk_7DEAA` | - | Speed/RPM needle animation script (gap). |
+| `$7DEAA` | `RaceHud_NeedleScript` | - | Speed/RPM needle animation script (gap). |
 
 `RaceHud_Draw` -> time/place/stamina/HP/names/speed/RPM/odometer. HUD entry offset is
 `2*(y*64+x)`; tile entries set bit 15 + palette. See `docs/analysis/race_hud.md`.

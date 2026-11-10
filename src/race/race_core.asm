@@ -676,7 +676,7 @@ Race_LoadHUD:
                 move.l  (a0)+,d0
                 asl.w   #3,d0
                 subq.w  #1,d0
-                lea     (ram_FF352C).l,a1
+                lea     (RaceHud_ram_OdometerFont).l,a1
 .loc_AD8E:
                 move.l  (a0)+,(a1)+                
                 dbf     d0,.loc_AD8E

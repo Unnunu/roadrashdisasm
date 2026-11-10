@@ -48,12 +48,12 @@ when the tiles are preloaded in VRAM (e.g. `EndLevel_UpdateAnimation`).
 
 ## Users
 
-- Race HUD needles (`unk_7DEAA` script), `RiderSprites_Build`, `EndLevel_UpdateAnimation`,
+- Race HUD needles (`RaceHud_NeedleScript` script), `RiderSprites_Build`, `EndLevel_UpdateAnimation`,
   and raced actor/sprite code; `UpdateAnimation2` for preloaded VRAM.
 
 ## Open questions
 
-- Individual animation scripts (`unk_7DEAA`, `unk_7DF??`, end-level `$8DC2`) and frames.
+- Individual animation scripts (`RaceHud_NeedleScript`, `unk_7DF??`, end-level `$8DC2`) and frames.
 - The exact SAT link/priority semantics and maximum sprite counts.
 - Dynamic verification of scripts and tile copies.
 

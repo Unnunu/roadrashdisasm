@@ -29,7 +29,7 @@ RaceHud_Draw:
  ; *************************************************
 ; Function RaceHud_DrawSpeedArrow
 ; Draws the speed needle; speed/453 -> animation frame (clamped to 31).
-; In:  RacePlayerA speed; unk_7DEAA script
+; In:  RacePlayerA speed; RaceHud_NeedleScript script
 ; Out: sprite table/tile array (UpdateAnimation)
 ; Clobbers: d0-d2/a0/a1/a4
 ; *************************************************
@@ -46,7 +46,7 @@ RaceHud_DrawSpeedArrow:
 .loc_D2BA:
                 movea.l (Race_ram_CurrentSpriteAttributeTable).l,a0; sprite attribute table
                 movea.l (Race_ram_CurrentSpriteTileArray).l,a1 ; sprite tile array
-                lea     (unk_7DEAA).l,a4 ; animation script
+                lea     (RaceHud_NeedleScript).l,a4 ; animation script
                 move.w  #$88,d1 ; X = 8 + $80
                 move.w  #$80,d2 ; Y = 0 + $80
                 jsr     (UpdateAnimation).l
@@ -60,7 +60,7 @@ RaceHud_DrawSpeedArrow:
  ; *************************************************
 ; Function RaceHud_DrawRPMArrow
 ; Draws the RPM needle from the gear curve (RaceBike_ram_Parameters) and speed.
-; In:  RacePlayerA speed/gear; RaceBike_ram_Parameters; unk_7DEAA
+; In:  RacePlayerA speed/gear; RaceBike_ram_Parameters; RaceHud_NeedleScript
 ; Out: Race_ram_PlayerRpmDivisor; sprite table/tile array
 ; Clobbers: d0-d2/a0/a1/a4
 ; *************************************************
@@ -87,7 +87,7 @@ RaceHud_DrawRPMArrow:
                 move.w  #$6C,d2 ; Y = -14 + $80
                 movea.l (Race_ram_CurrentSpriteAttributeTable).l,a0
                 movea.l (Race_ram_CurrentSpriteTileArray).l,a1
-                lea     (unk_7DEAA).l,a4
+                lea     (RaceHud_NeedleScript).l,a4
                 jsr     (UpdateAnimation).l
                 rts
 ; End of function RaceHud_DrawRPMArrow
@@ -98,7 +98,7 @@ RaceHud_DrawRPMArrow:
 
  ; *************************************************
 ; Function RaceHud_DrawOdometer
-; Draws the distance odometer digits using the ram_FF352C digit font.
+; Draws the distance odometer digits using the RaceHud_ram_OdometerFont digit font.
 ; In:  RacePlayerA POSX_HIGH
 ; Out: Race_ram_CurrentHudBuffer+$E00
 ; Clobbers: d0-d2/a0/a1
@@ -121,7 +121,7 @@ RaceHud_DrawOdometer:
                 addi.w  #$50,d0 ; 'P'
                 asl.w   #2,d0
                 move.w  d0,d2
-                lea     (ram_FF352C).l,a0
+                lea     (RaceHud_ram_OdometerFont).l,a0
                 adda.w  d0,a0
                 move.l  (a0)+,(a1)+
                 move.l  (a0)+,(a1)+
@@ -146,7 +146,7 @@ RaceHud_DrawOdometer:
                 add.w   d2,d0
 .loc_D39E:
                 move.w  d0,d2
-                lea     (ram_FF352C).l,a0
+                lea     (RaceHud_ram_OdometerFont).l,a0
                 adda.w  d0,a0
                 move.l  (a0)+,(a1)+
                 move.l  (a0)+,(a1)+
@@ -171,7 +171,7 @@ RaceHud_DrawOdometer:
                 add.w   d2,d0
 .loc_D3DA:
                 move.w  d0,d2
-                lea     (ram_FF352C).l,a0
+                lea     (RaceHud_ram_OdometerFont).l,a0
                 adda.w  d0,a0
                 move.l  (a0)+,(a1)+
                 move.l  (a0)+,(a1)+

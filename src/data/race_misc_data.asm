@@ -7,7 +7,7 @@
 unk_7DCA8:
     binclude "baserom.md",$7DCA8,$0202
 
-; unk_7DEAA: HUD speed/RPM needle animation script (tilemap + frame table).
+; RaceHud_NeedleScript: HUD speed/RPM needle animation script (tilemap + frame table).
 ; HUD speed/RPM needle animation script (32 frame pointers, max index $1F).
 RaceHud_NeedleTilemap equ $7E070
 RaceHud_NeedleFrame_0 equ $7DF30
@@ -42,7 +42,7 @@ RaceHud_NeedleFrame_28 equ $7E048
 RaceHud_NeedleFrame_29 equ $7E052
 RaceHud_NeedleFrame_30 equ $7E05C
 RaceHud_NeedleFrame_31 equ $7E066
-unk_7DEAA:
+RaceHud_NeedleScript:
     dc.l    RaceHud_NeedleTilemap
     dc.w    $001F
     dc.l    RaceHud_NeedleFrame_0

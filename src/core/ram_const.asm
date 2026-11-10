@@ -510,7 +510,7 @@ ram_FF3362 equ $FF3362
 ram_FF33C8 equ $FF33C8
 Race_ram_NumSpriteTiles equ $FF33CA
 Race_ram_RearviewTileRows equ $FF33CC
-ram_FF352C equ $FF352C
+RaceHud_ram_OdometerFont equ $FF352C
 ram_FF368C equ $FF368C
 ram_FF368E equ $FF368E
 ram_FF3690 equ $FF3690

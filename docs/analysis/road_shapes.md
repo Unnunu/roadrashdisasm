@@ -95,7 +95,7 @@ the `+2` handoff; exact row encoding is still TODO.
 - Shape record format: header/edges/width and the `scale>>2` fields.
 - Which table entries are road pieces vs object/background shapes.
 - Why some pointers repeat (mirroring/aliasing) and how flags select them.
-- `unk_7DCA8`, `unk_7DEAA` (HUD needle script), `Shop_BikePalettes` and the remaining
+- `unk_7DCA8`, `RaceHud_NeedleScript` (HUD needle script), `Shop_BikePalettes` and the remaining
   bytes before `src/core/top_level.asm` (`0x7DCA8-$7E6A1`) are now in `src/data/race_misc_data.asm`.
 
 ## Rename proposals
