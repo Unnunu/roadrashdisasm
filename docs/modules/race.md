@@ -184,8 +184,8 @@ Detailed top-level flow: `docs/analysis/race.md`; actors: `docs/analysis/race_ac
 - TODO: static group `$FF2EAA/$FF2F2A` uses a phase-specific layout after
   `Race_UpdateStaticActors` (`$16` becomes 0, `$30=$8000`); analyze that updater.
 - TODO: actor fields `$22/$24/$2A/$32/$36-$3C/$3E-$42/$46/$4A-$4E/$56/$68/$69`
-  under steering/off-road/2P tests.
-- TODO: player B (`$FF26AA`) is zero in the demo; verify in 2P mode.
+  under steering/off-road/static tests.
+- `[dynamic]` 2P is sequential: HUD name changes, same race code/PlayerA is used; `RacePlayerB` is a range marker, not a live actor.
 - TODO: trace the `a1` bases and map the player/actor structures field by field.
 - TODO: actor/physics/AI functions; `race_hud`/`road_marking`/`animation` data/scripts and dynamic checks.
 - Only after the field layout is confirmed: AS `STRUCT`s, convert confirmed uses,

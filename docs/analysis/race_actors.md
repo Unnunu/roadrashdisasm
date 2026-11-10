@@ -45,7 +45,7 @@ Observed demo state: `Race_ram_Started=1`, active count `8`, active list =
 `$FF1EAA,$FF232A,$FF23AA,$FF242A,$FF24AA,$FF252A,$FF25AA,$FF262A`; nearest target
 `$FF232A`; PlayerA `Speed=$00EE`, `$14=$0022`, `$26=$00000682`; `FrameDelay=7`
 (`Speed * 7 = $26`). Opponents have `Speed=$0111`/`$0118`, `$14=$27`/`$28`,
-`$26=$777`/`$7A8`. `$FF26AA` (player B) and `$FF2FAA` remain zero except the latter's
+`$26=$777`/`$7A8`. `$FF26AA` (`RacePlayerB`, a range marker in sequential 2P) and `$FF2FAA` remain zero except the latter's
 `$71=$12`; the static actors `$FF2EAA/$FF2F2A` diverge from normal actors after the
 update (`$16` becomes 0, `$30=$8000`, `$46=-$11/ +$10`, `$56=$E2/$17`, `$74=$0E/$01`).
 
@@ -264,8 +264,9 @@ open semantic question, not a reason to rename the field.
   other speeds.
 - `+$2A` origin/role and `+$4A/$4C/$4E` collision/sprite extents.
 - `+$56` sentinel/timer and `+$68` bit0/4/5/7 semantics; `$69` bit0/1/7 split.
-- Static group `$FF2EAA/$FF2F2A` and `$FF2FAA` (index `$12`); player B
-  (`$FF26AA`) is zero in demo.
+- Static group `$FF2EAA/$FF2F2A` and `$FF2FAA` (index `$12`); 2P is
+  sequential and uses `RacePlayerA` with the selected player data, while
+  `$FF26AA` is a region bound/zero slot.
 - Which fields are copied/overwritten by `Race_SpawnOpponent`/`Race_RecycleActor`.
 - Next dynamic tests: brake/accelerate via native pad or after disabling demo mode,
   off-road, 2P/player B, static/police appearance. Steering/lean is covered by the

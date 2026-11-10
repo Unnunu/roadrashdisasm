@@ -178,7 +178,7 @@ Actors/player structures:
 | Base | Size | Role |
 |---|---|---|
 | `RacePlayerA` (`$FF1EAA`) | `$80` | Player A actor (the actor/player struct type). |
-| `RacePlayerB` (`$FF26AA`) | `$80` | Player B actor (inactive/2P; TODO). |
+| `RacePlayerB` (`$FF26AA`) | `$80` | Player B region marker; 2P is sequential and uses `RacePlayerA` with the selected player data. |
 | `$FF1F2A`..`$FF262A` | `$80` | 15 opponent actors (`Race_ActorList`). |
 | `$FF2EAA`/`$FF2F2A` | `$80` | static actors (type `$10`). |
 | `$FF2FAA` | `$80`? | further actor-like instance (not in the static list); role TODO. |
@@ -251,7 +251,7 @@ Actors/player structures:
 
 1. Actor model: dynamic snapshots now confirm active/free split (8+7), `$12/$14/$26`,
    `$1E` previous X, `$68` bit6 active marker, `$42` signed lean; remaining
-   off-road/static/2P fields are listed in `docs/analysis/race_actors.md`.
+   off-road/static fields are listed in `docs/analysis/race_actors.md`.
 2. Analyze the actor/physics functions (`Race_UpdateSpeedDisplay`, `Race_SpawnTick`,
    `sub_13xxx`, `sub_Dxxx`, `sub_Exxx`) and the object list.
 3. `src/race/race_hud.asm`, `src/race/road_marking.asm`, `src/race/animation.asm` data tables/scripts + dynamic checks.
