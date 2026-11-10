@@ -2778,7 +2778,7 @@ Race_CreateActors:
                 clr.l   d1
                 move.w  d1,RaceActor_XLow(a1)
                 move.w  d1,RaceActor_PosZ(a1)
-                move.w  d1,STRUCT_OFFSET_1C(a1)
+                move.w  d1,RaceActor_PreviousCollisionOffset(a1)
                 move.w  d1,RaceActor_CollisionOffset(a1)
                 move.w  d1,STRUCT_OFFSET_8(a1)
                 move.w  d1,STRUCT_OFFSET_A(a1)
@@ -2801,7 +2801,7 @@ Race_CreateActors:
                 move.b  d1,RaceActor_AnimIndex(a1)
                 move.b  #$FF,RaceActor_AnimFrame(a1)
                 move.b  d1,STRUCT_OFFSET_78(a1)
-                move.w  #$FFFF,STRUCT_OFFSET_56(a1)
+                move.w  #$FFFF,RaceActor_RespawnTimer(a1)
                 bra.w   .loopCreateActor
 .break:
                 clr.w   d0
@@ -2833,7 +2833,7 @@ Race_CreateActors:
                 move.b  #0,RaceActor_ControlFlags(a1)
                 move.b  #0,RaceActor_StateFlags(a1)
                 move.b  #0,RaceActor_WeaponAnimFlags(a1)
-                move.w  #$FFFF,$56(a1)
+                move.w  #$FFFF,RaceActor_RespawnTimer(a1)
                 addq.w  #1,d0
                 bra.s   .loc_CC88
 .loc_CCC6:

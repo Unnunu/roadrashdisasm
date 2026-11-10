@@ -382,7 +382,7 @@ RaceActor_Speed equ $12
 RaceActor_Acceleration equ $14 ; signed per-frame acceleration
 RaceActor_Type equ $16
 RaceActor_Gear equ $18
-STRUCT_OFFSET_1C equ $1C
+RaceActor_PreviousCollisionOffset equ $1C
 RaceActor_PreviousX equ $1E ; previous/start-of-frame X
 STRUCT_OFFSET_22 equ $22
 STRUCT_OFFSET_24 equ $24
@@ -394,6 +394,7 @@ STRUCT_OFFSET_36 equ $36
 STRUCT_OFFSET_38 equ $38
 STRUCT_OFFSET_3A equ $3A
 STRUCT_OFFSET_3C equ $3C
+RaceActor_RespawnTimer equ $56 ; $FFFF = active/normal; static countdown
 RaceActor_Curve equ $3E
 RaceActor_LeanCurve equ $40
 RaceActor_Lean equ $42 ; signed lean/curve value
@@ -403,7 +404,6 @@ RaceActor_CollisionExtentUpper equ $4C
 RaceActor_CollisionExtentLower equ $4E
 RaceActor_AttackReach equ $50
 RaceActor_AttackOverlap equ $52
-STRUCT_OFFSET_56 equ $56
 RaceActor_AttackCooldown equ $5A
 RaceActor_TileBase equ $5C ; current animation/tile base
 STRUCT_OFFSET_5E equ $5E

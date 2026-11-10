@@ -950,7 +950,7 @@ sub_1438E:
 
 
 Race_ApplyCollisionImpact:
-                move.w  $1C(a1),d0
+                move.w  RaceActor_PreviousCollisionOffset(a1),d0
                 cmp.w   (ram_FF303E).l,d0
                 bpl.w   .loc_14594
                 move.w  #$1000,d1

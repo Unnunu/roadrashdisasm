@@ -262,7 +262,7 @@ Race_UpdateActorAI:
 Race_AdvanceActorProgress:
                 move.l  d0,-(sp)
                 move.w  $30(a1),$1A(a1)
-                move.w  RaceActor_CollisionOffset(a1),$1C(a1)
+                move.w  RaceActor_CollisionOffset(a1),RaceActor_PreviousCollisionOffset(a1)
                 move.l  $26(a1),d0
                 move.l  4(a1),d4
                 move.l  d4,RaceActor_PreviousX(a1)
@@ -766,7 +766,7 @@ sub_113CA:
 Race_UpdateActorX:
                 movem.l d0-d7/a0-a6,-(sp)
                 move.w  $30(a1),$1A(a1)
-                move.w  RaceActor_CollisionOffset(a1),$1C(a1)
+                move.w  RaceActor_CollisionOffset(a1),RaceActor_PreviousCollisionOffset(a1)
                 move.l  $26(a1),d0
                 move.l  4(a1),d4
                 move.l  d4,RaceActor_PreviousX(a1)
@@ -1013,7 +1013,7 @@ sub_115C6:
 Race_UpdateActorMovement:
                 movem.l d0-d7/a0-a6,-(sp)
                 move.w  $30(a1),$1A(a1)
-                move.w  RaceActor_CollisionOffset(a1),$1C(a1)
+                move.w  RaceActor_CollisionOffset(a1),RaceActor_PreviousCollisionOffset(a1)
                 move.l  $26(a1),d0
                 move.l  4(a1),d4
                 move.l  d4,RaceActor_PreviousX(a1)
@@ -1277,7 +1277,7 @@ Race_UpdateActorFallMovement:
 
 .loc_1195A:
                 move.w  $30(a1),$1A(a1)
-                move.w  RaceActor_CollisionOffset(a1),$1C(a1)
+                move.w  RaceActor_CollisionOffset(a1),RaceActor_PreviousCollisionOffset(a1)
                 move.l  $26(a1),d4
                 move.l  4(a1),d0
                 move.l  d0,RaceActor_PreviousX(a1)
@@ -1919,7 +1919,7 @@ sub_11CC8:
                 movea.l (a0)+,a2
                 cmpa.l  #$FFFFFFFF,a2
                 beq.w   .loc_11EF4
-                cmpi.w  #$FFFF,$56(a2)
+                cmpi.w  #$FFFF,RaceActor_RespawnTimer(a2)
                 bne.s   .loc_11EAC
                 bsr.w   Race_UpdateActorPairCollision
                 btst    #4,RaceActor_ControlFlags(a1)
@@ -2293,7 +2293,7 @@ sub_1218C:
                 movea.l (a0)+,a2
                 cmpa.l  #$FFFFFFFF,a2
                 beq.w   .loc_12384
-                cmpi.w  #$FFFF,$56(a2)
+                cmpi.w  #$FFFF,RaceActor_RespawnTimer(a2)
                 bne.s   .loc_1231A
                 bsr.w   Race_UpdateActorPairCollision
                 btst    #4,RaceActor_ControlFlags(a1)
@@ -2742,7 +2742,7 @@ Race_UpdateStaticActors:
                 movea.l (a2)+,a1
                 cmpa.w  #$FFFF,a1
                 beq.w   .locret_128DE
-                cmpi.w  #$FFFF,$56(a1)
+                cmpi.w  #$FFFF,RaceActor_RespawnTimer(a1)
                 bne.s   .loc_1286E
                 btst    #6,RaceActor_ControlFlags(a1)
                 beq.s   .loc_1286E
@@ -2768,7 +2768,7 @@ Race_UpdateStaticActors:
                 move.w  $36(a1),d1
                 add.w   $38(a1),d1
                 move.w  d1,0.w(a1)
-                bsr.w   sub_137E4
+                bsr.w   Race_BuildTargetCandidates
                 bsr.w   sub_12C9A
                 jsr     (sub_13DE0).l
                 bra.s   .loc_1286E
@@ -4019,7 +4019,7 @@ Race_UpdateActorSpeedCurve:
                 movea.l (sp)+,a2
 
 .loc_135D6:
-                bsr.w   sub_13892
+                bsr.w   Race_SteerTowardTarget
                 bset    #1,RaceActor_ControlFlags(a1)
                 bclr    #2,RaceActor_ControlFlags(a1)
 
@@ -4262,7 +4262,7 @@ Race_SetupActorSprite:
 
 .loc_1376C:
                 move.b  d0,RaceActor_AnimIndex(a1)
-                bsr.w   sub_13812
+                bsr.w   Race_AddTargetCandidate
                 move.w  $16(a1),d2
                 lea     (unk_25812).l,a0
                 asl.w   #2,d2
@@ -4285,7 +4285,7 @@ Race_SetupActorSprite:
 .loc_137A6:
                 cmp.b   RaceActor_AnimIndex(a1),d0
                 beq.w   .loc_137B2
-                bsr.w   sub_13812
+                bsr.w   Race_AddTargetCandidate
 
 .loc_137B2:
                 move.w  d1,d0
@@ -4305,7 +4305,7 @@ Race_SetupActorSprite:
 .loc_137D2:
                 cmp.b   RaceActor_AnimIndex(a1),d0
                 beq.w   .loc_137DE
-                bsr.w   sub_13812
+                bsr.w   Race_AddTargetCandidate
 
 .loc_137DE:
                 movem.l (sp)+,d0-d1/a0
@@ -4316,7 +4316,15 @@ Race_SetupActorSprite:
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_137E4:
+; *************************************************
+; Function Race_BuildTargetCandidates
+; Rebuilds the per-bucket target-candidate table from actor Y headings.
+; In:  a1 - actor; ram_FF178A/ram_FF1792
+; Out: candidate counts/indices
+; Clobbers: d0/d1/a0
+; *************************************************
+
+Race_BuildTargetCandidates:
                 movem.l d0-d1/a0,-(sp)
                 clr.w   d0
                 tst.w   $30(a1)
@@ -4329,19 +4337,27 @@ sub_137E4:
 
 .loc_137FE:
                 move.w  d1,-(sp)
-                bsr.w   sub_13812
+                bsr.w   Race_AddTargetCandidate
                 move.w  (sp)+,d1
                 addq.w  #1,d0
                 dbf     d1,.loc_137FE
                 movem.l (sp)+,d0-d1/a0
                 rts
-; End of function sub_137E4
+; End of function Race_BuildTargetCandidates
 
 
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_13812:
+; *************************************************
+; Function Race_AddTargetCandidate
+; Appends actor +$71 to the candidate bucket selected by d0.
+; In:  a1 - actor; d0 - bucket
+; Out: ram_FF178A count, ram_FF1792 list
+; Clobbers: d0/d1/a0
+; *************************************************
+
+Race_AddTargetCandidate:
                 movem.l d0-d1/a0,-(sp)
                 ext.w   d0
                 lea     (ram_FF178A).l,a0
@@ -4354,7 +4370,7 @@ sub_13812:
                 move.b  $71(a1),(a0,d1.w)
                 movem.l (sp)+,d0-d1/a0
                 rts
-; End of function sub_13812
+; End of function Race_AddTargetCandidate
 
 
 ; =============== S U B R O U T I N E =======================================
@@ -4401,7 +4417,16 @@ Race_UpdateActorRoadSteering:
 ; =============== S U B R O U T I N E =======================================
 
 
-sub_13892:
+; *************************************************
+; Function Race_SteerTowardTarget
+; Computes CurveDirection toward the selected target bucket using the
+; distance/speed ratio in ram_FF1B46.
+; In:  a1 - actor; d0 - bucket
+; Out: RaceActor_CurveDirection, StateFlags bit2
+; Clobbers: d0-d2/a6
+; *************************************************
+
+Race_SteerTowardTarget:
                 asl.w   #1,d0
                 lea     (unk_12D0A).l,a6
                 move.w  (a6,d0.w),d0
@@ -4422,7 +4447,7 @@ sub_13892:
                 bset    #2,RaceActor_StateFlags(a1)
 .return:
                 rts
-; End of function sub_13892
+; End of function Race_SteerTowardTarget
 
 
 ; =============== S U B R O U T I N E =======================================
@@ -4440,7 +4465,7 @@ sub_138CE:
                 beq.w   .return
                 btst    #6,RaceActor_ControlFlags(a2)
                 bne.s   .loc_138E4
-                cmpi.w  #$FFFF,$56(a2)
+                cmpi.w  #$FFFF,RaceActor_RespawnTimer(a2)
                 bne.w   .loc_13982
                 bclr    #4,RaceActor_ControlFlags(a2)
                 bsr.w   Rand_GetWord
@@ -4451,7 +4476,7 @@ sub_138CE:
                 move.w  (a4,d1.w),d1
                 mulu.w  d1,d0
                 swap    d0
-                move.w  d0,$56(a2)
+                move.w  d0,RaceActor_RespawnTimer(a2)
                 move.w  d0,d1
                 andi.b  #1,d1
                 beq.w   .loc_13936
@@ -4486,9 +4511,9 @@ sub_138CE:
                 cmpi.l  #$708,(Race_ram_ProgressSnapshotB).l
                 bcs.w   .loc_138E4
                 move.w  (Race_ram_FrameDelay).l,d2
-                sub.w   d2,$56(a2)
+                sub.w   d2,RaceActor_RespawnTimer(a2)
                 bgt.w   .loc_138E4
-                move.w  #$FFFF,$56(a2)
+                move.w  #$FFFF,RaceActor_RespawnTimer(a2)
                 bsr.w   sub_13A26
                 bra.w   .loc_138E4
 

@@ -23,7 +23,7 @@ threshold and the extra/static activation snapshot, then uses the same curve mat
 ## Forward movement: `Race_UpdateActorMovement` / `Race_UpdateActorX`
 
 - `$1A = $30`: previous draw/road Y.
-- `$1C = $32`: previous candidate Y.
+- `$1C = $32`: previous collision offset (`RaceActor_PreviousCollisionOffset`).
 - `$1E = $04`: previous X.
 - `$04 += $26`: X advances by `Speed * FrameDelay`.
 - The low X byte selects a pair of bytes in `Track_CurveBuffer`.
@@ -80,8 +80,8 @@ the lower side. `Race_ClampActorPairY` and `sub_12414` use the same mapping.
 
 ## Open points
 
-- `$32`: candidate Y copied to `$1C`; zero in normal snapshots. It is used as a
-  threshold in the collision path. Role still TODO.
+- `$32`: `RaceActor_CollisionOffset`, copied to `$1C`; zero outside collisions. It is
+  the projected collision penetration used by the pair-collision threshold.
 - `$3C`: observed write-only; confirm whether any rendering/audio reader uses it.
 - `$4C/$4E`: mapping now static; dynamic pair test can still confirm edge clamping.
 - `$73`: now named `RaceActor_Palette`; its low 2 bits are shifted into the sprite

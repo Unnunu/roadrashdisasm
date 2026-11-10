@@ -134,7 +134,7 @@ routines; `+$06` is its low word, not an independent X coordinate.
 | `+$16` | word | `Type`/sprite from definition byte0 | `[confirmed]` 2/3/4; static actors anomaly below |
 | `+$18` | word | `Gear` | `[static]`; zero in demo |
 | `+$1A` | word | previous draw/road Y copied from `+$30` at `Race_UpdateActorX` entry | `[dynamic]` steering `$31` vs `$30=$35`; hard-left `$FFE4` |
-| `+$1C` | word | unknown; zero in snapshots | `[dynamic]` |
+| `+$1C` | word | `RaceActor_PreviousCollisionOffset`; copy of `$32` before movement | `[static]` R29 |
 | `+$1E` | long | previous X; `Race_UpdateActorX` copies current `+$04` here before adding `+$26` | `[confirmed]` `$04-$1E=$26`; initial spawn value before movement |
 | `+$22`/`+$24` | word | X/Y screen delta/velocity; `$22` non-zero under steering | `[dynamic]` `$09/0` steering; zero no-steer |
 | `+$26` | long | frame distance = `Speed * Race_ram_FrameDelay` | `[confirmed]` Player `$EE*7=$682`, Opp `$111*7=$777`; steering `$2D15*7=$13B93` |
@@ -149,7 +149,7 @@ routines; `+$06` is its low word, not an independent X coordinate.
 | `+$4C`/`+$4E` | word | collision extents toward smaller/larger Y: `CollisionExtentUpper`/`Lower` | `[static/dynamic]` forced pair: side 0 for lower actor, side 1 for upper; R27 |
 | `+$50` | word | attack reach/knockback | `[dynamic]` armed `$28`, unarmed `$19`; `Race_GetAttackerReach` |
 | `+$52` | word | overlap/penetration | `[dynamic]` `$42` armed / `$33` unarmed |
-| `+$56` | word | sentinel/timer; `$FFFF` normal actors | `[dynamic]` `$FFFF`; static `$E2/$17` |
+| `+$56` | word | `RaceActor_RespawnTimer`; `$FFFF` normal/sentinel, static countdown | `[static/dynamic]` R29; static `$E2/$17` |
 | `+$5A` | word | attack/impact cooldown | `[static]/[dynamic]` combat; zero in demo |
 | `+$5C` | word | tile/animation base | `[confirmed]` Player `$A00 -> $507`; graphics table |
 | `+$5E`/`+$60` | word | sprite graphics fields | `[confirmed]` Player `$400/$180`; graphics table |
@@ -244,7 +244,7 @@ actor, but the role is still a hypothesis.
 
 `Race_UpdateStaticActors` only processes static actors with `$56==$FFFF` and `$68`
 bit6. It uses `$16` as the `unk_25A10` type index, recomputes `$26`, calls
-`sub_113A4`/`Race_UpdateActorMovement`/`Race_UpdateActorFallMovement`, then `$36+$38 -> $00`, `sub_137E4`,
+`sub_113A4`/`Race_UpdateActorMovement`/`Race_UpdateActorFallMovement`, then `$36+$38 -> $00`, `Race_BuildTargetCandidates`,
 `sub_12C9A`, `sub_13DE0`. The observed static `$16=0` after update is therefore an
 open semantic question, not a reason to rename the field.
 
@@ -297,6 +297,8 @@ open semantic question, not a reason to rename the field.
 | `$1E` (literal) | `RaceActor_PreviousX` (long) | `Race_UpdateActorX` copies `+$04` here; `$04-$1E=$26` | high |
 | `$68` | `RaceActor_Flags` | bit6 active/update marker; multiple AI bits | medium |
 | `$5E`/`$60` | `ActorSpritePosX/Y` | graphics +$A/+$C | low |
+
+Applied in R29: `RaceActor_PreviousCollisionOffset` (`$1C`), `RaceActor_RespawnTimer` (`$56`).
 
 Applied in R27: `RaceActor_CollisionExtentUpper` (`$4C`), `RaceActor_CollisionExtentLower` (`$4E`).
 

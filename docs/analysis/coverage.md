@@ -44,11 +44,11 @@ Priority is analytical impact, not address order.
 |---|---|---|---|---|
 | 1 | `Race_UpdateActorPairCollision`, `sub_12070`, `sub_12414`, `sub_11CC8` | `$32/$4C/$4E/$56`, side-extent mapping | **done:** `$4C` upper / `$4E` lower by Y ordering (forced pair trace); `$32` offset; `$56` timer TODO | collision contract + field matrix |
 | 2 | `Race_UpdateActorSpeedState`, `Race_UpdateActorSpeedGear` | gear/speed/curve branch semantics | **done:** demo trace + `race_speed.md`; gear=0 remains TODO | speed/gear contract |
-| 3 | `Race_FindTargetActor`, `Race_SaveActorShadow` | target selection + shadow sync role | log target candidates/shadow state | target/shadow contract |
+| 3 | `Race_FindTargetActor`, `Race_SaveActorShadow` | **done:** candidate buckets, ratio scan, shadow role | target contract documented | `race_ai.md` |
 | 4 | `Race_UpdateActorMovement/FallMovement`, `sub_115C6` | exact `$36–$3C` roles | normal/steer/off-road/fall snapshots | movement matrix update |
-| 5 | `Race_GetCurveSpeedLimit`, `Race_UpdateBikeCurve`, `Race_UpdateLeanCurve` | curve limit and `$40/$78` | high-speed steering trace | curve contract |
+| 5 | `Race_GetCurveSpeedLimit`, `Race_UpdateBikeCurve`, `Race_UpdateLeanCurve` | **done:** curve/lean/gear contract; gear=0 edge TODO | high-speed steering trace | `race_speed.md` |
 | 6 | Road render helpers: `Race_ProjectObject`, `Race_ProjectActorObject`, `Road_DrawStrip`, `Road_WriteTileColumns` | exact row/tile mapping | **progress:** shape record layout + row start confirmed; SAT/VSRAM next | render/shape doc |
-| 7 | `Race_ApplyCollisionImpact`, `Race_ApplyCrashImpact`, impact chain | `$2A/$2C/$2E/$56` and damage timing | forced impact/fall trace | impact contract |
+| 7 | `Race_ApplyCollisionImpact`, `Race_ApplyCrashImpact`, impact chain | `$2A/$2C/$2E/$54/$5C` and damage timing | **progress:** contract documented; forced impact trace next | `race_impact.md` |
 | 8 | Track/shape data formats | **done:** Data2/3 decoder, Data4/5/6 formats; remaining Data4 side bits | compare staged/service consumers | format spec |
 | 9 | Screens flow | non-demo inputs/visuals | **progress:** demo flow + menu entry; `screens_flow.md`; input injection next | screen state machines |
 | 10 | Asset tail | labels/bounds/consumers | inventory length/pointers/visuals | asset catalogue |
@@ -58,7 +58,7 @@ Priority is analytical impact, not address order.
 
 - [x] Phase 0: coverage baseline and work queue.
 - [ ] Phase 1: runtime, IRQ, input, RAM ownership.
-- [ ] Phase 2: race simulation semantics (movement, speed, collision in progress).
+- [~] Phase 2: race simulation semantics (targeting/speed/collision done; impact/movement residual).
 - [~] Phase 3: road/render and data formats (Data4/5/6 mapped; row/tile mapping in progress).
 - [~] Phase 4: screens and visual confirmation (flow mapped; non-demo/visual captures pending).
 - [ ] Phase 5: audio/Z80, separate.

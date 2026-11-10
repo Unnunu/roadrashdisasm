@@ -310,7 +310,7 @@ flowchart LR
 | `sub_12414` | `0x12414` | `sub_11CC8` | - |
 | `Race_UpdateActorPairCollision` | `0x124E2` | `sub_11CC8`, `sub_1218C`, `sub_123A8` | `Race_GetAttackerReach`, `Race_GetCollisionExtent`, `Race_GetDefenderReach` |
 | `Race_ClearActorOnFootFlags` | `0x1281E` | `Race_Update` | - |
-| `Race_UpdateStaticActors` | `0x12868` | `Race_Update` | `Race_UpdateActorFallMovement`, `Race_UpdateActorMovement`, `sub_113A4`, `sub_12C9A`, `sub_137E4`, `sub_13DE0` |
+| `Race_UpdateStaticActors` | `0x12868` | `Race_Update` | `Race_UpdateActorFallMovement`, `Race_UpdateActorMovement`, `sub_113A4`, `sub_12C9A`, `Race_BuildTargetCandidates`, `sub_13DE0` |
 | `Race_InitExtraStaticActor` | `0x128E0` | `Race_Update` | `Rand_GetWord` |
 | `Race_UpdateExtraStaticActor` | `0x12974` | `Race_Update` | - |
 | `Race_GetCollisionExtent` | `0x12A88` | `Race_UpdateActorPairCollision` | `Race_GetActorCollisionExtent`, `Race_GetStaticCollisionExtent` |
@@ -331,16 +331,16 @@ flowchart LR
 | `Race_UpdateActorSpeedGear` | `0x131BE` | `Race_ActorAttackIfClose`, `Race_ActorCollideSteer`, `Race_ActorCombatResponse`, `Race_ActorFollowPath`, `Race_ActorNormalVariant`, `Race_ActorProximityReaction`, `Race_ActorPursueAttack`, `Race_ActorSteerRoadCenter` | `Race_GetCurveSpeedLimit`, `Race_UpdateActorSpeedState` |
 | `Race_UpdateActorChase` | `0x13292` | `Race_ActorEvadePlayer` | `Race_GetCurveSpeedLimit`, `Race_UpdateActorSpeedState` |
 | `Race_ApplyActorSpeedCorrection` | `0x1333C` | `Race_ActorAttackIfClose`, `Race_ActorCollideSteer`, `Race_ActorCombatResponse`, `Race_ActorEvadePlayer`, `Race_ActorProximityReaction`, `Race_ActorPursueAttack` | `Race_ScaleActorSpeed` |
-| `Race_UpdateActorSpeedCurve` | `0x13422` | `Race_ActorCombatResponse`, `Race_ActorFollowPath`, `Race_ActorNormalUpdate`, `Race_ActorNormalVariant`, `Race_ActorStateCollision` | `Race_FindTargetActor`, `sub_13892` |
+| `Race_UpdateActorSpeedCurve` | `0x13422` | `Race_ActorCombatResponse`, `Race_ActorFollowPath`, `Race_ActorNormalUpdate`, `Race_ActorNormalVariant`, `Race_ActorStateCollision` | `Race_FindTargetActor`, `Race_SteerTowardTarget` |
 | `Race_FindTargetActor` | `0x135F6` | `Race_ActorCombatResponse`, `Race_ActorNormalUpdate`, `Race_ActorNormalVariant`, `Race_DispatchActorAction`, `Race_UpdateActorSpeedCurve` | `Race_ScanTargetDistance` |
 | `Race_ScanTargetDistance` | `0x13626` | `Race_FindTargetActor` | - |
 | `Race_ScaleActorSpeed` | `0x136B6` | `Race_ApplyActorSpeedCorrection` | - |
-| `Race_SetupActorSprite` | `0x13746` | `Race_SetupActor`, `Race_UpdateActorAI` | `sub_13812` |
-| `sub_137E4` | `0x137E4` | `Race_UpdateStaticActors` | `sub_13812` |
-| `sub_13812` | `0x13812` | `Race_SetupActorSprite`, `sub_137E4` | - |
+| `Race_SetupActorSprite` | `0x13746` | `Race_SetupActor`, `Race_UpdateActorAI` | `Race_AddTargetCandidate` |
+| `Race_BuildTargetCandidates` | `0x137E4` | `Race_UpdateStaticActors` | `Race_AddTargetCandidate` |
+| `Race_AddTargetCandidate` | `0x13812` | `Race_SetupActorSprite`, `Race_BuildTargetCandidates` | - |
 | `sub_1383E` | `0x1383E` | `Race_Update` | - |
 | `Race_UpdateActorRoadSteering` | `0x1384C` | `Race_ActorNormalUpdate`, `Race_ActorNormalVariant`, `Race_ActorPursueAttack`, `Race_ActorSteerRoadCenter`, `Race_ActorSteerThrottle` | - |
-| `sub_13892` | `0x13892` | `Race_UpdateActorSpeedCurve` | - |
+| `Race_SteerTowardTarget` | `0x13892` | `Race_UpdateActorSpeedCurve` | - |
 | `sub_138CE` | `0x138CE` | `Race_Update` | `Rand_GetWord`, `sub_13A26` |
 | `sub_13A26` | `0x13A26` | `sub_138CE` | - |
 | `Race_UpdateActorSpeedState` | `0x13A92` | `Race_ActorNormalUpdate`, `Race_ActorStateCollision`, `Race_ActorSteerThrottle`, `Race_Update`, `Race_UpdateActorActions`, `Race_UpdateActorChase`, `Race_UpdateActorSpeedGear`, `sub_1634E` | `sub_13BBC` |

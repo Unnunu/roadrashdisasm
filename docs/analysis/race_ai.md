@@ -3,7 +3,7 @@
 - **Module:** on-foot player/AI input, actor AI loop, static actor AI, bike lean/curve,
   curve speed limit, actor sprite setup, movement/collision helpers
 - **ROM range:** `0x010E00`–`0x014055`
-- **Status:** analyzed (roles/flow); exact AI/collision field semantics partly TODO
+- **Status:** analyzed (roles/flow, target buckets/scan, movement/speed; impact handoff documented)
 - **Source:** `src/race/race_ai.asm`
 - **Related:** `docs/analysis/combat.md` (fist/AI attack state), `docs/analysis/race.md`, `docs/analysis/race_ai_road.md`,
   `docs/analysis/race_physics.md`, `docs/modules/race_ai.md`, `docs/ram-map.md`
@@ -37,7 +37,7 @@
 (`sub_113CA`/`sub_13EFA`, `Race_UpdateActorX`, `Race_UpdateActorFallMovement`). Opponents use
 `Race_UpdateActorAI`/`Race_AdvanceActorProgress`/`sub_113A4`/`Race_UpdateActorMovement`. Static/police actors are
 walked from `Race_StaticActorList` by `Race_UpdateStaticActors`
-(`unk_25A10`, `sub_113A4`/`Race_UpdateActorMovement`/`Race_UpdateActorFallMovement`, `sub_137E4`/`sub_12C9A`/
+(`unk_25A10`, `sub_113A4`/`Race_UpdateActorMovement`/`Race_UpdateActorFallMovement`, `Race_BuildTargetCandidates`/`sub_12C9A`/
 `sub_13DE0`).
 
 ## Bike lean / curve
@@ -68,6 +68,39 @@ X low byte (`(byte+6)&$FF`, word entries), takes abs, scales by
 `[dynamic]` Forced steering (`RaceBike_ram_CurrentSteering=±$600`) gave
 `RaceActor_Lean=$FFB7`/`$0049` (signed); `$3E/$40` stayed zero in that snapshot,
 so the curve-limit branch was not entered at that speed/curve.
+
+## Target candidate selection
+
+`Race_BuildTargetCandidates` (`0x137E4`) rebuilds six candidate buckets from the
+actor's Y heading/sign and speed:
+
+- `ram_FF178A` = byte counts for buckets 0..5.
+- `ram_FF1792` = six 16-byte buckets of actor-index bytes.
+- `Race_AddTargetCandidate` appends `$71` to bucket `d0`; secondary actors use
+  indices `$10+` and resolve through `Race_StaticActorList`.
+
+`Race_FindTargetActor(d0)`:
+
+1. Read `count = ram_FF178A[d0]`; zero -> no target.
+2. Initialize `ram_FF1B46 = $F0`.
+3. Scan the bucket; skip self (`$71` match).
+4. Convert index `< $10` through `Race_ActorList`, otherwise `Race_StaticActorList`
+   with `index-$10`.
+5. Compute signed relative speed from `$12` (flip when `$69` bit3 is set) and
+   require the candidate to be ahead (`X2-X1 > 0`) with positive relative speed.
+6. Store `distance / relative_speed` if it is smaller than the current minimum.
+7. Return `a2 = candidate` or `$FFFFFFFF`.
+
+`Race_UpdateActorSpeedCurve` scans buckets forward/backward from the current target
+index, keeping the two nearest candidates in `ram_FF1892/ram_FF189C`, then selects the
+smaller distance/speed ratio. On success it calls `Race_SteerTowardTarget` and sets
+`ControlFlags` bit1 (accelerate); on failure it sets bit2 (brake) and calls
+`Race_UpdateActorRoadSteering`.
+
+`Race_SteerTowardTarget` uses the `unk_12D0A` Y-offset table for the selected bucket,
+subtracts the actor Y, scales by speed and the selected distance ratio, and writes
+`RaceActor_CurveDirection` plus `StateFlags` bit2. `Race_UpdateActorRoadSteering` is
+the same calculation toward the road center when no target exists.
 
 ## Actor action dispatch (`0x12D0A-0x131BE`)
 
@@ -156,8 +189,9 @@ Action 4 (`a4+$10`, used by `Race_DispatchActorAction`'s final fallback) by prof
 ## RAM / fields
 
 Actor fields used here: `$12` Speed, `$14` acceleration (`Speed += $14 * FrameDelay`
-after the speed/on-foot gates), `$16` type, `$1E` previous X, `$22`, `$26` frame
-distance = `Speed * FrameDelay`, `$30`/`$36/$38` Y/road, `$3E/$40/$42` lean, `$56`,
+after the speed/on-foot gates), `$16` type, `$1C` previous collision offset, `$1E`
+previous X, `$22`, `$26` frame distance = `Speed * FrameDelay`, `$30`/`$36/$38`
+Y/road, `$3E/$40/$42` lean, `$56` static respawn timer,
 `$68` flags (bit6 active/update marker confirmed in the demo), `$69` flags, `$6E`,
 `$71` index, `$73`, `$75`, `$78`. Data: `Race_ActorShadowTable`/`unk_25A10` actor data,
 `unk_10E3E`, `unk_12B7C`, `unk_12D0A`, `unk_13A1A`, `Track_CurveBuffer`,
@@ -190,6 +224,11 @@ Applied in R6: `Race_InitExtraStaticActor`, `Race_UpdateExtraStaticActor`,
 `Race_ApplyCollisionImpact`, `Race_ExchangeCollisionSpeed`,
 `Race_UpdateActorSpeedState`, `Race_FindTargetActor`,
 `Race_ScanTargetDistance`.
+
+Applied in R28: `Race_BuildTargetCandidates` (`sub_137E4`),
+`Race_AddTargetCandidate` (`sub_13812`), `Race_SteerTowardTarget` (`sub_13892`).
+Applied in R29: `RaceActor_PreviousCollisionOffset` (`$1C`),
+`RaceActor_RespawnTimer` (`$56`).
 
 Applied in R13: `Race_AdvanceActorProgress`, `Race_UpdateActorX`,
 `Race_UpdateActorMovement`, `Race_UpdateActorFallMovement`,

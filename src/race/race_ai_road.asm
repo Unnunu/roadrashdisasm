@@ -1123,7 +1123,7 @@ Race_BuildActorObjectList:
 .loc_F4CA:
                 cmpi.w  #1,(ram_FF3040).l
                 bne.w   .loc_F4E0
-                cmpi.w  #$FFFF,$56(a1)
+                cmpi.w  #$FFFF,RaceActor_RespawnTimer(a1)
                 bne.w   .loc_F44C
 
 .loc_F4E0:
