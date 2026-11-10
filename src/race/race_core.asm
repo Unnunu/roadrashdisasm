@@ -2768,7 +2768,7 @@ Race_CreateActors:
                 move.w  (ram_FF18AA).l,RaceActor_TileBase(a1)
 .loc_CB80:
 ; bytes 3/4 -> +$73/+$77; byte 5 * 100 -> +$66 (actor rating/skill)
-                move.b  (a2)+,STRUCT_OFFSET_73(a1)
+                move.b  (a2)+,RaceActor_Palette(a1)
                 move.b  (a2)+,STRUCT_OFFSET_77(a1)
                 move.b  (a2)+,d1
                 ext.w   d1

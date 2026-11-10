@@ -1201,7 +1201,7 @@ Race_BuildActorObjectList:
                 add.w   8(a1),d1
                 btst    #5,RaceActor_ControlFlags(a1)
                 beq.w   .loc_F5C6
-                add.w   $40(a1),d1
+                add.w   RaceActor_LeanCurve(a1),d1
 
 .loc_F5C6:
                 tst.w   d1
@@ -1277,7 +1277,7 @@ Race_BuildActorObjectList:
                 or.w    d0,2(a0)
 
 .loc_F684:
-                move.b  $73(a1),d0
+                move.b  RaceActor_Palette(a1),d0
                 asl.b   #4,d0
                 or.b    d0,$A(a0)
                 move.w  (a0),d0
@@ -1342,7 +1342,7 @@ Race_BuildActorObjectList:
                 move.w  #0,$A(a0)
                 move.l  #0,$C(a0)
                 move.l  #0,$10(a0)
-                move.b  $73(a1),d0
+                move.b  RaceActor_Palette(a1),d0
                 asl.b   #4,d0
                 move.b  d0,$A(a0)
                 lea     (ram_FF1B50).l,a6
@@ -1489,7 +1489,7 @@ Race_AddActorImpactObject:
                 move.w  #0,$A(a0)
                 move.l  #0,$C(a0)
                 move.l  #0,$10(a0)
-                move.b  $73(a1),d0
+                move.b  RaceActor_Palette(a1),d0
                 asl.b   #4,d0
                 move.b  d0,$A(a0)
                 bclr    #7,$A(a0)

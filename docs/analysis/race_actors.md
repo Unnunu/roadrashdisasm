@@ -143,7 +143,7 @@ routines; `+$06` is its low word, not an independent X coordinate.
 | `+$30` | word | current road/target Y; `+$1A` keeps the previous value | `[dynamic]` steering `$35`; hard-left `$FFEA`; no-steer `$A0` |
 | `+$32` | word | road/target Y candidate; zero in snapshots | `[dynamic]` |
 | `+$36`/`+$38`/`+$3A`/`+$3C` | word | road/curve/lean accumulators | `[dynamic]` steering `5/$22B/3/0`; zero no-steer |
-| `+$3E`/`+$40`/`+$42` | word | lean/curve state; `$42` signed | `[confirmed]` `$42=-$49` left, `+$49` right; `$3E/$40` zero in test |
+| `+$3E`/`+$40`/`+$42` | word | curve/lean state; `$42` signed | `[confirmed]` `$42=-$49` left, `+$49` right; `$3E/$40` zero in test; R22/R23 names `Curve`/`LeanCurve` |
 | `+$46` | word | curve/direction sign; AI flips it | `[dynamic]` `-$03` under forced steering |
 | `+$4A` | word | collision/proximity extent | `[dynamic]` `$0D` active, `$0E` hard-left; `[static]` `Race_UpdateCollision` |
 | `+$4C`/`+$4E` | word | left/right sprite/collision extents | `[dynamic]` `$0C/$0F` hard-left; exact role TODO |
@@ -163,7 +163,7 @@ routines; `+$06` is its low word, not an independent X coordinate.
 | `+$70` | byte | animation timer | `[static]` animation; zero active |
 | `+$71` | byte | actor index | `[confirmed]` 0..15, static `$10/$11`, extra `$12` |
 | `+$72` | byte | animation frame/index written by `Race_SetupActorSprite` | `[static]/[dynamic]` values 3/5 |
-| `+$73`/`+$74`/`+$75`/`+$77` | byte | definition bytes 3/1/2/4; `+$74` AI profile, `+$75` graphics index | `[confirmed]` |
+| `+$73`/`+$74`/`+$75`/`+$77` | byte | definition bytes 3/1/2/4; `+$74` AI profile, `+$75` graphics index, `+$73` palette | `[confirmed]`; R23 |
 | `+$78` | byte | animation/state flag; zero in snapshots | `[dynamic]`; TODO |
 | `+$7E` | word | unknown; zero in snapshots | `[dynamic]` |
 
@@ -297,6 +297,8 @@ open semantic question, not a reason to rename the field.
 | `$1E` (literal) | `RaceActor_PreviousX` (long) | `Race_UpdateActorX` copies `+$04` here; `$04-$1E=$26` | high |
 | `$68` | `RaceActor_Flags` | bit6 active/update marker; multiple AI bits | medium |
 | `$5E`/`$60` | `ActorSpritePosX/Y` | graphics +$A/+$C | low |
+
+Applied in R23: `RaceActor_LeanCurve` (`$40`), `RaceActor_Palette` (`$73`).
 
 Applied in R22: `RaceActor_Curve` (`$3E`), `RaceActor_CurveDirection` (`$46`).
 

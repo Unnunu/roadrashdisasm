@@ -395,6 +395,7 @@ STRUCT_OFFSET_38 equ $38
 STRUCT_OFFSET_3A equ $3A
 STRUCT_OFFSET_3C equ $3C
 RaceActor_Curve equ $3E
+RaceActor_LeanCurve equ $40
 RaceActor_Lean equ $42 ; signed lean/curve value
 RaceActor_CurveDirection equ $46
 RaceActor_CollisionExtent equ $4A
@@ -417,7 +418,7 @@ RaceActor_AnimFrame equ $6F
 RaceActor_AnimTimer equ $70
 RaceActor_Index equ $71
 RaceActor_AnimIndex equ $72
-STRUCT_OFFSET_73 equ $73
+RaceActor_Palette equ $73
 RaceActor_ActionProfile equ $74
 RaceActor_GraphicsIndex equ $75
 STRUCT_OFFSET_77 equ $77

@@ -274,7 +274,7 @@ Race_ProjectActorSprite:
                 add.w   d1,d0
                 move.w  d0,4(a0)
                 move.w  #$E0,6(a0)
-                move.b  $73(a1),d0
+                move.b  RaceActor_Palette(a1),d0
                 andi.w  #3,d0
                 ror.w   #4,d0
                 addi.w  #$4100,d0

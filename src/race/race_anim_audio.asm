@@ -71,7 +71,7 @@ Race_UpdateLeanCurve:
                 lsr.l   #8,d2
 
 .loc_140B4:
-                move.w  d2,$40(a1)
+                move.w  d2,RaceActor_LeanCurve(a1)
                 move.w  d1,d0
 
 .locret_140BA:

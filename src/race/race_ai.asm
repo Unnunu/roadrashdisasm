@@ -1680,7 +1680,7 @@ Race_ApplyCrashImpact:
                 bpl.w   .locret_11C42
                 move.w  $C(a1),d0
                 move.w  d0,8(a1)
-                move.w  $40(a1),d2
+                move.w  RaceActor_LeanCurve(a1),d2
                 move.w  $34(a1),d3
                 move.w  d0,d1
                 bpl.w   .loc_11BDC
@@ -2776,12 +2776,12 @@ Race_InitExtraStaticActor:
                 subq.w  #1,d1
                 btst    #0,d0
                 bne.w   .loc_1291A
-                move.b  #0,$73(a1)
+                move.b  #0,RaceActor_Palette(a1)
                 bra.w   .loc_12920
 
 
 .loc_1291A:
-                move.b  #2,$73(a1)
+                move.b  #2,RaceActor_Palette(a1)
 
 .loc_12920:
                 tst.w   d0
@@ -4442,7 +4442,7 @@ sub_138CE:
                 move.w  #2,d1
 
 .loc_13936:
-                move.b  d1,$73(a2)
+                move.b  d1,RaceActor_Palette(a2)
                 btst    #2,d0
                 bne.w   .loc_13952
                 bclr    #3,RaceActor_StateFlags(a2)
@@ -5294,7 +5294,7 @@ Race_UpdateBikeCurve:
 
 .loc_13FCE:
                 bclr    #5,RaceActor_ControlFlags(a1)
-                move.w  #0,$40(a1)
+                move.w  #0,RaceActor_LeanCurve(a1)
                 move.w  #0,RaceActor_Curve(a1)
 
 .loc_13FE0:
