@@ -11,6 +11,7 @@ Related:
 - `docs/hardware.md` — VDP/DMA/controller/Z80 reference and game configurations.
 - `docs/ram-map.md` — phase-aware work-RAM map.
 - `docs/analysis/` — deep dives (annotated listings, why, experiments).
+- `docs/analysis/screens_flow.md` — boot/menu/race/results screen state machine and VDP map.
 - `docs/callgraph.md` — generated function index and call graph.
 - `docs/references.md`, `docs/glossary.md` — sources and terms.
 - `docs/modules/_template.md` — template for per-module cards.
