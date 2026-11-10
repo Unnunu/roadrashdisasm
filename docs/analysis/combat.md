@@ -129,6 +129,10 @@ Applied in R6: `Race_InitExtraStaticActor`, `Race_UpdateExtraStaticActor`,
 `Race_UpdateActorSpeedState`, `Race_FindTargetActor`,
 `Race_ScanTargetDistance`.
 
+Applied in R14: `Race_UpdateActorPairImpact`, `Race_ClampActorPairY`,
+`Race_ApplyFallKnockdown`, `Race_AdjustActorTrackPositions`,
+`Race_UpdateCollisionSpeedState`, `Race_ApplyImpactSpeedLoss`.
+
 Applied in R10: `Race_TriggerArmedAttackSfx` and `Race_UpdateAttackPhase`.
 
 Applied in R7: `Race_StealClub`/`Race_StealClubMirror`; `WEAPON_NONE`/`WEAPON_CLUB`.
@@ -317,6 +321,22 @@ fall is `[refuted]` for these crash cases.
 `Race_StealClub`/`Race_StealClubMirror` (`sub_149C4`/`sub_14B04`) are statically
 identified as the transfer routine: player phase 1 + opponent phase 0 + opponent
 armed -> toggle `$6B` bit1, set both phases `2`/`$6D=$3C`, SFX `$15`, timer `$1E`.
+
+## Impact / fall chain (R14)
+
+- `Race_UpdateActorPairImpact` (`0x1487C`) resets the pair speed state and
+  chooses:
+  - far X separation → `Race_ExchangeCollisionSpeed`;
+  - close pair → `Race_ClampActorPairY`, attack/steal checks, then
+    `Race_AdjustActorTrackPositions` + `Race_ApplyFallKnockdown`.
+- `Race_UpdateCollisionSpeedState` (`0x145EC`) compares speed and sets `$6E`
+  plus the `$09/$0A` event candidates.
+- `Race_ApplyImpactSpeedLoss` (`0x146AC`) reduces speed, updates `$2A/$2C`,
+  and raises `$68` bit0.
+- `Race_ApplyFallKnockdown` (`0x14C3C`) handles fall/knockdown state, `$54`,
+  and `$0D/$0F` events.
+- `Race_AdjustActorTrackPositions` (`0x14D84`) adjusts `$8/$C` track-position
+  deltas.
 
 ## SFX / impact IDs
 
