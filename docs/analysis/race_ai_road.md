@@ -102,6 +102,20 @@ still TODO.
 These helpers are called from `Race_Update` around the road-profile/visible-list
 stage (`sub_FD96`, `sub_FB1E`, `sub_F40C`, `sub_109B6`, `sub_FC0E`).
 
+### Dynamic object-list snapshot
+
+At the first `Road_DrawObjects` (`0x942A`) hit in the demo race:
+
+- `ram_FFDE72 = 22` object records, `PlayerProgress = $00078000`;
+- `Road_ObjectArray` records decode as `x,y,scale,limit,shape,flags,c,e,f,shape2`;
+  e.g. record 9: `x=-208,y=96,scale=$5174,shape=$01C3,flags=$1184,
+  c=-170,e=$0380,f=$00AC,shape2=$01C4`;
+- `ram_FF1D50` visible index list starts
+  `1,2,3,4,9,0,$A,$B,5,6,$C,$D,$E,7,8,$F,$10,$11,$12,$13,...`.
+
+This confirms the object-record field order and the visible-index list layout used
+by `Road_DrawObjects`/`Road_DrawStrip`.
+
 ## RAM / data
 
 - `Road_ram_XLeftArray`/`XRightArray`/`MarkingXArray`;

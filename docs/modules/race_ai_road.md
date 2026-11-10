@@ -41,7 +41,7 @@ standings/results helpers and the speed display: `PiecewiseLinearInterpolation`,
 | speed/decimal | `0xF108`/`0xF11C` | [x] | [x] | [x] | - | [x] | [ ] | analyzed |
 | visible list | `0x10D46` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
 | road profile fill | `0xECE0` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
-| object-list/render helpers | `0xF40C`+ | [~] | [~] | [x] | [x] | [~] | [ ] | partial |
+| object-list/render helpers | `0xF40C`+ | [~] | [~] | [x] | [x] | [~] | [~] | partial + object snapshot |
 | road/profile/objects | `0xF40C`+ | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | TODO |
 
 Detailed flow: `docs/analysis/race.md`; spawn: `docs/analysis/race_spawn.md`.
