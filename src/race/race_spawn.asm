@@ -4,7 +4,7 @@
 ; *************************************************
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 TrackData_InitLevel:
@@ -53,7 +53,7 @@ TrackData_InitLevel:
 ; End of function TrackData_InitLevel
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 TrackData_DecodeNextChunk:
@@ -120,7 +120,7 @@ word_16AC4:     dc.w $B333
                 dc.w $CCCC
                 dc.w $D999
                 dc.w $D999
-word_16ACC:     dc.w $D999
+                dc.w $D999
 word_16ACE:     dc.w $B333
                 dc.w $CCCC
                 dc.w $D999
@@ -144,7 +144,7 @@ word_16AEC:     dc.w $B333
 
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 ; *************************************************
@@ -192,7 +192,7 @@ Race_SpawnTick:
 ; End of function Race_SpawnTick
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 ; *************************************************
@@ -220,7 +220,7 @@ Race_CheckOpponentAhead:
 ; End of function Race_CheckOpponentAhead
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 ; *************************************************
@@ -246,7 +246,7 @@ Race_CheckTrafficBehind:
 ; End of function Race_CheckTrafficBehind
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 ; *************************************************
@@ -265,7 +265,7 @@ Race_GetActorDistance:
 ; End of function Race_GetActorDistance
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 ; *************************************************
@@ -299,7 +299,7 @@ Race_SpawnOpponent:
 ; End of function Race_SpawnOpponent
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 ; *************************************************
@@ -329,7 +329,7 @@ Race_SpawnTraffic:
 ; End of function Race_SpawnTraffic
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 ; *************************************************
@@ -365,7 +365,7 @@ Race_ApplyActorRating:
 ; End of function Race_ApplyActorRating
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 ; *************************************************
@@ -386,7 +386,7 @@ Race_RecycleOpponent:
 ; End of function Race_RecycleOpponent
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 ; *************************************************
@@ -427,7 +427,7 @@ Race_RecycleActor:
 ; End of function Race_RecycleActor
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 ; *************************************************
@@ -452,7 +452,7 @@ Race_ActivateActor:
 ; End of function Race_ActivateActor
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 ; *************************************************
@@ -482,7 +482,7 @@ Race_InitOpponentActor:
 ; End of function Race_InitOpponentActor
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 ; *************************************************
@@ -514,7 +514,7 @@ Race_InitTrafficActor:
 ; End of function Race_InitTrafficActor
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 ; *************************************************
@@ -564,7 +564,7 @@ Race_SetupActor:
 ; End of function Race_SetupActor
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 ; *************************************************
@@ -594,7 +594,7 @@ Race_RemoveActiveActor:
 ; End of function Race_RemoveActiveActor
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 ; *************************************************
@@ -614,7 +614,7 @@ Race_PushFreeActor:
 ; End of function Race_PushFreeActor
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 ; *************************************************

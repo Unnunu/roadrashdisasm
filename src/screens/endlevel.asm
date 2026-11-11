@@ -90,7 +90,7 @@ EndLevel_Init:
 ; write it to VRAM address $1280
                 move.l  #$1280,d0
                 lea     (Intro_ram_ImageBuffer).l,a0
-                jsr     (WriteToVRAM).l
+                jsr     (WriteTilesetToVRAM).l
 ; and draw it
                 move.w  #40,d0 ; width
                 move.w  #28,d1 ; height
@@ -128,7 +128,7 @@ EndLevel_Init:
 
                 move.l  #$2020,d0
                 lea     (Intro_ram_ImageBuffer).l,a0
-                jsr     (WriteToVRAM).l
+                jsr     (WriteTilesetToVRAM).l
 
                 move.w  #40,d0 ; width
                 move.w  #14,d1 ; height
@@ -169,7 +169,7 @@ EndLevel_Init:
 ; write it to VRAM address $0
                 moveq   #0,d0
                 lea     (Intro_ram_ImageBuffer).l,a0
-                jsr     (WriteToVRAM).l
+                jsr     (WriteTilesetToVRAM).l
 ; draw image from frame buffer
                 move.l  #Menu_ram_FrameBuffer,d0
                 move.w  #$3000,d1
@@ -207,7 +207,7 @@ EndLevel_InitVictoryCharacter:
                 jsr     (UncompressB).l
                 move.l  #$A000,d0
                 lea     (Intro_ram_ImageBuffer).l,a0
-                jsr     (WriteToVRAM).l
+                jsr     (WriteTilesetToVRAM).l
                 move.w  #$C,d0
                 move.w  #6,d1
                 move.w  #2,d2
@@ -235,7 +235,7 @@ EndLevel_InitVictoryCharacter:
                 jsr     (UncompressB).l
                 move.l  #$9000,d0
                 lea     (Intro_ram_ImageBuffer).l,a0
-                jsr     (WriteToVRAM).l
+                jsr     (WriteTilesetToVRAM).l
                 move.w  #$C,d0
                 move.w  #$E,d1
                 move.w  #2,d2
@@ -270,7 +270,7 @@ EndLevel_InitVictoryCharacter:
                 movea.l (sp),a0
                 movea.w -6(a0),a0
                 adda.l  #Intro_ram_ImageBuffer,a0
-                jsr     (WriteToVRAM).l
+                jsr     (WriteTilesetToVRAM).l
                 move.w  #$A,d0
                 move.w  #$C,d1
                 move.w  #3,d2

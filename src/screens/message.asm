@@ -496,7 +496,7 @@ unk_4BAC:
     dc.b "    Grass Valley    "
     dc.b "          miles     "
 
-unk_4C18: ; demo high-score table (used by intro.asm)
+DemoHighScoreTable: ; demo high-score table (used by intro.asm)
     dc.b "Fang         $51,320"
     dc.b "Helldog      $44,790"
     dc.b "Lubster      $34,260"

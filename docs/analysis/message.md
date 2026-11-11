@@ -113,7 +113,7 @@ The blink period (`Message_ram_ButtonBlinkPeriod`, `$FF05E8`) is set by the scre
   `StrMusicOn` `0x4960`, `StrMusicOff` `0x49A4`.
 - `Menu_dRaceNameTable` (5 race-name/tooltip pointers -> `unk_49FC`, `unk_4AE8` (at `0x4A68`),
   `unk_4AD4`, `unk_4B40`, `unk_4BAC`); used by `Menu_BuildRaceTooltip` for the race tooltip.
-- `unk_4C18` demo high-score table (used by `Intro_Init`).
+- `DemoHighScoreTable` demo high-score table (used by `Intro_Init`).
 - `unk_4CA4`…`unk_4DDC` main-menu tooltip texts; `unk_4E20` ".. password invalid ..";
   `unk_4E78`, `unk_4EE4`, `word_4EEE` password labels/status; `unk_4F4A`…`unk_5668`
   shop/password/high-score tooltips and bike descriptions.

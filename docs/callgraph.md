@@ -80,7 +80,7 @@ flowchart LR
 | `FadeWithFunction_GameTick` | `0x012F8` | - | `DmaWriteCRAM` |
 | `HorizontalInterrupt` | `0x0145A` | - | `Audio_Engine1Update`, `Audio_Engine2Update`, `Audio_Update`, `Audio_UpdateEngine` |
 | `Audio_UpdateEngine` | `0x01652` | `HorizontalInterrupt` | - |
-| `Intro_Init` | `0x01704` | `TopLevel_Init` | `Audio_StartMusic`, `DmaWriteVRAM`, `EncodeString`, `Intro_InitPlayerA`, `Intro_InitPlayerB`, `Rand_Init`, `UncompressW`, `WriteNametable`, `WriteToVRAM`, `sub_16088` |
+| `Intro_Init` | `0x01704` | `TopLevel_Init` | `Audio_StartMusic`, `DmaWriteVRAM`, `EncodeString`, `Intro_InitPlayerA`, `Intro_InitPlayerB`, `Rand_Init`, `UncompressW`, `WriteNametable`, `WriteTilesetToVRAM`, `sub_16088` |
 | `Intro_InitPlayerA` | `0x01A2C` | `Intro_Init`, `Menu_Init` | - |
 | `Intro_InitPlayerB` | `0x01B48` | `Intro_Init`, `Menu_Init` | - |
 | `Intro_GameTick` | `0x01C64` | - | `Audio_StopMusic`, `Audio_Update`, `DmaWriteVRAM`, `EncodeString`, `GetInputPlayerA`, `GetInputPlayerB`, `WriteNametable` |
@@ -97,7 +97,7 @@ flowchart LR
 | `MenuPassword_ParsePassword` | `0x02D1E` | `MenuPassword_UpdateStatus` | - |
 | `MenuPassword_CreatePassword` | `0x02F3A` | `EndLevel_AdvanceLevel`, `Race_ComputeResults`, `Shop_HandleInput` | `DecodeString`, `EncodeString`, `MenuPassword_ValidatePassword` |
 | `MenuPassword_DrawNamesAndPasswords` | `0x03306` | `MainMenu_HandleInput`, `MenuPassword_HandleInput` | `EncodeString`, `WriteNametableToBuffer` |
-| `Menu_Init` | `0x03400` | `TopLevel_Init` | `Audio_StartMusic`, `DmaWriteVRAM`, `Intro_InitPlayerA`, `Intro_InitPlayerB`, `MenuPassword_SelectCurrentTrack`, `Menu_DrawPlayerInfo`, `Menu_DrawRaceSelection`, `Menu_ShowMessage`, `UncompressB`, `UncompressW`, `WriteNametable`, `WriteNametableToBuffer`, `WriteToVRAM` |
+| `Menu_Init` | `0x03400` | `TopLevel_Init` | `Audio_StartMusic`, `DmaWriteVRAM`, `Intro_InitPlayerA`, `Intro_InitPlayerB`, `MenuPassword_SelectCurrentTrack`, `Menu_DrawPlayerInfo`, `Menu_DrawRaceSelection`, `Menu_ShowMessage`, `UncompressB`, `UncompressW`, `WriteNametable`, `WriteNametableToBuffer`, `WriteTilesetToVRAM` |
 | `WriteNametableToBuffer` | `0x037AA` | `DrawString`, `EndLevel_Init`, `EndLevel_InitVictoryCharacter`, `HighScore_Init`, `MainMenu_HandleInput`, `MenuPassword_DrawNamesAndPasswords`, `MenuPassword_HandleInput`, `Menu_DrawPlayerInfo`, `Menu_DrawRaceSelection`, `Menu_Init`, `Menu_ShowMessage`, `Message_BlinkButtonC`, `Message_BlinkButtonStart`, `Message_Clear`, `Message_DrawButtonA`, `Message_DrawButtonB`, `Message_DrawDirPadRight`, `Message_DrawDirPadVert`, `Message_ShowEmpty`, `RaceResults_DrawBusted`, `RaceResults_DrawRepair`, `RaceResults_DrawStandings`, `Race_DrawOpponentName`, `Race_DrawPlayerNameOrPlace`, `Race_LoadHUD`, `RiderIntro_Init`, `Shop_DrawBikeName`, `Shop_DrawString`, `Shop_Init` | - |
 | `Menu_WriteNametableMasked` | `0x037D2` | `Menu_DrawRaceCard` | - |
 | `MainMenu_GameTick` | `0x03802` | - | `Audio_StopMusic`, `Audio_Update`, `DmaWriteVRAM`, `GetInputPlayerA`, `GetInputPlayerB`, `MainMenu_HandleInput`, `Menu_ShowMessage`, `Rand_GetWord`, `sub_160B0`, `sub_160CC` |
@@ -123,20 +123,20 @@ flowchart LR
 | `Message_BlinkDirectionalPad` | `0x0454E` | - | `Message_Clear`, `loc_4486`, `loc_44FE` |
 | `RiderSprites_Build` | `0x05760` | `RiderSprites_BuildAlt`, `Road_DrawStrip` | - |
 | `RiderSprites_BuildAlt` | `0x0593E` | - | `RiderSprites_Build` |
-| `RiderIntro_Init` | `0x059C4` | `TopLevel_Init` | `DmaWriteVRAM`, `EncodeString`, `Menu_ShowMessage`, `Rand_GetWord`, `UncompressB`, `UncompressW`, `WriteNametable`, `WriteNametableToBuffer`, `WriteToVRAM` |
+| `RiderIntro_Init` | `0x059C4` | `TopLevel_Init` | `DmaWriteVRAM`, `EncodeString`, `Menu_ShowMessage`, `Rand_GetWord`, `UncompressB`, `UncompressW`, `WriteNametable`, `WriteNametableToBuffer`, `WriteTilesetToVRAM` |
 | `RiderIntro_GameTick` | `0x05E66` | - | `Audio_StopMusic`, `Audio_Update`, `DmaWriteVRAM`, `GetInputPlayerA`, `GetInputPlayerB`, `Menu_ShowMessage` |
-| `RaceResults_Init` | `0x05F28` | `TopLevel_Init` | `Audio_StartMusic`, `Audio_StopMusic`, `DmaWriteVRAM`, `RaceResults_DrawBusted`, `RaceResults_DrawRepair`, `RaceResults_DrawStandings`, `Race_FormatMoney`, `UncompressB`, `UncompressW`, `WriteNametable`, `WriteToVRAM` |
-| `RaceResults_DrawStandings` | `0x062CE` | `RaceResults_Init` | `EncodeString`, `UncompressW`, `WriteNametable`, `WriteNametableToBuffer`, `WriteToVRAM` |
-| `RaceResults_DrawBusted` | `0x0647E` | `RaceResults_Init` | `EncodeString`, `Race_FormatNumber`, `Rand_GetWord`, `UncompressB`, `UncompressW`, `WriteNametable`, `WriteNametableToBuffer`, `WriteToVRAM` |
-| `RaceResults_DrawRepair` | `0x067AC` | `RaceResults_Init` | `EncodeString`, `Race_FormatNumber`, `Rand_GetWord`, `UncompressB`, `UncompressW`, `WriteNametableToBuffer`, `WriteToVRAM` |
+| `RaceResults_Init` | `0x05F28` | `TopLevel_Init` | `Audio_StartMusic`, `Audio_StopMusic`, `DmaWriteVRAM`, `RaceResults_DrawBusted`, `RaceResults_DrawRepair`, `RaceResults_DrawStandings`, `Race_FormatMoney`, `UncompressB`, `UncompressW`, `WriteNametable`, `WriteTilesetToVRAM` |
+| `RaceResults_DrawStandings` | `0x062CE` | `RaceResults_Init` | `EncodeString`, `UncompressW`, `WriteNametable`, `WriteNametableToBuffer`, `WriteTilesetToVRAM` |
+| `RaceResults_DrawBusted` | `0x0647E` | `RaceResults_Init` | `EncodeString`, `Race_FormatNumber`, `Rand_GetWord`, `UncompressB`, `UncompressW`, `WriteNametable`, `WriteNametableToBuffer`, `WriteTilesetToVRAM` |
+| `RaceResults_DrawRepair` | `0x067AC` | `RaceResults_Init` | `EncodeString`, `Race_FormatNumber`, `Rand_GetWord`, `UncompressB`, `UncompressW`, `WriteNametableToBuffer`, `WriteTilesetToVRAM` |
 | `RaceResults_GameTick` | `0x06A90` | - | `Audio_StopMusic`, `Audio_Update`, `DmaWriteVRAM`, `GetInputPlayerA`, `GetInputPlayerB`, `Menu_ShowMessage`, `RaceResults_HandleInput` |
 | `RaceResults_HandleInput` | `0x06BD4` | `RaceResults_GameTick` | - |
 | `DrawString` | `0x06C5E` | - | `EncodeString`, `WriteNametableToBuffer` |
-| `HighScore_Init` | `0x06DC0` | `TopLevel_Init` | `Audio_StartMusic`, `Audio_StopMusic`, `DmaWriteVRAM`, `EncodeString`, `UncompressB`, `UncompressW`, `WriteNametable`, `WriteNametableToBuffer`, `WriteToVRAM` |
+| `HighScore_Init` | `0x06DC0` | `TopLevel_Init` | `Audio_StartMusic`, `Audio_StopMusic`, `DmaWriteVRAM`, `EncodeString`, `UncompressB`, `UncompressW`, `WriteNametable`, `WriteNametableToBuffer`, `WriteTilesetToVRAM` |
 | `HighScore_GameTick_Demo` | `0x072BA` | - | `Audio_StopMusic`, `Audio_Update`, `GetInputPlayerA`, `GetInputPlayerB` |
 | `HighScore_GameTick` | `0x0732E` | - | `Audio_StopMusic`, `Audio_Update`, `DmaWriteVRAM`, `GetInputPlayerA`, `GetInputPlayerB`, `HighScore_HandleInput`, `Menu_ShowMessage` |
 | `HighScore_HandleInput` | `0x07460` | `HighScore_GameTick` | - |
-| `Shop_Init` | `0x074AA` | `TopLevel_Init` | `Audio_StartMusic`, `Audio_StopMusic`, `DmaWriteVRAM`, `Shop_DrawBikeName`, `Shop_DrawBikes`, `Shop_DrawCreditsAndPrice`, `Shop_PrepareMessages`, `Shop_ShowBikeDescription`, `UncompressB`, `UncompressW`, `WriteNametable`, `WriteNametableToBuffer`, `WriteToVRAM` |
+| `Shop_Init` | `0x074AA` | `TopLevel_Init` | `Audio_StartMusic`, `Audio_StopMusic`, `DmaWriteVRAM`, `Shop_DrawBikeName`, `Shop_DrawBikes`, `Shop_DrawCreditsAndPrice`, `Shop_PrepareMessages`, `Shop_ShowBikeDescription`, `UncompressB`, `UncompressW`, `WriteNametable`, `WriteNametableToBuffer`, `WriteTilesetToVRAM` |
 | `Shop_DrawBikeName` | `0x07996` | `Shop_HandleInput`, `Shop_Init` | `EncodeString`, `WriteNametableToBuffer` |
 | `Shop_ShowBikeDescription` | `0x079DA` | `Shop_HandleInput`, `Shop_Init` | - |
 | `Shop_GameTick` | `0x079F8` | - | `Audio_StopMusic`, `Audio_Update`, `DmaWriteCRAM`, `DmaWriteVRAM`, `GetInputPlayerA`, `GetInputPlayerB`, `Menu_ShowMessage`, `Shop_HandleInput`, `Shop_UpdateScroll` |
@@ -148,8 +148,8 @@ flowchart LR
 | `Shop_PrepareMessages` | `0x07F62` | `Shop_HandleInput`, `Shop_Init` | - |
 | `Shop_DrawBikes` | `0x0803C` | `Shop_HandleInput`, `Shop_Init` | `WriteNametable` |
 | `Shop_UpdateScroll` | `0x08178` | `Shop_GameTick` | - |
-| `EndLevel_Init` | `0x08342` | `TopLevel_Init` | `Audio_StartMusic`, `Audio_StopMusic`, `DmaWriteVRAM`, `UncompressB`, `UncompressToVRAM`, `UncompressW`, `WriteNametable`, `WriteNametableToBuffer`, `WriteToVRAM` |
-| `EndLevel_InitVictoryCharacter` | `0x08682` | `EndLevel_GameTick` | `DmaWriteCRAM`, `EncodeString`, `EndLevel_AdvanceLevel`, `Rand_GetWord`, `UncompressB`, `UncompressW`, `WriteNametable`, `WriteNametableToBuffer`, `WriteToVRAM` |
+| `EndLevel_Init` | `0x08342` | `TopLevel_Init` | `Audio_StartMusic`, `Audio_StopMusic`, `DmaWriteVRAM`, `UncompressB`, `UncompressToVRAM`, `UncompressW`, `WriteNametable`, `WriteNametableToBuffer`, `WriteTilesetToVRAM` |
+| `EndLevel_InitVictoryCharacter` | `0x08682` | `EndLevel_GameTick` | `DmaWriteCRAM`, `EncodeString`, `EndLevel_AdvanceLevel`, `Rand_GetWord`, `UncompressB`, `UncompressW`, `WriteNametable`, `WriteNametableToBuffer`, `WriteTilesetToVRAM` |
 | `EndLevel_AdvanceLevel` | `0x08946` | `EndLevel_InitVictoryCharacter` | `MenuPassword_CreatePassword` |
 | `EndLevel_GameTickVictoryCharacter` | `0x08A1A` | - | `Audio_StopMusic`, `Audio_Update`, `DmaWriteVRAM`, `GetInputPlayerA`, `GetInputPlayerB`, `Menu_ShowMessage` |
 | `EndLevel_GameTick` | `0x08AEE` | - | `Audio_Update`, `DmaWriteVRAM`, `EndLevel_InitVictoryCharacter`, `GetInputPlayerA`, `GetInputPlayerB`, `Race_SwapFrames` |
@@ -185,16 +185,16 @@ flowchart LR
 | `Race_Init` | `0x0A4E2` | `TopLevel_Init` | `Race_ClearFrameBuffers`, `Race_ClearHudCorners`, `Race_CreateActors`, `Race_DrawTopHud`, `Race_GameTick`, `Race_InitActorLists`, `Race_InitActorPositions`, `Race_InitAudio`, `Race_InitTrack`, `Race_InitVariables`, `Race_InitVdp`, `Race_LoadBikeData`, `Race_LoadBikePalette`, `Race_LoadFonts`, `Race_LoadHUD`, `Race_LoadMoreTrackGfx`, `Race_LoadRoadImage`, `Race_LoadTrackParams`, `Race_LoatTrackGfx`, `Race_SpawnOpponents`, `Race_Update`, `TrackData_InitLevel` |
 | `Race_InitAudio` | `0x0A674` | `Race_Init` | `Audio_Engine1Start`, `Audio_Engine1Update`, `Audio_Engine2Start`, `Audio_Engine2Update`, `Audio_Engine3Start`, `Audio_Engine3Update`, `Audio_StartMusic` |
 | `Race_InitVdp` | `0x0A72A` | `Race_Init` | - |
-| `Race_DrawTopHud` | `0x0A79C` | `Race_Init` | `UncompressW`, `WriteNametable`, `WriteToVRAM` |
-| `Race_LoatTrackGfx` | `0x0A90A` | `Race_Init` | `UncompressB`, `WriteNametable`, `WriteToVRAM` |
-| `Race_LoadMoreTrackGfx` | `0x0A9DE` | `Race_Init` | `UncompressW`, `WriteNametable`, `WriteToVRAM` |
+| `Race_DrawTopHud` | `0x0A79C` | `Race_Init` | `UncompressW`, `WriteNametable`, `WriteTilesetToVRAM` |
+| `Race_LoatTrackGfx` | `0x0A90A` | `Race_Init` | `UncompressB`, `WriteNametable`, `WriteTilesetToVRAM` |
+| `Race_LoadMoreTrackGfx` | `0x0A9DE` | `Race_Init` | `UncompressW`, `WriteNametable`, `WriteTilesetToVRAM` |
 | `Race_ClearFrameBuffers` | `0x0AB38` | `Race_Init` | `Race_FillHudTile` |
 | `Race_ClearHudCorners` | `0x0AB78` | `Race_Init` | - |
 | `Race_FillHudTile` | `0x0AB9A` | `Race_ClearFrameBuffers` | - |
-| `Race_LoadHUD` | `0x0ABBA` | `Race_Init` | `EncodeString`, `UncompressW`, `WriteNametable`, `WriteNametableToBuffer`, `WriteToVRAM` |
-| `Race_LoadRoadImage` | `0x0ADFC` | `Race_Init` | `Race_DrawRearviewMirror`, `UncompressW`, `WriteToVRAM` |
-| `Race_LoadFonts` | `0x0AF40` | `Race_Init` | `UncompressW`, `WriteToVRAM` |
-| `WriteToVRAM` | `0x0AFF2` | `EndLevel_Init`, `EndLevel_InitVictoryCharacter`, `HighScore_Init`, `Intro_Init`, `Menu_Init`, `RaceResults_DrawBusted`, `RaceResults_DrawRepair`, `RaceResults_DrawStandings`, `RaceResults_Init`, `Race_DrawTopHud`, `Race_LoadFonts`, `Race_LoadHUD`, `Race_LoadMoreTrackGfx`, `Race_LoadRoadImage`, `Race_LoatTrackGfx`, `RiderIntro_Init`, `Shop_Init` | - |
+| `Race_LoadHUD` | `0x0ABBA` | `Race_Init` | `EncodeString`, `UncompressW`, `WriteNametable`, `WriteNametableToBuffer`, `WriteTilesetToVRAM` |
+| `Race_LoadRoadImage` | `0x0ADFC` | `Race_Init` | `Race_DrawRearviewMirror`, `UncompressW`, `WriteTilesetToVRAM` |
+| `Race_LoadFonts` | `0x0AF40` | `Race_Init` | `UncompressW`, `WriteTilesetToVRAM` |
+| `WriteTilesetToVRAM` | `0x0AFF2` | `EndLevel_Init`, `EndLevel_InitVictoryCharacter`, `HighScore_Init`, `Intro_Init`, `Menu_Init`, `RaceResults_DrawBusted`, `RaceResults_DrawRepair`, `RaceResults_DrawStandings`, `RaceResults_Init`, `Race_DrawTopHud`, `Race_LoadFonts`, `Race_LoadHUD`, `Race_LoadMoreTrackGfx`, `Race_LoadRoadImage`, `Race_LoatTrackGfx`, `RiderIntro_Init`, `Shop_Init` | - |
 | `Race_InitTrack` | `0x0B016` | `Race_Init` | - |
 | `Race_InitVariables` | `0x0B0E8` | `Race_Init` | - |
 | `Race_InitActorLists` | `0x0B6C4` | `Race_Init` | - |

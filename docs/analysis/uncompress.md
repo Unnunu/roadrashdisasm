@@ -6,7 +6,7 @@
 - **Status:** analyzed; algorithm validated with a Python decoder against the assets
 - **Source:** `src/core/uncompress.asm`
 - **Related:** `docs/architecture.md`, `docs/ram-map.md`, `docs/analysis/road_render.md`,
-  `docs/coding-style.md` (asset formats), `src/race/race.asm` `WriteToVRAM`
+  `docs/coding-style.md` (asset formats), `src/race/race.asm` `WriteTilesetToVRAM`
 
 ## Coverage matrix
 
@@ -82,7 +82,7 @@ frames.
 
 - The ring buffer is `Road_ram_XLeftArray`, the road scratch array; the decompressors
   overwrite it (the ring is not preserved across separate `UncompressB/W` calls).
-- `WriteToVRAM` (`src/race/race.asm`) expects the decompressed asset's first long to hold the
+- `WriteTilesetToVRAM` (`src/race/race.asm`) expects the decompressed asset's first long to hold the
   tile count in its low word (the `asl.w` ignores the high word). The observed first
   longs are `$08080007` (panel, 7 tiles) and `$0808011A` (gamepad, low word `$011A`).
   The high word `$0808` appears to be a format marker; the exact header semantics and

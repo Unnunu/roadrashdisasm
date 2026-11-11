@@ -58,7 +58,7 @@ frames / off 32. `Message_ram_ButtonBlinkCounter` ($FF05E6) and
   `StrOnePlayerModeSelected` `0x4888`, `StrTwoPlayerModeSelected` `0x48F4`,
   `StrMusicOn` `0x4960`, `StrMusicOff` `0x49A4`.
 - `Menu_dRaceNameTable` race-name/tooltip pointers (used by `Menu_BuildRaceTooltip` in `menu_main`).
-- `unk_4C18` demo high-score table (used by `src/screens/intro.asm`).
+- `DemoHighScoreTable` demo high-score table (used by `src/screens/intro.asm`).
 - `unk_4CA4`…`unk_4DDC` main-menu tooltips, `unk_4E20` ".. password invalid ..",
   `unk_4E78`/`unk_4EE4`/`word_4EEE` password labels, `unk_4F4A`…`unk_5668`
   shop/password/high-score tooltips and bike descriptions.

@@ -48,7 +48,7 @@ background palette (at `ImageBuffer+$4E4`) is copied to the global palette.
 
 - Header `y=22, x=16, height=7, width=20`, followed by 7 x 20-character entries
   (`$FF05F2` is the first entry).
-- The initial table is built by `src/screens/intro.asm` from `unk_4C18` (src/screens/message.asm): Fang,
+- The initial table is built by `src/screens/intro.asm` from `DemoHighScoreTable` (src/screens/message.asm): Fang,
   Helldog, Lubster, Natasha, Sergio, Player A, Player B with their money.
 - `HighScore_ram_PlayerATableOffset/B` (20*5 / 20*6 initially) point at the player rows;
   `Race_UpdateHighScoreTable` in `src/race/race.asm` and `Intro_InitPlayerA` in `src/screens/intro.asm` update/sort them.

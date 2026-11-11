@@ -519,7 +519,7 @@ decoder state (`UncompressStreamStart`/`UncompressStreamContinue`):
 | `$FF13A8` | mid-match flag | 2 | `$FFFF` while resuming inside a back-reference. |
 | `$FF13AA` | VRAM assembly | 4 | `UncompressToVRAM` 4-byte buffer. |
 
-`WriteToVRAM` (`src/race/race.asm`) takes the decompressed tile count from the first long's low
+`WriteTilesetToVRAM` (`src/race/race.asm`) takes the decompressed tile count from the first long's low
 word (high word `$0808` marker). See `docs/analysis/uncompress.md`.
 
 ### Messages (`src/screens/message.asm`)

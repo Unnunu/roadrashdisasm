@@ -62,7 +62,7 @@ HighScore_Init:
 ; write to VRAM address $8000
                 move.l  #$8000,d0
                 lea     (Intro_ram_ImageBuffer).l,a0
-                jsr     (WriteToVRAM).l
+                jsr     (WriteTilesetToVRAM).l
 ; and draw it
                 move.w  #40,d0 ; width
                 move.w  #28,d1 ; height
@@ -80,7 +80,7 @@ HighScore_Init:
 ; write to VRAM address $9000
                 move.l  #$9000,d0
                 lea     (Intro_ram_ImageBuffer).l,a0
-                jsr     (WriteToVRAM).l
+                jsr     (WriteTilesetToVRAM).l
 ; and draw it
                 move.w  #20,d0 ; width
                 move.w  #2,d1 ; height
@@ -121,7 +121,7 @@ HighScore_Init:
 ; write to VRAM address $A000
                 move.l  #$A000,d0
                 lea     (Intro_ram_ImageBuffer).l,a0
-                jsr     (WriteToVRAM).l
+                jsr     (WriteTilesetToVRAM).l
 ; and draw it
                 move.w  #12,d0 ; width
                 move.w  #6,d1 ; height
@@ -139,7 +139,7 @@ HighScore_Init:
 ; write to VRAM address $B000
                 move.l  #$B000,d0
                 lea     (Intro_ram_ImageBuffer).l,a0
-                jsr     (WriteToVRAM).l
+                jsr     (WriteTilesetToVRAM).l
 ; and draw it 5 times
                 move.w  #22,d0
                 move.w  #3,d1
@@ -197,7 +197,7 @@ HighScore_Init:
 ; write to VRAM address $0
                 moveq   #0,d0
                 lea     (Intro_ram_ImageBuffer).l,a0
-                jsr     (WriteToVRAM).l
+                jsr     (WriteTilesetToVRAM).l
 ; table font at VRAM $800
                 lea     (FontHighScoreTable).l,a3
                 lea     (Intro_ram_ImageBuffer).l,a1
@@ -205,7 +205,7 @@ HighScore_Init:
 ; write to VRAM address $800
                 move.l  #$800,d0
                 lea     (Intro_ram_ImageBuffer).l,a0
-                jsr     (WriteToVRAM).l
+                jsr     (WriteTilesetToVRAM).l
 
                 lea     (unk_A2E68).l,a3
                 lea     (Intro_ram_ImageBuffer).l,a1
@@ -213,7 +213,7 @@ HighScore_Init:
 
                 move.l  #$1000,d0
                 lea     (Intro_ram_ImageBuffer).l,a0
-                jsr     (WriteToVRAM).l
+                jsr     (WriteTilesetToVRAM).l
 ; clear 22 lines to the default tile, the bottom 6 to spaces
                 lea     (Menu_ram_FrameBuffer).l,a0
                 move.l  #$7FF07FF,d1

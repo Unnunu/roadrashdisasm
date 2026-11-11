@@ -79,7 +79,7 @@ unk_10E3E:      dc.b $18
                 dc.b $E5
                 dc.b   0
 
-; =============== S U B R O U T I N E =======================================
+
 
 
  ; *************************************************
@@ -256,7 +256,7 @@ Race_UpdateActorAI:
 ; End of function Race_UpdateActorAI
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 Race_AdvanceActorProgress:
@@ -290,7 +290,7 @@ Race_AdvanceActorProgress:
 ; End of function Race_AdvanceActorProgress
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
  ; *************************************************
@@ -399,7 +399,7 @@ Race_HandleInputOnFoot:
 ; End of function Race_HandleInputOnFoot
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
  ; *************************************************
@@ -450,7 +450,7 @@ Race_AnotherInputOnFoot:
 ; End of function Race_AnotherInputOnFoot
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 sub_11268:
@@ -499,7 +499,7 @@ sub_11268:
 ; End of function sub_11268
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 sub_112C8:
@@ -682,7 +682,7 @@ sub_112C8:
                 dc.b $4E ; N
                 dc.b $75 ; u
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 sub_113A4:
@@ -702,7 +702,7 @@ sub_113A4:
 ; End of function sub_113A4
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 sub_113CA:
@@ -760,7 +760,7 @@ sub_113CA:
 ; End of function sub_113CA
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 Race_UpdateActorX:
@@ -905,7 +905,7 @@ Race_UpdateActorX:
 ; End of function Race_UpdateActorX
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 sub_115C6:
@@ -1007,7 +1007,7 @@ sub_115C6:
 ; End of function sub_115C6
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 Race_UpdateActorMovement:
@@ -1128,7 +1128,7 @@ Race_UpdateActorMovement:
 ; End of function Race_UpdateActorMovement
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 ; *************************************************
@@ -1233,7 +1233,7 @@ Race_UpdateActorShadow:
 ; End of function Race_UpdateActorShadow
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 ; *************************************************
@@ -1265,7 +1265,7 @@ Race_SaveActorShadow:
 ; End of function Race_SaveActorShadow
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 Race_UpdateActorFallMovement:
@@ -1669,7 +1669,7 @@ Race_UpdateActorFallMovement:
                 dc.b $4E ; N
                 dc.b $75 ; u
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 Race_ApplyCrashImpact:
@@ -1738,7 +1738,7 @@ Race_ApplyCrashImpact:
 ; End of function Race_ApplyCrashImpact
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 sub_11C44:
@@ -1782,7 +1782,7 @@ sub_11C44:
 ; End of function sub_11C44
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 sub_11CC8:
@@ -2043,7 +2043,7 @@ sub_11CC8:
 ; End of function sub_11CC8
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 sub_12070:
@@ -2170,7 +2170,7 @@ sub_12070:
                 dc.b $43 ; C
                 dc.b $8E
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 sub_1218C:
@@ -2337,7 +2337,7 @@ sub_1218C:
 ; End of function sub_1218C
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 sub_123A8:
@@ -2369,7 +2369,7 @@ sub_123A8:
 ; End of function sub_123A8
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 sub_12414:
@@ -2446,7 +2446,7 @@ sub_12414:
 ; End of function sub_12414
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 Race_UpdateActorPairCollision:
@@ -2689,7 +2689,7 @@ Race_UpdateActorPairCollision:
 ; End of function Race_UpdateActorPairCollision
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 Race_ClearActorOnFootFlags:
@@ -2724,7 +2724,7 @@ Race_ClearActorOnFootFlags:
 ; End of function Race_ClearActorOnFootFlags
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
  ; *************************************************
@@ -2779,7 +2779,7 @@ Race_UpdateStaticActors:
 ; End of function Race_UpdateStaticActors
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 Race_InitExtraStaticActor:
@@ -2832,7 +2832,7 @@ Race_InitExtraStaticActor:
 ; End of function Race_InitExtraStaticActor
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 Race_UpdateExtraStaticActor:
@@ -2935,7 +2935,7 @@ Race_UpdateExtraStaticActor:
 ; End of function Race_UpdateExtraStaticActor
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 Race_GetCollisionExtent:
@@ -2951,7 +2951,7 @@ Race_GetCollisionExtent:
 ; End of function Race_GetCollisionExtent
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 Race_GetActorCollisionExtent:
@@ -2996,7 +2996,7 @@ Race_GetActorCollisionExtent:
 ; End of function Race_GetActorCollisionExtent
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 Race_GetStaticCollisionExtent:
@@ -3012,7 +3012,7 @@ Race_GetStaticCollisionExtent:
 ; End of function Race_GetStaticCollisionExtent
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 Race_GetAttackerReach:
@@ -3030,7 +3030,7 @@ Race_GetAttackerReach:
 ; End of function Race_GetAttackerReach
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 Race_GetDefenderReach:
@@ -3208,7 +3208,7 @@ unk_12B7C:      dc.b $10
                 dc.b   0
                 dc.b $1A
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 sub_12BD2:
@@ -3278,7 +3278,7 @@ sub_12BD2:
 ; End of function sub_12BD2
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 sub_12C9A:
@@ -3299,7 +3299,7 @@ sub_12C9A:
 ; End of function sub_12C9A
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 sub_12CCE:
@@ -3552,7 +3552,7 @@ loc_13100:
 loc_13104:
                 rts
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 Race_UpdateStaticActions:
@@ -3618,7 +3618,7 @@ loc_131B8:
                 move.w      d0,$30(a1)
                 rts
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 Race_UpdateActorSpeedGear:
@@ -3693,7 +3693,7 @@ Race_UpdateActorSpeedGear:
 ; End of function Race_UpdateActorSpeedGear
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 Race_UpdateActorChase:
@@ -3755,7 +3755,7 @@ Race_UpdateActorChase:
 ; End of function Race_UpdateActorChase
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 Race_ApplyActorSpeedCorrection:
@@ -3888,7 +3888,7 @@ Race_ApplyActorSpeedCorrection:
                 dc.b $4E ; N
                 dc.b $75 ; u
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 Race_UpdateActorSpeedCurve:
@@ -4043,7 +4043,7 @@ Race_UpdateActorSpeedCurve:
                 dc.b $4E ; N
                 dc.b $75 ; u
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 Race_FindTargetActor:
@@ -4064,7 +4064,7 @@ Race_FindTargetActor:
 ; End of function Race_FindTargetActor
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 Race_ScanTargetDistance:
@@ -4123,7 +4123,7 @@ Race_ScanTargetDistance:
 ; End of function Race_ScanTargetDistance
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 Race_ScaleActorSpeed:
@@ -4233,7 +4233,7 @@ Race_ScaleActorSpeed:
                 dc.b $4E ; N
                 dc.b $75 ; u
 
-; =============== S U B R O U T I N E =======================================
+
 
 
  ; *************************************************
@@ -4313,7 +4313,7 @@ Race_SetupActorSprite:
 ; End of function Race_SetupActorSprite
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 ; *************************************************
@@ -4346,7 +4346,7 @@ Race_BuildTargetCandidates:
 ; End of function Race_BuildTargetCandidates
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 ; *************************************************
@@ -4373,7 +4373,7 @@ Race_AddTargetCandidate:
 ; End of function Race_AddTargetCandidate
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 sub_1383E:
@@ -4383,7 +4383,7 @@ sub_1383E:
 ; End of function sub_1383E
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 Race_UpdateActorRoadSteering:
@@ -4414,7 +4414,7 @@ Race_UpdateActorRoadSteering:
 ; End of function Race_UpdateActorRoadSteering
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 ; *************************************************
@@ -4450,7 +4450,7 @@ Race_SteerTowardTarget:
 ; End of function Race_SteerTowardTarget
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 sub_138CE:
@@ -4645,7 +4645,7 @@ unk_13A1A:      dc.b $FF
                 dc.b $22 ; "
                 dc.b $22 ; "
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 sub_13A26:
@@ -4837,7 +4837,7 @@ sub_13BBC:
 ; End of function sub_13BBC
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 sub_13BD8:
@@ -4856,7 +4856,7 @@ sub_13BD8:
 ; End of function sub_13BD8
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 sub_13BF4:
@@ -4932,7 +4932,7 @@ sub_13BF4:
 ; End of function sub_13BF4
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 sub_13CFE:
@@ -5117,7 +5117,7 @@ sub_13CFE:
                 dc.b $4E ; N
                 dc.b $75 ; u
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 sub_13DE0:
@@ -5189,7 +5189,7 @@ sub_13DE0:
 ; End of function sub_13DE0
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 sub_13E94:
@@ -5244,7 +5244,7 @@ Race_UpdateBikeLean:
 ; End of function Race_UpdateBikeLean
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
  ; *************************************************
@@ -5344,7 +5344,7 @@ Race_UpdateBikeCurve:
 ; End of function Race_UpdateBikeCurve
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
  ; *************************************************

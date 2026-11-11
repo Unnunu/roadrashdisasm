@@ -45,7 +45,7 @@ supplies the output pointer and new budget); the ring persists across calls.
 - `Road_ram_XLeftArray`: LZ ring (also road scratch, overwritten).
 - `Uncompress_StateVram`: 4-byte VRAM assembly buffer.
 - Asset header: the decompressed image begins with a `$0808` marker and the tile count
-  in the low word (observed `$08080007` panel, `$0808011A` gamepad); `WriteToVRAM`
+  in the low word (observed `$08080007` panel, `$0808011A` gamepad); `WriteTilesetToVRAM`
   (`src/race/race.asm`) uses the low word. Exact header semantics/TODO.
 - Validated sizes: panel `0x2B8`, gamepad `0xC20`, background `0xDA8`, character
   `0x1058`.
@@ -67,7 +67,7 @@ Detailed listing: `docs/analysis/uncompress.md`.
 - Used by `src/logoEA/logoEA.asm`? (no, LogoEA has its own), `src/screens/intro.asm`, `src/screens/menu_main.asm`,
   `src/screens/rider_intro.asm`, `src/screens/race_results.asm`, `src/screens/highscore.asm`, `src/screens/shop.asm`, `src/screens/endlevel.asm`,
   `src/race/race.asm` (asset loaders).
-- `WriteToVRAM` (`src/race/race.asm`) consumes the decompressed tile-count header.
+- `WriteTilesetToVRAM` (`src/race/race.asm`) consumes the decompressed tile-count header.
 
 ## Hacks / bugs / quirks
 
@@ -76,7 +76,7 @@ Detailed listing: `docs/analysis/uncompress.md`.
 - `UncompressStreamContinue` saves but does not restore `a1`/`d1`; the caller owns them. `[static]`
 - The match length is nibble+3 (DBF runs d5+1 times). `[static]`
 - The decompressed image's first long is a `$0808` marker + tile-count low word; the
-  gamepad count `$011A` exceeds the tiles that fit in 0xC20 bytes, so `WriteToVRAM`
+  gamepad count `$011A` exceeds the tiles that fit in 0xC20 bytes, so `WriteTilesetToVRAM`
   over-copies harmless/unused tiles. TODO/exact header semantics.
 
 ## Verified facts

@@ -89,7 +89,7 @@ Race_Init:
 ; End of function Race_Init
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 ClearRAM:
@@ -103,7 +103,7 @@ ClearRAM:
 ; End of function ClearRAM
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 ClearVRAM:
@@ -272,7 +272,7 @@ Race_DrawTopHud:
 
                 move.l  #$3260,d0
                 lea     (Intro_ram_ImageBuffer).l,a0
-                jsr     (WriteToVRAM).l
+                jsr     (WriteTilesetToVRAM).l
 
                 move.w  #3,d0 ; width
                 move.w  #17,d1 ; height
@@ -338,7 +338,7 @@ Race_LoatTrackGfx:
                 movea.l (RaceTrack_Data6).l,a0
                 movea.w -6(a0),a0
                 adda.l  #Intro_ram_ImageBuffer,a0
-                jsr     (WriteToVRAM).l
+                jsr     (WriteTilesetToVRAM).l
 
                 move.w  #128,d0 ; width
                 move.w  #14,d1 ; height
@@ -419,7 +419,7 @@ Race_LoadMoreTrackGfx:
 
                 move.l  #$8000,d0
                 lea     (Intro_ram_ImageBuffer).l,a0
-                jsr     (WriteToVRAM).l
+                jsr     (WriteTilesetToVRAM).l
 
                 move.w  #128,d0 ; width
                 move.w  #7,d1 ; height
@@ -519,7 +519,7 @@ Race_ClearFrameBuffers:
 ; End of function Race_ClearFrameBuffers
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 Race_ClearHudCorners:
@@ -534,7 +534,7 @@ Race_ClearHudCorners:
 ; End of function Race_ClearHudCorners
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 Race_FillHudTile:
@@ -567,7 +567,7 @@ Race_LoadHUD:
 
                 moveq   #0,d0
                 lea     (Intro_ram_ImageBuffer).l,a0
-                jsr     (WriteToVRAM).l
+                jsr     (WriteTilesetToVRAM).l
 
                 move.w  #40,d0 ; width
                 move.w  #9,d1 ; height
@@ -724,7 +724,7 @@ Race_LoadRoadImage:
 
                 move.l  #$F880,d0
                 lea     (Intro_ram_ImageBuffer).l,a0
-                jsr     (WriteToVRAM).l
+                jsr     (WriteTilesetToVRAM).l
 
                 lea     (Intro_ram_ImageBuffer + $728).l,a0
                 movea.l #Race_ram_RearviewTileRows,a1
@@ -839,7 +839,7 @@ Race_LoadFonts:
 
                 move.l  #$B800,d0
                 lea     (Intro_ram_ImageBuffer).l,a0
-                jsr     (WriteToVRAM).l
+                jsr     (WriteTilesetToVRAM).l
 ; load digit font
                 lea     (unk_9DB68).l,a3
                 lea     (Intro_ram_ImageBuffer).l,a1
@@ -847,7 +847,7 @@ Race_LoadFonts:
 
                 move.l  #$3E80,d0
                 lea     (Intro_ram_ImageBuffer).l,a0
-                jsr     (WriteToVRAM).l
+                jsr     (WriteTilesetToVRAM).l
 
                 lea     (unk_9DC4C).l,a3
                 lea     (Intro_ram_ImageBuffer).l,a1
@@ -855,16 +855,16 @@ Race_LoadFonts:
 
                 move.l  #$BF00,d0
                 lea     (Intro_ram_ImageBuffer).l,a0
-                jsr     (WriteToVRAM).l
+                jsr     (WriteTilesetToVRAM).l
 
                 move.l  #$8300,d0
                 lea     (Intro_ram_ImageBuffer).l,a0
-                jsr     (WriteToVRAM).l
+                jsr     (WriteTilesetToVRAM).l
                 rts
 ; End of function Race_LoadFonts
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 Race_WriteVRAMTiles:
@@ -884,14 +884,14 @@ Race_WriteVRAMTiles:
 ; End of function Race_WriteVRAMTiles
 
 ; *************************************************
-; Function WriteToVRAM
+; Function WriteTilesetToVRAM
 ; Copies decompressed tile data to VRAM; the first long is the tile count.
 ; In:  d0 - VRAM address; a0 - [tile count][tile data]
 ; Out: VRAM
 ; Clobbers: d0/d1/a0/a1
 ; *************************************************
 
-WriteToVRAM:
+WriteTilesetToVRAM:
                 asl.l   #2,d0
                 lsr.w   #2,d0
                 ori.w   #$4000,d0
@@ -905,7 +905,7 @@ WriteToVRAM:
                 move.l  (a0)+,(a1)
                 dbf     d0,.loopWrite
                 rts
-; End of function WriteToVRAM
+; End of function WriteTilesetToVRAM
 
 
 ; *************************************************
@@ -1993,7 +1993,7 @@ Race_Update:
 ; End of function Race_Update
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 sub_C2FC:
@@ -2034,7 +2034,7 @@ sub_C2FC:
 ; End of function sub_C2FC
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 sub_C350:
@@ -2057,7 +2057,7 @@ sub_C350:
 ; End of function sub_C350
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 Race_SortResults:
@@ -2115,14 +2115,14 @@ Race_SortResults:
 ; End of function Race_SortResults
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 sub_C3F6:
                 rts
 ; End of function sub_C3F6
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 Race_ComputeResults:
@@ -2240,11 +2240,11 @@ Race_ComputeResults:
 ; End of function Race_ComputeResults
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 Race_UpdateHighScoreTable:
-                lea     (ram_FF05F2).l,a0
+                lea     (HighScore_ram_Table + 8).l,a0
                 lea     (MenuPassword_ram_StrPlayerAName + 8).l,a1
                 lea     (HighScore_ram_PlayerATableOffset).l,a2
                 move.w  (a2),d1
@@ -2252,7 +2252,7 @@ Race_UpdateHighScoreTable:
                 move.l  (a1)+,(a0)
                 move.l  (a1)+,4(a0)
                 move.w  (a1)+,8(a0)
-                lea     (ram_FF05F2).l,a0
+                lea     (HighScore_ram_Table + 8).l,a0
                 lea     (MenuPassword_ram_StrPlayerBName + 8).l,a1
                 lea     (HighScore_ram_PlayerBTableOffset).l,a2
                 move.w  (a2),d1
@@ -2260,7 +2260,7 @@ Race_UpdateHighScoreTable:
                 move.l  (a1)+,(a0)
                 move.l  (a1)+,4(a0)
                 move.w  (a1)+,8(a0)
-                lea     (ram_FF05F2).l,a0
+                lea     (HighScore_ram_Table + 8).l,a0
                 lea     (MenuPassword_ram_StrPlayerAName + 8).l,a1
                 lea     (HighScore_ram_PlayerATableOffset).l,a2
                 move.l  (ram_FF0510).l,d0
@@ -2288,7 +2288,7 @@ Race_UpdateHighScoreTable:
 .loc_C64E:
                 subi.w  #$14,d1
                 bmi.w   .locret_C6C2
-                lea     (ram_FF05F2).l,a1
+                lea     (HighScore_ram_Table + 8).l,a1
                 lea     $A(a1,d1.w),a1
                 move.w  #9,d0
 .loc_C664:
@@ -2304,7 +2304,7 @@ Race_UpdateHighScoreTable:
                 move.w  (a2),(a0)
 .loc_C682:
                 move.w  d1,(a2)
-                lea     (ram_FF05F2).l,a1
+                lea     (HighScore_ram_Table + 8).l,a1
                 lea     (a1,d1.w),a1
                 move.l  $14(a1),d2
                 move.l  (a1),$14(a1)
@@ -2327,7 +2327,7 @@ Race_UpdateHighScoreTable:
 ; End of function Race_UpdateHighScoreTable
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 Race_FormatMoney:
@@ -2412,7 +2412,7 @@ Race_FormatMoney:
 ; End of function Race_FormatMoney
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 Race_FormatNumber:
@@ -2495,7 +2495,7 @@ Race_FormatNumber:
 ; End of function Race_FormatNumber
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 Race_BuildStandings:
@@ -2613,7 +2613,7 @@ Race_BuildStandings:
 ; End of function Race_BuildStandings
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 Race_FormatTime:
@@ -2657,7 +2657,7 @@ Race_FormatTime:
 ; End of function Race_FormatTime
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 Race_LoadBikePalette:
@@ -2687,7 +2687,7 @@ Race_LoadBikePalette:
 ; End of function Race_LoadBikePalette
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 Race_LoadActorPalette:

@@ -67,7 +67,7 @@ Detailed listing/table/purchase logic: `docs/analysis/shop.md`.
 
 - Callers: `src/core/top_level.asm`; results/high-score C; the shop sets `RaceResults_ram_NextFunction` to
   HighScore/RaceResults/Shop.
-- Uses `UncompressW/B`, `WriteToVRAM`, `WriteNametable(ToBuffer)`, `EncodeString`,
+- Uses `UncompressW/B`, `WriteTilesetToVRAM`, `WriteNametable(ToBuffer)`, `EncodeString`,
   `Menu_ShowMessage`, `DmaWriteVRAM`, `DmaWriteCRAM`, `GetInputPlayerA/B`, `Race_FormatNumber`,
   `MenuPassword_CreatePassword`, `Audio_Update/3/4`.
 

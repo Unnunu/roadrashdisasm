@@ -230,7 +230,7 @@ Actors/player structures:
 
 | Area | Functions/addresses |
 |---|---|
-| Init/assets | `Race_Init` `0xA4E2`, loaders `0xA79C`–`0xAFF2`, `WriteToVRAM` `0xAFF2` |
+| Init/assets | `Race_Init` `0xA4E2`, loaders `0xA79C`–`0xAFF2`, `WriteTilesetToVRAM` `0xAFF2` |
 | VDP/interrupts | `Race_InitVdp` `0xA72A`, HInt via `src/main.asm`; VScroll/HInt buffers |
 | Buffering | `Race_SwapFrames` `0xBBFE`, `Race_FinishFrame` `0xBD24` |
 | Input | `Race_GetInput` `0xBE56`, `Race_GetInputDemo` `0xBE2C`, steering/pause |

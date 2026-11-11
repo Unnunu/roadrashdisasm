@@ -147,7 +147,7 @@ Race_UpdateNearestTarget:
 ; End of function Race_UpdateNearestTarget
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
  ; *************************************************
@@ -310,7 +310,7 @@ locret_16456:
 ; End of function sub_1634E
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
  ; *************************************************
@@ -392,7 +392,7 @@ locret_1651E:
                 rts
 ; End of function Race_DispatchActorAction
 
-; =============== S U B R O U T I N E =======================================
+
 
 
  ; *************************************************
@@ -417,7 +417,7 @@ Race_TriggerArmedAttackSfx:
 ; End of function Race_TriggerArmedAttackSfx
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
  ; *************************************************
@@ -472,7 +472,7 @@ Race_UpdateAttackPhase:
 ; End of function Race_UpdateAttackPhase
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
  ; *************************************************
@@ -493,7 +493,7 @@ Race_ActorSteerRoadCenter:
 ; End of function Race_ActorSteerRoadCenter
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
  ; *************************************************
@@ -521,7 +521,7 @@ Race_ActorSteerThrottle:
 ; End of function Race_ActorSteerThrottle
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
  ; *************************************************
@@ -543,7 +543,7 @@ Race_ActorCollideSteer:
 ; End of function Race_ActorCollideSteer
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
  ; *************************************************
@@ -561,7 +561,7 @@ Race_ActorSteerCollide:
 ; End of function Race_ActorSteerCollide
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
  ; *************************************************
@@ -587,7 +587,7 @@ Race_ActorRandomCombatChoice:
 ; End of function Race_ActorRandomCombatChoice
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
  ; *************************************************
@@ -615,7 +615,7 @@ Race_ActorProximityReaction:
 ; End of function Race_ActorProximityReaction
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
  ; *************************************************
@@ -657,7 +657,7 @@ Race_ActorPursueAttack:
 ; End of function Race_ActorPursueAttack
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
  ; *************************************************
@@ -688,7 +688,7 @@ Race_ActorAttackIfClose:
 ; End of function Race_ActorAttackIfClose
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
  ; *************************************************
@@ -708,7 +708,7 @@ Race_ActorEvadePlayer:
 ; End of function Race_ActorEvadePlayer
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
  ; *************************************************
@@ -746,7 +746,7 @@ Race_ActorCombatResponse:
 ; End of function Race_ActorCombatResponse
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
  ; *************************************************

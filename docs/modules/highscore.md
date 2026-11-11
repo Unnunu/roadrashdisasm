@@ -34,7 +34,7 @@ play A/B/C select high score/results/shop and a release returns to the results.
 ## RAM / ROM & structures
 
 - `HighScore_ram_Table` (`$FF05EA`): header `(22,16,7,20)` + 7 x 20-char entries; text
-  starts at `$FF05F2`; built by `src/screens/intro.asm` from `unk_4C18`, updated/sorted by
+  starts at `$FF05F2`; built by `src/screens/intro.asm` from `DemoHighScoreTable`, updated/sorted by
   `Race_UpdateHighScoreTable` (src/race/race.asm) and `Intro_InitPlayerA` (src/screens/intro.asm).
 - `HighScore_ram_PlayerATableOffset/B` (`$FF052A/$FF052C`): player row offsets (20*5,
   20*6 initially; can move after sorting).
@@ -59,7 +59,7 @@ Detailed listing/table: `docs/analysis/highscore.md`.
 
 - Callers: `src/core/top_level.asm`; `src/screens/race_results.asm`/`src/screens/shop.asm` set `RaceResults_ram_NextFunction` to
   `HighScore_Init`.
-- Uses `UncompressW/B`, `WriteToVRAM`, `WriteNametable(ToBuffer)`, `EncodeString`,
+- Uses `UncompressW/B`, `WriteTilesetToVRAM`, `WriteNametable(ToBuffer)`, `EncodeString`,
   `Menu_ShowMessage`, `DmaWriteVRAM`, `GetInputPlayerA/B`, `Audio_Update/3/4`.
 
 ## Hacks / bugs / quirks

@@ -131,7 +131,7 @@ Detailed top-level flow: `docs/analysis/race.md`; actors: `docs/analysis/race_ac
 ## External calls / dependencies
 
 - Callers: `src/core/top_level.asm`.
-- Uses `UncompressW/B`, `UncompressToVRAM`, `WriteToVRAM`, `WriteNametable(ToBuffer)`,
+- Uses `UncompressW/B`, `UncompressToVRAM`, `WriteTilesetToVRAM`, `WriteNametable(ToBuffer)`,
   `DmaWriteVRAM`, `DmaWriteCRAM`, `PiecewiseLinearInterpolation`, `Road_DrawObjects`
   (`road_render`), `RaceHud_Draw`, `RoadMarking_Draw`, `UpdateAnimation(2)`, the audio
   functions, `GetInputPlayerA/B`, `Rand_GetWord`, `track_data` decoder, `Race_LoadActorPalette`,

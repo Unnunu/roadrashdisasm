@@ -63,7 +63,7 @@ Detailed listing: `docs/analysis/endlevel.md`.
 ## External calls / dependencies
 
 - Callers: `src/core/top_level.asm`.
-- Uses `UncompressW/B`, `UncompressToVRAM`, `WriteToVRAM`, `WriteNametable(ToBuffer)`,
+- Uses `UncompressW/B`, `UncompressToVRAM`, `WriteTilesetToVRAM`, `WriteNametable(ToBuffer)`,
   `EncodeString`, `Menu_ShowMessage`, `DmaWriteVRAM`, `DmaWriteCRAM`,
   `UpdateAnimation2`, `Race_FinishFrame`, `Race_SwapFrames`, `GetInputPlayerA/B`,
   `MenuPassword_CreatePassword`, `Audio_Update/3/4`.

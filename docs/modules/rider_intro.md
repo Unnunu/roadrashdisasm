@@ -66,7 +66,7 @@ Detailed listing, table parse and layout: `docs/analysis/rider_intro.md`.
 ## External calls / dependencies
 
 - Callers: `src/core/top_level.asm`.
-- Uses `UncompressW/B`, `WriteToVRAM`, `WriteNametable(ToBuffer)`, `EncodeString`,
+- Uses `UncompressW/B`, `WriteTilesetToVRAM`, `WriteNametable(ToBuffer)`, `EncodeString`,
   `Menu_ShowMessage`, `DmaWriteVRAM`, `Rand_GetWord`, `GetInputPlayerA/B`,
   `Audio_Update/4`.
 

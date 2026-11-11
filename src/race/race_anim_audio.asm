@@ -24,7 +24,7 @@ unk_14056:      dc.b   1
                 dc.b   1
                 dc.b $20
 
-; =============== S U B R O U T I N E =======================================
+
 
 
  ; *************************************************
@@ -620,7 +620,7 @@ Race_UpdateLeanCurve:
                 dc.b $40 ; @
                 dc.b $EE
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 sub_142D8:
@@ -718,7 +718,7 @@ sub_142D8:
                 dc.b $4E ; N
                 dc.b $75 ; u
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 Race_ScaleImpactDamage:
@@ -776,7 +776,7 @@ Race_ScaleImpactDamage:
                 dc.b $4E ; N
                 dc.b $75 ; u
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 sub_1438E:
@@ -946,7 +946,7 @@ sub_1438E:
                 dc.b $4E ; N
                 dc.b $75 ; u
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 Race_ApplyCollisionImpact:
@@ -1059,7 +1059,7 @@ Race_ApplyCollisionImpact:
 ; End of function Race_ApplyCollisionImpact
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 Race_UpdateCollisionSpeedState:
@@ -1126,7 +1126,7 @@ Race_UpdateCollisionSpeedState:
 ; End of function Race_UpdateCollisionSpeedState
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 sub_14688:
@@ -1143,7 +1143,7 @@ sub_14688:
 ; End of function sub_14688
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 Race_ApplyImpactSpeedLoss:
@@ -1538,7 +1538,7 @@ unk_147FC:      dc.b   0
                 dc.b   6
                 dc.b   0
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 Race_UpdateActorPairImpact:
@@ -1621,7 +1621,7 @@ Race_UpdateActorPairImpact:
 ; End of function Race_UpdateActorPairImpact
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 Race_ClampActorPairY:
@@ -1657,7 +1657,7 @@ Race_ClampActorPairY:
 ; End of function Race_ClampActorPairY
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 Race_StealClub:
@@ -1751,7 +1751,7 @@ Race_StealClub:
 ; End of function Race_StealClub
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 Race_StealClubMirror:
@@ -1846,7 +1846,7 @@ Race_StealClubMirror:
 ; End of function Race_StealClubMirror
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 Race_ApplyFallKnockdown:
@@ -1893,7 +1893,7 @@ Race_ApplyFallKnockdown:
 ; End of function Race_ApplyFallKnockdown
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 Race_ExchangeCollisionSpeed:
@@ -1950,7 +1950,7 @@ Race_ExchangeCollisionSpeed:
 ; End of function Race_ExchangeCollisionSpeed
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 Race_AdjustActorTrackPositions:
@@ -2072,7 +2072,7 @@ Race_AdjustActorTrackPositions:
                 dc.b $4E ; N
                 dc.b $75 ; u
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 sub_14E38:
@@ -2192,7 +2192,7 @@ sub_14E38:
 ; End of function sub_14E38
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 sub_14FB4:
@@ -2222,7 +2222,7 @@ sub_14FB4:
 ; End of function sub_14FB4
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 sub_15014:
@@ -2388,7 +2388,7 @@ sub_15014:
 ; End of function sub_15014
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 sub_151F0:
@@ -2495,7 +2495,7 @@ sub_151F0:
 ; End of function sub_151F0
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 sub_1533E:
@@ -2580,7 +2580,7 @@ sub_1533E:
 ; End of function sub_1533E
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 sub_15446:
@@ -2619,7 +2619,7 @@ sub_15446:
 ; End of function sub_15446
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 sub_15478:
@@ -2649,7 +2649,7 @@ sub_15478:
 ; End of function sub_15478
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 sub_154D2:
@@ -2703,7 +2703,7 @@ sub_154D2:
 ; End of function sub_154D2
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 sub_15538:
@@ -2719,7 +2719,7 @@ sub_15538:
 ; End of function sub_15538
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 sub_1555C:
@@ -5400,7 +5400,7 @@ byte_15FA8:     dc.b $3D
                 dc.b $D5
                 dc.b $7F ; 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
  ; *************************************************
@@ -5441,7 +5441,7 @@ Rand_Init:
 ; End of function Rand_Init
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
  ; *************************************************
@@ -5471,7 +5471,7 @@ Rand_GetWord:
 ; End of function Rand_GetWord
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 sub_1607C:
@@ -5482,7 +5482,7 @@ sub_1607C:
 ; End of function sub_1607C
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 sub_16088:
@@ -5492,7 +5492,7 @@ sub_16088:
 ; End of function sub_16088
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 sub_1609A:
@@ -5507,7 +5507,7 @@ sub_1609A:
 ; End of function sub_1609A
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 sub_160B0:
@@ -5525,7 +5525,7 @@ sub_160B0:
 ; End of function sub_160B0
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 sub_160CC:
@@ -5540,7 +5540,7 @@ sub_160CC:
 ; End of function sub_160CC
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
  ; *************************************************
@@ -5571,7 +5571,3 @@ Race_UpdatePlayerAnimation:
 .locret_16118:
                 rts
 ; End of function Race_UpdatePlayerAnimation
-
-
-; =============== S U B R O U T I N E =======================================
-

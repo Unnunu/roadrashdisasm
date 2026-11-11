@@ -95,7 +95,7 @@ reg92 $1C   WindowY 28 cells (window covers the screen)
 
 ## External calls / dependencies
 
-- `UncompressW`/`UncompressB`, `WriteToVRAM`, `DmaWriteVRAM`,
+- `UncompressW`/`UncompressB`, `WriteTilesetToVRAM`, `DmaWriteVRAM`,
   `EncodeString`/`WriteNametable`, `WriteNametableToBuffer`, `Menu_ShowMessage`,
   `Menu_DrawRaceSelection`, `Menu_DrawPlayerInfo`, `MenuPassword_SelectCurrentTrack`, `MenuPassword_GameTick`,
   `Fade_ram_UpdateFunction`, `Audio_Update/3/4`, `Rand_GetWord`, `sub_160B0/CC`.

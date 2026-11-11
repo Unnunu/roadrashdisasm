@@ -358,7 +358,7 @@ unk_EB34:       dc.b   0
                 dc.b $DD
                 dc.b $DD
 
-; =============== S U B R O U T I N E =======================================
+
 ; draw edges of the road ???
 
  ; *************************************************
@@ -507,7 +507,7 @@ Road_FillProfileTables:
 ; End of function Road_FillProfileTables
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
  ; *************************************************
@@ -710,7 +710,7 @@ Race_IntegrateTrackCurve:
 ; End of function Race_IntegrateTrackCurve
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
  ; *************************************************
@@ -830,7 +830,7 @@ Race_ComputeStandings:
 ; End of function Race_ComputeStandings
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
  ; *************************************************
@@ -878,7 +878,7 @@ Race_UpdateSpeedDisplay:
 ; End of function Race_UpdateSpeedDisplay
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 ; *************************************************
@@ -1076,7 +1076,7 @@ Interp_dDivisorMap:
     dc.w      273,   271,   270,   269,   268,   267,   266,   265
     dc.w      264,   263,   262,   261,   260,   259,   258,   257
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 Race_BuildActorObjectList:
@@ -1415,7 +1415,7 @@ Race_BuildActorObjectList:
 ; End of function Race_BuildActorObjectList
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 Race_AddActorLeanObject:
@@ -1481,7 +1481,7 @@ Race_AddActorLeanObject:
 ; End of function Race_AddActorLeanObject
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 Race_AddActorImpactObject:
@@ -1537,7 +1537,7 @@ Race_AddActorImpactObject:
 ; End of function Race_AddActorImpactObject
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 Race_AddActorFallObject:
@@ -1602,7 +1602,7 @@ unk_FA80:
     dc.w    -16, 56
     dc.w    -16, 40
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 Race_AddActorWeaponObject:
@@ -1642,7 +1642,7 @@ Race_AddActorWeaponObject:
 ; End of function Race_AddActorWeaponObject
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 Race_AddTrackStartObject:
@@ -1719,7 +1719,7 @@ Race_AddTrackStartObject:
 ; End of function Race_AddTrackStartObject
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 Race_AddStagedObjects:
@@ -1875,7 +1875,7 @@ Race_AddStagedObjects:
                 dc.b $FF
                 dc.b $FF
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 Race_AddSpecialObject:
@@ -1917,7 +1917,7 @@ Race_AddSpecialObject:
 ; End of function Race_AddSpecialObject
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 Race_ProjectObject:
@@ -2067,7 +2067,7 @@ Race_ProjectObject:
 ; End of function Race_ProjectObject
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 Race_ProjectActorObject:
@@ -2219,7 +2219,7 @@ Race_ProjectActorObject:
 ; End of function Race_ProjectActorObject
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 Race_SelectActorObjectShape:
@@ -2339,7 +2339,7 @@ Race_SelectActorObjectShape:
 ; End of function Race_SelectActorObjectShape
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 Race_SelectActorSpeedShape:
@@ -2372,7 +2372,7 @@ Race_SelectActorSpeedShape:
 ; End of function Race_SelectActorSpeedShape
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 Race_SelectActorIdleShape:
@@ -2393,7 +2393,7 @@ Race_SelectActorIdleShape:
 ; End of function Race_SelectActorIdleShape
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 Race_SelectOpponentShape:
@@ -2419,7 +2419,7 @@ Race_SelectOpponentShape:
 ; End of function Race_SelectOpponentShape
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 Race_SelectPlayerFinishShape:
@@ -2450,7 +2450,7 @@ Race_SelectPlayerFinishShape:
 
 unk_102DE:  dc.w 3, 19, 35
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 Race_GetActorShapeVariant:
@@ -2473,7 +2473,7 @@ Race_GetActorShapeVariant:
 ; End of function Race_GetActorShapeVariant
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 sub_1030A:
@@ -2533,7 +2533,7 @@ sub_1030A:
 ; End of function sub_1030A
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 sub_10384:
@@ -2681,7 +2681,7 @@ sub_10384:
 ; End of function sub_10384
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 sub_104E6:
@@ -3288,7 +3288,7 @@ unk_10702:      dc.b   0
                 dc.b   0
                 dc.b   0
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 sub_10762:
@@ -3379,7 +3379,7 @@ word_10802:     dc.w $12C
                 dc.w $13B
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 sub_1081A:
@@ -3471,7 +3471,7 @@ unk_108C2:      dc.b   0
                 dc.b   0
                 dc.b $2B ; +
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 Race_SelectExtraActorShape:
@@ -3543,7 +3543,7 @@ Race_SelectExtraActorShape:
 ; End of function Race_SelectExtraActorShape
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
  ; *************************************************
@@ -3573,7 +3573,7 @@ Race_WriteSpriteTiles:
 ; End of function Race_WriteSpriteTiles
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 Race_BuildTrackObjects:
@@ -3809,7 +3809,7 @@ Race_BuildTrackObjects:
 ; End of function Race_BuildTrackObjects
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 Race_ProjectTrackObject:
@@ -3904,7 +3904,7 @@ Race_ProjectTrackObject:
 ; End of function Race_ProjectTrackObject
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
  ; *************************************************
@@ -3970,7 +3970,7 @@ Road_BuildVisibleList:
 ; End of function Road_BuildVisibleList
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 sub_10DBE:
@@ -3983,7 +3983,7 @@ sub_10DBE:
 ; End of function sub_10DBE
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 sub_10DDA:
@@ -3998,8 +3998,3 @@ sub_10DDA:
 .locret_10DFE:
                 rts
 ; End of function sub_10DDA
-
-
-; =============== S U B R O U T I N E =======================================
-
-

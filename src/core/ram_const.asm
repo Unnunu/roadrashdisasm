@@ -3,10 +3,12 @@ Fade_ram_UpdateFunction equ $FF0302
 Fade_ram_CurrentPalette equ $FF0306
 Fade_ram_TargetPalette equ $FF0386
 Race_ram_HIntScrollOffset equ $FF0406
+
 Intro_ram_PlayerAPressedStart equ $FF040A
 Intro_ram_PlayerBPressedStart equ $FF040C
 Intro_ram_TextTimer equ $FF040E
 Intro_ram_CurrentStringOffset equ $FF0410
+
 Menu_ram_CurrentButtonsPtr equ $FF0412
 Menu_ram_ChangedButtonsPtr equ $FF0416
 MenuPassword_ram_StrPlayerNamePtr equ $FF041A
@@ -62,7 +64,6 @@ Menu_ram_CurrentlyDrawnRaceCard equ $FF05E4
 Message_ram_ButtonBlinkCounter equ $FF05E6
 Message_ram_ButtonBlinkPeriod equ $FF05E8
 HighScore_ram_Table equ $FF05EA
-ram_FF05F2 equ $FF05F2
 MenuPassword_StrPasswordStatus equ $FF067E
 ram_FF0682 equ $FF0682
 Shop_StrBuyNewBike equ $FF06EA

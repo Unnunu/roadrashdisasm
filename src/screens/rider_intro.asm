@@ -73,7 +73,7 @@ RiderIntro_Init:
 ; write to VRAM, why $4000 ??
                 move.l  #$4000,d0
                 lea     (Intro_ram_ImageBuffer).l,a0
-                jsr     (WriteToVRAM).l
+                jsr     (WriteTilesetToVRAM).l
 ; and draw it
                 move.w  #40,d0 ; width
                 move.w  #28,d1 ; height
@@ -91,7 +91,7 @@ RiderIntro_Init:
 ; write to VRAM address $A000
                 move.l  #$A000,d0
                 lea     (Intro_ram_ImageBuffer).l,a0
-                jsr     (WriteToVRAM).l
+                jsr     (WriteTilesetToVRAM).l
 ; and draw it
                 move.w  #12,d0 ; width
                 move.w  #6,d1 ; height
@@ -117,7 +117,7 @@ RiderIntro_Init:
 
                 move.l  #$B000,d0
                 lea     (Intro_ram_ImageBuffer).l,a0
-                jsr     (WriteToVRAM).l
+                jsr     (WriteTilesetToVRAM).l
 
                 move.w  #12,d0 ; width
                 move.w  #14,d1 ; height
@@ -185,7 +185,7 @@ RiderIntro_Init:
                 movea.l (sp),a0
                 movea.w -6(a0),a0
                 adda.l  #Intro_ram_ImageBuffer,a0
-                jsr     (WriteToVRAM).l
+                jsr     (WriteTilesetToVRAM).l
 ; draw the 10x12 portrait at (3,6); header -4 = nametable offset (+4 skips header)
                 move.w  #10,d0 ; width
                 move.w  #12,d1 ; height
@@ -319,7 +319,7 @@ RiderIntro_Init:
 
                 move.l  #$D000,d0
                 lea     (Intro_ram_ImageBuffer).l,a0
-                jsr     (WriteToVRAM).l
+                jsr     (WriteTilesetToVRAM).l
 
                 move.w  #6,d0
                 move.w  #7,d1
@@ -338,7 +338,7 @@ RiderIntro_Init:
 
                 moveq   #0,d0
                 lea     (Intro_ram_ImageBuffer).l,a0
-                jsr     (WriteToVRAM).l
+                jsr     (WriteTilesetToVRAM).l
 
                 bsr.w   Menu_ShowMessage
 

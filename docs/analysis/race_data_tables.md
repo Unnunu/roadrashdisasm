@@ -20,7 +20,7 @@
 Evidence [static]: the quote records are in `src/screens/rider_intro_quotes.asm`; `RiderIntro_GameTick` indexes `d0` (0/8/0x10/0x18) + `(level-1)*$A0`
 + `track*$10`; results use `(index-1)*$20`/$10 with `rand & $18`/$8; end level uses
 `(level-1)*$10` with `rand & 8`. All records are `(quote_ptr,image_ptr)` consumed by
-`UncompressW` + `WriteToVRAM/WriteNametableToBuffer`.
+`UncompressW` + `WriteTilesetToVRAM/WriteNametableToBuffer`.
 
 The `AudioFunc1..18` stubs at `$19F62` (audio) and the bytes after remain in the raw
 bridge.

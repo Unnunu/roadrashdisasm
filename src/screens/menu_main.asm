@@ -83,7 +83,7 @@ Menu_Init:
 ; write background image to VRAM
                 move.l  #$8000,d0
                 lea     (Intro_ram_ImageBuffer).l,a0
-                jsr     (WriteToVRAM).l
+                jsr     (WriteTilesetToVRAM).l
 ; write background nametable
                 move.w  #40,d0 ; width
                 move.w  #28,d1 ; height
@@ -101,7 +101,7 @@ Menu_Init:
 ; write it to VRAM
                 move.l  #$9000,d0
                 lea     (Intro_ram_ImageBuffer).l,a0
-                jsr     (WriteToVRAM).l
+                jsr     (WriteTilesetToVRAM).l
 ; write race selection background nametable
                 move.w  #40,d0 ; width
                 move.w  #14,d1 ; height
@@ -119,7 +119,7 @@ Menu_Init:
 ; write it to VRAM, but it's initially hidden
                 move.l  #$9400,d0
                 lea     (Intro_ram_ImageBuffer).l,a0
-                jsr     (WriteToVRAM).l
+                jsr     (WriteTilesetToVRAM).l
 ; load gamepad image
                 lea     (img_Gamepad).l,a3
                 lea     (Intro_ram_ImageBuffer).l,a1
@@ -127,7 +127,7 @@ Menu_Init:
 ; write it to VRAM
                 move.l  #$A000,d0
                 lea     (Intro_ram_ImageBuffer).l,a0
-                jsr     (WriteToVRAM).l
+                jsr     (WriteTilesetToVRAM).l
 ; write gamepad image nametable
                 move.w  #12,d0 ; width
                 move.w  #6,d1 ; height
@@ -145,7 +145,7 @@ Menu_Init:
 
                 move.l  #$B000,d0
                 lea     (Intro_ram_ImageBuffer).l,a0
-                jsr     (WriteToVRAM).l
+                jsr     (WriteTilesetToVRAM).l
 ; clear the 64x28 window frame buffer with the default tile $7FF
                 lea     (Menu_ram_FrameBuffer).l,a0
                 move.l  #$7FF07FF,d1 ; default tile
@@ -160,7 +160,7 @@ Menu_Init:
 ; write it to VRAM
                 move.l  #$C000,d0
                 lea     (Intro_ram_ImageBuffer).l,a0
-                jsr     (WriteToVRAM).l
+                jsr     (WriteTilesetToVRAM).l
 ; create nametable in Race_ram_ImageBuffer2
                 move.w  #12,d0 ; width
                 move.w  #12,d1 ; height
@@ -178,7 +178,7 @@ Menu_Init:
 ; write it to VRAM
                 move.l  #$D000,d0
                 lea     (Intro_ram_ImageBuffer).l,a0
-                jsr     (WriteToVRAM).l
+                jsr     (WriteTilesetToVRAM).l
 ; and append nametable in Race_ram_ImageBuffer2, just below names images
                 move.w  #12,d0 ; width
                 move.w  #30,d1 ; height
@@ -219,7 +219,7 @@ Menu_Init:
 ; write font to VRAM
                 moveq   #0,d0
                 lea     (Intro_ram_ImageBuffer).l,a0
-                jsr     (WriteToVRAM).l
+                jsr     (WriteTilesetToVRAM).l
 
                 jsr     (Menu_ShowMessage).l
                 jsr     (MenuPassword_SelectCurrentTrack).w

@@ -4,7 +4,7 @@
 ; *************************************************
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 DmaWriteVRAM:
@@ -40,7 +40,7 @@ DmaWriteVRAM:
 ; End of function DmaWriteVRAM
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 ; d2 - DMA length
 ; d0 - DMA source
@@ -79,7 +79,7 @@ DmaWriteCRAM:
 ; End of function DmaWriteCRAM
 
 
-; =============== S U B R O U T I N E =======================================
+
 ; draw road in rearview mirrors
 
 ; *************************************************
@@ -124,7 +124,7 @@ Race_DrawRearviewMirror:
 ; End of function Race_DrawRearviewMirror
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 ; *************************************************
@@ -195,7 +195,7 @@ Race_DrawMirrorRoad:
 ; End of function Race_DrawMirrorRoad
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 ; *************************************************
@@ -595,7 +595,7 @@ Race_RoadMarkingDataB:       dc.b $BB
                 dc.b $BB
                 dc.b $BB
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 ; *************************************************
@@ -705,7 +705,7 @@ Race_DrawRoadMarkingHud:
 ; End of function Race_DrawRoadMarkingHud
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 ; *************************************************
@@ -815,7 +815,7 @@ Race_UpdateCamera:
 ; End of function Race_UpdateCamera
 
 
-; =============== S U B R O U T I N E =======================================
+
 ; black screen if commented out
 
 ; *************************************************
@@ -1143,7 +1143,7 @@ Race_BuildVScrollInfo:
 ; End of function Race_BuildVScrollInfo
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 ; *************************************************
@@ -1274,7 +1274,7 @@ Race_BuildHScrollTable:
 ; End of function Race_BuildHScrollTable
 
 
-; =============== S U B R O U T I N E =======================================
+
 
 
 ; *************************************************
