@@ -30,3 +30,33 @@ loc_7E6A2 equ $7E6A2
 ; Rider intro portrait images (11 unique in the ROM tail).
 
 ; Results-screen track images (pointed to by unk_7E670).
+
+SONG_INTRO equ 1
+
+; Menu_ram_PlayerMode values.
+PLAYER_MODE_A equ 1
+PLAYER_MODE_B equ 2
+PLAYER_MODE_TWO_PLAYERS equ 3
+
+; Menu_ram_Player values.
+PLAYER_SLOT_A equ 0
+PLAYER_SLOT_B equ $FFFF
+
+; Menu_ram_CurrentTrackId values (five races, even ids).
+TRACK_ID_SIERRA_NEVADA equ 0
+TRACK_ID_PACIFIC_COAST equ 2
+TRACK_ID_REDWOOD_FOREST equ 4
+TRACK_ID_PALM_DESERT equ 6
+TRACK_ID_GRASS_VALLEY equ 8
+
+; Starting level for a fresh player profile.
+PLAYER_LEVEL_START equ 1
+
+; Default starting bike id.
+BIKE_ID_START equ 0
+
+; Race outcome values (ram_FF0526/28).
+RACE_OUTCOME_NONE equ 0
+
+; Race place value for a race that has not been played.
+RACE_PLACE_NONE equ 0

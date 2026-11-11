@@ -2,7 +2,7 @@
 
 - **Module / routine:** intro screen, credit strings, title/bottom scroll effect, initial game state
 - **ROM range:** `0x001704`–`0x002445` (`src/screens/menu_password.asm` starts at `0x2446`)
-- **Status:** partially analyzed (VDP/text/scroll structure understood; exact title visuals TODO)
+- **Status:** analyzed (static; visual confirmation of the title wipe TODO)
 - **Source:** `src/screens/intro.asm`
 - **Related:** `docs/architecture.md`, `docs/hardware.md`, `docs/ram-map.md`,
   `docs/analysis/screens_flow.md`
@@ -94,28 +94,50 @@ the next frame without Start ends the stage). `.endStage` clears `ram_UpdateFunc
 - `[dynamic]` GDB: line 150 starts at `$01EC0000` and decreases by `12.0` (`$C0000`)
   each frame; the timer starts at `$B4` (180) and decrements; `ram_UpdateFunction` is
   `0x1C64` (Intro_GameTick).
-- `Intro_GameTick` updates lines 150-189 each frame from the speed array: the scroll
-  value decreases toward it (or the speed is capped), with acceleration/deceleration and
-  a minimum; after all developers are shown, the title is moved out (`$FD800000` =
-  -640) and the recoil/out-of-screen logic runs.
+- `Intro_GameTick` updates lines 150-189 every frame. Each line starts at 12.0 px/frame;
+  while its remaining scroll is >16 px it keeps that speed. At <=16 px the speed drops
+  by 2.0 per frame. If the reduced speed still fits in the remaining distance, the speed
+  is clamped to that distance and the line lands exactly on 0; otherwise the line
+  overshoots, the speed goes negative and pulls it back (damped recoil/oscillation that
+  settles in about 10 frames). `[static]` + simulation.
+- While credits are still playing, a separate bottom-up pass walks lines 190..150 and
+  enforces `upper <= lower - 1` when `lower > upper + 1`, propagating the lower edge
+  upward with a 1 px/scanline slope. This is the visible settling wave that avoids a
+  hard seam at the bottom of the band. `[static]`
+- At `CurrentStringOffset = $2C` (the 12th of 13 pages) the normal pass is skipped and
+  the move-out path runs: line 189 gets 12 px/frame, line 190 is set to -640 as a
+  sentinel; line 189 slides right to about -648 and stops. A second pass with the
+  opposite branch sense (`line above = line below + 1`) then wipes the band right in a
+  diagonal wave over ~60 frames. It runs 40 iterations from line 189, so it also touches
+  line 149 (the blank row above the band) - an off-by-one quirk. `[static]`
+- The arrays are 32-bit 16.16 fixed point. In the H-scroll table the high word feeds
+  plane A and the low word is the plane-B scroll word; the low word doubles as the
+  fractional accumulator. Every fraction is a multiple of 1/8 (`0x2000`), whose low 10
+  bits are zero, so plane B stays at 0 despite sharing the word. `[static]`
 - The whole table is DMA'd to VRAM `$7000` (`$1C0` words = 896 bytes = 224 H-scroll
   entries) every frame via `DmaWriteVRAM`. With `reg0B=$03` the VDP applies the scroll
   per line, creating the title/credits wave.
-- Exact visual result and the line ranges are still TODO; the algorithm is a
-  per-line scroll table with per-line speed and clamping.
+- TODO: confirm the diagonal wipe visually in BlastEm; the table and algorithm are now
+  understood statically.
 
 ## String encoding and nametable writing
 
-- `EncodeString` (`a0` string, `a1` destination):
+- `EncodeString` (`a0` text record, `a1` destination):
   - reads the header words at +4/+6 (height, width), computes `height*width` chars;
-  - maps each byte through `dStringCodeTable` (a 256-entry word table, characters to
-    font tile indices); bytes >= `$80` become space (`$20`);
+  - maps each byte through `dStringCodeTable` (128 words, byte offset `char*2`);
+    bytes >= `$80` become space; unsupported glyphs map to the space tile 36;
   - writes one word (tile index) per character.
-- `DecodeString` is the reverse using `dStringDecodeTable` (a 50-byte char table).
-- `WriteNametable` computes the VDP VRAM write command from the destination base,
-  x/y, plane width and tile base, then writes `height` rows of `width` words. The bit
-  manipulation converts the linear VRAM address into the VDP command word format
-  (`$40000000 | (address bits)`); the row stride is `planeWidth * 2` bytes.
+- `DecodeString` is the reverse using `dStringDecodeTable` (50 bytes). It has no
+  bounds check; callers must pass tile indices 0..49.
+- `WriteNametable` arguments: a0 = row-major source; d0/d1 = width/height in cells;
+  d2/d3 = x/y in cells; d4 = base tile **word** added to every source word (tile
+  number + palette/priority bits, e.g. `$6000` = tile 0, palette 3); d5 = destination
+  plane base VRAM byte address (e.g. `$4000`); d6 = plane width in cells (128). It
+  builds `$4000 | (address & $3FFF)` in the high word and `(address >> 14) & 3` in the
+  low word (CD=01), then streams `width*height` words through `VdpData`, adding
+  `planeWidth*2` bytes per row. Requires auto-increment=2; the 16-bit address math
+  assumes the plane stays within the A13..A0 window. Example: d5=`$4000`, x=1, y=25,
+  d6=128 -> command `$59020001` (VRAM `$5902`).
 
 ## Initial game state (`Intro_InitPlayerA` / `Intro_InitPlayerB`)
 
@@ -125,10 +147,10 @@ persistent player/menu/high-score state:
 - choose `HighScore_ram_PlayerATableOffset`/`B` (20*5 or 20*6 depending on the other
   player);
 - copy the default player name from `MenuPassword_ram_StrPlayerAName/BName` into the
-  high-score table (`ram_FF05F2 + offset`), add spaces and `'$0'`;
+  high-score table (`HighScore_ram_Table + 8 + offset`), add spaces and `'$0'`;
 - copy `Menu_DefaultPassword` into the password string;
 - level 1, money 100, bike 0, five race places = 0, opponents list `$4B,0..$E`;
-- the high-score table is initialized from `unk_4C18` (demo data, 34 longs);
+- the high-score table is initialized from `DemoHighScoreTable` (demo data, 34 longs);
 - `Menu_ram_CurrentTrackId = 0`, `Menu_ram_PlayerMode = 1`, `Menu_ram_PlayerLevel = 1`,
   `Menu_ram_Player = 0`, music enabled, `Rand_Init`, `sub_16088`, `Audio_StartMusic`.
 

@@ -1,7 +1,7 @@
 # Module card: `src/screens/intro.asm`
 
 - **ROM range:** `0x001704`–`0x002445`
-- **Status:** partially analyzed (VDP/text/scroll structure and runtime confirmed; exact title visuals TODO)
+- **Status:** analyzed (static; visual confirmation of the title wipe TODO)
 - **Related:** `docs/architecture.md`, `docs/coding-style.md`,
   `docs/reverse-engineering.md`, `docs/hardware.md`, `docs/ram-map.md`,
   `docs/analysis/intro.md`
@@ -31,10 +31,12 @@ player/menu/high-score state used by the rest of the game.
   build nametables with `WriteNametable`, initialize the H-scroll table/speed arrays,
   DMA the H-scroll table, set up audio/random/menu state.
 - **GameTick:** DMA the H-scroll table to `$7000`; read pads A/B and edge-detect Start
-  (press then release); decrement the text timer (180 frames = 3 s); advance through
-  `Intro_dCreditStringTable`; when the last `$FFFFFFFF` entry is reached or Start is pressed,
-  clear `ram_UpdateFunction` and return. Otherwise update the title/credits scroll
-  (acceleration/deceleration, recoil/out-of-screen logic).
+  (press then release); decrement the text timer (180-tick setting, 181 frames per page
+  because of the `bpl`) and advance through `Intro_dCreditStringTable` when it expires.
+  At the table terminator (`$FFFFFFFF`) or on Start release, clear `ram_UpdateFunction`.
+  Otherwise animate lines 150-189: 12 px/frame, reduced to 2 px steps within 16 px, then
+  clamp or overshoot (damped recoil), plus a bottom-up edge wave. At offset `$2C` (12th
+  page) start the diagonal wipe-off to the right; the last two pages keep showing.
 
 The title nametable is written twice: 40x28 at (0,0) and 88x6 at (40,18), because the
 plane is 128 cells wide and the per-line H-scroll reveals the off-screen right part.
@@ -70,7 +72,7 @@ reg90 $03   128x32 planes
 
 ## External calls / dependencies
 
-- `UncompressW`, `WriteToVRAM`, `DmaWriteVRAM` (asset upload).
+- `UncompressW`, `WriteTilesetToVRAM`, `DmaWriteVRAM` (asset upload).
 - `GetInputPlayerA/B`, `DmaWriteVRAM`, `Audio_Update/3/4`, `Rand_Init`, `sub_16088`.
 - `Menu_*`, `MenuPassword_*`, `HighScore_*` state (initial values).
 
@@ -94,18 +96,23 @@ See `docs/analysis/intro.md` for the full matrix.
 
 - `[static]` The intro uses plane A `$4000` (title/text), plane B `$2000` (background),
   sprite table `$6000`, H-scroll table `$7000`, 128x32 planes, per-line H-scroll.
-- `[static]` 13 credit strings, each shown for 180 frames; Start is edge-detected
-  (press then release) to end the stage.
-- `[static]` `EncodeString`/`DecodeString` use the font code tables; `WriteNametable`
-  builds the VDP command from x/y/plane width/tile base.
+- `[static]` 13 credit strings, each page lasts 181 frames (180-tick timer + `bpl`);
+  Start is edge-detected (press then release) to end the stage.
+- `[static]` The title animation uses 32-bit 16.16 scroll/speed arrays for lines 150-189:
+  12 px/frame, a 2 px/frame reduction within 16 px, then clamp or damped overshoot; a
+  bottom-up wave enforces a 1 px/scanline edge. At offset `$2C` the band wipes right
+  (sentinel -640); that loop also touches line 149 (off-by-one, blank row).
+- `[static]` `EncodeString`/`DecodeString` use the 128-word/50-byte font tables;
+  `WriteNametable` takes width/height/x/y in cells, a base tile **word** in d4
+  (palette/priority included), the plane base address in d5 and the plane width in
+  cells in d6, then builds the VDP VRAM-write command.
 - `[static]` `Intro_InitPlayerA`/`Intro_InitPlayerB` initialize the player/menu/high-score state.
 - `[dynamic]` `Intro_GameTick` (`0x1C64`) is the update function; the text timer starts
   at 180; H-scroll line 150 decreases by 12.0 per frame.
 
 ## Hypotheses / open questions
 
-- `[hypothesis]` The per-line scroll arrays implement a wavy/accelerating title reveal.
-- `[ ]` Confirm the visible scroll line ranges and exact wave in BlastEm.
+- `[ ]` Confirm the diagonal wipe and the exact wave visually in BlastEm.
 - `[ ]` Confirm `Intro_GameTick` is installed as `ram_UpdateFunction` and the Start edge.
 - `[ ]` Audio/`sub_16088` deferred.
 
