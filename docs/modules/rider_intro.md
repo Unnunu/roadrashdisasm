@@ -2,7 +2,7 @@
 
 - **ROM range:** `0x0059C4`–`0x005F27` (`RiderIntro_Init` `0x59C4`,
   `RiderIntro_GameTick` `0x5E66`)
-- **Status:** analyzed (static; rendering not yet dynamically confirmed)
+- **Status:** line-by-line analyzed (static; rendering not yet dynamically confirmed)
 - **Related:** `docs/architecture.md`, `docs/reverse-engineering.md`,
   `docs/hardware.md`, `docs/ram-map.md`, `docs/analysis/rider_intro.md`
 
@@ -41,8 +41,10 @@ to the race and records the controller in `Race_ram_ActiveController`.
 - Quote: `8-byte header (y,x,height,width) + width*height text`; 155 referenced
   quote records (85 intro + results/end-level) are committed as normal source in
   `src/screens/rider_intro_quotes.asm`, with headers in decimal and one `dc.b`
-  line per text row. `align 2,0` provides the normal 2-byte padding.
-  `RaceQuote_172D0` has an authoring bug: header width 22 but text authored as
+  line per text row. `align 2,0` provides the normal 2-byte padding. The 85
+  intro-only records are named `RiderIntro_Quote_<Rider>_<NN>`; the 70
+  results/end-level records keep `RaceQuote_<addr>`.
+  `RiderIntro_Quote_Natasha_16` has an authoring bug: header width 22 but text authored as
   3×23; it is split at 23 with a comment and a trailing `$00`, so the source and
   actual 22-column rendering differ; bytes are preserved.
 - The 11 unique portrait images are at `$AF902-$BE628`, in the ROM tail after the
@@ -57,8 +59,8 @@ to the race and records the controller in `Race_ram_ActiveController`.
 
 | Function | Address | Contract | Algorithm | Data | Hardware | Why | Dynamic | Status |
 |----------|---------|----------|-----------|------|----------|-----|---------|--------|
-| `RiderIntro_Init` | `0x59C4` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
-| `RiderIntro_GameTick` | `0x5E66` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
+| `RiderIntro_Init` | `0x59C4` | [x] | [x] | [x] | [x] | [x] | [ ] | line-by-line |
+| `RiderIntro_GameTick` | `0x5E66` | [x] | [x] | [x] | [x] | [x] | [ ] | line-by-line |
 | `RiderIntro_RecordTable` | `0x19A12` | [x] | [x] | [x] | - | [x] | - | parsed |
 
 Detailed listing, table parse and layout: `docs/analysis/rider_intro.md`.
@@ -79,19 +81,27 @@ Detailed listing, table parse and layout: `docs/analysis/rider_intro.md`.
   destination Y is the header Y shifted right by one. `[static]`
 - Variant 3 is not chosen randomly; it replaces variant 0 only when the player's
   "extra" field is non-zero. `[static]`
+- The 10-character name is centered by counting trailing minus leading spaces,
+  halving the surplus and right-rotating the field. `[static]`
 - The portrait palette overwrites all 64 global palette words. `[static]`
 
 ## Verified facts
 
 - `[static]` Flow: main menu -> Character (non-demo) -> race; demo skips it.
 - `[static]` Table/asset formats and 100 opponent records parsed from `baserom.md`.
-- `[static]` Message cycle starts at index 18, advances by 8 every 300 frames, ends at
-  `$FFFFFFFF`; releasing a held button on pad A/B exits and sets the active controller.
+- `[static]` Message cycle starts at index 18 (byte offset `8*18`), advances by 8
+  after 301 ticks (~5 s), and ends at `$FFFFFFFF`; releasing a held button on pad A/B
+  exits and sets the active controller (A is checked first).
+- `[static]` Portrait header names: 0 Natasha, 1 O'Leary, 2 O'Rourke, 3 Flynn, 4 O'Shea,
+  5 O'Connor, 6 Biff, 7 Slater, 8 Ikira, 9 Sergio, 10 Helldog.
+- `[static]` The 85 intro-only quote records were renamed to
+  `RiderIntro_Quote_<Rider>_<NN>`; the 70 results/end-level quotes remain
+  `RaceQuote_<addr>`.
 
 ## Hypotheses
 
-- `[hypothesis]` `unk_B1506` is Natasha's bike/overlay; `ram_FF0520` is a bike/opponent
-  class. Test: render `unk_B1506` and the portrait with the game palette.
+- `[hypothesis]` `unk_B1506` is Natasha's bike/overlay (`U-0008`); `ram_FF0520` is a
+  bike/opponent class. Test: render `unk_B1506` and the portrait with the game palette.
 - `[hypothesis]` The `$4000` background write is a leftover/bug (should be `$8000`).
   Test: enter the screen right after `RiderIntro_Init` without the main menu and inspect
   VRAM.
@@ -101,7 +111,10 @@ Detailed listing, table parse and layout: `docs/analysis/rider_intro.md`.
 | Current | Proposed | Evidence | Confidence |
 |---------|----------|----------|------------|
 | `unk_AF902` | `RiderIntro_NatashaImage` | parsed name | medium |
-| `unk_B1506` | `RiderIntro_NatashaBike` | conditional overlay | low |
+| `unk_B1506` | `RiderIntro_NatashaBike` | conditional overlay (`U-0008`) | low |
+
+The intro quote labels were renamed during the line-by-line pass; this table lists the
+remaining asset proposals, which need a separate task.
 
 ## Experiments performed
 

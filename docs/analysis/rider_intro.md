@@ -2,7 +2,7 @@
 
 - **Module:** rider/opponent introduction screen shown between the main menu and the race
 - **ROM range:** `0x0059C4`–`0x005F27` (`RiderIntro_Init` `0x59C4`, `RiderIntro_GameTick` `0x5E66`)
-- **Status:** analyzed statically; rendering not yet confirmed dynamically (demo skips it)
+- **Status:** line-by-line analyzed statically; rendering not yet confirmed dynamically (demo skips it)
 - **Source:** `src/screens/rider_intro.asm`
 - **Related:** `docs/architecture.md`, `docs/hardware.md`, `docs/ram-map.md`
 
@@ -10,8 +10,8 @@
 
 | Function | Address | Contract | Algorithm | Data | Hardware | Why | Dynamic | Status |
 |----------|---------|----------|-----------|------|----------|-----|---------|--------|
-| `RiderIntro_Init` | `0x59C4` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
-| `RiderIntro_GameTick` | `0x5E66` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
+| `RiderIntro_Init` | `0x59C4` | [x] | [x] | [x] | [x] | [x] | [ ] | line-by-line |
+| `RiderIntro_GameTick` | `0x5E66` | [x] | [x] | [x] | [x] | [x] | [ ] | line-by-line |
 | `RiderIntro_RecordTable` table | `0x19A12` | [x] | [x] | [x] | - | [x] | - | parsed |
 | image asset header | - | [x] | [x] | [x] | - | [x] | - | parsed (100 records) |
 | `RiderIntro_QuoteData` | `0x16E70` | [x] | [x] | [x] | - | [x] | - | source |
@@ -40,6 +40,9 @@ returns to the race when the held button is released (or after the message timer
 - Parsed opponents include Natasha, Biff, Slater, O'Leary, O'Rourke, Ikira, O'Connor,
   Sergio, Helldog, O'Shea; e.g. level 1 track 0 variants = Natasha, Biff, Slater,
   Natasha (variant 3); level 5 track 0 = O'Connor, Sergio, Helldog, O'Connor.
+- Portrait header names `[static]`: 0 Natasha, 1 O'Leary, 2 O'Rourke, 3 Flynn,
+  4 O'Shea, 5 O'Connor, 6 Biff, 7 Slater, 8 Ikira, 9 Sergio, 10 Helldog. Each intro
+  quote is paired with exactly one portrait/rider.
 
 ## Quote data (`src/screens/rider_intro_quotes.asm`, `0x16E70-$19A11`)
 
@@ -48,14 +51,17 @@ returns to the race when the held button is released (or after the message timer
 - `RiderIntro_Init` passes `(a0)=y` (shifted), `2(a0)=x`, `4(a0)=height`,
   `6(a0)=width` to `EncodeString`/`WriteNametableToBuffer`.
 - `RiderIntro_RecordTable` references **85 unique** intro quote headers; the
-  results/end-level tables add more, giving **155 unique** referenced records in
+  results/end-level tables add 70 more, giving **155 unique** referenced records in
   `0x16E70-$19A11`.
+- The 85 intro-only records are named `RiderIntro_Quote_<Rider>_<NN>` (NN ordered by
+  ROM address within the rider); the 70 results/end-level records keep
+  `RaceQuote_<addr>`.
 - The region is now a normal source file in `src/screens/rider_intro_quotes.asm`:
   each record has a decimal `dc.w y,x,height,width` header and one `dc.b` line per
   text row (`width` characters), matching the on-screen row layout.
 - 40 one-byte gaps are handled by `align 2,0` after each record (they are just
   2-byte alignment).
-- `RaceQuote_172D0` is the exception: the header says `width=22`, but the text was
+- `RiderIntro_Quote_Natasha_16` is the exception: the header says `width=22`, but the text was
   authored as three lines of 23 characters. The source is split at 23 and the three
   extra spaces are folded into the last line; the renderer uses 22, so the game
   displays different line breaks than this source. The trailing `$00` is kept as
@@ -112,15 +118,16 @@ The VDP setup is the same as the main menu: planes A/B `$4000`, window `$7000`
 
 1. Clear pad state/changed buttons; message blink timer `$FFFF`, button period `$3F`,
    next message timer 300, message id `8*18`.
-2. Write the VDP registers; clear HScroll (16 bytes), VSRAM, the default tile `$FFE0`
-   (32 bytes), planes `$4000` (0x700 longs), and the frame buffer (`$E00` bytes) to
-   `$7FF`.
+2. Write the VDP registers; clear SAT/HScroll (16 bytes at `$6000`), VSRAM, the
+   default tile `$FFE0` (32 bytes), the visible 128x28 cells at `$4000` (`$700`
+   longs), and the frame buffer (`$E00` bytes) to `$7FF`.
 3. Load/draw the background, gamepad and portrait `unk_7EA66` (see table).
 4. Pick the opponent record (above), then:
    - read the name from the image header string pointer;
    - `UncompressW` the portrait; write to VRAM `$C000`; draw 10x12 at `(3,6)`;
-   - copy the 64-word palette; copy the 10-char name into a temporary string header
-     `(19,3,1,10)`, encode and draw it at `(3,19)`;
+   - copy the 4x8-long (64-colour) palette; copy the 10-char name into a temporary
+     string header `(19,3,1,10)`, center it by rotating trailing spaces to the
+     front, encode and draw it at `(3,19)`;
    - encode the quote and draw it at `(16, y/2)` with destination stride 128
      (double-spaced rows).
 5. If the image is `unk_AF902` (Natasha) and `ram_FF0520 > 0`, load `unk_B1506`
@@ -131,11 +138,12 @@ The VDP setup is the same as the main menu: planes A/B `$4000`, window `$7000`
 ## `RiderIntro_GameTick` (`0x5E66`)
 
 Per frame: DMA the frame buffer to `$7000`; read pad A, then pad B; on a **release
-edge** (`~input & previous raw buttons`; `GetInput` returns 1 = pressed) set
-`Race_ram_ActiveController` to 0/1 and end the screen. Otherwise decrement `Menu_ram_NextMessageTimer`; every 300
-frames (5 s) advance `Menu_ram_CurrentMessageId` by 8; when the message array entry is
-`$FFFFFFFF`, end. Then `Menu_ShowMessage` and `Audio_Update`. End stage: `Audio_StopMusic`,
-clear `ram_UpdateFunction`, `Audio_Update`.
+edge** (`old & ~new`; `GetInput` returns 1 = pressed) set
+`Race_ram_ActiveController` to 0/1 and end the screen; pad A is checked first.
+Otherwise decrement `Menu_ram_NextMessageTimer`; after 301 ticks (~5 s) advance the
+byte-offset `Menu_ram_CurrentMessageId` by 8 (8 bytes per array entry); when the text
+pointer is `$FFFFFFFF`, end. Then `Menu_ShowMessage` and `Audio_Update`. End stage:
+`Audio_StopMusic`, clear `ram_UpdateFunction`, `Audio_Update`.
 
 Message sequence: index 18 = blank `Message_StrBlank`, index 19 = `StrPressStartToExit` with
 the blinking Start icon, index 20 = terminator. The screen therefore auto-exits after
@@ -150,11 +158,23 @@ the blinking Start icon, index 20 = terminator. The screen therefore auto-exits 
   this screen directly (debug) would show a wrong background. `[static]`
 - The variant-3 record and the extra `unk_B1506` overlay are used only when the
   selected player's "extra" field is non-zero and the opponent image is `unk_AF902`.
-  `[static]`
+  The overlay's exact identity is `U-0008`. `[static]`
+- The 10-character name is centered by counting trailing minus leading spaces,
+  halving the surplus and right-rotating the field that many times. `[static]`
 - The quote's destination Y is the header Y shifted right by one; with the 128-cell
   stride this gives double-spaced rows 3,5,7,9. `[static]`
 - The portrait palette overwrites all 64 global palette words; the background/gamepad/
   font therefore use the rider palette on this screen. `[static]`
+
+## Line-by-line pass (2026-11-12)
+
+- Comment-only pass over both routines: verified the VDP register/clear counts, record
+  index math, image prefix/header offsets, 64-colour palette copy, name centering,
+  quote stride, overlay guard, and the GameTick release-edge/timer/terminator logic.
+- Renamed the 85 intro-only quote records to `RiderIntro_Quote_<Rider>_<NN>` and
+  updated `RiderIntro_RecordTable`, the `RiderIntro_QuoteData` alias, and docs. The 70
+  results/end-level quotes keep `RaceQuote_*`; portraits are unchanged.
+- Open: `U-0008` overlay identity; dynamic rendering still unconfirmed.
 
 ## Dynamic status
 
@@ -169,6 +189,9 @@ path), then inspect VRAM `$7000`/the portrait palette. Rendering/positions above
 | Current | Proposed | Evidence | Confidence |
 |---------|----------|----------|------------|
 | `unk_AF902` | `RiderIntro_NatashaImage` | name parsed from header | medium |
-| `unk_B1506` | `RiderIntro_NatashaBike` | overlay when extra != 0 | low |
+| `unk_B1506` | `RiderIntro_NatashaBike` | overlay when extra != 0 (`U-0008`) | low |
 | `ram_FF0520` | `Menu_ram_PlayerExtra` | password "extra" field | medium |
+
+The quote labels were renamed during the line-by-line pass (see above); this table
+lists the remaining asset/RAM proposals, which need a separate task.
 

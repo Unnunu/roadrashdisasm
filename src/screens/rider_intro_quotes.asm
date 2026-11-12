@@ -4,11 +4,14 @@
 ;
 ; Each record: word y, word x, word height, word width (characters), followed by
 ; height*width text bytes (row-major, space-padded). Header values are decimal.
+; The 85 records referenced only by RiderIntro_RecordTable are named
+; RiderIntro_Quote_<Rider>_<NN> from the portrait header names; results/end-level
+; quotes keep the address-based RaceQuote_<addr> form.
 ; Consecutive records are 2-byte aligned with `align 2,0`; only the special case at
 ; $172D0 keeps an explicit byte (see the NOTE there).
 ; *************************************************
 
-RaceQuote_16E70:
+RiderIntro_Quote_Natasha_01:
     dc.w    7,16,4,19 ; y,x,height,width
     dc.b    "Some of these jerks"
     dc.b    "would rather fight "
@@ -16,28 +19,28 @@ RaceQuote_16E70:
     dc.b    "yourself out there."
     align 2,0
 
-RaceQuote_16EC4:
+RiderIntro_Quote_Natasha_02:
     dc.w    7,16,3,20 ; y,x,height,width
     dc.b    "Viper's got a club. "
     dc.b    "If he swings at you,"
     dc.b    "grab it.            "
     align 2,0
 
-RaceQuote_16F08:
+RiderIntro_Quote_Natasha_03:
     dc.w    7,16,3,22 ; y,x,height,width
     dc.b    "watch for intersection"
     dc.b    "signs. They can save  "
     dc.b    "you in a blind turn.  "
     align 2,0
 
-RaceQuote_16F52:
+RiderIntro_Quote_Natasha_04:
     dc.w    7,16,3,21 ; y,x,height,width
     dc.b    "Stay on the road. the"
     dc.b    "sand is slippery and "
     dc.b    "you may lose control."
     align 2,0
 
-RaceQuote_16F9A:
+RiderIntro_Quote_Natasha_05:
     dc.w    7,16,4,20 ; y,x,height,width
     dc.b    "I don't like to     "
     dc.b    "fight, but if I have"
@@ -45,7 +48,7 @@ RaceQuote_16F9A:
     dc.b    "bruiser hate life.  "
     align 2,0
 
-RaceQuote_16FF2:
+RiderIntro_Quote_Natasha_06:
     dc.w    7,16,4,21 ; y,x,height,width
     dc.b    "Ready for a new bike "
     dc.b    "yet? Don't spend all "
@@ -53,42 +56,42 @@ RaceQuote_16FF2:
     dc.b    "for fines and wrecks."
     align 2,0
 
-RaceQuote_1704E:
+RiderIntro_Quote_Natasha_07:
     dc.w    7,16,3,22 ; y,x,height,width
     dc.b    "This course can be    "
     dc.b    "tough. tap the brake  "
     dc.b    "if you start to slide."
     align 2,0
 
-RaceQuote_17098:
+RiderIntro_Quote_Natasha_08:
     dc.w    7,16,3,19 ; y,x,height,width
     dc.b    "Slater's crazed. he"
     dc.b    "jumped a cow last  "
     dc.b    "time we raced here."
     align 2,0
 
-RaceQuote_170DA:
+RiderIntro_Quote_Natasha_09:
     dc.w    7,16,3,18 ; y,x,height,width
     dc.b    "some trashers use "
     dc.b    "the roadside rocks"
     dc.b    "as ramps... once. "
     align 2,0
 
-RaceQuote_17118:
+RiderIntro_Quote_Natasha_10:
     dc.w    7,16,3,17 ; y,x,height,width
     dc.b    "expect anything  "
     dc.b    "from spike. don't"
     dc.b    "trust him.       "
     align 2,0
 
-RaceQuote_17154:
+RiderIntro_Quote_Natasha_11:
     dc.w    7,16,3,20 ; y,x,height,width
     dc.b    "ikira may be a bit  "
     dc.b    "serious but he's not"
     dc.b    "out to hurt anyone. "
     align 2,0
 
-RaceQuote_17198:
+RiderIntro_Quote_Natasha_12:
     dc.w    7,16,5,18 ; y,x,height,width
     dc.b    "sometimes the only"
     dc.b    "way to lose a cop "
@@ -97,7 +100,7 @@ RaceQuote_17198:
     dc.b    "then dust'em.     "
     align 2,0
 
-RaceQuote_171FA:
+RiderIntro_Quote_Natasha_13:
     dc.w    7,16,4,19 ; y,x,height,width
     dc.b    "Don't be afraid to "
     dc.b    "use the brake. you "
@@ -105,21 +108,21 @@ RaceQuote_171FA:
     dc.b    "slowing down.      "
     align 2,0
 
-RaceQuote_1724E:
+RiderIntro_Quote_Natasha_14:
     dc.w    7,16,3,20 ; y,x,height,width
     dc.b    "the cops are getting"
     dc.b    "smarter. watch out  "
     dc.b    "for roadblocks here."
     align 2,0
 
-RaceQuote_17292:
+RiderIntro_Quote_Natasha_15:
     dc.w    7,16,3,18 ; y,x,height,width
     dc.b    "keep your distance"
     dc.b    "from helldog. the "
     dc.b    "guy's an animal.  "
     align 2,0
 
-RaceQuote_172D0:
+RiderIntro_Quote_Natasha_16:
     ; NOTE: the header says width=22, but the text was authored as 3 lines of 23.
     ; The renderer uses 22, so the game shows different line breaks than this source;
     ; the bytes are preserved exactly (3x23 text + the trailing $00).
@@ -131,7 +134,7 @@ RaceQuote_172D0:
 QuoteGap_1731D:
     dc.b    $00
 
-RaceQuote_1731E:
+RiderIntro_Quote_Natasha_17:
     dc.w    7,16,4,22 ; y,x,height,width
     dc.b    "you can sucker helldog"
     dc.b    "into a wreck. start a "
@@ -139,14 +142,14 @@ RaceQuote_1731E:
     dc.b    "may forget the traffic"
     align 2,0
 
-RaceQuote_1737E:
+RiderIntro_Quote_Natasha_18:
     dc.w    7,16,3,20 ; y,x,height,width
     dc.b    "be careful. officer "
     dc.b    "o'connor is almost  "
     dc.b    "as tough as helldog."
     align 2,0
 
-RaceQuote_173C2:
+RiderIntro_Quote_Natasha_19:
     dc.w    7,16,4,21 ; y,x,height,width
     dc.b    "this course is really"
     dc.b    "windy toward the end."
@@ -154,34 +157,34 @@ RaceQuote_173C2:
     dc.b    "too hard.            "
     align 2,0
 
-RaceQuote_1741E:
+RiderIntro_Quote_Natasha_20:
     dc.w    7,16,2,19 ; y,x,height,width
     dc.b    "You're on your own "
     dc.b    "now. good luck.    "
     align 2,0
 
-RaceQuote_1744C:
+RiderIntro_Quote_Natasha_21:
     dc.w    7,16,3,21 ; y,x,height,width
     dc.b    "Don't count on me for"
     dc.b    "help when you hack me"
     dc.b    "out on the track.    "
     align 2,0
 
-RaceQuote_17494:
+RiderIntro_Quote_Natasha_22:
     dc.w    7,16,3,18 ; y,x,height,width
     dc.b    "You should listen "
     dc.b    "to what Biff has  "
     dc.b    "to say. Great Guy!"
     align 2,0
 
-RaceQuote_174D2:
+RiderIntro_Quote_Natasha_23:
     dc.w    7,16,3,20 ; y,x,height,width
     dc.b    "out of my face, bud."
     dc.b    "you'd be wise to    "
     dc.b    "keep your distance. "
     align 2,0
 
-RaceQuote_17516:
+RiderIntro_Quote_Natasha_24:
     dc.w    7,16,4,20 ; y,x,height,width
     dc.b    "I thought we had an "
     dc.b    "understanding? i can"
@@ -189,14 +192,14 @@ RaceQuote_17516:
     dc.b    "i trust biff.       "
     align 2,0
 
-RaceQuote_1756E:
+RiderIntro_Quote_Natasha_25:
     dc.w    7,16,3,20 ; y,x,height,width
     dc.b    "want to be a victim?"
     dc.b    "just pull up beside "
     dc.b    "me during the race. "
     align 2,0
 
-RaceQuote_175B2:
+RiderIntro_Quote_Natasha_26:
     dc.w    7,16,5,20 ; y,x,height,width
     dc.b    "if i see ya sprawled"
     dc.b    "out on the pavement "
@@ -205,20 +208,20 @@ RaceQuote_175B2:
     dc.b    "your misery.        "
     align 2,0
 
-RaceQuote_1761E:
+RiderIntro_Quote_Natasha_27:
     dc.w    7,16,2,17 ; y,x,height,width
     dc.b    "You touch me, you"
     dc.b    "die. Simple.     "
     align 2,0
 
-RaceQuote_17648:
+RiderIntro_Quote_Natasha_28:
     dc.w    7,16,3,19 ; y,x,height,width
     dc.b    "i've got a big     "
     dc.b    "stick and it's got "
     dc.b    "your name on it.   "
     align 2,0
 
-RaceQuote_1768A:
+RiderIntro_Quote_Natasha_29:
     dc.w    7,16,4,19 ; y,x,height,width
     dc.b    "go face down on the"
     dc.b    "pavement lately or "
@@ -226,7 +229,7 @@ RaceQuote_1768A:
     dc.b    "like that?         "
     align 2,0
 
-RaceQuote_176DE:
+RiderIntro_Quote_Natasha_30:
     dc.w    7,16,3,19 ; y,x,height,width
     dc.b    "Keep your distance."
     dc.b    "Get too close and  "
@@ -270,14 +273,14 @@ RaceQuote_17848:
     dc.b    "can you stay on top? "
     align 2,0
 
-RaceQuote_178A4:
+RiderIntro_Quote_OLeary_01:
     dc.w    7,16,3,20 ; y,x,height,width
     dc.b    "Now take it easy and"
     dc.b    "don't let me catch  "
     dc.b    "you speeding. Okay? "
     align 2,0
 
-RaceQuote_178E8:
+RiderIntro_Quote_OLeary_02:
     dc.w    7,16,4,20 ; y,x,height,width
     dc.b    "You don't want to   "
     dc.b    "get me mad. I can be"
@@ -285,7 +288,7 @@ RaceQuote_178E8:
     dc.b    "when I want to be.  "
     align 2,0
 
-RaceQuote_17940:
+RiderIntro_Quote_OLeary_03:
     dc.w    7,16,4,18 ; y,x,height,width
     dc.b    "Please don't drive"
     dc.b    "so fast. The sarge"
@@ -336,7 +339,7 @@ RaceQuote_17B00:
     dc.b    "jail, that's the law."
     align 2,0
 
-RaceQuote_17B32:
+RiderIntro_Quote_ORourke_01:
     dc.w    7,16,4,20 ; y,x,height,width
     dc.b    "You'd better not be "
     dc.b    "one of those wild   "
@@ -344,7 +347,7 @@ RaceQuote_17B32:
     dc.b    "to get me a rasher. "
     align 2,0
 
-RaceQuote_17B8A:
+RiderIntro_Quote_ORourke_02:
     dc.w    7,16,4,22 ; y,x,height,width
     dc.b    "the last rasher to try"
     dc.b    "outrunnin' me was a   "
@@ -352,14 +355,14 @@ RaceQuote_17B8A:
     dc.b    "through with'em.      "
     align 2,0
 
-RaceQuote_17BEA:
+RiderIntro_Quote_ORourke_03:
     dc.w    7,16,3,22 ; y,x,height,width
     dc.b    "You punks think you're"
     dc.b    "so fast. Wait 'til you"
     dc.b    "see me on your tail.  "
     align 2,0
 
-RaceQuote_17C34:
+RiderIntro_Quote_ORourke_04:
     dc.w    7,16,3,20 ; y,x,height,width
     dc.b    "don't eyeball me,   "
     dc.b    "bud. i want a little"
@@ -408,21 +411,21 @@ RaceQuote_17DC4:
     dc.b    "your life.        "
     align 2,0
 
-RaceQuote_17E02:
+RiderIntro_Quote_Flynn_01:
     dc.w    7,16,3,20 ; y,x,height,width
     dc.b    "what's your name?   "
     dc.b    "i'm fillin' out some"
     dc.b    "tickets in advance. "
     align 2,0
 
-RaceQuote_17E46:
+RiderIntro_Quote_Flynn_02:
     dc.w    7,16,3,19 ; y,x,height,width
     dc.b    "be fly, sly boy or "
     dc.b    "i'm gonna put you  "
     dc.b    "out like the trash."
     align 2,0
 
-RaceQuote_17E88:
+RiderIntro_Quote_Flynn_03:
     dc.w    7,16,3,21 ; y,x,height,width
     dc.b    "do yourself some good"
     dc.b    "and ride home while  "
@@ -476,7 +479,7 @@ RaceQuote_18062:
     dc.b    "a lot richer.    "
     align 2,0
 
-RaceQuote_180AE:
+RiderIntro_Quote_OShea_01:
     dc.w    7,16,4,22 ; y,x,height,width
     dc.b    "i use to run with the "
     dc.b    "rashers before i wised"
@@ -484,7 +487,7 @@ RaceQuote_180AE:
     dc.b    "so heads up, bud.     "
     align 2,0
 
-RaceQuote_1810E:
+RiderIntro_Quote_OShea_02:
     dc.w    7,16,4,21 ; y,x,height,width
     dc.b    "hey, rookie. you sure"
     dc.b    "you belong in the big"
@@ -492,7 +495,7 @@ RaceQuote_1810E:
     dc.b    "will spit you out.   "
     align 2,0
 
-RaceQuote_1816A:
+RiderIntro_Quote_OShea_03:
     dc.w    7,16,4,17 ; y,x,height,width
     dc.b    "i usually give   "
     dc.b    "the rasher a     "
@@ -539,14 +542,14 @@ RaceQuote_182D4:
     dc.b    "retirement, buddy. "
     align 2,0
 
-RaceQuote_18302:
+RiderIntro_Quote_OConnor_01:
     dc.w    7,16,3,20 ; y,x,height,width
     dc.b    "you're all the same."
     dc.b    "high speed hamburger"
     dc.b    "waiting to happen.  "
     align 2,0
 
-RaceQuote_18346:
+RiderIntro_Quote_OConnor_02:
     dc.w    7,16,3,20 ; y,x,height,width
     dc.b    "if i don't drop you,"
     dc.b    "helldog will. you'd "
@@ -596,7 +599,7 @@ RaceQuote_184FE:
     dc.b    "is due. game over bud."
     align 2,0
 
-RaceQuote_18548:
+RiderIntro_Quote_Biff_01:
     dc.w    7,16,4,19 ; y,x,height,width
     dc.b    "It's a great day to"
     dc.b    "face challenge on  "
@@ -604,14 +607,14 @@ RaceQuote_18548:
     dc.b    "of luck friend!    "
     align 2,0
 
-RaceQuote_1859C:
+RiderIntro_Quote_Biff_02:
     dc.w    7,16,3,19 ; y,x,height,width
     dc.b    "Did I tell you that"
     dc.b    "my bike was custom "
     dc.b    "built? Very pricey."
     align 2,0
 
-RaceQuote_185DE:
+RiderIntro_Quote_Biff_03:
     dc.w    7,16,4,17 ; y,x,height,width
     dc.b    "You don't have to"
     dc.b    "worry about me   "
@@ -619,21 +622,21 @@ RaceQuote_185DE:
     dc.b    "I'm a sportsman! "
     align 2,0
 
-RaceQuote_1862A:
+RiderIntro_Quote_Biff_04:
     dc.w    7,16,3,22 ; y,x,height,width
     dc.b    "i'd spend everything i"
     dc.b    "had on a new bike at  "
     dc.b    "the first opportunity."
     align 2,0
 
-RaceQuote_18674:
+RiderIntro_Quote_Biff_05:
     dc.w    7,16,3,20 ; y,x,height,width
     dc.b    "top speed is every- "
     dc.b    "thing. higher speed,"
     dc.b    "quicker finish.     "
     align 2,0
 
-RaceQuote_186B8:
+RiderIntro_Quote_Biff_06:
     dc.w    7,16,4,20 ; y,x,height,width
     dc.b    "be a sport. take a  "
     dc.b    "fall and drop out of"
@@ -685,28 +688,28 @@ RaceQuote_1886C:
     dc.b    "the other lowlife.  "
     align 2,0
 
-RaceQuote_188B0:
+RiderIntro_Quote_Slater_01:
     dc.w    7,16,3,22 ; y,x,height,width
     dc.b    "vet thrashers run 15  "
     dc.b    "mile races. Our race  "
     dc.b    "is only about 5 miles."
     align 2,0
 
-RaceQuote_188FA:
+RiderIntro_Quote_Slater_02:
     dc.w    7,16,3,20 ; y,x,height,width
     dc.b    "Cool place, huh. I'm"
     dc.b    "local. look out for "
     dc.b    "cars on blind turns."
     align 2,0
 
-RaceQuote_1893E:
+RiderIntro_Quote_Slater_03:
     dc.w    7,16,3,20 ; y,x,height,width
     dc.b    "Do you believe that "
     dc.b    "Biff dude? Man, what"
     dc.b    "a mouth!            "
     align 2,0
 
-RaceQuote_18982:
+RiderIntro_Quote_Slater_04:
     dc.w    7,16,4,21 ; y,x,height,width
     dc.b    "i was way loose that "
     dc.b    "last race, man. i saw"
@@ -714,14 +717,14 @@ RaceQuote_18982:
     dc.b    "my eyes. whoa!       "
     align 2,0
 
-RaceQuote_189DE:
+RiderIntro_Quote_Slater_05:
     dc.w    7,16,3,21 ; y,x,height,width
     dc.b    "thrash and burn. if a"
     dc.b    "gomer takes me out,  "
     dc.b    "they come with me.   "
     align 2,0
 
-RaceQuote_18A26:
+RiderIntro_Quote_Slater_06:
     dc.w    7,16,4,20 ; y,x,height,width
     dc.b    "i am tweekin'. if i "
     dc.b    "see dread, i'm going"
@@ -729,21 +732,21 @@ RaceQuote_18A26:
     dc.b    "liberate his head.  "
     align 2,0
 
-RaceQuote_18A7E:
+RiderIntro_Quote_Slater_07:
     dc.w    7,16,3,21 ; y,x,height,width
     dc.b    "i am sooo fast. some-"
     dc.b    "times it scares me,  "
     dc.b    "so i close my eyes.  "
     align 2,0
 
-RaceQuote_18AC6:
+RiderIntro_Quote_Slater_08:
     dc.w    7,16,3,20 ; y,x,height,width
     dc.b    "Don't slam everyone,"
     dc.b    "amigo. No points for"
     dc.b    "bailin'.            "
     align 2,0
 
-RaceQuote_18B0A:
+RiderIntro_Quote_Slater_09:
     dc.w    7,16,4,20 ; y,x,height,width
     dc.b    "serge is one strange"
     dc.b    "dude! he's polishing"
@@ -751,7 +754,7 @@ RaceQuote_18B0A:
     dc.b    "ing heavy.          "
     align 2,0
 
-RaceQuote_18B62:
+RiderIntro_Quote_Slater_10:
     dc.w    7,16,4,17 ; y,x,height,width
     dc.b    "Chaos factor is  "
     dc.b    "my mantra. never "
@@ -759,7 +762,7 @@ RaceQuote_18B62:
     dc.b    "same thing twice."
     align 2,0
 
-RaceQuote_18BAE:
+RiderIntro_Quote_Slater_11:
     dc.w    7,16,2,19 ; y,x,height,width
     dc.b    "witness me airborn."
     dc.b    "i'm slater, fly me."
@@ -819,7 +822,7 @@ RaceQuote_18D84:
     dc.b    "to fry bigger trout."
     align 2,0
 
-RaceQuote_18DC8:
+RiderIntro_Quote_Ikira_01:
     dc.w    7,16,4,20 ; y,x,height,width
     dc.b    "be fast. that is the"
     dc.b    "best way to win. let"
@@ -827,21 +830,21 @@ RaceQuote_18DC8:
     dc.b    "amongst themselves. "
     align 2,0
 
-RaceQuote_18E20:
+RiderIntro_Quote_Ikira_02:
     dc.w    7,16,3,18 ; y,x,height,width
     dc.b    "don't let her name"
     dc.b    "fool ya. angel is "
     dc.b    "no saint.         "
     align 2,0
 
-RaceQuote_18E5E:
+RiderIntro_Quote_Ikira_03:
     dc.w    7,16,3,19 ; y,x,height,width
     dc.b    "i have heard that  "
     dc.b    "viper is out to get"
     dc.b    "you. heads up.     "
     align 2,0
 
-RaceQuote_18EA0:
+RiderIntro_Quote_Ikira_04:
     dc.w    7,16,4,20 ; y,x,height,width
     dc.b    "i prefer handling to"
     dc.b    "horsepower. power   "
@@ -849,21 +852,21 @@ RaceQuote_18EA0:
     dc.b    "in a sharp turn.    "
     align 2,0
 
-RaceQuote_18EF8:
+RiderIntro_Quote_Ikira_05:
     dc.w    7,16,3,22 ; y,x,height,width
     dc.b    "it is useless to fight"
     dc.b    "the police. it'll only"
     dc.b    "make matters worse.   "
     align 2,0
 
-RaceQuote_18F42:
+RiderIntro_Quote_Ikira_06:
     dc.w    7,16,3,18 ; y,x,height,width
     dc.b    "i believe the best"
     dc.b    "riders only fight "
     dc.b    "when forced to.   "
     align 2,0
 
-RaceQuote_18F80:
+RiderIntro_Quote_Ikira_07:
     dc.w    7,16,4,20 ; y,x,height,width
     dc.b    "sergio is a great   "
     dc.b    "mechanic, but a bit "
@@ -918,42 +921,42 @@ RaceQuote_19136:
     dc.b    "waiting for us.    "
     align 2,0
 
-RaceQuote_19178:
+RiderIntro_Quote_Sergio_01:
     dc.w    7,16,3,21 ; y,x,height,width
     dc.b    "listen to my cycle,  "
     dc.b    "purring like a big   "
     dc.b    "cat, ready to pounce."
     align 2,0
 
-RaceQuote_191C0:
+RiderIntro_Quote_Sergio_02:
     dc.w    7,16,3,17 ; y,x,height,width
     dc.b    "i wait for you at"
     dc.b    "the finish line, "
     dc.b    "amico. yes, no?  "
     align 2,0
 
-RaceQuote_191FC:
+RiderIntro_Quote_Sergio_03:
     dc.w    7,16,3,19 ; y,x,height,width
     dc.b    "the handling of my "
     dc.b    "machine excites me."
     dc.b    "do not ask to ride."
     align 2,0
 
-RaceQuote_1923E:
+RiderIntro_Quote_Sergio_04:
     dc.w    7,16,3,18 ; y,x,height,width
     dc.b    "hoghide is the son"
     dc.b    "of helldog. like  "
     dc.b    "son, like father. "
     align 2,0
 
-RaceQuote_1927C:
+RiderIntro_Quote_Sergio_05:
     dc.w    7,16,3,18 ; y,x,height,width
     dc.b    "luna, she is loco."
     dc.b    "she swings her    "
     dc.b    "club into my face."
     align 2,0
 
-RaceQuote_192BA:
+RiderIntro_Quote_Sergio_06:
     dc.w    7,16,4,19 ; y,x,height,width
     dc.b    "your bike is dirty."
     dc.b    "a machine should be"
@@ -961,7 +964,7 @@ RaceQuote_192BA:
     dc.b    "beautiful woman.   "
     align 2,0
 
-RaceQuote_1930E:
+RiderIntro_Quote_Sergio_07:
     dc.w    7,16,4,21 ; y,x,height,width
     dc.b    "i do not need mirrors"
     dc.b    "on my motorbike. What"
@@ -969,7 +972,7 @@ RaceQuote_1930E:
     dc.b    "care about.          "
     align 2,0
 
-RaceQuote_1936A:
+RiderIntro_Quote_Sergio_08:
     dc.w    7,16,4,16 ; y,x,height,width
     dc.b    "look out for the"
     dc.b    "poliziotto. be  "
@@ -977,14 +980,14 @@ RaceQuote_1936A:
     dc.b    "roadblock.      "
     align 2,0
 
-RaceQuote_193B2:
+RiderIntro_Quote_Sergio_09:
     dc.w    7,16,3,21 ; y,x,height,width
     dc.b    "if killjoy gets close"
     dc.b    "to me i will beat him"
     dc.b    "with his own club.   "
     align 2,0
 
-RaceQuote_193FA:
+RiderIntro_Quote_Sergio_10:
     dc.w    7,16,4,20 ; y,x,height,width
     dc.b    "helldog, he must be "
     dc.b    "knocked out. like-  "
@@ -1049,7 +1052,7 @@ RaceQuote_1964C:
     dc.b    "with the best.    "
     align 2,0
 
-RaceQuote_1968A:
+RiderIntro_Quote_Helldog_01:
     dc.w    7,16,4,19 ; y,x,height,width
     dc.b    "i get pleasure from"
     dc.b    "dragging newcomers "
@@ -1057,28 +1060,28 @@ RaceQuote_1968A:
     dc.b    "their ankles.      "
     align 2,0
 
-RaceQuote_196DE:
+RiderIntro_Quote_Helldog_02:
     dc.w    7,16,3,19 ; y,x,height,width
     dc.b    "do yourself a favor"
     dc.b    "and keep your dis- "
     dc.b    "tance from me.     "
     align 2,0
 
-RaceQuote_19720:
+RiderIntro_Quote_Helldog_03:
     dc.w    7,16,3,21 ; y,x,height,width
     dc.b    "sometimes i pull over"
     dc.b    "and scalp my victims "
     dc.b    "after they fall.     "
     align 2,0
 
-RaceQuote_19768:
+RiderIntro_Quote_Helldog_04:
     dc.w    7,16,3,20 ; y,x,height,width
     dc.b    "the skulls on my gas"
     dc.b    "tank? they're like  "
     dc.b    "notches on a gun.   "
     align 2,0
 
-RaceQuote_197AC:
+RiderIntro_Quote_Helldog_05:
     dc.w    7,16,4,20 ; y,x,height,width
     dc.b    "if i miss the chance"
     dc.b    "to knock you down on"
@@ -1086,7 +1089,7 @@ RaceQuote_197AC:
     dc.b    "it after the race.  "
     align 2,0
 
-RaceQuote_19804:
+RiderIntro_Quote_Helldog_06:
     dc.w    7,16,4,22 ; y,x,height,width
     dc.b    "i think it's important"
     dc.b    "to enjoy what you do. "
@@ -1137,4 +1140,4 @@ RaceQuote_199C8:
     dc.b    "you'll see me again.  "
     align 2,0
 
-RiderIntro_QuoteData equ RaceQuote_16E70
+RiderIntro_QuoteData equ RiderIntro_Quote_Natasha_01
