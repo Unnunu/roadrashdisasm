@@ -11,6 +11,7 @@ Read this index first. Then open only the file needed for the current task.
 | `coding-style.md` | Naming, comments, headers, RAM/overlay conventions. |
 | `glossary.md` | Unknown project terminology. |
 | `hardware.md` | VDP, DMA, controllers, Z80, interrupt/hardware behavior. |
+| `line-by-line-analysis.md` | Line-by-line pass procedure, markers, identifier audit. |
 | `ram-map.md` | Resolve RAM ranges, owners, fields and aliases. |
 | `references.md` | External references and sources. |
 | `reverse-engineering.md` | Evidence tags, BlastEm workflow, experiment format. |
@@ -28,6 +29,7 @@ Read this index first. Then open only the file needed for the current task.
 | `analysis/endlevel.md` | Level-complete animation and level-up screen. |
 | `analysis/highscore.md` | High-score screen behavior and layout. |
 | `analysis/intro.md` | Intro/title/credits screen, text and H-scroll. |
+| `analysis/identifiers.md` | Cross-file identifier quality map and rename verdicts. |
 | `analysis/logoEA.md` | EA logo screen, decompression and plane trick. |
 | `analysis/main.md` | Boot, interrupts, input, VDP/DMA and top-level helpers. |
 | `analysis/menu_main.md` | Main menu, race selection, tooltips and menu input. |
@@ -62,6 +64,7 @@ Read this index first. Then open only the file needed for the current task.
 | `analysis/shop.md` | Bike shop screen, layout and input. |
 | `analysis/track_data.md` | Track decoder and curve-buffer format. |
 | `analysis/uncompress.md` | LZSS B/W/stream/VRAM decompression formats. |
+| `analysis/unknowns.md` | Registry of live `@UNKNOWN` semantic gaps. |
 | `analysis/z80_driver.md` | Z80 loader/entry/mailbox analysis. |
 | `analysis/_template.md` | Template for a new detailed analysis document. |
 

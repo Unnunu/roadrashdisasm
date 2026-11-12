@@ -2,13 +2,22 @@
 
 Project: byte-exact matching disassembly of the target Sega Genesis ROM.
 
+## Communication
+
+- Talk to the user in **Russian**.
+- Keep code, comments, and documentation in **English** (project convention).
+
 ## Commands
 
 ```sh
-./build.sh                       # assemble, compare with baserom.md, report Matched OK
+./build.sh                       # assemble + compare; verdict = last line ("Matched OK")
 python3 tools/assets.py check    # verify split asset slices against baserom.md
 python3 tools/assets.py all      # split + render local previews (optional)
 ```
+
+`./build.sh` prints the full two-pass assembler log. The build result is the exit code
+and the final line (`Matched OK` or `No matching`); the warnings above it are expected.
+To see only the verdict: `./build.sh 2>&1 | tail -n 3`.
 
 ## Session workflow
 
@@ -37,6 +46,9 @@ Before opening `docs/`, read `docs/INDEX.md` and open only the relevant file.
 | RAM regions, fields, ownership | `docs/ram-map.md` |
 | VDP, DMA, controllers, Z80 | `docs/hardware.md` |
 | Source identifiers, comments, headers | `docs/coding-style.md` |
+| Line-by-line pass procedure and markers | `docs/line-by-line-analysis.md` |
+| Identifier quality map and rename verdicts | `docs/analysis/identifiers.md` |
+| Live semantic gaps (`@UNKNOWN`) | `docs/analysis/unknowns.md` |
 | Evidence rules, BlastEm, experiments | `docs/reverse-engineering.md` |
 | Function index and call graph | `docs/callgraph.md` |
 | Module cards | `docs/modules/README.md` |
@@ -54,5 +66,6 @@ Before opening `docs/`, read `docs/INDEX.md` and open only the relevant file.
   Do not reformat or rename unrelated code as part of another task.
 - Follow the project's existing English documentation/comments style.
 - Keep generated files and local analysis data out of git unless explicitly requested.
-- If a line's purpose is unknown, mark it `TODO` with the evidence tag and next
-  experiment rather than inventing behavior.
+- If a line's purpose is unknown, use `; @UNKNOWN(U-xxxx): ...` with the evidence tag,
+  a guess, and the next experiment, and add a row to `docs/analysis/unknowns.md` rather
+  than inventing behavior. See `docs/line-by-line-analysis.md` §7.

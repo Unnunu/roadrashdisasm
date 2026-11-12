@@ -2,7 +2,8 @@
 
 > Deep-dive template. Copy to `docs/analysis/<name>.md`. Keep it in English.
 > Only `[confirmed]` facts may drive renames; everything else is tagged.
-> See `docs/reverse-engineering.md` for tags and `docs/coding-style.md` for source style.
+> See `docs/reverse-engineering.md` for tags, `docs/coding-style.md` for source style,
+> and `docs/line-by-line-analysis.md` for the pass procedure and markers.
 
 - **Module / routine:** `TODO`
 - **ROM range:** `0x??????`–`0x??????`
@@ -66,7 +67,20 @@ Explain the reason behind non-obvious choices:
 |------|--------------------|----------|------------|
 | `TODO` | `TODO` | `TODO` | `TODO` |
 
+## Identifier audit
+
+Summary of names touched in this file. The source of truth is
+`docs/analysis/identifiers.md`; add/update rows there and list only the file-local
+summary here.
+
+| Identifier | Kind | Observed use | Name quality | Rename verdict | Unknown ID |
+|------------|------|--------------|--------------|----------------|------------|
+| `TODO` | routine/RAM/data | `TODO` | good/narrow/misleading/placeholder/wrong-unknown | keep/rename-later/blocked-unknown | `-` |
+
 ## Rename proposals (apply only on request)
+
+Rename verdicts are recorded in `docs/analysis/identifiers.md`. List only the proposals
+that are ready to apply (verdict `rename-later`, evidence `[confirmed]`):
 
 | Current | Proposed | Evidence | Confidence |
 |---------|----------|----------|------------|
@@ -74,4 +88,7 @@ Explain the reason behind non-obvious choices:
 
 ## Open questions
 
-- [ ] `TODO`
+Semantic gaps must also have an `@UNKNOWN(<id>)` marker and a row in
+`docs/analysis/unknowns.md`.
+
+- [ ] `U-0000` `TODO`

@@ -6,8 +6,13 @@ How we determine what the code does and why. The guiding rule is simple:
 > verified, it is marked `TODO` / `[hypothesis]` and never encoded in names or
 > confident comments.
 
-Related: `AGENTS.md`, `docs/coding-style.md`, `docs/architecture.md`,
-`docs/hardware.md`, `docs/ram-map.md`, `docs/analysis/`, `docs/modules/_template.md`.
+Related: `AGENTS.md`, `docs/coding-style.md`, `docs/line-by-line-analysis.md`,
+`docs/architecture.md`, `docs/hardware.md`, `docs/ram-map.md`, `docs/analysis/`,
+`docs/modules/_template.md`.
+
+> General analysis (calls, ownership, formats) and the per-file line-by-line pass are
+> separate activities; see `docs/line-by-line-analysis.md` §1. Semantic gaps found
+> during either pass are recorded as `@UNKNOWN` markers in `docs/analysis/unknowns.md`.
 
 ## 1. Evidence tags
 

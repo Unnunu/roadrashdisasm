@@ -74,8 +74,10 @@ Cross-module variables always live in `src/core/ram_const.asm` (see section 6).
 ### 2.5 Renames
 
 Renaming identifiers is a **separate, explicit task** (e.g. "study this file, then
-rename"). Do not rename as a side effect of adding comments. After a rename, update all
-references and re-verify the build.
+rename"). Do not rename as a side effect of adding comments. Before proposing a rename,
+record the name's observed uses and quality in `docs/analysis/identifiers.md` (see
+`docs/line-by-line-analysis.md` §8). After a rename, update all references and
+re-verify the build.
 
 ## 3. Comments
 
@@ -181,12 +183,17 @@ structure offsets. This is some of the most valuable documentation in the ROM.
 
 ## 7. Markers
 
-- `; TODO: <action>` for pending work.
+- `; TODO: <action>` for a known pending action.
+- `; @UNKNOWN(U-xxxx): <what> | guess: <...> | next: <...>` for a semantic gap — the
+  comment is provisional and must be revisited. Every ID has a row in
+  `docs/analysis/unknowns.md`; see `docs/line-by-line-analysis.md` §7.
 - `; unknown: <what>` or `TODO` in header fields for unverified facts.
 - Do not leave misleading confident comments in unanalyzed code.
 
 ## 8. Code comments vs. analysis docs
 
+- The pass procedure (how to comment every line, markers, identifier audit) is in
+  `docs/line-by-line-analysis.md`.
 - **In code:** function contracts, hardware details, local invariants, quirks. Comments
   explain *why*; they are not a line-by-line narration.
 - **`docs/modules/<file>.md`:** architecture, control flow, data structures, external

@@ -70,6 +70,9 @@ Unverified ideas. State the experiment that would confirm or refute each one.
 
 ## Rename proposals (apply only on request)
 
+Identifier quality and verdicts live in `docs/analysis/identifiers.md`; only
+`[confirmed]` proposals that are ready to apply belong here.
+
 | Current | Proposed | Evidence | Confidence |
 |---------|----------|----------|------------|
 | `TODO` | `TODO` | `TODO` | TODO |
@@ -82,4 +85,7 @@ Unverified ideas. State the experiment that would confirm or refute each one.
 
 ## Open questions
 
-- [ ] `TODO`
+Semantic gaps must also have an `@UNKNOWN(<id>)` marker and a row in
+`docs/analysis/unknowns.md`.
+
+- [ ] `U-0000` `TODO`
