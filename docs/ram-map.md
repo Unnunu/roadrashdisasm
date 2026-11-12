@@ -261,13 +261,14 @@ See `docs/analysis/combat.md`.
 (`x-$100000`), with active/free lists and distance checks; `Race_UpdateSpeedDisplay`
 + `Race_FormatDecimal` produce `Race_ram_SpeedDisplay`. See `docs/analysis/race_spawn.md`.
 
-### PRNG/audio/animation (`src/race/race_anim_audio.asm`)
+### PRNG/audio/animation (`src/race/rand.asm`, `src/race/race_anim_audio.asm`)
 
 | Address | Name | Size | Meaning |
 |---|---|---|---|
-| `$FF18BE` | PRNG state | 64 | 32-word sum PRNG table. |
-| `$FF18FE`/`$FF1900` | PRNG indexes | 2 each | Two 0..31 indexes. |
-| `byte_15FA8` | PRNG seed | 64 | Seed table for `Rand_Init`. |
+| `$FF18BE` | `Rand_ram_State` | 64 | 32-word sum PRNG table. |
+| `$FF18FE`/`$FF1900` | `Rand_ram_Index1/2` | 2 each | Initialized to 0/15 by `Rand_InitSum`. |
+| `$015FA8` | `Rand_InitTable` | 64 | 32-word initial state copied by `Rand_InitSum`. |
+| `$FF1B42`/`$FF1B44` | `Rand_ram_LfsrA/B` | 2 each | Seed `$563A`; written by the LFSR helpers, currently unread. |
 | `$FF1AD7` | engine-audio flag | 1 | Set to `$0E` for an active engine. |
 | `$FF1904`/`$FF1906`/`$FF1908` | target/collision state | 2-4 | Nearest-target/collision helpers. |
 | `$FF1AA4`/`$FF1786` | nearest-target distances | 2/4 | Nearest actor speed/distance. |
@@ -277,9 +278,10 @@ See `docs/analysis/combat.md`.
 | `word_14742` | curve speed | 2 | `Race_UpdateBikeCurve` speed. |
 
 Actor fields: `$3E/$40/$42` lean, `$4A/$5A` collision/range, `$5C` tile base,
-`$68/$69/$6B/$6C/$6D/$6E` engine/collision/animation flags. `Rand_Init` seeds the
-32-word sum PRNG; `Rand_GetWord` returns `state[i1]+state[i2]`. See
-`docs/analysis/race_anim_audio.md`.
+`$68/$69/$6B/$6C/$6D/$6E` engine/collision/animation flags. `Rand_InitSum` copies the
+32-word state and always sets the indexes to 0/15; `Rand_NextWord` returns
+`state[i1]+state[i2]`. The LFSR state words are currently write-only. See
+`docs/analysis/rand.md`.
 
 ### Actors/AI (`src/race/race_ai.asm`)
 

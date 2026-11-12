@@ -409,7 +409,7 @@ RaceResults_DrawBusted:
 ; cop portraits: money<0 table (5x2), else money>=0 table (5x4)
                 lea     (RaceResults_CopTableNeg).l,a0
                 move.l  a0,-(sp)
-                jsr     (Rand_GetWord).l
+                jsr     (Rand_NextWord).l
                 and.w   ($8).w,d0
                 adda.w  d0,a0
                 move.w  (Race_CopIndex).l,d0
@@ -420,7 +420,7 @@ RaceResults_DrawBusted:
 .loc_6560:
                 lea     (RaceResults_CopTablePos).l,a0
                 move.l  a0,-(sp)
-                jsr     (Rand_GetWord).l
+                jsr     (Rand_NextWord).l
                 andi.w  #$18,d0
                 adda.w  d0,a0
                 move.w  (Race_CopIndex).l,d0
@@ -622,7 +622,7 @@ RaceResults_DrawRepair:
 ; level portraits: money<0 table (5x2), else money>=0 table (5x4)
                 lea     (RaceResults_LevelTableNeg).l,a0
                 move.l  a0,-(sp)
-                jsr     (Rand_GetWord).l
+                jsr     (Rand_NextWord).l
                 and.w   ($8).w,d0
                 adda.w  d0,a0
                 move.w  (Menu_ram_PlayerLevel).l,d0
@@ -633,7 +633,7 @@ RaceResults_DrawRepair:
 .loc_6844:
                 lea     (RaceResults_LevelTablePos).l,a0
                 move.l  a0,-(sp)
-                jsr     (Rand_GetWord).l
+                jsr     (Rand_NextWord).l
                 andi.w  #$18,d0
                 adda.w  d0,a0
                 move.w  (Menu_ram_PlayerLevel).l,d0

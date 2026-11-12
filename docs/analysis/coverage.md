@@ -33,7 +33,7 @@ Legend: `[x]` done, `[~]` partial, `[ ]` not started.
 | Decompression | `uncompress` | [x] | [x] | [~] | [~] | remaining edge cases |
 | Audio (separate) | raw bridge, `z80_driver` | [~] | [~] | [ ] | [ ] | Z80 driver, sequencer, sound data |
 | Asset tail | `rom_assets` | [x] | [~] | [ ] | [ ] | asset identification/bounds/consumers |
-| Random/helpers | `Rand_GetWord`, `PiecewiseLinearInterpolation`, `Race_FormatDecimal` | [x] | [~] | [ ] | [~] | contracts mostly clear; callers |
+| Random/helpers | `Rand_NextWord`, `PiecewiseLinearInterpolation`, `Race_FormatDecimal` | [x] | [~] | [ ] | [~] | contracts mostly clear; callers |
 
 ## Current work queue
 

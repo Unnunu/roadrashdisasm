@@ -73,7 +73,7 @@ reg90 $03   128x32 planes
 ## External calls / dependencies
 
 - `UncompressW`, `WriteTilesetToVRAM`, `DmaWriteVRAM` (asset upload).
-- `GetInputPlayerA/B`, `DmaWriteVRAM`, `Audio_Update/3/4`, `Rand_Init`, `sub_16088`.
+- `GetInputPlayerA/B`, `DmaWriteVRAM`, `Audio_Update/3/4`, `Rand_InitSum`, `Rand_SeedLfsrs`.
 - `Menu_*`, `MenuPassword_*`, `HighScore_*` state (initial values).
 
 ## Hacks / bugs / quirks
@@ -114,7 +114,7 @@ See `docs/analysis/intro.md` for the full matrix.
 
 - `[ ]` Confirm the diagonal wipe and the exact wave visually in BlastEm.
 - `[ ]` Confirm `Intro_GameTick` is installed as `ram_UpdateFunction` and the Start edge.
-- `[ ]` Audio/`sub_16088` deferred.
+- `[ ]` Audio/`Rand_SeedLfsrs` deferred.
 
 ## Rename proposals (apply only on request)
 

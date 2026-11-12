@@ -70,7 +70,7 @@ Detailed listing and table parse: `docs/analysis/race_results.md`.
 - Callers: `src/core/top_level.asm` (and `src/screens/shop.asm`/`src/screens/highscore.asm` set `RaceResults_ram_NextFunction` back to
   `RaceResults_Init`).
 - Uses `UncompressW/B`, `WriteTilesetToVRAM`, `WriteNametable(ToBuffer)`, `EncodeString`,
-  `Menu_ShowMessage`, `DmaWriteVRAM`, `GetInputPlayerA/B`, `Rand_GetWord`, `Race_FormatMoney`,
+  `Menu_ShowMessage`, `DmaWriteVRAM`, `GetInputPlayerA/B`, `Rand_NextWord`, `Race_FormatMoney`,
   `Race_FormatNumber`, `Audio_Update/3/4`.
 - Race outcome fields are computed by `Race_ComputeResults` in `src/race/race.asm`.
 

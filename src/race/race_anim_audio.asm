@@ -1,6 +1,7 @@
 ; *************************************************
-; race_anim_audio.asm - animations, random, engine audio (split from race_ai)
+; race_anim_audio.asm - animations, engine audio, impact helpers
 ; ROM range: $14056-$1685F (animation.asm starts at $16860)
+; PRNG/LFSR helpers are in rand.asm, included at their original ROM location.
 ; *************************************************
 
 unk_14056:      dc.b   1
@@ -2708,7 +2709,7 @@ sub_154D2:
 
 sub_15538:
                 movem.l d0/a4,-(sp)
-                jsr     (Rand_GetWord).l
+                jsr     (Rand_NextWord).l
                 andi.w  #3,d0
                 lea     (unk_15618).l,a4
                 move.b  (a4,d0.w),d0
@@ -2724,7 +2725,7 @@ sub_15538:
 
 sub_1555C:
                 movem.l d0/a4,-(sp)
-                jsr     (Rand_GetWord).l
+                jsr     (Rand_NextWord).l
                 andi.w  #7,d0
                 lea     (unk_15624).l,a4
                 move.b  (a4,d0.w),d0
@@ -5335,209 +5336,7 @@ unk_15CFC:      dc.b   0
                 dc.b $12
                 dc.b   3
                 dc.b $FF
-byte_15FA8:     dc.b $3D
-                dc.b $52 ; R
-                dc.b $7F ; 
-                dc.b $31 ; 1
-                dc.b $80
-                dc.b $A2
-                dc.b $ED
-                dc.b $16
-                dc.b $42 ; B
-                dc.b $BF
-                dc.b $5C ; 
-                dc.b $41 ; A
-                dc.b  $C
-                dc.b $5E ; ^
-                dc.b $92
-                dc.b $26 ; &
-                dc.b $A5
-                dc.b $8B
-                dc.b $48 ; H
-                dc.b $2D ; -
-                dc.b $64 ; d
-                dc.b $D9
-                dc.b $82
-                dc.b $AD
-                dc.b $E1
-                dc.b $79 ; y
-                dc.b $21 ; !
-                dc.b $4B ; K
-                dc.b $81
-                dc.b $4C ; L
-                dc.b $D7
-                dc.b $36 ; 6
-                dc.b $97
-                dc.b $CF
-                dc.b $AE
-                dc.b $B1
-                dc.b $F7
-                dc.b $CB
-                dc.b $6A ; j
-                dc.b $9B
-                dc.b  $C
-                dc.b $59 ; Y
-                dc.b $85
-                dc.b $34 ; 4
-                dc.b $71 ; q
-                dc.b $89
-                dc.b $15
-                dc.b $93
-                dc.b $6B ; k
-                dc.b $C5
-                dc.b   7
-                dc.b $AC
-                dc.b $3C ; <
-                dc.b $7F ; 
-                dc.b $A4
-                dc.b $3E ; >
-                dc.b $DA
-                dc.b $69 ; i
-                dc.b $18
-                dc.b $1E
-                dc.b $9B
-                dc.b $D1
-                dc.b $D5
-                dc.b $7F ; 
-
-
-
-
- ; *************************************************
-; Function Rand_Init
-; Seeds/copies the 32-word sum PRNG state and sets the indexes.
-; In:  d0 - seed
-; Out: ram_FF18BE (32 words), ram_FF18FE/ram_FF1900
-; Clobbers: d0/d1/a0/a1
-; *************************************************
-
-Rand_Init:
-                movem.l d0-d1/a0-a1,-(sp)
-                move.w  d0,d1
-
-                lea     (byte_15FA8).l,a0
-                lea     (ram_FF18BE).l,a1
-                move.w  #$20,d0
-.loc_15FFE:
-                move.w  (a0)+,(a1)+
-                dbf     d0,.loc_15FFE
-
-                lea     (ram_FF18BE).l,a0
-                move.w  #$20,d0
-.loc_1600E:
-                add.w   d1,(a0)+
-                dbf     d0,.loc_1600E
-
-                lsl.w   #7,d1
-                andi.w  #$1F,d1
-                move.w  d1,(ram_FF18FE).l
-
-                addi.w  #$F,d1
-                andi.w  #$1F,d1
-                move.w  d1,(ram_FF1900).l
-
-                movem.l (sp)+,d0-d1/a0-a1
-                rts
-; End of function Rand_Init
-
-
-
-
-
- ; *************************************************
-; Function Rand_GetWord
-; Returns state[i1]+state[i2] and advances both indexes (lagged sum PRNG).
-; In:  ram_FF18BE/18FE/1900
-; Out: d0 - word
-; Clobbers: d0-d2/a0
-; *************************************************
-
-Rand_GetWord:
-                movem.l d1-d2/a0,-(sp)
-                move.w  (ram_FF18FE).l,d1
-                lsl.w   #1,d1
-                move.w  (ram_FF1900).l,d2
-                lsl.w   #1,d2
-                lea     (ram_FF18BE).l,a0
-                move.w  (a0,d1.w),d0
-                add.w   (a0,d2.w),d0
-                move.w  d0,(a0,d1.w)
-                addq.w  #1,(ram_FF18FE).l
-                andi.w  #$1F,(ram_FF18FE).l
-                addq.w  #1,(ram_FF1900).l
-                andi.w  #$1F,(ram_FF1900).l
-                movem.l (sp)+,d1-d2/a0
-                rts
-; End of function Rand_GetWord
-
-
-
-
-
-sub_1607C:
-                bsr.s   Rand_GetWord
-                lsr.w   #8,d0
-                andi.l  #$FF,d0
-                rts
-; End of function sub_1607C
-
-
-
-
-
-sub_16088:
-                move.w  #$563A,(ram_FF1B42).l
-                move.w  #$563A,(ram_FF1B44).l
-                rts
-; End of function sub_16088
-
-
-
-
-
-sub_1609A:
-                move.w  (ram_FF1B42).l,d0
-                lsr.w   #1,d0
-                bcc.s   .loc_160A8
-                eori.w  #$B400,d0
-
-.loc_160A8:
-                move.w  d0,(ram_FF1B42).l
-                rts
-; End of function sub_1609A
-
-
-
-
-
-sub_160B0:
-                moveq   #0,d0
-                move.w  (ram_FF1B42).l,d0
-                lsr.w   #1,d0
-                bcc.s   .loc_160C0
-                eori.w  #$B400,d0
-
-.loc_160C0:
-                move.w  d0,(ram_FF1B42).l
-                divs.w  d2,d0
-                swap    d0
-                rts
-; End of function sub_160B0
-
-
-
-
-
-sub_160CC:
-                move.w  (ram_FF1B44).l,d0
-                lsr.w   #1,d0
-                bcc.s   .loc_160DA
-                eori.w  #$B400,d0
-
-.loc_160DA:
-                move.w  d0,(ram_FF1B44).l
-                rts
-; End of function sub_160CC
+    include "rand.asm"
 
 
 

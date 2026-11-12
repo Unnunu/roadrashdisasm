@@ -995,8 +995,8 @@ Race_InitVariables:
                 move.w  #0,(ram_FF1B30).l
                 move.w  #0,(ram_FF1B3E).l
                 move.w  #0,(Race_ram_PlayerPlace).l
-                move.w  #0,(ram_FF1B42).l
-                move.w  #0,(ram_FF1B44).l
+                move.w  #0,(Rand_ram_LfsrA).l
+                move.w  #0,(Rand_ram_LfsrB).l
                 move.w  #0,(ram_FF1B46).l
                 move.w  #0,(ram_FF1B48).l
                 move.w  #0,(ram_FF1B4C).l
@@ -1352,12 +1352,12 @@ Race_SpawnOpponents:
                 move.l  (a0)+,d1
                 cmp.l   #$FFFFFFFF,d1
                 beq.w   .loc_B970
-                jsr     (Rand_GetWord).l
+                jsr     (Rand_NextWord).l
                 cmp.w   d7,d0
                 bcs.s   .loc_B91C
                 btst    #4,d1
                 beq.w   .loc_B94A
-                jsr     (Rand_GetWord).l
+                jsr     (Rand_NextWord).l
                 andi.w  #$F,d0
                 andi.w  #$FFF0,d1
                 or.w    d0,d1

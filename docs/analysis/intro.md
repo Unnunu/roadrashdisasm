@@ -152,7 +152,7 @@ persistent player/menu/high-score state:
 - level 1, money 100, bike 0, five race places = 0, opponents list `$4B,0..$E`;
 - the high-score table is initialized from `DemoHighScoreTable` (demo data, 34 longs);
 - `Menu_ram_CurrentTrackId = 0`, `Menu_ram_PlayerMode = 1`, `Menu_ram_PlayerLevel = 1`,
-  `Menu_ram_Player = 0`, music enabled, `Rand_Init`, `sub_16088`, `Audio_StartMusic`.
+  `Menu_ram_Player = 0`, music enabled, `Rand_InitSum`, `Rand_SeedLfsrs`, `Audio_StartMusic`.
 
 ## Verified facts
 
@@ -178,7 +178,7 @@ persistent player/menu/high-score state:
 - `[x]` Visible title region: lines 150-189 (Init predecrement), lines 190-223 cleared.
   The exact wave is still best confirmed visually.
 - `[ ]` Confirm the `$6000` text tile base / palette line 3 and the font layout.
-- `[ ]` `sub_16088` and the audio calls are deferred (audio deep dive).
+- `[ ]` `Rand_SeedLfsrs` and the audio calls are deferred (audio deep dive).
 - `[ ]` Dynamic: confirm `Intro_GameTick` is called as `ram_UpdateFunction` (0x1C64) and
   the Start edge behaviour in BlastEm.
 

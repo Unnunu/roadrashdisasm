@@ -309,8 +309,8 @@ Intro_Init:
                 bsr.w   Intro_InitPlayerA
                 bsr.w   Intro_InitPlayerB
                 move.w  #$3F,(Message_ram_ButtonBlinkPeriod).l ; button blink period = 63 frames
-                jsr     (Rand_Init).l ; 32-word sum PRNG; seed = d0 ($FFFF left by the copy loops)
-                jsr     (sub_16088).l ; seed the two 16-bit LFSR state words
+                jsr     (Rand_InitSum).l ; 32-word sum PRNG; seed = d0 ($FFFF left by the copy loops)
+                jsr     (Rand_SeedLfsrs).l ; seed the two 16-bit LFSR state words
                 move.w  #1,(ram_MusicEnabled).l ; music active: HInt skips engine audio
                 rts
 ; End of function Intro_Init

@@ -1,15 +1,16 @@
-# Analysis: `src/race/race_anim_audio.asm` (PRNG, audio/impact helpers, animation)
+# Analysis: `src/race/race_anim_audio.asm` (audio/impact helpers, animation)
 
-- **Module:** PRNG, engine-audio helpers, player animation, impact/damage helpers,
-  and the track/animation data tables
+- **Module:** engine-audio helpers, player animation, impact/damage helpers, and the
+  track/animation data tables; PRNG/LFSR helpers moved to `src/race/rand.asm`
 - **ROM range:** `0x014056`–`0x016119`
-- **Status:** partially analyzed (PRNG/player animation/roles); animation/impact
-  internals TODO; combat moved to `src/race/race_combat.asm`
+- **Status:** partially analyzed (player animation/roles); PRNG analyzed in
+  `docs/analysis/rand.md`; animation/impact internals TODO; combat moved to
+  `src/race/race_combat.asm`
 - **Source:** `src/race/race_anim_audio.asm`
 - **Related:** `docs/analysis/combat.md` (attack input/state/actions),
   `docs/analysis/race.md`, `docs/analysis/race_ai.md`,
-  `docs/analysis/race_physics.md`, `docs/modules/race_anim_audio.md`,
-  `docs/ram-map.md`
+  `docs/analysis/race_physics.md`, `docs/analysis/rand.md`,
+  `docs/modules/race_anim_audio.md`, `docs/ram-map.md`
 
 ## Functions
 
@@ -17,8 +18,6 @@
 |---|---|---|
 | `Race_UpdateLeanCurve` | `0x1406A` | Lean/curve `$3E/$40` and `ram_FF3042`. |
 | `Race_UpdatePlayerAnimation` | `0x160E2` | Player `$5C` animation/tile base clamp. |
-| `Rand_Init` | `0x15FE8` | Seed the 32-word PRNG state. |
-| `Rand_GetWord` | `0x16034` | Sum-of-two-words PRNG word. |
 | `sub_141...`..`sub_155...` | `0x1406A`+ | Animation/track/impact helpers (TODO). |
 | `Race_ScaleImpactDamage`/`Race_ApplyCollisionImpact`/`Race_ExchangeCollisionSpeed` | `0x1434A`+ | Impact/damage helpers shared with combat. |
 
@@ -29,9 +28,10 @@ Combat/target/collision functions (`Race_UpdateNearestTarget`, `Race_UpdatePlaye
 
 ## PRNG
 
-`byte_15FA8` is a 32-word seed table copied to `ram_FF18BE`; `Rand_Init` adds the seed
-and sets the two indexes (`ram_FF18FE`/`ram_FF1900`, 0..31). `Rand_GetWord` returns
-`state[i1] + state[i2]`, stores it and advances both indexes (lagged sum PRNG).
+The 32-word lagged-sum PRNG and the two 16-bit LFSR helpers are now in
+`src/race/rand.asm`, included at the original `$15FA8` location. See
+`docs/analysis/rand.md` for contracts, the fixed 0/15 index quirk, caller map and
+unreferenced helpers.
 
 ## Animation / impact
 
@@ -45,8 +45,8 @@ and sets the two indexes (`ram_FF18FE`/`ram_FF1900`, 0..31). `Rand_GetWord` retu
 
 - `unk_14056` (curve speed limit; `Race_GetCurveSpeedLimit`), `unk_1471A` (track
   params; `Race_LoadTrackParams`), `word_14742` (curve speed), `unk_155A4`/
-  `unk_15624`/`unk_15CE0`/`unk_15CFC`/`byte_15FA8` (animation/PRNG data).
-- PRNG: `ram_FF18BE` (32 words), `ram_FF18FE`/`ram_FF1900` indexes.
+  `unk_15624`/`unk_15CE0`/`unk_15CFC` (animation data).
+- PRNG/LFSR tables and RAM are documented in `docs/analysis/rand.md`.
 - Actor fields: `$3E/$40/$42` lean, `$4A/$5A` impact/range, `$5C` tile base,
   `$6E` on-foot/animation gate. Attack fields: see `docs/ram-map.md` combat section.
 
@@ -58,4 +58,5 @@ and sets the two indexes (`ram_FF18FE`/`ram_FF1900`, 0..31). `Rand_GetWord` retu
 
 ## Rename proposals
 
-The function renames above are applied. Remaining data/field names are TODO.
+Animation/impact data/field names remain TODO. PRNG/LFSR rename proposals are in
+`docs/analysis/rand.md`.

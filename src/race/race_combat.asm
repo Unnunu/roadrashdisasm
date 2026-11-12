@@ -568,13 +568,13 @@ Race_ActorSteerCollide:
 ; Function Race_ActorRandomCombatChoice
 ; AI action: random choice between collision/attack (Race_ActorCollideSteer) and pursuit
 ; (Race_ActorPursueAttack).
-; In:  a1 - actor; Rand_GetWord
+; In:  a1 - actor; Rand_NextWord
 ; Out: actor fields
 ; Clobbers: d0
 ; *************************************************
 
 Race_ActorRandomCombatChoice:
-                jsr     (Rand_GetWord).l
+                jsr     (Rand_NextWord).l
                 btst    #0,d0
                 bne.w   .loc_1663E
                 bsr.s   Race_ActorCollideSteer

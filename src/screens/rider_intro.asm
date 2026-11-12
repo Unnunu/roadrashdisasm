@@ -137,7 +137,7 @@ RiderIntro_Init:
                 beq.w   .loc_5BC8
                 move.w  (ram_FF0524).l,(ram_FF0520).l ; player B
 .loc_5BC8:
-                jsr     (Rand_GetWord).l
+                jsr     (Rand_NextWord).l
                 andi.w  #$18,d0
                 cmp.w   #$18,d0
                 beq.s   .loc_5BAA

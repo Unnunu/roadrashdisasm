@@ -41,7 +41,7 @@ chain. The spawner adds/removes actors and the physics chain moves them.
 4. If player Speed `>= 6000`: `Race_SpawnOpponent`; if it returns `$FFFFFFFF`
    (no/too-far actor) fall back to `Race_SpawnTraffic`.
 5. Otherwise `Race_SpawnTraffic`.
-6. Set `Race_ram_SpawnTimer = Rand_GetWord & $1FF` (0..511 frames).
+6. Set `Race_ram_SpawnTimer = Rand_NextWord & $1FF` (0..511 frames).
 
 ## Spawn paths
 

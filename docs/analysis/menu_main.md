@@ -100,8 +100,8 @@ row 4 (`$7000 + $200`), matching `src/screens/menu_password.asm`.
 - Handle newly pressed buttons for B/A (`MainMenu_HandleInput`); if the update function
   changed (password screen), skip the tooltip update.
 - Tooltip cycle: every 240 frames (4 s) advance `Menu_ram_CurrentMessageId` by 8 (tooltip
-  array `Message_MsgArray`); `Menu_ShowMessage`; `Audio_Update`, `sub_160B0/CC`,
-  `Rand_GetWord`.
+  array `Message_MsgArray`); `Menu_ShowMessage`; `Audio_Update`, `Rand_StepLfsrAMod/Rand_StepLfsrB`,
+  `Rand_NextWord`.
 
 ## Input (`MainMenu_HandleInput`, `0x3BE2`)
 

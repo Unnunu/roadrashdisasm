@@ -415,9 +415,9 @@ MainMenu_GameTick:
                 jsr     (Menu_ShowMessage).l
                 jsr     (Audio_Update).l
                 move.w  #1,d2
-                jsr     (sub_160B0).l
-                jsr     (sub_160CC).l
-                jsr     (Rand_GetWord).l
+                jsr     (Rand_StepLfsrAMod).l
+                jsr     (Rand_StepLfsrB).l
+                jsr     (Rand_NextWord).l
                 rts
 .endStage:
                 jsr     (Audio_StopMusic).l

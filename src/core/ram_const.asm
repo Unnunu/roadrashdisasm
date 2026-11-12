@@ -231,9 +231,9 @@ ram_FF18B6 equ $FF18B6
 Race_ram_PairImpactA equ $FF18B8
 Race_ram_PairImpactB equ $FF18BA
 ram_FF18BC equ $FF18BC
-ram_FF18BE equ $FF18BE
-ram_FF18FE equ $FF18FE
-ram_FF1900 equ $FF1900
+Rand_ram_State equ $FF18BE
+Rand_ram_Index1 equ $FF18FE
+Rand_ram_Index2 equ $FF1900
 ram_FF1904 equ $FF1904
 ram_FF1906 equ $FF1906
 Race_ram_NearestActor equ $FF1908
@@ -328,8 +328,8 @@ Race_ram_LevelIndex equ $FF1B38
 ram_FF1B3A equ $FF1B3A
 ram_FF1B3E equ $FF1B3E
 Race_ram_PlayerPlace equ $FF1B40
-ram_FF1B42 equ $FF1B42
-ram_FF1B44 equ $FF1B44
+Rand_ram_LfsrA equ $FF1B42
+Rand_ram_LfsrB equ $FF1B44
 ram_FF1B46 equ $FF1B46
 ram_FF1B48 equ $FF1B48
 ram_FF1B4A equ $FF1B4A

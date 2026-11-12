@@ -162,7 +162,7 @@ tentative until the module card is filled in.
 | `0x00E732` | `src/race/road_marking.asm` | Road marking / sprite placement | [road_marking.md](modules/road_marking.md) |
 | `0x00EB34` | `src/race/race_ai_road.asm` | Road profile/objects/standings/speed | [race_ai_road.md](modules/race_ai_road.md) |
 | `0x010E00` | `src/race/race_ai.asm` | Actor/input/AI/physics | [race_ai.md](modules/race_ai.md) |
-| `0x014056` | `src/race/race_anim_audio.asm` | Animations, random, audio/impact helpers | [race_anim_audio.md](modules/race_anim_audio.md) |
+| `0x014056` | `src/race/race_anim_audio.asm` | Animations, audio/impact helpers; PRNG in `rand.asm` | [race_anim_audio.md](modules/race_anim_audio.md) |
 | `0x01611A` | `src/race/race_combat.asm` | Player fist, AI combat, nearest-target/collision | [combat.md](modules/combat.md) |
 | `0x016860` | `src/race/animation.asm` | Sprite animation | [animation.md](modules/animation.md) |
 | `0x0169B0` | `src/race/race_spawn.asm` | Track data + dynamic spawn | [race_spawn.md](modules/race_spawn.md) |

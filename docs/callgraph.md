@@ -80,7 +80,7 @@ flowchart LR
 | `FadeWithFunction_GameTick` | `0x012F8` | - | `DmaWriteCRAM` |
 | `HorizontalInterrupt` | `0x0145A` | - | `Audio_Engine1Update`, `Audio_Engine2Update`, `Audio_Update`, `Audio_UpdateEngine` |
 | `Audio_UpdateEngine` | `0x01652` | `HorizontalInterrupt` | - |
-| `Intro_Init` | `0x01704` | `TopLevel_Init` | `Audio_StartMusic`, `DmaWriteVRAM`, `EncodeString`, `Intro_InitPlayerA`, `Intro_InitPlayerB`, `Rand_Init`, `UncompressW`, `WriteNametable`, `WriteTilesetToVRAM`, `sub_16088` |
+| `Intro_Init` | `0x01704` | `TopLevel_Init` | `Audio_StartMusic`, `DmaWriteVRAM`, `EncodeString`, `Intro_InitPlayerA`, `Intro_InitPlayerB`, `Rand_InitSum`, `UncompressW`, `WriteNametable`, `WriteTilesetToVRAM`, `Rand_SeedLfsrs` |
 | `Intro_InitPlayerA` | `0x01A2C` | `Intro_Init`, `Menu_Init` | - |
 | `Intro_InitPlayerB` | `0x01B48` | `Intro_Init`, `Menu_Init` | - |
 | `Intro_GameTick` | `0x01C64` | - | `Audio_StopMusic`, `Audio_Update`, `DmaWriteVRAM`, `EncodeString`, `GetInputPlayerA`, `GetInputPlayerB`, `WriteNametable` |
@@ -100,7 +100,7 @@ flowchart LR
 | `Menu_Init` | `0x03400` | `TopLevel_Init` | `Audio_StartMusic`, `DmaWriteVRAM`, `Intro_InitPlayerA`, `Intro_InitPlayerB`, `MenuPassword_SelectCurrentTrack`, `Menu_DrawPlayerInfo`, `Menu_DrawRaceSelection`, `Menu_ShowMessage`, `UncompressB`, `UncompressW`, `WriteNametable`, `WriteNametableToBuffer`, `WriteTilesetToVRAM` |
 | `WriteNametableToBuffer` | `0x037AA` | `DrawString`, `EndLevel_Init`, `EndLevel_InitVictoryCharacter`, `HighScore_Init`, `MainMenu_HandleInput`, `MenuPassword_DrawNamesAndPasswords`, `MenuPassword_HandleInput`, `Menu_DrawPlayerInfo`, `Menu_DrawRaceSelection`, `Menu_Init`, `Menu_ShowMessage`, `Message_BlinkButtonC`, `Message_BlinkButtonStart`, `Message_Clear`, `Message_DrawButtonA`, `Message_DrawButtonB`, `Message_DrawDirPadRight`, `Message_DrawDirPadVert`, `Message_ShowEmpty`, `RaceResults_DrawBusted`, `RaceResults_DrawRepair`, `RaceResults_DrawStandings`, `Race_DrawOpponentName`, `Race_DrawPlayerNameOrPlace`, `Race_LoadHUD`, `RiderIntro_Init`, `Shop_DrawBikeName`, `Shop_DrawString`, `Shop_Init` | - |
 | `Menu_WriteNametableMasked` | `0x037D2` | `Menu_DrawRaceCard` | - |
-| `MainMenu_GameTick` | `0x03802` | - | `Audio_StopMusic`, `Audio_Update`, `DmaWriteVRAM`, `GetInputPlayerA`, `GetInputPlayerB`, `MainMenu_HandleInput`, `Menu_ShowMessage`, `Rand_GetWord`, `sub_160B0`, `sub_160CC` |
+| `MainMenu_GameTick` | `0x03802` | - | `Audio_StopMusic`, `Audio_Update`, `DmaWriteVRAM`, `GetInputPlayerA`, `GetInputPlayerB`, `MainMenu_HandleInput`, `Menu_ShowMessage`, `Rand_NextWord`, `Rand_StepLfsrAMod`, `Rand_StepLfsrB` |
 | `Menu_DrawPlayerInfo` | `0x039AE` | `MainMenu_HandleInput`, `MenuPassword_GameTick`, `Menu_Init` | `EncodeString`, `UncompressW`, `WriteNametableToBuffer` |
 | `Menu_BuildRaceTooltip` | `0x03B56` | `MainMenu_HandleInput` | - |
 | `MainMenu_HandleInput` | `0x03BE2` | `MainMenu_GameTick` | `Audio_StartMusic`, `Audio_StopMusic`, `EncodeString`, `MenuPassword_DrawNamesAndPasswords`, `MenuPassword_SelectCurrentTrack`, `Menu_BuildRaceTooltip`, `Menu_DrawPlayerInfo`, `Menu_DrawRaceSelection`, `UncompressW`, `WriteNametableToBuffer` |
@@ -123,12 +123,12 @@ flowchart LR
 | `Message_BlinkDirectionalPad` | `0x0454E` | - | `Message_Clear`, `loc_4486`, `loc_44FE` |
 | `RiderSprites_Build` | `0x05760` | `RiderSprites_BuildAlt`, `Road_DrawStrip` | - |
 | `RiderSprites_BuildAlt` | `0x0593E` | - | `RiderSprites_Build` |
-| `RiderIntro_Init` | `0x059C4` | `TopLevel_Init` | `DmaWriteVRAM`, `EncodeString`, `Menu_ShowMessage`, `Rand_GetWord`, `UncompressB`, `UncompressW`, `WriteNametable`, `WriteNametableToBuffer`, `WriteTilesetToVRAM` |
+| `RiderIntro_Init` | `0x059C4` | `TopLevel_Init` | `DmaWriteVRAM`, `EncodeString`, `Menu_ShowMessage`, `Rand_NextWord`, `UncompressB`, `UncompressW`, `WriteNametable`, `WriteNametableToBuffer`, `WriteTilesetToVRAM` |
 | `RiderIntro_GameTick` | `0x05E66` | - | `Audio_StopMusic`, `Audio_Update`, `DmaWriteVRAM`, `GetInputPlayerA`, `GetInputPlayerB`, `Menu_ShowMessage` |
 | `RaceResults_Init` | `0x05F28` | `TopLevel_Init` | `Audio_StartMusic`, `Audio_StopMusic`, `DmaWriteVRAM`, `RaceResults_DrawBusted`, `RaceResults_DrawRepair`, `RaceResults_DrawStandings`, `Race_FormatMoney`, `UncompressB`, `UncompressW`, `WriteNametable`, `WriteTilesetToVRAM` |
 | `RaceResults_DrawStandings` | `0x062CE` | `RaceResults_Init` | `EncodeString`, `UncompressW`, `WriteNametable`, `WriteNametableToBuffer`, `WriteTilesetToVRAM` |
-| `RaceResults_DrawBusted` | `0x0647E` | `RaceResults_Init` | `EncodeString`, `Race_FormatNumber`, `Rand_GetWord`, `UncompressB`, `UncompressW`, `WriteNametable`, `WriteNametableToBuffer`, `WriteTilesetToVRAM` |
-| `RaceResults_DrawRepair` | `0x067AC` | `RaceResults_Init` | `EncodeString`, `Race_FormatNumber`, `Rand_GetWord`, `UncompressB`, `UncompressW`, `WriteNametableToBuffer`, `WriteTilesetToVRAM` |
+| `RaceResults_DrawBusted` | `0x0647E` | `RaceResults_Init` | `EncodeString`, `Race_FormatNumber`, `Rand_NextWord`, `UncompressB`, `UncompressW`, `WriteNametable`, `WriteNametableToBuffer`, `WriteTilesetToVRAM` |
+| `RaceResults_DrawRepair` | `0x067AC` | `RaceResults_Init` | `EncodeString`, `Race_FormatNumber`, `Rand_NextWord`, `UncompressB`, `UncompressW`, `WriteNametableToBuffer`, `WriteTilesetToVRAM` |
 | `RaceResults_GameTick` | `0x06A90` | - | `Audio_StopMusic`, `Audio_Update`, `DmaWriteVRAM`, `GetInputPlayerA`, `GetInputPlayerB`, `Menu_ShowMessage`, `RaceResults_HandleInput` |
 | `RaceResults_HandleInput` | `0x06BD4` | `RaceResults_GameTick` | - |
 | `DrawString` | `0x06C5E` | - | `EncodeString`, `WriteNametableToBuffer` |
@@ -149,7 +149,7 @@ flowchart LR
 | `Shop_DrawBikes` | `0x0803C` | `Shop_HandleInput`, `Shop_Init` | `WriteNametable` |
 | `Shop_UpdateScroll` | `0x08178` | `Shop_GameTick` | - |
 | `EndLevel_Init` | `0x08342` | `TopLevel_Init` | `Audio_StartMusic`, `Audio_StopMusic`, `DmaWriteVRAM`, `UncompressB`, `UncompressToVRAM`, `UncompressW`, `WriteNametable`, `WriteNametableToBuffer`, `WriteTilesetToVRAM` |
-| `EndLevel_InitVictoryCharacter` | `0x08682` | `EndLevel_GameTick` | `DmaWriteCRAM`, `EncodeString`, `EndLevel_AdvanceLevel`, `Rand_GetWord`, `UncompressB`, `UncompressW`, `WriteNametable`, `WriteNametableToBuffer`, `WriteTilesetToVRAM` |
+| `EndLevel_InitVictoryCharacter` | `0x08682` | `EndLevel_GameTick` | `DmaWriteCRAM`, `EncodeString`, `EndLevel_AdvanceLevel`, `Rand_NextWord`, `UncompressB`, `UncompressW`, `WriteNametable`, `WriteNametableToBuffer`, `WriteTilesetToVRAM` |
 | `EndLevel_AdvanceLevel` | `0x08946` | `EndLevel_InitVictoryCharacter` | `MenuPassword_CreatePassword` |
 | `EndLevel_GameTickVictoryCharacter` | `0x08A1A` | - | `Audio_StopMusic`, `Audio_Update`, `DmaWriteVRAM`, `GetInputPlayerA`, `GetInputPlayerB`, `Menu_ShowMessage` |
 | `EndLevel_GameTick` | `0x08AEE` | - | `Audio_Update`, `DmaWriteVRAM`, `EndLevel_InitVictoryCharacter`, `GetInputPlayerA`, `GetInputPlayerB`, `Race_SwapFrames` |
@@ -202,7 +202,7 @@ flowchart LR
 | `Race_InitPhysicsConstants` | `0x0B770` | `TopLevel_Init` | - |
 | `Race_LoadTrackParams` | `0x0B840` | `Race_Init` | - |
 | `Race_LoadBikeData` | `0x0B86A` | `Race_Init` | - |
-| `Race_SpawnOpponents` | `0x0B8D0` | `Race_Init` | `Rand_GetWord` |
+| `Race_SpawnOpponents` | `0x0B8D0` | `Race_Init` | `Rand_NextWord` |
 | `Race_ResetFrameTimers` | `0x0B9AE` | `Race_GameTick` | - |
 | `Race_UpdateTime` | `0x0BA02` | `Race_GameTick` | - |
 | `Race_GameTick` | `0x0BA76` | `Race_Init` | `Audio_Engine1Stop`, `Audio_Engine2Stop`, `Audio_Engine3Stop`, `DmaWriteCRAM`, `DmaWriteVRAM`, `Race_GetInput`, `Race_GetInputDemo`, `Race_ResetFrameTimers`, `Race_SwapFrames`, `Race_UpdateTime`, `Race_WriteSpriteTiles` |
@@ -252,7 +252,7 @@ flowchart LR
 | `Race_DrawRoadEdges` | `0x0EC90` | `Race_Update` | - |
 | `Road_FillProfileTables` | `0x0ECE0` | `Race_Update` | - |
 | `Race_IntegrateTrackCurve` | `0x0EDD0` | `Race_Update` | - |
-| `Race_ComputeStandings` | `0x0EFA4` | `TopLevel_Init` | `Race_ScaleResultValue`, `Rand_GetWord` |
+| `Race_ComputeStandings` | `0x0EFA4` | `TopLevel_Init` | `Race_ScaleResultValue`, `Rand_NextWord` |
 | `Race_ScaleResultValue` | `0x0F0E4` | `Race_ComputeStandings` | - |
 | `Race_UpdateSpeedDisplay` | `0x0F108` | `Race_Update` | `Race_FormatDecimal` |
 | `Race_FormatDecimal` | `0x0F11C` | `RaceDebug_ShowDistanceTravelled`, `RaceDebug_ShowFrameDelay`, `RaceDebug_ShowPosZ`, `Race_UpdateSpeedDisplay`, `sub_999E` | - |
@@ -311,7 +311,7 @@ flowchart LR
 | `Race_UpdateActorPairCollision` | `0x124E2` | `sub_11CC8`, `sub_1218C`, `sub_123A8` | `Race_GetAttackerReach`, `Race_GetCollisionExtent`, `Race_GetDefenderReach` |
 | `Race_ClearActorOnFootFlags` | `0x1281E` | `Race_Update` | - |
 | `Race_UpdateStaticActors` | `0x12868` | `Race_Update` | `Race_BuildTargetCandidates`, `Race_UpdateActorFallMovement`, `Race_UpdateActorMovement`, `sub_113A4`, `sub_12C9A`, `sub_13DE0` |
-| `Race_InitExtraStaticActor` | `0x128E0` | `Race_Update` | `Rand_GetWord` |
+| `Race_InitExtraStaticActor` | `0x128E0` | `Race_Update` | `Rand_NextWord` |
 | `Race_UpdateExtraStaticActor` | `0x12974` | `Race_Update` | - |
 | `Race_GetCollisionExtent` | `0x12A88` | `Race_UpdateActorPairCollision` | `Race_GetActorCollisionExtent`, `Race_GetStaticCollisionExtent` |
 | `Race_GetActorCollisionExtent` | `0x12A9C` | `Race_GetCollisionExtent`, `sub_11CC8` | - |
@@ -341,7 +341,7 @@ flowchart LR
 | `sub_1383E` | `0x1383E` | `Race_Update` | - |
 | `Race_UpdateActorRoadSteering` | `0x1384C` | `Race_ActorNormalUpdate`, `Race_ActorNormalVariant`, `Race_ActorPursueAttack`, `Race_ActorSteerRoadCenter`, `Race_ActorSteerThrottle` | - |
 | `Race_SteerTowardTarget` | `0x13892` | `Race_UpdateActorSpeedCurve` | - |
-| `sub_138CE` | `0x138CE` | `Race_Update` | `Rand_GetWord`, `sub_13A26` |
+| `sub_138CE` | `0x138CE` | `Race_Update` | `Rand_NextWord`, `sub_13A26` |
 | `sub_13A26` | `0x13A26` | `sub_138CE` | - |
 | `Race_UpdateActorSpeedState` | `0x13A92` | `Race_ActorNormalUpdate`, `Race_ActorStateCollision`, `Race_ActorSteerThrottle`, `Race_Update`, `Race_UpdateActorActions`, `Race_UpdateActorChase`, `Race_UpdateActorSpeedGear`, `sub_1634E` | `sub_13BBC` |
 | `sub_13BBC` | `0x13BBC` | `Race_UpdateActorSpeedState` | - |
@@ -377,14 +377,14 @@ flowchart LR
 | `sub_15446` | `0x15446` | `sub_15014` | - |
 | `sub_15478` | `0x15478` | `Race_AddTrackStartObject` | `sub_154D2` |
 | `sub_154D2` | `0x154D2` | `sub_15014`, `sub_15478` | - |
-| `sub_15538` | `0x15538` | `Race_ApplyCrashImpact`, `Race_UpdateCollisionSpeedState`, `sub_12BD2` | `Rand_GetWord` |
-| `sub_1555C` | `0x1555C` | `Race_UpdateCollisionSpeedState`, `sub_12BD2` | `Rand_GetWord` |
-| `Rand_Init` | `0x15FE8` | `Intro_Init` | - |
-| `Rand_GetWord` | `0x16034` | `EndLevel_InitVictoryCharacter`, `MainMenu_GameTick`, `RaceResults_DrawBusted`, `RaceResults_DrawRepair`, `Race_ActorRandomCombatChoice`, `Race_ComputeStandings`, `Race_InitExtraStaticActor`, `Race_SpawnOpponents`, `Race_SpawnTick`, `RiderIntro_Init`, `sub_138CE`, `sub_15538`, `sub_1555C`, `sub_1607C` | - |
-| `sub_1607C` | `0x1607C` | - | `Rand_GetWord` |
-| `sub_16088` | `0x16088` | `Intro_Init` | - |
-| `sub_160B0` | `0x160B0` | `MainMenu_GameTick` | - |
-| `sub_160CC` | `0x160CC` | `MainMenu_GameTick` | - |
+| `sub_15538` | `0x15538` | `Race_ApplyCrashImpact`, `Race_UpdateCollisionSpeedState`, `sub_12BD2` | `Rand_NextWord` |
+| `sub_1555C` | `0x1555C` | `Race_UpdateCollisionSpeedState`, `sub_12BD2` | `Rand_NextWord` |
+| `Rand_InitSum` | `0x15FE8` | `Intro_Init` | - |
+| `Rand_NextWord` | `0x16034` | `EndLevel_InitVictoryCharacter`, `MainMenu_GameTick`, `RaceResults_DrawBusted`, `RaceResults_DrawRepair`, `Race_ActorRandomCombatChoice`, `Race_ComputeStandings`, `Race_InitExtraStaticActor`, `Race_SpawnOpponents`, `Race_SpawnTick`, `RiderIntro_Init`, `sub_138CE`, `sub_15538`, `sub_1555C`, `Rand_GetByte` | - |
+| `Rand_GetByte` | `0x1607C` | - | `Rand_NextWord` |
+| `Rand_SeedLfsrs` | `0x16088` | `Intro_Init` | - |
+| `Rand_StepLfsrAMod` | `0x160B0` | `MainMenu_GameTick` | - |
+| `Rand_StepLfsrB` | `0x160CC` | `MainMenu_GameTick` | - |
 | `Race_UpdatePlayerAnimation` | `0x160E2` | `Race_Update` | - |
 | `Race_UpdateNearestTarget` | `0x1611A` | `Race_Update` | `Race_TriggerArmedAttackSfx`, `Race_UpdatePlayerAttack`, `sub_14FB4` |
 | `Race_UpdatePlayerAttack` | `0x162B0` | `Race_UpdateNearestTarget` | - |
@@ -396,7 +396,7 @@ flowchart LR
 | `Race_ActorSteerThrottle` | `0x165E0` | `Race_ActorSteerCollide` | `Race_UpdateActorRoadSteering`, `Race_UpdateActorSpeedState` |
 | `Race_ActorCollideSteer` | `0x16612` | `Race_ActorAttackIfClose`, `Race_ActorRandomCombatChoice` | `Race_ApplyActorSpeedCorrection`, `Race_UpdateActorSpeedGear`, `Race_UpdateCollision` |
 | `Race_ActorSteerCollide` | `0x16624` | - | `Race_ActorSteerThrottle`, `Race_UpdateCollision` |
-| `Race_ActorRandomCombatChoice` | `0x1662C` | `Race_ActorProximityReaction` | `Race_ActorCollideSteer`, `Race_ActorPursueAttack`, `Rand_GetWord` |
+| `Race_ActorRandomCombatChoice` | `0x1662C` | `Race_ActorProximityReaction` | `Race_ActorCollideSteer`, `Race_ActorPursueAttack`, `Rand_NextWord` |
 | `Race_ActorProximityReaction` | `0x16644` | - | `Race_ActorRandomCombatChoice`, `Race_ApplyActorSpeedCorrection`, `Race_UpdateActorSpeedGear` |
 | `Race_ActorPursueAttack` | `0x1666A` | `Race_ActorRandomCombatChoice` | `Race_ApplyActorSpeedCorrection`, `Race_UpdateActorRoadSteering`, `Race_UpdateActorSpeedGear` |
 | `Race_ActorAttackIfClose` | `0x166B0` | - | `Race_ActorCollideSteer`, `Race_ApplyActorSpeedCorrection`, `Race_UpdateActorSpeedGear` |
@@ -407,7 +407,7 @@ flowchart LR
 | `UpdateAnimation2` | `0x16926` | `EndLevel_UpdateAnimation` | - |
 | `TrackData_InitLevel` | `0x169B0` | `Race_Init` | `TrackData_StartDecode` |
 | `TrackData_DecodeNextChunk` | `0x16A32` | `TopLevel_Init` | `TrackData_DecodeChunk` |
-| `Race_SpawnTick` | `0x16AF6` | `Race_Update` | `Race_SpawnOpponent`, `Race_SpawnTraffic`, `Rand_GetWord` |
+| `Race_SpawnTick` | `0x16AF6` | `Race_Update` | `Race_SpawnOpponent`, `Race_SpawnTraffic`, `Rand_NextWord` |
 | `Race_CheckOpponentAhead` | `0x16B6A` | `Race_SpawnOpponent` | `Race_GetActorDistance`, `Race_PushFreeActor` |
 | `Race_CheckTrafficBehind` | `0x16B9E` | `Race_SpawnTraffic` | `Race_GetActorDistance`, `Race_PushFreeActor` |
 | `Race_GetActorDistance` | `0x16BC8` | `Race_CheckOpponentAhead`, `Race_CheckTrafficBehind` | - |

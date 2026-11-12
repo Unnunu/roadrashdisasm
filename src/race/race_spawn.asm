@@ -183,7 +183,7 @@ Race_SpawnTick:
                 bsr.w   Race_SpawnTraffic
 
 .loc_16B58:
-                jsr     (Rand_GetWord).l
+                jsr     (Rand_NextWord).l
                 andi.w  #$1FF,d0
                 move.w  d0,(Race_ram_SpawnTimer).l
 

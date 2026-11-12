@@ -2786,7 +2786,7 @@ Race_InitExtraStaticActor:
                 cmpi.l  #$708,(Race_ram_ProgressSnapshotB).l
                 bcs.w   .locret_12972
                 bset    #6,RaceActor_ControlFlags(a1)
-                jsr     (Rand_GetWord).l
+                jsr     (Rand_NextWord).l
                 move.w  (Race_ram_PlayerProgress).l,d1
                 add.w   (ram_FF1B30).l,d1
                 subq.w  #1,d1
@@ -4468,7 +4468,7 @@ sub_138CE:
                 cmpi.w  #$FFFF,RaceActor_RespawnTimer(a2)
                 bne.w   .loc_13982
                 bclr    #4,RaceActor_ControlFlags(a2)
-                bsr.w   Rand_GetWord
+                bsr.w   Rand_NextWord
                 andi.w  #$FFF,d0
                 lea     (unk_13A1A).l,a4
                 move.w  (Menu_ram_PlayerLevel).l,d1

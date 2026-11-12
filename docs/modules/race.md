@@ -24,7 +24,8 @@ marking/animation, and the race outcome. `src/core/top_level.asm` calls `Race_In
 | `src/race/road_marking.asm` | `$E732-$EB33` | Road marking / sprite placement | [road_marking.md](road_marking.md) |
 | `src/race/race_ai_road.asm` | `$EB34-$10DFF` | Road profile/objects/standings/speed | [race_ai_road.md](race_ai_road.md) |
 | `src/race/race_ai.asm` | `$10E00-$14055` | Actor/input/AI/physics | [race_ai.md](race_ai.md) |
-| `src/race/race_anim_audio.asm` | `$14056-$16119` | Animations, random, audio/impact helpers | [race_anim_audio.md](race_anim_audio.md) |
+| `src/race/race_anim_audio.asm` | `$14056-$16119` | Animations, audio/impact helpers; includes `rand.asm` | [race_anim_audio.md](race_anim_audio.md) |
+| `src/race/rand.asm` | `$15FA8-$160E1` | PRNG/LFSR helpers (included by `race_anim_audio.asm`) | [rand.md](rand.md) |
 | `src/race/race_combat.asm` | `$1611A-$1685F` | Player fist, AI combat, nearest-target/collision | [combat.md](combat.md) |
 | `src/race/animation.asm` | `$16860-$169AF` | Sprite animation | [animation.md](animation.md) |
 | `src/race/race_spawn.asm` | `$169B0-$16E6F` | Track data + dynamic spawn | [race_spawn.md](race_spawn.md) |
@@ -134,7 +135,7 @@ Detailed top-level flow: `docs/analysis/race.md`; actors: `docs/analysis/race_ac
 - Uses `UncompressW/B`, `UncompressToVRAM`, `WriteTilesetToVRAM`, `WriteNametable(ToBuffer)`,
   `DmaWriteVRAM`, `DmaWriteCRAM`, `PiecewiseLinearInterpolation`, `Road_DrawObjects`
   (`road_render`), `RaceHud_Draw`, `RoadMarking_Draw`, `UpdateAnimation(2)`, the audio
-  functions, `GetInputPlayerA/B`, `Rand_GetWord`, `track_data` decoder, `Race_LoadActorPalette`,
+  functions, `GetInputPlayerA/B`, `Rand_NextWord`, `track_data` decoder, `Race_LoadActorPalette`,
   `Race_FormatDecimal`; spawn helpers `Race_SetupActorSprite`/`Race_GetCurveSpeedLimit` (physics TODO).
 
 ## Hacks / bugs / quirks

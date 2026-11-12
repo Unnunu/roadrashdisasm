@@ -247,7 +247,7 @@ EndLevel_InitVictoryCharacter:
                 jsr     (WriteNametableToBuffer).w
 ; level-up rider table: 5 levels x 2 variants (rival + Natasha)
                 lea     (EndLevel_LevelRiderTable).l,a0
-                jsr     (Rand_GetWord).l
+                jsr     (Rand_NextWord).l
                 andi.w  #8,d0
                 adda.w  d0,a0
                 move.w  (Menu_ram_PlayerLevel).l,d0

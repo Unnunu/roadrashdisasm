@@ -33,7 +33,8 @@ row to the table below.
 | `src/race/road_marking.asm` | `0x00E732` | Road marking / sprite placement | [road_marking.md](road_marking.md) |
 | `src/race/race_ai_road.asm` | `0x00EB34` | Road profile/objects/standings/speed | [race_ai_road.md](race_ai_road.md) |
 | `src/race/race_ai.asm` | `0x010E00` | Actor/input/AI/physics | [race_ai.md](race_ai.md) |
-| `src/race/race_anim_audio.asm` | `0x014056` | Animations, random, audio/impact helpers | [race_anim_audio.md](race_anim_audio.md) |
+| `src/race/race_anim_audio.asm` | `0x014056` | Animations, audio/impact helpers; includes `rand.asm` | [race_anim_audio.md](race_anim_audio.md) |
+| `src/race/rand.asm` | `0x015FA8` | PRNG/LFSR helpers (included by `race_anim_audio.asm`) | [rand.md](rand.md) |
 | `src/race/race_combat.asm` | `0x01611A` | Player fist/AI combat/collision state | [combat.md](combat.md) |
 | `src/race/animation.asm` | `0x016860` | Sprite animation | [animation.md](animation.md) |
 | `src/race/race_spawn.asm` | `0x0169B0` | Track data + dynamic spawn | [race_spawn.md](race_spawn.md) |

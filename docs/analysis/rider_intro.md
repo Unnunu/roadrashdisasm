@@ -30,7 +30,7 @@ returns to the race when the held button is released (or after the message timer
 - Index: `base + variant + (level-1)*$A0 + trackId*$10`,
   `variant` in `{0,8,$10,$18}`, `level` 1..5, `trackId` in `{0,2,4,6,8}` (5 races/level).
 - That is `[5 levels][5 tracks][4 variants]`: the variant is a random opponent pick.
-- Selection (`0x5BC8`): `d0 = Rand_GetWord & $18`; repeat while `d0 == $18`; if
+- Selection (`0x5BC8`): `d0 = Rand_NextWord & $18`; repeat while `d0 == $18`; if
   `d0 == 0` and `ram_FF0520 > 0`, use `$18` instead. So variants 0/1/2 are random;
   variant 3 (Natasha) replaces variant 0 when the selected player's "extra" field is
   non-zero.

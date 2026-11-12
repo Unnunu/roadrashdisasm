@@ -777,7 +777,7 @@ Race_ComputeStandings:
                 addi.w  #$20,d2 ; ' '
 
 .loc_F054:
-                jsr     (Rand_GetWord).l
+                jsr     (Rand_NextWord).l
                 andi.w  #$1F,d0
                 add.w   d0,d2
                 move.w  d2,d0
@@ -812,7 +812,7 @@ Race_ComputeStandings:
                 subi.w  #$10,d2
 
 .loc_F0BC:
-                jsr     (Rand_GetWord).l
+                jsr     (Rand_NextWord).l
                 andi.w  #$1F,d0
                 sub.w   d0,d2
                 move.w  d2,d0
