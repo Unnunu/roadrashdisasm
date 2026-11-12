@@ -2,6 +2,12 @@
 
 Project: byte-exact matching disassembly of the target Sega Genesis ROM.
 
+## Protected file
+
+- **Do not edit this `AGENTS.md` (or any `AGENTS.md`/`AGENTS.*` file) unless the user
+  has explicitly allowed it in the current request.** If a change seems useful, propose
+  it and wait for approval instead of editing.
+
 ## Communication
 
 - Talk to the user in **Russian**.
