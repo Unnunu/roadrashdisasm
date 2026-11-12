@@ -197,7 +197,8 @@ same handler is used for name and password strings; the address is
 ## Status message (`MenuPassword_UpdateStatus`, `0x2A1E`)
 
 - Selects `Message_MsgArray` index 5 (offset 40, `MenuPassword_StrPasswordStatus`) and
-  copies the 5x16 template `unk_4E20` (`"PASSWORD INVALID"`, `"OLD LEVEL IS: 0"`).
+  copies the 5x16 template `MenuPassword_StrStatusTemplate` (`"PASSWORD INVALID"`,
+  `"OLD LEVEL IS: 0"`).
 - Centers the 10-character player name on row 0: `text + (16-10)/2`.
 - Calls `ValidatePassword`. On success it changes row 2 from `"PASSWORD INVALID"` to
   `"PASSWORD   VALID"` (three spaces overwrite `" IN"`) and row 4 from `"OLD"` to
@@ -261,6 +262,5 @@ both name/password fields at their fixed positions.
 | Current | Proposed | Evidence | Confidence |
 |---------|----------|----------|------------|
 | `MenuPassword_ValidatePassword` | `MenuPassword_VerifyChecksum` | checksum checks only | high |
-| `unk_4E20` | `MenuPassword_StrStatusTemplate` | 5x16 status template | medium |
 | `ram_FF0510`/`ram_FF0514` | `Player_ram_Field20A/B` | blocked by `U-0005` | low |
 | `ram_FF0522`/`ram_FF0524` | `Player_ram_ExtraA/B` | blocked by `U-0004` | low |

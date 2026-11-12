@@ -45,10 +45,10 @@ uses. It exists so later analysis can decide whether a rename is worth doing.
 | `UncompressW` | routine | `core/uncompress` (`$09C26`) | menu_main: word-planar image blobs | good | `[static]` | keep | - | high | - |
 | `WriteNametable` | routine | `intro.asm` (`$2402`) | menu_main: VRAM nametable rectangles | good | `[static]` | keep | - | high | - |
 | `WriteTilesetToVRAM` | routine | `core/vdp` (`$0AFF2`) | menu_main: upload decompressed tiles | good | `[static]` | keep | - | high | - |
-| `Message_MsgArray` | data | `message.asm:334` | menu_main: 8-byte text/show-function entries | good | `[static]` | keep | - | high | - |
-| `Menu_dRaceNameTable` | data | `message.asm:460` | menu_main: five race-name text pointers | good | `[static]` | keep | - | high | - |
+| `Message_MsgArray` | data | `message.asm:468` | menu_main/menu_password/shop/highscore/race_results/endlevel: 8-byte text/show-function entries | good | `[static]` | keep | - | high | - |
+| `Menu_dRaceNameTable` | data | `message.asm:607` | menu_main: five race-name text pointers | good | `[static]` | keep | - | high | - |
 | `unk_25EC0` | data | `race_track_data.asm:17` | menu_main: five track-record pointers (level-word table at +$00) | placeholder | `[static]` | rename-later | `RaceTrack_dRecords` | medium | - |
-| `word_4EEE` | data | `message.asm:560` | menu_main: "Name"/"Password" label record (7x12) | placeholder | `[static]` | rename-later | `Menu_dPasswordLabels` | medium | - |
+| `Menu_dPasswordLabels` | data | `message.asm:726` | menu_main: "Name"/"Password" label record (7x12) | good | `[static]` | keep (renamed from `word_4EEE`) | - | high | - |
 | `dStringCodeTable` | data | `intro.asm:793` | menu_main: ASCII -> font tile index table | good | `[static]` | keep | - | high | - |
 | `img_MainMenu_Background` | asset | `rom_assets.asm` | menu_main: 39 tiles + 40x28 map (`+$4E4/+$4E8`) | good | `[static]` | keep | - | high | - |
 | `img_MainMenu_RaceSelectionBackground` | asset | `rom_assets.asm` | menu_main: 23 tiles + 40x14 map (`+$2E4/+$2E8`) | good | `[static]` | keep | - | high | - |
@@ -62,9 +62,9 @@ uses. It exists so later analysis can decide whether a rename is worth doing.
 | `VdpData` | hardware | `core/hw_const.asm` | menu_main: VDP data port `$C00000` | good | `[hardware]` | keep | - | high | - |
 | `Global_ram_PalettePtr` | RAM | `ram_const.asm` (`$FF305A`) | menu_main: active palette pointer | good | `[static]` | keep | - | high | - |
 | `Global_ram_Palette` | RAM | `ram_const.asm` (`$FF305E`) | menu_main: palette shadow (64 words) | good | `[static]` | keep | - | high | - |
-| `Intro_ram_ImageBuffer` | RAM | `ram_const.asm` (`$FF509C`) | menu_main: shared decompression/staging buffer for every asset | narrow | `[static]` | rename-later | `ram_ImageStagingBuffer` | medium | - |
+| `Intro_ram_ImageBuffer` | RAM | `ram_const.asm` (`$FF509C`) | menu_main/message: shared decompression/staging buffer for every asset | narrow | `[static]` | rename-later | `ram_ImageStagingBuffer` | medium | - |
 | `Race_ram_ImageBuffer2` | RAM | `ram_const.asm` (`$FF8364`) | menu_main only: badge/card nametable staging (12x42) | misleading | `[static]` | rename-later | `MainMenu_ram_RaceCardBuffer` | medium | - |
-| `Menu_ram_FrameBuffer` | RAM | `ram_const.asm` (`$FFB62C`) | menu_main: 64x28 window overlay | good | `[static]` | keep | - | high | - |
+| `Menu_ram_FrameBuffer` | RAM | `ram_const.asm` (`$FFB62C`) | menu_main/message: 64x28 window overlay | good | `[static]` | keep | - | high | - |
 | `Menu_ram_Player` | RAM | `ram_const.asm` (`$FF0508`) | menu_main: 0=A, `$FFFF`=B | good | `[static]` | keep | - | high | - |
 | `Menu_ram_PlayerMode` | RAM | `ram_const.asm` (`$FF05DA`) | menu_main: 1=A, 2=B, 3=two players | good | `[static]` | keep | - | high | - |
 | `Menu_ram_PlayerALevel` | RAM | `ram_const.asm` (`$FF050C`) | menu_main: level index for the distance tooltip | good | `[static]` | keep | - | high | - |
@@ -78,11 +78,11 @@ uses. It exists so later analysis can decide whether a rename is worth doing.
 | `Menu_ram_CurrentlyDrawnRaceCard` | RAM | `ram_const.asm` (`$FF05E4`) | menu_main: selected id, then carousel scratch | narrow | `[static]` | rename-later | `Menu_ram_CarouselRaceId` | medium | `U-0003` |
 | `Menu_ram_NextMessageTimer` | RAM | `ram_const.asm` (`$FF05D0`) | menu_main: tooltip advance delay | good | `[static]` | keep | - | high | - |
 | `Menu_ram_MessageBlinkTimer` | RAM | `ram_const.asm` (`$FF05D2`) | menu_main: tooltip text blink phase | good | `[static]` | keep | - | high | - |
-| `Menu_ram_CurrentMessageId` | RAM | `ram_const.asm` (`$FF05D4`) | menu_main: `Message_MsgArray` byte index (multiple of 8) | good | `[static]` | keep | - | high | - |
+| `Menu_ram_CurrentMessageId` | RAM | `ram_const.asm` (`$FF05D4`) | menu_main/menu_password/shop/highscore/race_results/endlevel: `Message_MsgArray` byte index (multiple of 8) | good | `[static]` | keep | - | high | - |
 | `Menu_ram_CurrentButtonsPtr` | RAM | `ram_const.asm` (`$FF0412`) | menu_main: current pad-state pointer for input handlers | good | `[static]` | keep | - | high | - |
 | `Menu_ram_ChangedButtonsPtr` | RAM | `ram_const.asm` (`$FF0416`) | menu_main: edge-mask pointer for input handlers | good | `[static]` | keep | - | high | - |
 | `Menu_ram_StrPlayerName` | RAM | `ram_const.asm` (`$FF046A`) | menu_main: scratch text record (name + level), reused for A and B | narrow | `[static]` | rename-later | `Menu_ram_PlayerInfoString` | medium | - |
-| `Menu_ram_TempString` | RAM | `ram_const.asm` (`$FF0756`) | menu_main: race-name/distance tooltip record | good | `[static]` | keep | - | high | - |
+| `Menu_ram_TempString` | RAM | `ram_const.asm` (`$FF0756`) | menu_main/message: race-name/distance tooltip record | good | `[static]` | keep | - | high | - |
 | `MainMenu_ram_DemoMode` | RAM | `ram_const.asm` (`$FF3692`) | menu_main: set after 30 s idle | good | `[static]` | keep | - | high | - |
 | `MainMenu_ram_FrameCounter` | RAM | `ram_const.asm` (`$FF3694`) | menu_main: idle/demo frame counter | good | `[static]` | keep | - | high | - |
 | `MainMenu_ram_ButtonsPlayerA` | RAM | `ram_const.asm` (`$FF05C8`) | menu_main: pad A current state | good | `[static]` | keep | - | high | - |
@@ -90,7 +90,7 @@ uses. It exists so later analysis can decide whether a rename is worth doing.
 | `MainMenu_ram_ButtonsPlayerB` | RAM | `ram_const.asm` (`$FF05CC`) | menu_main: pad B current state | good | `[static]` | keep | - | high | - |
 | `MainMenu_ram_ChangedButtonsPlayerB` | RAM | `ram_const.asm` (`$FF05CE`) | menu_main: pad B old XOR new | good | `[static]` | keep | - | high | - |
 | `MainMenu_ram_CurrentButtons` | RAM | `ram_const.asm` (`$FF05DE`) | menu_main: newly pressed mask being handled | good | `[static]` | keep | - | high | - |
-| `Message_ram_ButtonBlinkPeriod` | RAM | `ram_const.asm` (`$FF05E8`) | menu_main: 64-frame button-icon blink period | good | `[static]` | keep | - | high | - |
+| `Message_ram_ButtonBlinkPeriod` | RAM | `ram_const.asm` (`$FF05E8`) | menu_main/message/other screens: button-icon blink period | good | `[static]` | keep | - | high | - |
 | `ram_MusicEnabled` | RAM | `ram_const.asm` (`$FF05D6`) | menu_main: B toggles music | good | `[static]` | keep | - | high | - |
 | `ram_CurrentSong` | RAM | `ram_const.asm` (`$FF05D8`) | menu_main: current song id (0/1) | good | `[static]` | keep | - | high | - |
 | `ram_UpdateFunction` | RAM | `ram_const.asm` (`$FF1A62`) | menu_main: stage callback install/clear | good | `[static]` | keep | - | high | - |
@@ -115,8 +115,8 @@ uses. It exists so later analysis can decide whether a rename is worth doing.
 | `Menu_DefaultPassword` | data | `menu_password.asm:47` | menu_password/intro: 24-char template (invalid checksum) | good | `[static]` | keep | - | high | - |
 | `Menu_DefaultName` | data | `menu_password.asm:53` | intro: initial "Player A  " name | good | `[static]` | keep | - | high | - |
 | `unk_2468` | data | `menu_password.asm:58` | unreferenced 5x20 status text (dead data) | placeholder | `[static]` | keep | - | medium | - |
-| `MenuPassword_StrPasswordStatus` | RAM | `ram_const.asm` (`$FF067E`) | menu_password: 5x16 status record | good | `[static]` | keep | - | high | - |
-| `unk_4E20` | data | `message.asm:540` | menu_password: "PASSWORD INVALID" status template | placeholder | `[static]` | rename-later | `MenuPassword_StrStatusTemplate` | medium | - |
+| `MenuPassword_StrPasswordStatus` | RAM | `ram_const.asm` (`$FF067E`) | menu_password/message/race_results: 5x16 status record | good | `[static]` | keep | - | high | - |
+| `MenuPassword_StrStatusTemplate` | data | `message.asm:699` | menu_password: 5x16 "PASSWORD INVALID" status template | good | `[static]` | keep (renamed from `unk_4E20`) | - | high | - |
 | `dStringDecodeTable` | data | `intro.asm:806` (`$23D0`) | menu_password: font tile index -> ASCII | good | `[static]` | keep | - | high | - |
 | `DecodeString` | routine | `intro.asm:777` (`$22B2`) | menu_password: password words -> string | good | `[static]` | keep | - | high | - |
 | `MenuPassword_ram_CurrentButtons` | RAM | `ram_const.asm` (`$FF05C6`) | menu_password: input byte latched for the edit handlers | good | `[static]` | keep | - | high | - |
@@ -128,3 +128,67 @@ uses. It exists so later analysis can decide whether a rename is worth doing.
 | `ram_FF0514` | RAM | `ram_const.asm` (`$FF0514`) | menu_password: B 20-bit password field | placeholder | `[static]` | blocked-unknown | `Player_ram_Field20B` | low | `U-0005` |
 | `ram_FF0522` | RAM | `ram_const.asm` (`$FF0522`) | menu_password/intro/race: A 2-bit extra field | placeholder | `[static]` | blocked-unknown | `Player_ram_ExtraA` | low | `U-0004` |
 | `ram_FF0524` | RAM | `ram_const.asm` (`$FF0524`) | menu_password/intro/race: B 2-bit extra field | placeholder | `[static]` | blocked-unknown | `Player_ram_ExtraB` | low | `U-0004` |
+| `Message_ShowNoop` | routine | `message.asm:56` (`$4268`) | message: no-op show function; also the rts ending `Message_ShowEmpty` | good | `[static]` | keep (renamed from `sub_4268`) | - | high | - |
+| `Message_BlinkButtonA` | routine | `message.asm:103` (`$42AA`) | message/Menu_ShowMessage: blink A-button icon | good | `[static]` | keep | - | high | - |
+| `Message_DrawButtonA` | routine | `message.asm:128` (`$42D0`) | message: draw-only A-button entry | good | `[static]` | keep | - | high | - |
+| `Message_BlinkButtonB` | routine | `message.asm:153` (`$4302`) | message/Menu_ShowMessage: blink B-button icon | good | `[static]` | keep | - | high | - |
+| `Message_DrawButtonB` | routine | `message.asm:178` (`$432A`) | message: draw-only B-button entry | good | `[static]` | keep | - | high | - |
+| `Message_BlinkButtonsAB` | routine | `message.asm:205` (`$4362`) | message/Menu_ShowMessage: blink A+B icons | good | `[static]` | keep | - | high | - |
+| `Message_BlinkButtonC` | routine | `message.asm:235` (`$4392`) | message/Menu_ShowMessage: blink C-button icon | good | `[static]` | keep | - | high | - |
+| `Message_BlinkButtonStart` | routine | `message.asm:275` (`$43F6`) | message/Menu_ShowMessage: blink Start-button icon | good | `[static]` | keep | - | high | - |
+| `Message_BlinkDirPadHorizontal` | routine | `message.asm:319` (`$445E`) | message/shop: blink the horizontal dpad pair (left/right prompts) | good | `[static]` | keep (renamed from `Message_DrawDirPadVert`) | - | high | - |
+| `Message_DrawDirPadHorizontalIcon` | routine | `message.asm:345` (`$4486`) | message: draw-only horizontal dpad pair | good | `[static]` | keep (renamed from `loc_4486`) | - | high | - |
+| `Message_BlinkDirPadVertical` | routine | `message.asm:381` (`$44D6`) | message: blink the vertical dpad pair (up/down) | good | `[static]` | keep (renamed from `Message_DrawDirPadRight`) | - | high | - |
+| `Message_DrawDirPadVerticalIcon` | routine | `message.asm:406` (`$44FE`) | message: draw-only vertical dpad pair | good | `[static]` | keep (renamed from `loc_44FE`) | - | high | - |
+| `Message_BlinkDirectionalPad` | routine | `message.asm:440` (`$454E`) | message/Menu_ShowMessage: blink the complete dpad | good | `[static]` | keep | - | high | - |
+| `StrPressStartToExit` | data | `message.asm:561` (`$479E`) | message: 1x22 exit prompt (rider intro/end level) | good | `[static]` | keep | - | high | - |
+| `StrPressABToChangeLetter` | data | `message.asm:564` (`$47BC`) | message: 3x20 password edit prompt | good | `[static]` | keep | - | high | - |
+| `StrPressCToSelectOtherPlayer` | data | `message.asm:569` (`$4800`) | message: 3x20 password player-switch prompt | good | `[static]` | keep | - | high | - |
+| `StrUseDirPadToMoveCursor` | data | `message.asm:574` (`$4844`) | message: 3x20 password cursor prompt | good | `[static]` | keep | - | high | - |
+| `StrOnePlayerModeSelected` | data | `message.asm:579` (`$4888`) | message: 5x20 main-menu confirmation | good | `[static]` | keep | - | high | - |
+| `StrTwoPlayerModeSelected` | data | `message.asm:586` (`$48F4`) | message: 5x20 main-menu confirmation | good | `[static]` | keep | - | high | - |
+| `StrMusicOn` | data | `message.asm:593` (`$4960`) | message: 3x20 main-menu confirmation | good | `[static]` | keep | - | high | - |
+| `StrMusicOff` | data | `message.asm:598` (`$49A4`) | message: 3x20 main-menu confirmation | good | `[static]` | keep | - | high | - |
+| `Menu_StrRaceSierraNevada` | data | `message.asm:614` (`$49FC`) | message/menu_main: 5x20 race-name record | good | `[static]` | keep (renamed from `unk_49FC`) | - | high | - |
+| `Menu_StrRacePacificCoast` | data | `message.asm:621` (`$4A68`) | message/menu_main: 5x20 race-name record | good | `[static]` | keep (renamed from `unk_4AE8`) | - | high | - |
+| `Menu_StrRaceRedwoodForest` | data | `message.asm:628` (`$4AD4`) | message/menu_main: 5x20 race-name record | good | `[static]` | keep (renamed from `unk_4AD4`) | - | high | - |
+| `Menu_StrRacePalmDesert` | data | `message.asm:635` (`$4B40`) | message/menu_main: 5x20 race-name record | good | `[static]` | keep (renamed from `unk_4B40`) | - | high | - |
+| `Menu_StrRaceGrassValley` | data | `message.asm:642` (`$4BAC`) | message/menu_main: 5x20 race-name record | good | `[static]` | keep (renamed from `unk_4BAC`) | - | high | - |
+| `DemoHighScoreTable` | data | `message.asm:653` (`$4C18`) | intro: 7x20 demo high-score table body | good | `[static]` | keep | - | high | - |
+| `Message_StrPressStartToRace` | data | `message.asm:663` (`$4CA4`) | message: 3x20 main-menu tooltip | good | `[static]` | keep (renamed from `unk_4CA4`) | - | high | - |
+| `Message_StrPressAPlayerSelection` | data | `message.asm:669` (`$4CE8`) | message: 3x20 main-menu tooltip | good | `[static]` | keep (renamed from `unk_4CE8`) | - | high | - |
+| `Message_StrPressBMusicToggle` | data | `message.asm:675` (`$4D2C`) | message: 3x20 main-menu tooltip | good | `[static]` | keep (renamed from `unk_4D2C`) | - | high | - |
+| `Message_StrPressCPassword` | data | `message.asm:681` (`$4D70`) | message: 5x20 main-menu tooltip | good | `[static]` | keep (renamed from `unk_4D70`) | - | high | - |
+| `Message_StrDirPadSelectTrack` | data | `message.asm:689` (`$4DDC`) | message: 3x20 main-menu tooltip | good | `[static]` | keep (renamed from `unk_4DDC`) | - | high | - |
+| `Message_StrBlank` | data | `message.asm:709` (`$4E78`) | message: 5x20 all-space record | good | `[static]` | keep (renamed from `unk_4E78`) | - | high | - |
+| `Message_StrBlankCell` | data | `message.asm:720` (`$4EE4`) | message: 1x1 blank record (second byte is alignment padding) | good | `[static]` | keep (renamed from `unk_4EE4`) | - | high | - |
+| `Message_StrPressAHighScores` | data | `message.asm:738` (`$4F4A`) | message: 5x20 "Press A ... High Scores" prompt | good | `[static]` | keep (renamed from `unk_4F4A`) | - | high | - |
+| `Message_StrPressCNewBikes` | data | `message.asm:746` (`$4FB6`) | message: 3x20 "Press C ... new bikes" prompt | good | `[static]` | keep (renamed from `unk_4FB6`) | - | high | - |
+| `Message_StrPressStartTrackSelection` | data | `message.asm:752` (`$4FFA`) | message: 3x20 "Press Start ... Track Selection" prompt | good | `[static]` | keep (renamed from `unk_4FFA`) | - | high | - |
+| `Message_StrPressBRaceResults` | data | `message.asm:758` (`$503E`) | message: 5x20 "Press B ... Race Results" prompt | good | `[static]` | keep (renamed from `unk_503E`) | - | high | - |
+| `Message_StrPressCBuyNewBike` | data | `message.asm:766` (`$50AA`) | message/shop: 5x20 "Press C ... buy a new" prefix | good | `[static]` | keep (renamed from `unk_50AA`) | - | high | - |
+| `Message_StrPressLeftDirPad` | data | `message.asm:774` (`$5116`) | message/shop: 4x20 left-bike prompt prefix | good | `[static]` | keep (renamed from `unk_5116`) | - | high | - |
+| `Message_StrPressRightDirPad` | data | `message.asm:781` (`$516E`) | message/shop: 4x20 right-bike prompt prefix | good | `[static]` | keep (renamed from `unk_516E`) | - | high | - |
+| `Message_StrAlreadyOwnBike` | data | `message.asm:791` (`$51C6`) | message/shop: 3x20 "You already own a" prefix | good | `[static]` | keep (renamed from `unk_51C6`) | - | high | - |
+| `Message_StrNeedMoreCredit` | data | `message.asm:797` (`$520A`) | message/shop: 5x20 "You need more credit" prefix | good | `[static]` | keep (renamed from `unk_520A`) | - | high | - |
+| `Message_StrCompleteEveryCourse` | data | `message.asm:807` (`$5276`) | message/race_results: 4x20 incomplete-course text | good | `[static]` | keep (renamed from `unk_5276`) | - | high | - |
+| `Message_StrComplete4thPlace` | data | `message.asm:814` (`$52CE`) | message/race_results: 5x20 worse-than-4th text | good | `[static]` | keep (renamed from `unk_52CE`) | - | high | - |
+| `Message_StrCongratulations` | data | `message.asm:827` (`$533A`) | message/race_results: 5x20 level-clear text (level digit patched) | good | `[static]` | keep (renamed from `unk_533A`) | - | high | - |
+| `Message_StrTradeInCredit` | data | `message.asm:837` (`$53A6`) | message/shop: 4x20 trade-in credit note | good | `[static]` | keep (renamed from `unk_53A6`) | - | high | - |
+| `Message_StrBikeDescShuriken400` | data | `message.asm:848` (`$53FE`) | message/shop: bike id 0 prose description | good | `[static]` | keep (renamed from `unk_53FE`) | - | high | - |
+| `Message_StrBikeDescPanda600` | data | `message.asm:854` (`$5466`) | message/shop: bike id 1 prose description | good | `[static]` | keep (renamed from `unk_5466`) | - | high | - |
+| `Message_StrBikeDescBanzai750` | data | `message.asm:860` (`$54C2`) | message/shop: bike id 2 prose description | good | `[static]` | keep (renamed from `unk_54C2`) | - | high | - |
+| `Message_StrBikeDescKamikaze750` | data | `message.asm:866` (`$5524`) | message/shop: bike id 3 prose description | good | `[static]` | keep (renamed from `unk_5524`) | - | high | - |
+| `Message_StrBikeDescShuriken1000` | data | `message.asm:871` (`$556C`) | message/shop: bike id 4 prose description | good | `[static]` | keep (renamed from `unk_556C`) | - | high | - |
+| `Message_StrBikeDescFerruci850` | data | `message.asm:877` (`$55C8`) | message/shop: bike id 5 prose description | good | `[static]` | keep (renamed from `unk_55C8`) | - | high | - |
+| `Message_StrBikeDescPanda750` | data | `message.asm:883` (`$5624`) | message/shop: bike id 6 prose description | good | `[static]` | keep (renamed from `unk_5624`) | - | high | - |
+| `Message_StrBikeDescDiablo1000` | data | `message.asm:888` (`$5668`) | message/shop: bike id 7 prose description | good | `[static]` | keep (renamed from `unk_5668`) | - | high | - |
+| `Message_StrCaughtByCops` | data | `message.asm:896` (`$56AC`) | message/race_results: 2x18 busted-screen text | good | `[static]` | keep (renamed from `unk_56AC`) | - | high | - |
+| `Message_StrCantAffordBail` | data | `message.asm:901` (`$56D8`) | message/race_results: 2x18 GAME OVER busted text | good | `[static]` | keep (renamed from `unk_56D8`) | - | high | - |
+| `Message_StrBikeNeedsRepairs` | data | `message.asm:908` (`$5704`) | message/race_results: 2x18 repair-screen text | good | `[static]` | keep (renamed from `unk_5704`) | - | high | - |
+| `Message_StrNoMoneyForRepairs` | data | `message.asm:913` (`$5730`) | message/race_results: 2x20 GAME OVER repair text | good | `[static]` | keep (renamed from `unk_5730`) | - | high | - |
+| `Message_ram_ButtonBlinkCounter` | RAM | `ram_const.asm` (`$FF05E6`) | message: shared blink phase counter (advanced per show call) | good | `[static]` | keep | - | high | - |
+| `Shop_StrBuyNewBike` | RAM | `ram_const.asm` (`$FF06EA`) | shop/message: runtime 5x20 "Press C to buy ..." record | good | `[static]` | keep | - | high | - |
+| `ram_FF07C2` | RAM | `ram_const.asm` (`$FF07C2`) | shop/message: runtime 5x20 left-bike prompt record | placeholder | `[static]` | rename-later | `Shop_StrLeftBike` | medium | - |
+| `ram_FF082E` | RAM | `ram_const.asm` (`$FF082E`) | shop/message: runtime 5x20 right-bike prompt record | placeholder | `[static]` | rename-later | `Shop_StrRightBike` | medium | - |
+| `ram_FF089A` | RAM | `ram_const.asm` (`$FF089A`) | shop/race_results/message: runtime 5x20 dynamic message record | placeholder | `[static]` | rename-later | `Message_ram_DynamicRecord` | medium | - |

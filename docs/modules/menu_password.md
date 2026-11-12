@@ -99,7 +99,7 @@ finish). The even id (0,2,4,6,8) doubles as the byte offset into the places arra
   `HeldButtons` `$FF0428`, `CurrentButtons` `$FF05C6`.
 - Password strings `StrPlayerAPassword` `$FF042A` (size $20), `StrPlayerBPassword`
   `$FF044A`; names `StrPlayerAName` `$FF04A4`, `StrPlayerBName` `$FF04B6`.
-- Status string `MenuPassword_StrPasswordStatus` `$FF067E`; template `unk_4E20`
+- Status string `MenuPassword_StrPasswordStatus` `$FF067E`; template `MenuPassword_StrStatusTemplate`
   (`0x4E20`, 5x16).
 - Menu/player state: `Menu_ram_Player` `$FF0508`, levels `$FF050C/$FF050E`, money
   `$FF0518/$FF051C`, 20-bit fields `$FF0510/$FF0514`, extra bits `$FF0522/$FF0524`,

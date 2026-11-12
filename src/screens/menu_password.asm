@@ -477,7 +477,7 @@ MenuPassword_HandleInput:
 ; Out: MenuPassword_StrPasswordStatus text, level display, CurrentMessageId
 ; Clobbers: d0-d2/a0-a2
 ; Notes: ROM $002A1E-$002B17. Selects Message_MsgArray index 5 (offset 40) and
-;        fills the 5x16 status record from the unk_4E20 template, then centers
+;        fills the 5x16 status record from the MenuPassword_StrStatusTemplate record, then centers
 ;        the 10-character player name on its first row.
 ;        On a valid password ValidatePassword returns d0=0: the third row is
 ;        changed from "PASSWORD INVALID" to "PASSWORD   VALID" (three spaces
@@ -494,7 +494,7 @@ MenuPassword_UpdateStatus:
 ; Copy the full template record: header (y,x,height,width = 22,12,5,16) then
 ; its 5*16 = 80 characters.
                 lea     (MenuPassword_StrPasswordStatus).l,a0
-                lea     (unk_4E20).l,a1 ; string ".. password invalid .."
+                lea     (MenuPassword_StrStatusTemplate).l,a1 ; string ".. password invalid .."
                 lea     (MenuPassword_ram_StrPlayerAName + 6).l,a2 ; ptr to player A name width
                 cmpi.l  #MenuPassword_ram_StrPlayerAPassword,(MenuPassword_ram_StrPlayerPasswordPtr).l
                 beq.w   .loc_2A5C

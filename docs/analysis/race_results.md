@@ -46,9 +46,10 @@ A opens the high-score table; C opens the bike shop; B shows the cash/password b
 | `ram_FF1414`/`FF1418`/`FF141A` | Standings string header/text, height, width (built by `src/race/race.asm`). |
 | `Menu_ram_PlayerLevel` | Level (1..5) for the fine, repair and congratulations text. |
 
-Message group by outcome: 0 -> index 21 (`unk_5276`: complete every course); >4 ->
-index 28 (`unk_52CE`: complete every course in 4th place or better); 4 -> index 35
-(`ram_FF089A` = `unk_533A` congratulations with the level digit).
+Message group by outcome: 0 -> index 21 (`Message_StrCompleteEveryCourse`: complete
+every course); >4 -> index 28 (`Message_StrComplete4thPlace`: complete every course in
+4th place or better); 4 -> index 35 (`ram_FF089A` = `Message_StrCongratulations`
+congratulations with the level digit).
 
 ## Normal results (`RaceResults_DrawStandings`)
 
@@ -71,8 +72,10 @@ index 28 (`unk_52CE`: complete every course in 4th place or better); 4 -> index 
 - Same asset format as `src/screens/rider_intro.asm`: 8-byte interleaved size/header prefix; header
   gives name string, image/nametable/palette offsets. Draw 10x12 at (3,6), name at
   (3,19), quote at (16,y/2) with stride 128.
-- Message: `unk_56AC` "Caught by the cops / Your fine -" with `RaceResults_ram_Amount` formatted by
-  `Race_FormatNumber`, or `unk_56D8` "Can't afford bail / GAME OVER"; drawn at (16,18), stride 64.
+- Message: `Message_StrCaughtByCops` "Caught by the cops / Your fine -" with
+  `RaceResults_ram_Amount` formatted by `Race_FormatNumber`, or
+  `Message_StrCantAffordBail` "Can't afford bail / GAME OVER"; drawn at (16,18),
+  stride 64.
 - Cop names in the table: O'Leary, O'Rourke, Flynn, O'Shea, O'Connor.
 
 ## Bike repair (`RaceResults_DrawRepair`)
@@ -80,15 +83,16 @@ index 28 (`unk_52CE`: complete every course in 4th place or better); 4 -> index 
 - Panel `unk_7EA66` -> `$B000`, 12x14 at (2,5).
 - Select the portrait from `RaceResults_LevelTablePos` (money >= 0, 5 levels x4 variants) or
   `RaceResults_LevelTableNeg` (money < 0, 5x2), index `Menu_ram_PlayerLevel-1`, random variant.
-- Message: `unk_5704` "Your bike needs repairs -" with `RaceResults_ram_Amount` formatted, or
-  `unk_5730` "No money for repairs / GAME OVER".
+- Message: `Message_StrBikeNeedsRepairs` "Your bike needs repairs -" with
+  `RaceResults_ram_Amount` formatted, or `Message_StrNoMoneyForRepairs`
+  "No money for repairs / GAME OVER".
 - Level-table names: Biff, Slater, Ikira, Sergio, Helldog.
 
 ## Status box, congratulations, audio
 
 `RaceResults_Init` repurposes `MenuPassword_StrPasswordStatus` as a 12x5 box at
 (14,22): player name (10 chars), "cash" + money (`Race_FormatMoney`; negative money adjusts
-`ram_FF0682`), and the 24-char password. It copies `unk_533A` ("Congratulations! ... on
+`ram_FF0682`), and the 24-char password. It copies `Message_StrCongratulations` ("Congratulations! ... on
 level 1") to `ram_FF089A` and patches the level digit. If not busted: `Audio_StopMusic`,
 song 9, `Audio_StartMusic`; the bust path plays `Audio_StartMusic(10)`.
 
@@ -100,8 +104,10 @@ song 9, `Audio_StartMusic`; the bust path plays `Audio_StartMusic(10)`.
 - Message cycle: every 300 frames (5 s) advance by 8; on the `$FFFFFFFF` terminator
   reset to the group start (0xA8/0xE0/0x118) instead of exiting. The initial and B
   timers are 1500 frames.
-- Button prompts (`unk_4FFA` Start, `unk_4F4A` A, `unk_503E` B, `unk_4FB6` C) come from
-  `Message_MsgArray`; `Menu_ShowMessage` draws them.
+- Button prompts (`Message_StrPressStartTrackSelection` Start,
+  `Message_StrPressAHighScores` A, `Message_StrPressBRaceResults` B,
+  `Message_StrPressCNewBikes` C) come from `Message_MsgArray`; `Menu_ShowMessage`
+  draws them.
 
 ## VDP / assets
 

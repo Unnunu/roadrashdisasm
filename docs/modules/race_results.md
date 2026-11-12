@@ -48,8 +48,10 @@ open the shop (C), or inspect the cash/password (B).
   `quote_ptr, image_ptr` (same asset format as `src/screens/rider_intro.asm`).
 - Track images: `$7E670` pointers, `$7E684` image offsets, `$7E68E` nametable offsets,
   `$7E698` palette offsets.
-- Messages: groups 21 (`unk_5276`), 28 (`unk_52CE`), 35 (`ram_FF089A`/`unk_533A`) plus
-  Start/A/B/C prompts; bust/repair strings `unk_56AC`/`unk_56D8`/`unk_5704`/`unk_5730`.
+- Messages: groups 21 (`Message_StrCompleteEveryCourse`), 28
+  (`Message_StrComplete4thPlace`), 35 (`ram_FF089A`/`Message_StrCongratulations`) plus
+  Start/A/B/C prompts; bust/repair strings `Message_StrCaughtByCops`/
+  `Message_StrCantAffordBail`/`Message_StrBikeNeedsRepairs`/`Message_StrNoMoneyForRepairs`.
 
 ## Coverage matrix
 

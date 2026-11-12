@@ -204,7 +204,7 @@ RaceResults_Init:
                 move.b  (a2)+,(a0)+
                 dbf     d0,.loopWritePassword
 ; copy the congratulations text and patch in the current level digit
-                lea     (unk_533A).w,a0
+                lea     (Message_StrCongratulations).w,a0
                 lea     (ram_FF089A).l,a1
                 move.w  4(a0),d0
                 mulu.w  6(a0),d0
@@ -548,11 +548,11 @@ RaceResults_DrawBusted:
                 lea     (Menu_ram_FrameBuffer).l,a1
                 bsr.w   WriteNametableToBuffer
 ; message: fine text or "Can't afford bail / GAME OVER"
-                lea     (unk_56D8).w,a0
+                lea     (Message_StrCantAffordBail).w,a0
                 movea.l (sp)+,a1
                 cmpa.l  #RaceResults_CopTableNeg,a1
                 beq.w   .loc_6776
-                lea     (unk_56AC).w,a0
+                lea     (Message_StrCaughtByCops).w,a0
                 lea     (Menu_ram_TempString).l,a1
                 move.w  (a0)+,(a1)+
                 move.w  (a0)+,(a1)+
@@ -761,11 +761,11 @@ RaceResults_DrawRepair:
                 lea     (Menu_ram_FrameBuffer).l,a1
                 bsr.w   WriteNametableToBuffer
 ; message: repair text or "No money for repairs / GAME OVER"
-                lea     (unk_5730).w,a0
+                lea     (Message_StrNoMoneyForRepairs).w,a0
                 movea.l (sp)+,a1
                 cmpa.l  #RaceResults_LevelTableNeg,a1
                 beq.w   .loc_6A5A
-                lea     (unk_5704).w,a0
+                lea     (Message_StrBikeNeedsRepairs).w,a0
                 lea     (Menu_ram_TempString).l,a1
                 move.w  (a0)+,(a1)+
                 move.w  (a0)+,(a1)+

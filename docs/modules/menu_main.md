@@ -176,6 +176,6 @@ Detailed notes and the annotated algorithm live in `docs/analysis/menu_main.md`.
   identity even-mask for the documented ids; its origin is unclear.
 - `[ ]` Confirm the card layout/stride and five positions visually.
 - `[ ]` Confirm the demo path in BlastEm.
-- `[ ]` `Menu_dRaceNameTable`/`unk_25EC0`/`word_4EEE` are labelled data modules;
+- `[ ]` `Menu_dRaceNameTable`/`unk_25EC0`/`Menu_dPasswordLabels` are labelled data modules;
   per-entry track-record semantics remain outside this pass.
 

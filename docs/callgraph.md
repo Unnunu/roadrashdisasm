@@ -98,7 +98,7 @@ flowchart LR
 | `MenuPassword_CreatePassword` | `0x02F3A` | `EndLevel_AdvanceLevel`, `Race_ComputeResults`, `Shop_HandleInput` | `DecodeString`, `EncodeString`, `MenuPassword_ValidatePassword` |
 | `MenuPassword_DrawNamesAndPasswords` | `0x03306` | `MainMenu_HandleInput`, `MenuPassword_HandleInput` | `EncodeString`, `WriteNametableToBuffer` |
 | `Menu_Init` | `0x03400` | `TopLevel_Init` | `Audio_StartMusic`, `DmaWriteVRAM`, `Intro_InitPlayerA`, `Intro_InitPlayerB`, `MenuPassword_SelectCurrentTrack`, `Menu_DrawPlayerInfo`, `Menu_DrawRaceSelection`, `Menu_ShowMessage`, `UncompressB`, `UncompressW`, `WriteNametable`, `WriteNametableToBuffer`, `WriteTilesetToVRAM` |
-| `WriteNametableToBuffer` | `0x037AA` | `DrawString`, `EndLevel_Init`, `EndLevel_InitVictoryCharacter`, `HighScore_Init`, `MainMenu_HandleInput`, `MenuPassword_DrawNamesAndPasswords`, `MenuPassword_HandleInput`, `Menu_DrawPlayerInfo`, `Menu_DrawRaceSelection`, `Menu_Init`, `Menu_ShowMessage`, `Message_BlinkButtonC`, `Message_BlinkButtonStart`, `Message_Clear`, `Message_DrawButtonA`, `Message_DrawButtonB`, `Message_DrawDirPadRight`, `Message_DrawDirPadVert`, `Message_ShowEmpty`, `RaceResults_DrawBusted`, `RaceResults_DrawRepair`, `RaceResults_DrawStandings`, `Race_DrawOpponentName`, `Race_DrawPlayerNameOrPlace`, `Race_LoadHUD`, `RiderIntro_Init`, `Shop_DrawBikeName`, `Shop_DrawString`, `Shop_Init` | - |
+| `WriteNametableToBuffer` | `0x037AA` | `DrawString`, `EndLevel_Init`, `EndLevel_InitVictoryCharacter`, `HighScore_Init`, `MainMenu_HandleInput`, `MenuPassword_DrawNamesAndPasswords`, `MenuPassword_HandleInput`, `Menu_DrawPlayerInfo`, `Menu_DrawRaceSelection`, `Menu_Init`, `Menu_ShowMessage`, `Message_BlinkButtonC`, `Message_BlinkButtonStart`, `Message_Clear`, `Message_DrawButtonA`, `Message_DrawButtonB`, `Message_DrawDirPadVerticalIcon`, `Message_DrawDirPadHorizontalIcon`, `Message_ShowEmpty`, `RaceResults_DrawBusted`, `RaceResults_DrawRepair`, `RaceResults_DrawStandings`, `Race_DrawOpponentName`, `Race_DrawPlayerNameOrPlace`, `Race_LoadHUD`, `RiderIntro_Init`, `Shop_DrawBikeName`, `Shop_DrawString`, `Shop_Init` | - |
 | `Menu_WriteNametableMasked` | `0x037D2` | `Menu_DrawRaceCard` | - |
 | `MainMenu_GameTick` | `0x03802` | - | `Audio_StopMusic`, `Audio_Update`, `DmaWriteVRAM`, `GetInputPlayerA`, `GetInputPlayerB`, `MainMenu_HandleInput`, `Menu_ShowMessage`, `Rand_NextWord`, `Rand_StepLfsrAMod`, `Rand_StepLfsrB` |
 | `Menu_DrawPlayerInfo` | `0x039AE` | `MainMenu_HandleInput`, `MenuPassword_GameTick`, `Menu_Init` | `EncodeString`, `UncompressW`, `WriteNametableToBuffer` |
@@ -108,19 +108,20 @@ flowchart LR
 | `Menu_DrawRaceCard` | `0x0408E` | `Menu_DrawRaceSelection` | `Menu_WriteNametableMasked` |
 | `Menu_ShowMessage` | `0x0417C` | `EndLevel_GameTickVictoryCharacter`, `HighScore_GameTick`, `MainMenu_GameTick`, `MenuPassword_GameTick`, `Menu_Init`, `RaceResults_GameTick`, `RiderIntro_GameTick`, `RiderIntro_Init`, `Shop_GameTick` | `EncodeString`, `Message_Clear`, `Message_ShowEmpty`, `WriteNametableToBuffer` |
 | `Message_ShowEmpty` | `0x04226` | `Menu_ShowMessage` | `WriteNametableToBuffer` |
-| `Message_Clear` | `0x0426A` | `Menu_ShowMessage`, `Message_BlinkButtonA`, `Message_BlinkButtonB`, `Message_BlinkButtonC`, `Message_BlinkButtonStart`, `Message_BlinkButtonsAB`, `Message_BlinkDirectionalPad`, `Message_DrawDirPadRight`, `Message_DrawDirPadVert` | `WriteNametableToBuffer` |
-| `Message_BlinkButtonA` | `0x042AA` | - | `Message_Clear` |
-| `Message_DrawButtonA` | `0x042D0` | `Message_BlinkButtonsAB` | `WriteNametableToBuffer` |
-| `Message_BlinkButtonB` | `0x04302` | - | `Message_Clear` |
-| `Message_DrawButtonB` | `0x0432A` | `Message_BlinkButtonsAB` | `WriteNametableToBuffer` |
+| `Message_ShowNoop` | `0x04268` | `Message_MsgArray` (function pointer) | - |
+| `Message_Clear` | `0x0426A` | `Menu_ShowMessage`, `Message_BlinkButtonA`, `Message_BlinkButtonB`, `Message_BlinkButtonC`, `Message_BlinkButtonStart`, `Message_BlinkButtonsAB`, `Message_BlinkDirectionalPad`, `Message_BlinkDirPadVertical`, `Message_BlinkDirPadHorizontal` | `WriteNametableToBuffer` |
+| `Message_BlinkButtonA` | `0x042AA` | - | `Message_Clear`, `Message_DrawButtonA` |
+| `Message_DrawButtonA` | `0x042D0` | `Message_BlinkButtonA`, `Message_BlinkButtonsAB` | `WriteNametableToBuffer` |
+| `Message_BlinkButtonB` | `0x04302` | - | `Message_Clear`, `Message_DrawButtonB` |
+| `Message_DrawButtonB` | `0x0432A` | `Message_BlinkButtonB`, `Message_BlinkButtonsAB` | `WriteNametableToBuffer` |
 | `Message_BlinkButtonsAB` | `0x04362` | - | `Message_Clear`, `Message_DrawButtonA`, `Message_DrawButtonB` |
 | `Message_BlinkButtonC` | `0x04392` | - | `Message_Clear`, `WriteNametableToBuffer` |
 | `Message_BlinkButtonStart` | `0x043F6` | - | `Message_Clear`, `WriteNametableToBuffer` |
-| `Message_DrawDirPadVert` | `0x0445E` | - | `Message_Clear`, `WriteNametableToBuffer` |
-| `loc_4486` | `0x04486` | `Message_BlinkDirectionalPad` | - |
-| `Message_DrawDirPadRight` | `0x044D6` | - | `Message_Clear`, `WriteNametableToBuffer` |
-| `loc_44FE` | `0x044FE` | `Message_BlinkDirectionalPad` | - |
-| `Message_BlinkDirectionalPad` | `0x0454E` | - | `Message_Clear`, `loc_4486`, `loc_44FE` |
+| `Message_BlinkDirPadHorizontal` | `0x0445E` | - | `Message_Clear`, `Message_DrawDirPadHorizontalIcon` |
+| `Message_DrawDirPadHorizontalIcon` | `0x04486` | `Message_BlinkDirPadHorizontal`, `Message_BlinkDirectionalPad` | `WriteNametableToBuffer` |
+| `Message_BlinkDirPadVertical` | `0x044D6` | - | `Message_Clear`, `Message_DrawDirPadVerticalIcon` |
+| `Message_DrawDirPadVerticalIcon` | `0x044FE` | `Message_BlinkDirPadVertical`, `Message_BlinkDirectionalPad` | `WriteNametableToBuffer` |
+| `Message_BlinkDirectionalPad` | `0x0454E` | - | `Message_Clear`, `Message_DrawDirPadHorizontalIcon`, `Message_DrawDirPadVerticalIcon` |
 | `RiderSprites_Build` | `0x05760` | `RiderSprites_BuildAlt`, `Road_DrawStrip` | - |
 | `RiderSprites_BuildAlt` | `0x0593E` | - | `RiderSprites_Build` |
 | `RiderIntro_Init` | `0x059C4` | `TopLevel_Init` | `DmaWriteVRAM`, `EncodeString`, `Menu_ShowMessage`, `Rand_NextWord`, `UncompressB`, `UncompressW`, `WriteNametable`, `WriteNametableToBuffer`, `WriteTilesetToVRAM` |

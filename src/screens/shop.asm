@@ -699,7 +699,7 @@ Shop_DrawString:
 
 ; *************************************************
 ; Function Shop_ShowAlreadyOwned
-; Builds "You already own a ..." (unk_51C6 + bike name) in ram_FF089A (id 59).
+; Builds "You already own a ..." (Message_StrAlreadyOwnBike + bike name) in ram_FF089A (id 59).
 ; In:  Shop_CurrentBikeId
 ; Out: ram_FF089A; message id 59; 5 s timer
 ; Clobbers: d0/d1/a0/a1
@@ -709,7 +709,7 @@ Shop_ShowAlreadyOwned:
                 move.w  #$1D8,(Menu_ram_CurrentMessageId).l
                 move.w  #$1E,(Menu_ram_MessageBlinkTimer).l
                 move.w  #$12C,(Menu_ram_NextMessageTimer).l
-                lea     (unk_51C6).w,a0
+                lea     (Message_StrAlreadyOwnBike).w,a0
                 lea     (ram_FF089A).l,a1
                 move.l  (a0)+,(a1)+
                 move.w  (a0),d0
@@ -739,7 +739,7 @@ Shop_ShowAlreadyOwned:
 
 ; *************************************************
 ; Function Shop_ShowCannotAfford
-; Builds "You need more credit to buy a ..." (unk_520A + bike name) in ram_FF089A.
+; Builds "You need more credit to buy a ..." (Message_StrNeedMoreCredit + bike name) in ram_FF089A.
 ; In:  Shop_CurrentBikeId
 ; Out: ram_FF089A; message id 59; 5 s timer
 ; Clobbers: d0/d1/a0/a1
@@ -749,7 +749,7 @@ Shop_ShowCannotAfford:
                 move.w  #$1D8,(Menu_ram_CurrentMessageId).l
                 move.w  #$1E,(Menu_ram_MessageBlinkTimer).l
                 move.w  #$12C,(Menu_ram_NextMessageTimer).l
-                lea     (unk_520A).w,a0
+                lea     (Message_StrNeedMoreCredit).w,a0
                 lea     (ram_FF089A).l,a1
                 move.l  (a0)+,(a1)+
                 move.w  (a0),d0
@@ -788,7 +788,7 @@ Shop_ShowCannotAfford:
 
 Shop_PrepareMessages:
 ; copy text "Press C to buy a new bike"
-                lea     (unk_50AA).w,a0
+                lea     (Message_StrPressCBuyNewBike).w,a0
                 lea     (Shop_StrBuyNewBike).l,a1
                 move.l  (a0)+,(a1)+
                 move.w  (a0),d0 ; height
@@ -815,7 +815,7 @@ Shop_PrepareMessages:
                 move.b  (a0)+,(a1)+
                 dbf     d0,.loc_7FA0
 
-                lea     (unk_5116).w,a0
+                lea     (Message_StrPressLeftDirPad).w,a0
                 lea     (ram_FF07C2).l,a1
                 move.l  (a0)+,(a1)+
                 move.w  (a0),d0
@@ -843,7 +843,7 @@ Shop_PrepareMessages:
 .loc_7FEA:
                 move.b  (a0)+,(a1)+
                 dbf     d0,.loc_7FEA
-                lea     (unk_516E).w,a0
+                lea     (Message_StrPressRightDirPad).w,a0
                 lea     (ram_FF082E).l,a1
                 move.l  (a0)+,(a1)+
                 move.w  (a0),d0

@@ -87,13 +87,15 @@ with the window's transparent cells exposing the scrolling bike band.
 
 - `Shop_ShowBikeDescription`: message id `8*51 + bikeId*8` (entries 51..58) for 600
   frames (10 s); after that the cycle starts at group 60.
-- Group 60: trade-in credit (`unk_53A6`), left/right bike names (`ram_FF07C2`,
-  `ram_FF082E`), "Press C to buy a new ..." (`Shop_StrBuyNewBike`), Start/A/B prompts,
-  terminator; cycle 300 frames, reset to 0x1E0.
-- `Shop_PrepareMessages` fills `unk_50AA` + current bike name, `unk_5116` + previous
-  name, `unk_516E` + next name.
-- `Shop_ShowAlreadyOwned`/`Shop_ShowCannotAfford` build the dynamic messages in `ram_FF089A` from `unk_51C6` /
-  `unk_520A` + the current bike name (id 59, 5 s).
+- Group 60: trade-in credit (`Message_StrTradeInCredit`), left/right bike names
+  (`ram_FF07C2`, `ram_FF082E`), "Press C to buy a new ..." (`Shop_StrBuyNewBike`),
+  Start/A/B prompts, terminator; cycle 300 frames, reset to 0x1E0.
+- `Shop_PrepareMessages` fills `Message_StrPressCBuyNewBike` + current bike name,
+  `Message_StrPressLeftDirPad` + previous name, `Message_StrPressRightDirPad` + next
+  name.
+- `Shop_ShowAlreadyOwned`/`Shop_ShowCannotAfford` build the dynamic messages in
+  `ram_FF089A` from `Message_StrAlreadyOwnBike` / `Message_StrNeedMoreCredit` + the
+  current bike name (id 59, 5 s).
 
 ## Input
 

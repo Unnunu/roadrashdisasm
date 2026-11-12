@@ -137,7 +137,7 @@ frames (5 s) advance `Menu_ram_CurrentMessageId` by 8; when the message array en
 `$FFFFFFFF`, end. Then `Menu_ShowMessage` and `Audio_Update`. End stage: `Audio_StopMusic`,
 clear `ram_UpdateFunction`, `Audio_Update`.
 
-Message sequence: index 18 = blank `unk_4E78`, index 19 = `StrPressStartToExit` with
+Message sequence: index 18 = blank `Message_StrBlank`, index 19 = `StrPressStartToExit` with
 the blinking Start icon, index 20 = terminator. The screen therefore auto-exits after
 ~10 s if no button is pressed; any button on either pad exits earlier.
 

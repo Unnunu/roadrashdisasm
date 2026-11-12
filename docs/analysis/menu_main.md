@@ -157,7 +157,8 @@ C (password entry):
 - Sets `Menu_ram_CurrentButtonsPtr`/`ChangedButtonsPtr`, `MenuPassword_ram_StrPlayerNamePtr`
   and `StrPlayerPasswordPtr` for player A/B.
 - Fills `FrameBuffer + $200` (row 4) with spaces, loads/draws the password
-  player-selection border (`$9400`) and the labels (`word_4EEE`), draws the names/passwords.
+  player-selection border (`$9400`) and the labels (`Menu_dPasswordLabels`), draws the
+  names/passwords.
 - Installs `MenuPassword_GameTick` as `ram_UpdateFunction`; if a fade is in progress
   (`FadeWithFunction_GameTick`), it goes through `Fade_ram_UpdateFunction` so the fade
   completes first.
@@ -283,7 +284,7 @@ Full rows are in `docs/analysis/identifiers.md`; this is the file-local summary.
 | `Menu_ram_StrPlayerName` | RAM | single scratch record reused for A and B | narrow | rename-later | `-` |
 | `Menu_ram_CurrentlyDrawnRaceCard` | RAM | selected id, then carousel scratch | narrow | rename-later | `U-0003` |
 | `unk_25EC0` | data | five track-record pointers | placeholder | rename-later | `-` |
-| `word_4EEE` | data | "Name"/"Password" label record | placeholder | rename-later | `-` |
+| `Menu_dPasswordLabels` | data | "Name"/"Password" label record | good | keep | `-` |
 | `img_Gamepad` | asset | 12x9 header, only 12x6 rows used | narrow | keep | `U-0002` |
 
 Everything else used in this file is rated `good`/`keep` (routines, RAM names, assets,
@@ -303,5 +304,5 @@ Everything else used in this file is rated `good`/`keep` (routines, RAM names, a
   is unclear. Next: audit writers and test an odd id.
 - `[ ]` Confirm the exact race-card layout/stride and the five card positions visually.
 - `[ ]` Confirm the demo path (30 s no input) in BlastEm.
-- `[ ]` `Menu_dRaceNameTable`, `unk_25EC0` and `word_4EEE` are labelled data modules;
+- `[ ]` `Menu_dRaceNameTable`, `unk_25EC0` and `Menu_dPasswordLabels` are labelled data modules;
   per-entry semantics of the track records remain outside this pass.

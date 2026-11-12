@@ -877,12 +877,12 @@ MainMenu_HandleInput:
                 lea     (Menu_ram_FrameBuffer).l,a1 ; destination
                 lea     (Intro_ram_ImageBuffer + $C8).l,a0 ; source
                 jsr     (WriteNametableToBuffer).w
-; encode the static "Name"/"Password" labels (word_4EEE is a 7x12 text record)
-                lea     (word_4EEE).l,a0
+; encode the static "Name"/"Password" labels (Menu_dPasswordLabels is a 7x12 text record)
+                lea     (Menu_dPasswordLabels).l,a0
                 lea     (Intro_ram_ImageBuffer).l,a1
                 jsr     (EncodeString).w
 ; write the label text for player B at x=24, y=7
-                lea     (word_4EEE).l,a0
+                lea     (Menu_dPasswordLabels).l,a0
                 move.w  6(a0),d0 ; width
                 move.w  4(a0),d1 ; height
                 move.w  #24,d2 ; x
@@ -893,7 +893,7 @@ MainMenu_HandleInput:
                 lea     (Menu_ram_FrameBuffer).l,a1 ; destination
                 jsr     (WriteNametableToBuffer).w
 ; write the same label text for player A at x=4, y=7
-                lea     (word_4EEE).l,a0
+                lea     (Menu_dPasswordLabels).l,a0
                 move.w  6(a0),d0 ; width
                 move.w  4(a0),d1 ; height
                 move.w  #4,d2 ; x
