@@ -49,7 +49,8 @@ A opens the high-score table; C opens the bike shop; B shows the cash/password b
 Message group by outcome: 0 -> index 21 (`Message_StrCompleteEveryCourse`: complete
 every course); >4 -> index 28 (`Message_StrComplete4thPlace`: complete every course in
 4th place or better); 4 -> index 35 (`Message_ram_DynamicRecord` = `Message_StrCongratulations`
-congratulations with the level digit).
+congratulations with the level digit). The digit is patched with the completed level
+before the level advances, so it reads as the next level (2..5; `U-0006` resolved).
 
 ## Normal results (`RaceResults_DrawStandings`)
 
@@ -99,7 +100,8 @@ backwards into the row), and the 24-char password (two rows). The record header 
 overwritten with y=22, x=14, height=5, width=12. With negative money the code subtracts 2
 from the height field at `MenuPassword_StrPasswordStatus+4`, so the box shrinks to 3 rows
 and the password is hidden. It copies `Message_StrCongratulations` ("Congratulations! ... on
-level 1") to `Message_ram_DynamicRecord` and patches the level digit. If not busted:
+level 1") to `Message_ram_DynamicRecord` and patches the level digit with the completed
+level, so the text shows the next level (2..5; `U-0006` resolved). If not busted:
 `Audio_StopMusic`, song 9, `Audio_StartMusic`; the bust path plays `Audio_StartMusic(10)`.
 
 ## Input & messages

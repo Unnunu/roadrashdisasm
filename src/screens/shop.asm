@@ -894,8 +894,9 @@ Shop_PrepareMessages:
 Shop_DrawBikes:
                 move.w  d0,-(sp) ; save d0
 ; write palette line 2, for bike in center
-; @UNKNOWN(U-0010): dst w4 comes from the next palette's w0 (a0=base+10, $16(a0));
-; source w13 is never copied. Guess: fixed transparent colour. Next: render/capture.
+; dst w4 is a fixed transparent/background colour: it is taken from the next
+; palette's w0, which is $0222 in all eight records (and in actor palette 0),
+; while source w13 is never copied (U-0010).
                 movea.l (Global_ram_PalettePtr).l,a2
                 adda.w  #$40,a2 ; get palette 2 offset
                 move.l  (a0)+,(a2)+ ; w0-w1 (a long = two colours)

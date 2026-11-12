@@ -80,7 +80,9 @@ info messages in the lower-right.
 - `Shop_DrawBikes`: palette line 2 = selected bike palette, line 3 = previous bike
   palette. The copy skips source w4 and fills destination w4 from the **next** palette's
   w0 (`$16(a0)` with `a0 = base+10`); destination w5-w12 come from source w5-w12 and
-  w13-w15 are left untouched (`U-0010`). Draws five 18x9 images at x=3/29/55/81/107;
+  w13-w15 are left untouched. All eight records (and the neighbouring actor palette 0)
+  have w0 = `$0222`, so destination entry 4 is a fixed transparent/background colour
+  (`U-0010` resolved). Draws five 18x9 images at x=3/29/55/81/107;
   current with palette 2 (`$C000`), the others palette 3 (`$E000`).
 
 ## Buying / trade-in
@@ -134,8 +136,9 @@ then shifts the scroll position by `-$D0`/`+$D0`.
 
 - The H-scroll table is at `$6400` with cell mode and auto-increment `$20`; the other
   screens use `$6000`/full scroll. `[static]`
-- The palette copy skips source w4 and takes destination w4 from the next palette's w0;
-  the same three base image maps are reused for eight bikes (`U-0010`). `[static]`
+- The palette copy skips source w4 and takes destination w4 from the next palette's w0
+  (`$0222` in all eight records, so it is a fixed transparent/background colour); the
+  same three base image maps are reused for eight bikes (`U-0010` resolved). `[static]`
 - The price string "(its yours)" is assembled from three immediate longs written
   backwards into the temporary string. `[static]`
 - The window/plane transparency and the scroll band are confirmed by the user's
@@ -152,5 +155,5 @@ described the native-console view (`[dynamic]`, no BlastEm capture): one centre 
 the edge of one bike on each side, a sliding band, and the layered title/arrows/grey
 backdrop/bikes/texts/gamepad. The palette warning uses the normal grey-blue colour when
 the credits are insufficient. Remaining dynamic check: the "affordable" palette-2 colour
-and the exact CRAM entry-4 source (`U-0010`).
+(`U-0010` is resolved statically: destination entry 4 is always `$0222`).
 

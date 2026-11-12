@@ -178,10 +178,11 @@ for 32 frames and off for 32 (≈1 s at 60 Hz). `Message_ram_ButtonBlinkCounter`
 
 ## Hypotheses / open questions
 
-- `U-0006`: `RaceResults_Init` adds the 1-based `Menu_ram_PlayerLevel` (clamped to 4)
-  to the ASCII `'1'` in `Message_StrCongratulations` row 4, column 14. The resulting
-  digit is therefore `'1' + min(level,4)`; whether the text is intended to show the
-  completed level or the next level is not proven.
+- `U-0006` `[static]` resolved: `RaceResults_Init` adds the 1-based
+  `Menu_ram_PlayerLevel` (clamped to 4) to the ASCII `'1'` in
+  `Message_StrCongratulations` row 4, column 14. Because the results screen runs before
+  `EndLevel_AdvanceLevel`, `PlayerLevel` is the completed level, so the digit shows the
+  next level (2..5; level 5 clamps to 5).
 - `[ ]` Confirm the dpad icon layout and the blink cadence visually in BlastEm.
 - `[ ]` Confirm the `$2FF` blank-tile appearance on the real VDP (palette line 1).
 - `[ ]` Document the runtime record sizes/ownership with the shop and race-results

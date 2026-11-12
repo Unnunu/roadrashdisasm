@@ -821,9 +821,8 @@ Message_StrComplete4thPlace:
 
 ; RaceResults_Init copies this record to Message_ram_DynamicRecord and adds the current
 ; Menu_ram_PlayerLevel (clamped to 4) to the ASCII '1' at row 4, column 14.
-; @UNKNOWN(U-0006): intended displayed level | guess: the text shows the next
-; level because the level is 1-based elsewhere | next: compare this text with
-; the current/next level in BlastEm at levels 1 and 5
+; The results screen runs before the level advances, so the text shows the next level
+; (2..5; level 5 clamps to 5) (U-0006).
 Message_StrCongratulations:
     dc.w 22,10,5,20
     dc.b "  Congratulations!  "

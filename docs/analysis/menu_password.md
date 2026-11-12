@@ -76,7 +76,7 @@ Name and password strings are text records consumed by `EncodeString`/`DecodeStr
 |---|---|---|
 | `w0..w4` | race places 0..4 | low nibble; 0 = no recorded place (`RACE_PLACE_NONE`) |
 | `w5..w6` | separator spaces | not editable, skipped by the checksum |
-| `w7..w10` | 20-bit field, unit unknown (`U-0005`) | 5 bits each; `w7` = bits 19..15 … `w10` = bits 4..0 |
+| `w7..w10` | 20-bit career score (`U-0005`) | 5 bits each; `w7` = bits 19..15 … `w10` = bits 4..0 |
 | `w11..w16` | 24-bit signed money | six nibbles, MSB first; stored as `(nibble << 1)` |
 | `w17..w18` | separator spaces | not editable, skipped by the checksum |
 | `w19` | level | 3 bits (`& 7`) |
@@ -251,8 +251,10 @@ both name/password fields at their fixed positions.
 
 - `U-0004` `[hypothesis]`: `ram_FF0522/24` is a 2-bit bike/upgrade or small progress
   state; `race_core.asm` adjusts it around `$C41A`/`$C45C`.
-- `U-0005` `[hypothesis]`: `ram_FF0510/14` is a 20-bit progress/points value; unit
-  unknown.
+- `U-0005` `[static]` resolved: `ram_FF0510/14` is the 20-bit career score / high-score
+  value. `Race_ComputeResults` adds `unk_D1A0[place]*level` to it (together with money),
+  `Race_UpdateHighScoreTable` uses it for the high-score entry, and nothing ever spends
+  it.
 - `[ ]` Confirm the sample password in BlastEm (enter it in the password menu).
 - `[ ]` Confirm the exact cursor visual (high-byte palette toggle) and the
   `MenuPassword_SwapPlayerBlocks` panel swap.
@@ -262,5 +264,5 @@ both name/password fields at their fixed positions.
 | Current | Proposed | Evidence | Confidence |
 |---------|----------|----------|------------|
 | `MenuPassword_ValidatePassword` | `MenuPassword_VerifyChecksum` | checksum checks only | high |
-| `ram_FF0510`/`ram_FF0514` | `Player_ram_Field20A/B` | blocked by `U-0005` | low |
+| `ram_FF0510`/`ram_FF0514` | `Player_ram_CareerScoreA/B` | career score / high-score value (`U-0005`) | medium |
 | `ram_FF0522`/`ram_FF0524` | `Player_ram_ExtraA/B` | blocked by `U-0004` | low |

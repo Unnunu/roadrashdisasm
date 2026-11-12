@@ -88,8 +88,9 @@ cover the price.
 
 - Cell-mode H-scroll table `$6400` with auto-increment `$20`; other screens use
   `$6000`/full scroll. `[static]`
-- Palette copy skips source w4 and takes destination w4 from the next palette's w0
-  (`U-0010`); three base bike images are reused for eight bikes. `[static]`
+- Palette copy skips source w4 and takes destination w4 from the next palette's w0;
+  all records have w0 = `$0222`, so entry 4 is a fixed transparent colour
+  (`U-0010` resolved); three base bike images are reused for eight bikes. `[static]`
 - "(its yours)" is assembled from three immediate longs written backwards. `[static]`
 - Left/Right redraw the new bike before the scroll animation finishes, so the first
   frames show a transient wrong model/palette (user-observed). `[static]`/`[dynamic]`

@@ -101,7 +101,7 @@ is analyzed:
 | `$FF067E` | `MenuPassword_StrPasswordStatus` | TODO | Password status message string. |
 
 The player state used by the password system: `Menu_ram_Player` `$FF0508`, levels
-`$FF050C/$FF050E`, money `$FF0518/$FF051C`, progress `$FF0510/$FF0514`, extra field `$FF0522/$FF0524` (0..3, current
+`$FF050C/$FF050E`, money `$FF0518/$FF051C`, career score `$FF0510/$FF0514`, extra field `$FF0522/$FF0524` (0..3, current
 `$FF0520`), places `$FF052E/$FF0538`, opponents `$FF0546/$FF0566`, bike ids
 `$FF0542/$FF0544`.
 

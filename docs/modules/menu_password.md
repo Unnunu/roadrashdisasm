@@ -55,7 +55,7 @@ characters, switches players, validates the entered password, applies it to the 
 |---|---|
 | 0-4 | places in the 5 races (low nibble; 0 = not played) |
 | 5-6 | separator spaces |
-| 7-10 | 20-bit field (`ram_FF0510`/`ram_FF0514`, 5 bits each; `U-0005`) |
+| 7-10 | 20-bit career score (`ram_FF0510`/`ram_FF0514`, 5 bits each; `U-0005`) |
 | 11-16 | 24-bit signed money (nibbles << 1; bit0 = checksum) |
 | 17-18 | separator spaces |
 | 19 | level (3 bits) |
@@ -146,6 +146,7 @@ See `docs/analysis/menu_password.md` for the full matrix.
 
 - `U-0004` `[hypothesis]`: the 2-bit `ram_FF0522/24` field is a bike/upgrade or small
   progress state.
-- `U-0005` `[hypothesis]`: the 20-bit `ram_FF0510/14` field is a progress/points value.
+- `U-0005` `[static]` resolved: the 20-bit `ram_FF0510/14` field is the career
+  score / high-score value (credited per race, never spent).
 - `[ ]` Confirm the sample password in BlastEm.
 - `[ ]` Confirm the cursor visual and the `SwapPlayerBlocks` panel swap.

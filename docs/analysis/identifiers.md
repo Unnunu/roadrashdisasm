@@ -21,9 +21,9 @@ uses. It exists so later analysis can decide whether a rename is worth doing.
 | `Menu_WriteNametableMasked` | routine | `menu_main.asm:374` (`$37D2`) | menu_main: sentinel-masked card blit | good | `[static]` | keep | - | high | - |
 | `MainMenu_GameTick` | routine | `menu_main.asm:417` (`$3802`) | menu_main: per-frame callback via `ram_UpdateFunction` | good | `[static]` | keep | - | high | - |
 | `Menu_DrawPlayerInfo` | routine | `menu_main.asm:536` (`$39AE`) | menu_main; menu_password: A/B border, name, level | good | `[static]` | keep | - | high | - |
-| `Menu_BuildRaceTooltip` | routine | `menu_main.asm:682` (`$3B56`) | menu_main: race-name + distance tooltip | good | `[static]` | keep | - | high | `U-0001` |
+| `Menu_BuildRaceTooltip` | routine | `menu_main.asm:682` (`$3B56`) | menu_main: race-name + distance tooltip (level word = 16-ft units) | good | `[static]` | keep | - | high | `U-0001` resolved |
 | `MainMenu_HandleInput` | routine | `menu_main.asm:747` (`$3BE2`) | menu_main: newly pressed button actions | good | `[static]` | keep | - | high | - |
-| `Menu_DrawRaceSelection` | routine | `menu_main.asm:932` (`$3F18`) | menu_main; menu_password: badge + five-card carousel | good | `[static]` | keep | - | high | `U-0003` |
+| `Menu_DrawRaceSelection` | routine | `menu_main.asm:932` (`$3F18`) | menu_main; menu_password: badge + five-card carousel (even-id divide is vestigial) | good | `[static]` | keep | - | high | `U-0003` resolved |
 | `Menu_DrawRaceCard` | routine | `menu_main.asm:1051` (`$408E`) | menu_main: one card + place text | good | `[static]` | keep | - | high | - |
 | `Menu_ShowMessage` | routine | `menu_main.asm:1127` (`$417C`) | menu_main and other screens: blinking tooltip | good | `[static]` | keep | - | high | - |
 | `Audio_StartMusic` | routine | `core/audio` (`$19F6A`) | menu_main: start menu music | good | `[static]` | keep | - | high | - |
@@ -56,7 +56,7 @@ uses. It exists so later analysis can decide whether a rename is worth doing.
 | `img_MainMenu_Background` | asset | `rom_assets.asm` | menu_main: 39 tiles + 40x28 map (`+$4E4/+$4E8`) | good | `[static]` | keep | - | high | - |
 | `img_MainMenu_RaceSelectionBackground` | asset | `rom_assets.asm` | menu_main: 23 tiles + 40x14 map (`+$2E4/+$2E8`) | good | `[static]` | keep | - | high | - |
 | `img_PasswordMenu_PlayerSelection` | asset | `rom_assets.asm` | menu_main: 6-tile password border, map at `+$C8` | good | `[static]` | keep | - | high | - |
-| `img_Gamepad` | asset | `rom_assets.asm` | menu_main: 90 tiles, header 12x9 at `+$B44`, map `+$B48` | narrow | `[static]` | keep | - | medium | `U-0002` |
+| `img_Gamepad` | asset | `rom_assets.asm` | menu_main: 90 tiles, header 12x9 at `+$B44`, map `+$B48`; all callers use 12x6, lower 3 rows unused | narrow | `[static]` | keep | - | medium | `U-0002` resolved |
 | `img_mainMenu_PlayerSelection` | asset | `rom_assets.asm` | menu_main: 6-tile player border, map at `+$C8` | good | `[static]` | keep | - | high | - |
 | `img_MainMenu_RaceBadges` | asset | `rom_assets.asm` | menu_main: 108 tiles + 12x12 map (`+$D84/+$D88`) | good | `[static]` | keep | - | high | - |
 | `img_mainMenu_RaceCards` | asset | `rom_assets.asm` | menu_main: 311 tiles + 12x30 map (`+$2764/+$2768`), palette `+$26E4` | good | `[static]` | keep | - | high | - |
@@ -78,7 +78,7 @@ uses. It exists so later analysis can decide whether a rename is worth doing.
 | `Menu_ram_PlayerBPlaces` | RAM | `ram_const.asm` (`$FF0538`) | menu_main: five place words | good | `[static]` | keep | - | high | - |
 | `Menu_PlayerPlacesPtr` | RAM | `ram_const.asm` (`$FF05E0`) | menu_main: points at the active player's places | narrow | `[static]` | rename-later | `Menu_ram_PlayerPlacesPtr` | high | - |
 | `Menu_ram_CurrentTrackId` | RAM | `ram_const.asm` (`$FF05DC`) | menu_main: current even track id 0..8 | good | `[static]` | keep | - | high | - |
-| `Menu_ram_CurrentlyDrawnRaceCard` | RAM | `ram_const.asm` (`$FF05E4`) | menu_main: selected id, then carousel scratch | narrow | `[static]` | rename-later | `Menu_ram_CarouselRaceId` | medium | `U-0003` |
+| `Menu_ram_CurrentlyDrawnRaceCard` | RAM | `ram_const.asm` (`$FF05E4`) | menu_main: selected id, then carousel scratch (always even) | narrow | `[static]` | rename-later | `Menu_ram_CarouselRaceId` | medium | `U-0003` resolved |
 | `Menu_ram_NextMessageTimer` | RAM | `ram_const.asm` (`$FF05D0`) | menu_main: tooltip advance delay | good | `[static]` | keep | - | high | - |
 | `Menu_ram_MessageBlinkTimer` | RAM | `ram_const.asm` (`$FF05D2`) | menu_main: tooltip text blink phase | good | `[static]` | keep | - | high | - |
 | `Menu_ram_CurrentMessageId` | RAM | `ram_const.asm` (`$FF05D4`) | menu_main/menu_password/shop/highscore/race_results/endlevel: `Message_MsgArray` byte index (multiple of 8) | good | `[static]` | keep | - | high | - |
@@ -127,8 +127,8 @@ uses. It exists so later analysis can decide whether a rename is worth doing.
 | `Menu_ram_PlayerBOpponents` | RAM | `ram_const.asm` (`$FF0566`) | menu_password: 16-word B opponent definition list | good | `[static]` | keep | - | high | - |
 | `Menu_ram_BikeIdPlayerA` | RAM | `ram_const.asm` (`$FF0542`) | menu_password: A bike id (`w20` bits 0..2) | good | `[static]` | keep | - | high | - |
 | `Menu_ram_BikeIdPlayerB` | RAM | `ram_const.asm` (`$FF0544`) | menu_password: B bike id | good | `[static]` | keep | - | high | - |
-| `ram_FF0510` | RAM | `ram_const.asm` (`$FF0510`) | menu_password: A 20-bit password field (`w7..w10`) | placeholder | `[static]` | blocked-unknown | `Player_ram_Field20A` | low | `U-0005` |
-| `ram_FF0514` | RAM | `ram_const.asm` (`$FF0514`) | menu_password: B 20-bit password field | placeholder | `[static]` | blocked-unknown | `Player_ram_Field20B` | low | `U-0005` |
+| `ram_FF0510` | RAM | `ram_const.asm` (`$FF0510`) | menu_password/race_core: A 20-bit career score / high-score value (`w7..w10`) | narrow | `[static]` | rename-later | `Player_ram_CareerScoreA` | medium | `U-0005` resolved |
+| `ram_FF0514` | RAM | `ram_const.asm` (`$FF0514`) | menu_password/race_core: B 20-bit career score / high-score value | narrow | `[static]` | rename-later | `Player_ram_CareerScoreB` | medium | `U-0005` resolved |
 | `ram_FF0522` | RAM | `ram_const.asm` (`$FF0522`) | menu_password/intro/race: A 2-bit extra field | placeholder | `[static]` | blocked-unknown | `Player_ram_ExtraA` | low | `U-0004` |
 | `ram_FF0524` | RAM | `ram_const.asm` (`$FF0524`) | menu_password/intro/race: B 2-bit extra field | placeholder | `[static]` | blocked-unknown | `Player_ram_ExtraB` | low | `U-0004` |
 | `Message_ShowNoop` | routine | `message.asm:56` (`$4268`) | message: no-op show function; also the rts ending `Message_ShowEmpty` | good | `[static]` | keep (renamed from `sub_4268`) | - | high | - |

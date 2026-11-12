@@ -17,8 +17,8 @@
 ;
 ;   w0..w4   race places 0..4             low nibble; 0 = no recorded place
 ;   w5..w6   separator spaces             not editable, not in the checksum
-;   w7..w10  20-bit value, unknown unit   5 bits each, w7 holds bits 19..15
-;                                         (@UNKNOWN(U-0005))
+;   w7..w10  20-bit career score            5 bits each, w7 holds bits 19..15
+;                                         (high-score value, U-0005)
 ;   w11..w16 24-bit signed money          six nibbles, MSB first; each nibble is
 ;                                         stored as (nibble << 1) so bit0 is free
 ;                                         for a hidden checksum bit
@@ -904,7 +904,7 @@ MenuPassword_ParsePassword:
                 andi.w  #$1F,d0
                 or.w    d0,d1
 ; combine them all into 20 bit integer to ram_FF0510
-                move.l  d1,(ram_FF0510).l ; @UNKNOWN(U-0005): physical meaning/unit of this 20-bit field | guess: progress/points | next: audit readers in race_core/shop/highscore and compare two profiles
+                move.l  d1,(ram_FF0510).l ; career score / high-score value (U-0005)
 ; w11: money nibble 5 (bits 23..20); bit0 is the embedded checksum
                 move.w  22(a0),d0
                 lsl.w   #3,d0

@@ -233,7 +233,8 @@ RaceResults_Init:
                 dbf     d0,.loc_628C
 ; clamp the 1-based level to 4 and add it to the template '1' at row 4,
 ; column 14 (a1 points past the copied record; -6 lands on that digit)
-; @UNKNOWN(U-0006): whether the shown level is the completed or the next level
+; The screen runs before EndLevel_AdvanceLevel, so PlayerLevel is the level just
+; completed; '1'+level shows 2..5, i.e. the next level (clamped to 5) (U-0006).
                 move.w  (Menu_ram_PlayerLevel).l,d0
                 cmp.w   #5,d0
                 bmi.w   .loc_62A4

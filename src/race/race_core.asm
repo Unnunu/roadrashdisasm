@@ -2207,10 +2207,10 @@ Race_ComputeResults:
 .loc_C526:
                 asl.w   #1,d2
                 lea     (unk_D1A0).l,a0
-                move.w  (a0,d2.w),d4
-                mulu.w  (a6),d4
-                add.l   d4,(a2)
-                add.l   d4,(a3)
+                move.w  (a0,d2.w),d4 ; place points (0,75,50,30,20,18,...)
+                mulu.w  (a6),d4 ; * level
+                add.l   d4,(a2) ; career score (ram_FF0510/14), high-score value (U-0005)
+                add.l   d4,(a3) ; spendable money
                 move.w  (a1),(a4)
                 beq.w   .loc_C58A
                 cmpi.w  #4,(a4)

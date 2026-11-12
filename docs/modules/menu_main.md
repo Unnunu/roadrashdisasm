@@ -139,9 +139,9 @@ reg92 $1C   WindowY split at line 224 (DOWN=0) -> covers rows 0-27
 | `Menu_WriteNametableMasked` | `0x37D2` | [x] | [x] | [x] | - | [x] | - | analyzed (line-by-line) |
 | `MainMenu_GameTick` | `0x3802` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed (line-by-line) |
 | `Menu_DrawPlayerInfo` | `0x39AE` | [x] | [x] | [x] | [x] | [x] | - | analyzed (line-by-line) |
-| `Menu_BuildRaceTooltip` | `0x3B56` | [x] | [x] | [x] | [x] | [x] | - | analyzed (line-by-line; `U-0001`) |
+| `Menu_BuildRaceTooltip` | `0x3B56` | [x] | [x] | [x] | [x] | [x] | - | analyzed (line-by-line; `U-0001` resolved) |
 | `MainMenu_HandleInput` | `0x3BE2` | [x] | [x] | [x] | [x] | [x] | - | analyzed (line-by-line) |
-| `Menu_DrawRaceSelection` | `0x3F18` | [x] | [x] | [x] | [x] | [x] | - | analyzed (line-by-line; `U-0003`) |
+| `Menu_DrawRaceSelection` | `0x3F18` | [x] | [x] | [x] | [x] | [x] | - | analyzed (line-by-line; `U-0003` resolved) |
 | `Menu_DrawRaceCard` | `0x408E` | [x] | [x] | [x] | [x] | [x] | - | analyzed (line-by-line; layout TODO) |
 | `Menu_ShowMessage` | `0x417C` | [x] | [x] | [x] | - | [x] | - | analyzed (line-by-line) |
 
@@ -168,12 +168,12 @@ Detailed notes and the annotated algorithm live in `docs/analysis/menu_main.md`.
 
 ## Hypotheses / open questions
 
-- `[hypothesis]` `U-0001`: the `Menu_BuildRaceTooltip` value is the race distance in
-  miles; formatting and the "miles" text are static.
-- `[hypothesis]` `U-0002`: the gamepad map header is 12x9 while all call sites copy only
-  12x6; the lower 3 rows are probably unused padding.
-- `[hypothesis]` `U-0003`: the `divu #10 / swap / andi #$FFFE` normalization is an
-  identity even-mask for the documented ids; its origin is unclear.
+- `[static]` `U-0001` resolved: the level word is the track length in 16-foot units;
+  the tooltip shows `word/330` miles.
+- `[static]` `U-0002` resolved (wontfix): the gamepad map header is 12x9, but all call
+  sites copy only 12x6; the lower 3 rows are unused.
+- `[static]` `U-0003` resolved: all card-id writers store even ids, so `divu #10` is the
+  identity and `andi #$FFFE` is the effective operation (vestigial divide).
 - `[ ]` Confirm the card layout/stride and five positions visually.
 - `[ ]` Confirm the demo path in BlastEm.
 - `[ ]` `Menu_dRaceNameTable`/`unk_25EC0`/`Menu_dPasswordLabels` are labelled data modules;

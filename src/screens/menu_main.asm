@@ -167,9 +167,8 @@ Menu_Init:
                 jsr     (WriteTilesetToVRAM).l
 ; Gamepad: 90 tiles -> VRAM $A000. Source map header is 12x9 at +$B44; this
 ; call copies only its top 12x6 rows (map at +$B48); base tile $500 -> $A000.
-; @UNKNOWN(U-0002): why the header advertises 12x9 while only 12x6 rows are
-; copied here and elsewhere | guess: lower 3 rows are unused padding | next:
-; inspect img_Gamepad's full map and check for other readers of +$B48
+; No caller copies the lower 3 map rows (all screens use 12x6 from +$B48), so
+; that art is an unused/vestigial tail of the asset (U-0002).
                 lea     (img_Gamepad).l,a3
                 lea     (Intro_ram_ImageBuffer).l,a1
                 jsr     (UncompressB).l
@@ -673,10 +672,11 @@ Menu_DrawPlayerInfo:
 ; Notes:    ROM $003B56-$003BE1. Menu_dRaceNameTable/unk_25EC0 hold five
 ;           longword pointers; d0*2 is the byte offset (d0 is already even).
 ;           The name record is fixed at 5x20, so 108 bytes are copied. The
-;           level table is indexed by level-1; value = level_word * 16 / $210
-;           (tenths), then /10: the remainder is the fractional digit and the
-;           quotient is written as integer digits in reverse. Level is not
-;           bounds-checked.
+;           level table is indexed by level-1; the level word is the track
+;           length in 16-foot units, so level_word * 16 / $210 gives tenths of
+;           a mile and level_word / 330 gives the displayed miles. The /10
+;           remainder is the fractional digit and the quotient is written as
+;           integer digits in reverse. Level is not bounds-checked.
 ; *************************************************
 
 Menu_BuildRaceTooltip:
@@ -707,7 +707,7 @@ Menu_BuildRaceTooltip:
                 subq.w  #1,d1 ; levels are 1-based
                 asl.w   #1,d1
                 adda.w  d1,a0 ; level-word pointer
-                move.w  (a0),d1 ; level word; @UNKNOWN(U-0001): physical meaning/unit | guess: distance in tenths of a mile | next: compare level words with the in-game tooltip
+                move.w  (a0),d1 ; level word: track length in 16-foot units (U-0001)
                 mulu.w  #$10,d1
                 divu.w  #$210,d1 ; d1 = level_word * 16 / 528
                 andi.l  #$FFFF,d1 ; drop remainder word
@@ -944,7 +944,7 @@ Menu_DrawRaceSelection:
 
                 move.w  (Menu_ram_CurrentlyDrawnRaceCard).l,d0
                 andi.l  #$FFFF,d0
-                divu.w  #10,d0 ; @UNKNOWN(U-0003): purpose of this even normalization | guess: leftover encoding; identity for even ids 0..8 | next: audit all writers and try an odd id
+                divu.w  #10,d0 ; identity for ids 0..8; all writers store even ids (U-0003)
                 swap    d0 ; low word = remainder (the id itself for 0..8)
                 andi.w  #$FFFE,d0 ; force an even id
 ; draw race badge

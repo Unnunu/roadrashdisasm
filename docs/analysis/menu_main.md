@@ -17,9 +17,9 @@
 | `Menu_WriteNametableMasked` | `0x37D2` | [x] | [x] | [x] | - | [x] | - | analyzed (line-by-line) |
 | `MainMenu_GameTick` | `0x3802` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed (line-by-line) |
 | `Menu_DrawPlayerInfo` | `0x39AE` | [x] | [x] | [x] | [x] | [x] | - | analyzed (line-by-line) |
-| `Menu_BuildRaceTooltip` | `0x3B56` | [x] | [x] | [x] | [x] | [x] | - | analyzed (line-by-line; `U-0001`) |
+| `Menu_BuildRaceTooltip` | `0x3B56` | [x] | [x] | [x] | [x] | [x] | - | analyzed (line-by-line; `U-0001` resolved) |
 | `MainMenu_HandleInput` | `0x3BE2` | [x] | [x] | [x] | [x] | [x] | - | analyzed (line-by-line) |
-| `Menu_DrawRaceSelection` | `0x3F18` | [x] | [x] | [x] | [x] | [x] | - | analyzed (line-by-line; `U-0003`) |
+| `Menu_DrawRaceSelection` | `0x3F18` | [x] | [x] | [x] | [x] | [x] | - | analyzed (line-by-line; `U-0003` resolved) |
 | `Menu_DrawRaceCard` | `0x408E` | [x] | [x] | [x] | [x] | [x] | - | analyzed (line-by-line; layout TODO) |
 | `Menu_ShowMessage` | `0x417C` | [x] | [x] | [x] | - | [x] | - | analyzed (line-by-line) |
 
@@ -197,8 +197,10 @@ C (password entry):
   offset 97, `.` at 96, then the integer digits backwards (e.g. 94-95 for two
   digits), so the value ends immediately before "miles" at offset 98 in the
   record's last 20-char line. The 5x20 size and record offset 97 are hard-coded;
-  the level index is not bounds-checked. The unit of the level word is `U-0001`.
-  Output is message id `8*4`. Clobbers `d1/a0/a1`; `d0` is preserved.
+  the level index is not bounds-checked. The level word is the track length in
+  16-foot units, so `level_word / 330` is the displayed mileage (`level_word * 16
+  / 528` gives tenths of a mile). Output is message id `8*4`. Clobbers `d1/a0/a1`;
+  `d0` is preserved.
 - `Menu_ShowMessage`: looks up the message text and show-function pointers in
   `Message_MsgArray` (8 bytes per id); if the blink timer is non-negative, hides the
   text (`Message_ShowEmpty` for static prompts, `Message_Clear` for animated ones);
@@ -282,26 +284,24 @@ Full rows are in `docs/analysis/identifiers.md`; this is the file-local summary.
 | `Intro_InitPlayerA/B` | routine | also called by `Menu_Init` to reset profiles | narrow | rename-later | `-` |
 | `Menu_PlayerPlacesPtr` | RAM | active player's five-place array | narrow (missing `_ram_`) | rename-later | `-` |
 | `Menu_ram_StrPlayerName` | RAM | single scratch record reused for A and B | narrow | rename-later | `-` |
-| `Menu_ram_CurrentlyDrawnRaceCard` | RAM | selected id, then carousel scratch | narrow | rename-later | `U-0003` |
+| `Menu_ram_CurrentlyDrawnRaceCard` | RAM | selected id, then carousel scratch | narrow | rename-later | `U-0003` resolved |
 | `unk_25EC0` | data | five track-record pointers | placeholder | rename-later | `-` |
 | `Menu_dPasswordLabels` | data | "Name"/"Password" label record | good | keep | `-` |
-| `img_Gamepad` | asset | 12x9 header, only 12x6 rows used | narrow | keep | `U-0002` |
+| `img_Gamepad` | asset | 12x9 header, only 12x6 rows used | narrow | keep | `U-0002` resolved |
 
 Everything else used in this file is rated `good`/`keep` (routines, RAM names, assets,
 `dStringCodeTable`, `VdpCtrl`/`VdpData`).
 
 ## Hypotheses / open questions
 
-- `[hypothesis]` `U-0001`: the value inserted by `Menu_BuildRaceTooltip` is the race
-  distance in miles; the record text already says "miles" and the formula is static.
-  The tables are labelled in `src/screens/message.asm` and
-  `src/data/race_track_data.asm`. Next: compare level words with in-game values.
-- `[hypothesis]` `U-0002`: the gamepad map header is 12x9 while every call site copies
-  only 12x6; the lower 3 rows are probably unused padding. Next: inspect the full
-  decompressed map and other readers.
-- `[hypothesis]` `U-0003`: the `divu #10 / swap / andi #$FFFE` normalization in
-  `Menu_DrawRaceSelection` is an identity even-mask for the documented ids; its origin
-  is unclear. Next: audit writers and test an odd id.
+- `[static]` `U-0001` resolved: the level word is the track length in 16-foot units;
+  `Menu_BuildRaceTooltip` displays `word/330` miles (e.g. track 0 level 1 `$073F` ->
+  5.6 miles). Confirmed by the static formula, not by an in-game distance readout.
+- `[static]` `U-0002` resolved (wontfix): the gamepad map header is 12x9, but every
+  call site copies only 12x6 from `+$B48`; the lower 3 rows/tiles are never referenced.
+- `[static]` `U-0003` resolved: every writer of `Menu_ram_CurrentlyDrawnRaceCard` stores
+  an even id (0..8), so `divu #10` is the identity and `andi #$FFFE` is the only
+  effective operation; the divide is vestigial.
 - `[ ]` Confirm the exact race-card layout/stride and the five card positions visually.
 - `[ ]` Confirm the demo path (30 s no input) in BlastEm.
 - `[ ]` `Menu_dRaceNameTable`, `unk_25EC0` and `Menu_dPasswordLabels` are labelled data modules;
