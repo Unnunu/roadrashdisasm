@@ -50,6 +50,7 @@ symbol/row and read only that slice.
 | `analysis/race_hud_debug.md` | HUD digit/debug writers and callers. |
 | `analysis/race_impact.md` | Pair impact, collision, crash and fall contracts. |
 | `analysis/race_impact_map.md` | Prioritized race analysis targets by impact/fan-in. |
+| `analysis/race_map.md` | Race frame timeline, dataflow spine, actor field ownership matrix, capture matrix and study order. |
 | `analysis/race.md` | Race top-level init, frame loop, input and buffers. |
 | `analysis/race_misc_data.md` | HUD/palette/results tables in the data gap. |
 | `analysis/race_movement.md` | Actor movement/curve dataflow and Y clamping. |
