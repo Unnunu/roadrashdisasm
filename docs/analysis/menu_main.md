@@ -3,7 +3,7 @@
 - **Module / routine:** main menu (VDP setup, background, race selection, player info,
   music toggle, demo timer, password-screen entry)
 - **ROM range:** `0x003400`–`0x004225` (`src/screens/message.asm` starts at `0x4226`)
-- **Status:** analyzed (Menu_Init line-by-line; exact card layout/demo TODO)
+- **Status:** analyzed (all functions line-by-line; exact card layout/demo visual TODO)
 - **Source:** `src/screens/menu_main.asm`
 - **Related:** `docs/architecture.md`, `docs/hardware.md`, `docs/ram-map.md`,
   `docs/analysis/screens_flow.md`
@@ -13,15 +13,15 @@
 | Function | Address | Contract | Algorithm | Data | Hardware | Why | Dynamic | Status |
 |----------|---------|----------|-----------|------|----------|-----|---------|--------|
 | `Menu_Init` | `0x3400` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed (line-by-line) |
-| `WriteNametableToBuffer` | `0x37AA` | [x] | [x] | [x] | - | [x] | - | analyzed |
-| `Menu_WriteNametableMasked` | `0x37D2` | [x] | [x] | [x] | - | [x] | - | analyzed |
+| `WriteNametableToBuffer` | `0x37AA` | [x] | [x] | [x] | - | [x] | - | analyzed (line-by-line) |
+| `Menu_WriteNametableMasked` | `0x37D2` | [x] | [x] | [x] | - | [x] | - | analyzed (line-by-line) |
 | `MainMenu_GameTick` | `0x3802` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed (line-by-line) |
 | `Menu_DrawPlayerInfo` | `0x39AE` | [x] | [x] | [x] | [x] | [x] | - | analyzed (line-by-line) |
-| `Menu_BuildRaceTooltip` | `0x3B56` | [x] | [x] | [x] | [x] | [x] | - | analyzed (line-by-line) |
-| `MainMenu_HandleInput` | `0x3BE2` | [x] | [x] | [x] | [x] | [x] | - | analyzed |
-| `Menu_DrawRaceSelection` | `0x3F18` | [x] | [x] | [x] | [x] | [x] | - | analyzed |
-| `Menu_DrawRaceCard` | `0x408E` | [x] | [x] | [x] | [x] | [x] | - | analyzed (layout TODO) |
-| `Menu_ShowMessage` | `0x417C` | [x] | [x] | [x] | - | [x] | - | analyzed |
+| `Menu_BuildRaceTooltip` | `0x3B56` | [x] | [x] | [x] | [x] | [x] | - | analyzed (line-by-line; `U-0001`) |
+| `MainMenu_HandleInput` | `0x3BE2` | [x] | [x] | [x] | [x] | [x] | - | analyzed (line-by-line) |
+| `Menu_DrawRaceSelection` | `0x3F18` | [x] | [x] | [x] | [x] | [x] | - | analyzed (line-by-line; `U-0003`) |
+| `Menu_DrawRaceCard` | `0x408E` | [x] | [x] | [x] | [x] | [x] | - | analyzed (line-by-line; layout TODO) |
+| `Menu_ShowMessage` | `0x417C` | [x] | [x] | [x] | - | [x] | - | analyzed (line-by-line) |
 
 ## VDP configuration (`Menu_Init`)
 
@@ -39,8 +39,8 @@ reg0C $81   H40, no interlace, shadow/highlight off
 reg0D $18   H-scroll table $6000      (overlaps the sprite table)
 reg0F $02   auto-increment 2
 reg90 $03   128x32 planes
-reg91 $00   WindowX boundary 0 -> horizontal constraint inactive
-reg92 $1C   WindowY split above line 224 (DOWN=0) -> covers rows 0-27
+reg91 $00   WindowX split 0 (unused: reg92 makes every visible line full-width window)
+reg92 $1C   WindowY split at line 224 (DOWN=0) -> window covers rows 0-27
 ```
 
 Layers:
@@ -48,8 +48,8 @@ Layers:
 - **Planes A and B share the nametable at `$4000`** (background/race-selection image).
 - **Window at `$7000`** = the 64x28 `Menu_ram_FrameBuffer` text/info overlay. This is
   DMA'd every frame; the password screen writes rows 4-27 (`$7200`) into it.
-  `WindowX=0` makes the horizontal constraint inactive and `WindowY=28` with `DOWN=0`
-  places the window above line 224, so it covers all 28 rows.
+  `WindowY=$1C` with `DOWN=0` puts the split at line 224, so every visible line
+  (0-27) is a full-width window line; the `WindowX=0` split is therefore unused.
 - **Sprite table `$6000`** and **H-scroll table `$6000`** overlap. The 16-byte clear at
   `$6000` zeroes SAT entries 0-1 and H-scroll entries 0-3; HSCR is full-screen, so only
   H-scroll entry 0 (planes A/B) matters. The menu uses no sprites.
@@ -176,26 +176,33 @@ C (password entry):
   only a single-digit level is represented. The highlighted player's text uses
   palette 2 (`$4000`); the other player uses palette 3 (`$6000`).
 - `Menu_DrawRaceSelection`: clears the race area, draws the race badge at (14,18), then
-  five race cards at (14,10), (21,8), (25,6), (7,8), (3,6) using the player's places
-  array and the current track id (0,2,4,6,8).
-- `Menu_DrawRaceCard`: copies a 12-wide x6-high card nametable from `Race_ram_ImageBuffer2+$120`,
-  writes "1st/2nd/3rd/Nth" into the bottom middle, then writes it with
-  `Menu_WriteNametableMasked` (sentinel `$7FF` = default tile word) so only the card's
-  opaque pixels replace the background.
+  five cards in a carousel: for current id R, x=14 shows R, x=21 shows R+2, x=25
+  shows R+4, x=7 shows R+8 (R-2) and x=3 shows R+6 (R-4), all mod 10, using the
+  active player's places array. The ids are even byte offsets into the five-word
+  places array.
+- `Menu_DrawRaceCard`: copies a 12-wide x6-high card nametable from `Race_ram_ImageBuffer2+$120`
+  (144 bytes per card; the even id times `$48` steps by one card), writes
+  "1st/2nd/3rd/Nth" into row 5, columns 4-7 (supports places 1-19), then writes it
+  with `Menu_WriteNametableMasked` (sentinel `$7FF` = default tile word) so only the
+  card's opaque pixels replace the background. The four text words are reduced by
+  `$680` before the masked write so the writer's base restores the font tile index at
+  VRAM `$0000`.
 - `Menu_BuildRaceTooltip`: indexes `Menu_dRaceNameTable` by `trackId*2` and copies the
   fixed 5x20 text record (8-byte header + 100 chars) into `Menu_ram_TempString`. It
   then indexes `unk_25EC0[trackId]`, dereferences the track record's `+$00` level-word
   table, and selects `level-1` (`PlayerALevel` or `PlayerBLevel` depending on
   `Menu_ram_Player`). Value = `level_word * 16 / $210` (tenths); dividing by 10 yields
-  the integer part and one fractional digit. It writes the fractional digit, `.`, and
-  the integer digits backwards at offsets 94-96, i.e. immediately before "miles" in
-  the record's last 20-char line. The 5x20 size and record offset 97 are hard-coded;
-  the level index is not bounds-checked. Output is message id `8*4`. Clobbers
-  `d1/a0/a1`; `d0` is preserved.
+  the integer part and one fractional digit. It writes the fractional digit at
+  offset 97, `.` at 96, then the integer digits backwards (e.g. 94-95 for two
+  digits), so the value ends immediately before "miles" at offset 98 in the
+  record's last 20-char line. The 5x20 size and record offset 97 are hard-coded;
+  the level index is not bounds-checked. The unit of the level word is `U-0001`.
+  Output is message id `8*4`. Clobbers `d1/a0/a1`; `d0` is preserved.
 - `Menu_ShowMessage`: looks up the message text and show-function pointers in
-  `Message_MsgArray` (8 bytes per id); if the blink timer is positive, clears/hides the
-  text (`Message_Clear`/`Message_ShowEmpty`); otherwise calls the show function, encodes
-  the tooltip text and writes it to the frame buffer.
+  `Message_MsgArray` (8 bytes per id); if the blink timer is non-negative, hides the
+  text (`Message_ShowEmpty` for static prompts, `Message_Clear` for animated ones);
+  otherwise calls the show function, encodes the tooltip text and writes it to the
+  frame buffer.
 
 ## Nametable helpers (`WriteNametableToBuffer` / `Menu_WriteNametableMasked`)
 
@@ -230,9 +237,9 @@ Common contract:
 - `[static]` Planes A/B share `$4000`; the window at `$7000` holds the 64x28 frame
   buffer; the password screen's `$7200` is window row 4 (confirms the password module's
   DMA destination).
-- `[static]` The window is full-screen: `WindowX=0` makes the horizontal constraint
-  inactive; `WindowY=28` with `DOWN=0` places the window above line 224, covering all
-  28 rows (`[hardware]` VDP register semantics).
+- `[static]` The window is full-screen: `WindowY=$1C` with `DOWN=0` puts the split at
+  line 224, so every visible line (0-27) is a full-width window line and the
+  `WindowX=0` split is unused (`[hardware]` VDP register semantics).
 - `[static]` The sprite table and H-scroll table overlap at `$6000`; the 16-byte clear
   zeroes SAT entries 0-1 and H-scroll entries 0-3. With HSCR full-screen, only H-scroll
   entry 0 matters, so the overlap is functional for this clear.
@@ -257,15 +264,44 @@ Common contract:
   toggle player mode/music; directions change the current track by 2.
 - `[static]` The race cards are written with a mask (`$7FF` default black), so only
   opaque pixels replace the background.
+- `[static]` The five-card carousel is: current R at x=14, R+2 at x=21, R+4 at x=25,
+  R+8 (R-2) at x=7, R+6 (R-4) at x=3, all mod 10.
+- `[static]` `Menu_DrawRaceCard` draws place text in row 5, columns 4-7 and handles
+  1-19; it subtracts `$680` from the font tile words so the masked writer's base
+  restores them.
+
+## Identifier audit
+
+Full rows are in `docs/analysis/identifiers.md`; this is the file-local summary.
+
+| Identifier | Kind | Observed use | Name quality | Rename verdict | Unknown ID |
+|---|---|---|---|---|---|
+| `Intro_ram_ImageBuffer` | RAM | generic decompression/staging buffer for every asset | narrow | rename-later | `-` |
+| `Race_ram_ImageBuffer2` | RAM | menu-only badge/card nametable staging | misleading | rename-later | `-` |
+| `Intro_InitPlayerA/B` | routine | also called by `Menu_Init` to reset profiles | narrow | rename-later | `-` |
+| `Menu_PlayerPlacesPtr` | RAM | active player's five-place array | narrow (missing `_ram_`) | rename-later | `-` |
+| `Menu_ram_StrPlayerName` | RAM | single scratch record reused for A and B | narrow | rename-later | `-` |
+| `Menu_ram_CurrentlyDrawnRaceCard` | RAM | selected id, then carousel scratch | narrow | rename-later | `U-0003` |
+| `unk_25EC0` | data | five track-record pointers | placeholder | rename-later | `-` |
+| `word_4EEE` | data | "Name"/"Password" label record | placeholder | rename-later | `-` |
+| `img_Gamepad` | asset | 12x9 header, only 12x6 rows used | narrow | keep | `U-0002` |
+
+Everything else used in this file is rated `good`/`keep` (routines, RAM names, assets,
+`dStringCodeTable`, `VdpCtrl`/`VdpData`).
 
 ## Hypotheses / open questions
 
-- `[hypothesis]` The value inserted by `Menu_BuildRaceTooltip` is the race distance in
-  miles; the record text already says "miles" and the formula is static. The tables are
-  labelled in `src/screens/message.asm` and `src/data/race_track_data.asm`.
+- `[hypothesis]` `U-0001`: the value inserted by `Menu_BuildRaceTooltip` is the race
+  distance in miles; the record text already says "miles" and the formula is static.
+  The tables are labelled in `src/screens/message.asm` and
+  `src/data/race_track_data.asm`. Next: compare level words with in-game values.
+- `[hypothesis]` `U-0002`: the gamepad map header is 12x9 while every call site copies
+  only 12x6; the lower 3 rows are probably unused padding. Next: inspect the full
+  decompressed map and other readers.
+- `[hypothesis]` `U-0003`: the `divu #10 / swap / andi #$FFFE` normalization in
+  `Menu_DrawRaceSelection` is an identity even-mask for the documented ids; its origin
+  is unclear. Next: audit writers and test an odd id.
 - `[ ]` Confirm the exact race-card layout/stride and the five card positions visually.
 - `[ ]` Confirm the demo path (30 s no input) in BlastEm.
-- `[ ]` Why the gamepad map header is 12x9 while every call site copies only 12x6;
-  the lower 3 rows are currently unused.
-- `[ ]` `word_4EEE` remains in the gap; `Menu_dRaceNameTable` and `unk_25EC0` are now
-  labelled data modules.
+- `[ ]` `Menu_dRaceNameTable`, `unk_25EC0` and `word_4EEE` are labelled data modules;
+  per-entry semantics of the track records remain outside this pass.

@@ -1,7 +1,7 @@
 ; *************************************************
 ; src/screens/menu_main.asm - main menu (player/track selection)
 ; ROM range: $003400-$004225 (src/screens/message.asm starts at $004226)
-; Status:    analyzed (Menu_Init line-by-line; exact card layout/demo TODO)
+; Status:    analyzed (all functions line-by-line; card layout/demo visual TODO)
 ; Purpose:   main-menu background, player-mode and track selection, tooltips,
 ;            password-screen entry and the transition into a race.
 ; Flow:      TopLevel_Init -> Menu_Init -> Fade_InitFadeIn -> MainMenu_GameTick
@@ -38,9 +38,10 @@
 ;           function is installed here (the caller sets MainMenu_GameTick).
 ; Clobbers: d0-d7/a0-a6
 ; Notes:    ROM $003400-$0037A9. Planes A/B share $4000; the window at $7000
-;           holds the 64x28 frame buffer. WindowX=0 makes the horizontal window
-;           constraint inactive and WindowY splits above line 224, so the window
-;           covers the full 28-row screen. Caller runs the fade-in afterwards.
+;           holds the 64x28 frame buffer. WindowY=$1C with DOWN=0 places the
+;           split at line 224, so every visible line (0-27) is a full-width
+;           window line; the WindowX split is therefore unused. Caller runs the
+;           fade-in afterwards.
 ; *************************************************
 
 Menu_Init:
@@ -87,8 +88,8 @@ Menu_Init:
                 move.w  #$8D18,(a0) ; H-scroll table: $6000
                 move.w  #$8F02,(a0) ; auto-increment: 2
                 move.w  #$9003,(a0) ; plane size: 128x32
-                move.w  #$9100,(a0) ; window X boundary 0 -> horizontal constraint inactive
-                move.w  #$921C,(a0) ; window Y split above line 224 -> covers rows 0-27
+                move.w  #$9100,(a0) ; WindowX split 0 (unused: Y split makes every line full-width window)
+                move.w  #$921C,(a0) ; WindowY split line 224, DOWN=0 -> window covers rows 0-27
 ; Planes A/B share $4000; the window $7000 holds the 64x28 frame buffer.
 ; The 16-byte clear at $6000 covers SAT entries 0-1 and H-scroll entries 0-3;
 ; HSCR is full-screen, so this also zeros the only H-scroll entry that matters.
@@ -102,7 +103,7 @@ Menu_Init:
                 VDP_VSRAM_WRITE $0,(a0)
                 move.l  #0,(VdpData).l ; clear VSRAM words 0-1 (full-screen V-scroll; plane A uses word 0)
 ; clear default tile
-                movea.l #VdpData,a0
+                movea.l #VdpData,a0 ; a0 = data port for fast longword stores
                 VDP_VRAM_WRITE $FFE0,VdpCtrl
                 move.w  #7,d0
 .loopClearDefaultTile:
@@ -166,6 +167,9 @@ Menu_Init:
                 jsr     (WriteTilesetToVRAM).l
 ; Gamepad: 90 tiles -> VRAM $A000. Source map header is 12x9 at +$B44; this
 ; call copies only its top 12x6 rows (map at +$B48); base tile $500 -> $A000.
+; @UNKNOWN(U-0002): why the header advertises 12x9 while only 12x6 rows are
+; copied here and elsewhere | guess: lower 3 rows are unused padding | next:
+; inspect img_Gamepad's full map and check for other readers of +$B48
                 lea     (img_Gamepad).l,a3
                 lea     (Intro_ram_ImageBuffer).l,a1
                 jsr     (UncompressB).l
@@ -458,6 +462,8 @@ MainMenu_GameTick:
                 andi.w  #$80,d0
                 bne.w   .endStage ; B released Start
 
+; Handle only newly pressed buttons: Changed & Buttons drops pure releases.
+; B is handled first; if it enters the password screen, A is skipped this frame.
 .handleInputPlayerB:
                 move.w  (MainMenu_ram_ChangedButtonsPlayerB).l,d0 ; no B edge -> try A
                 beq.w   .handleInputPlayerA
@@ -518,11 +524,13 @@ MainMenu_GameTick:
 ; Out:      Frame-buffer rows 17-20 updated: border at x=1 or 27, name rows
 ;           at x=2 or 28.
 ; Clobbers: d0-d4/d6/a0-a3; d5 and d7 preserved.
-; Notes:    ROM $0039AE-$003B55. The clear keeps x=14-25 intact for the race
-;           badge. The highlighted player's text uses palette 2 ($4000), the
-;           other player palette 3 ($6000). The border image uses base tile
-;           word $580 (tile data at $B000). The level is added to the ASCII
-;           '0', so the display assumes a single decimal digit.
+; Notes:    ROM $0039AE-$003B55. Each row is 64 cells; the clear writes 7 longs
+;           (14 cells) at x=0-13, skips 12 badge cells, writes 14 cells at
+;           x=26-39, then skips 24 cells to reach the next row. The highlighted
+;           player's text uses palette 2 ($4000), the other player palette 3
+;           ($6000). The border image uses base tile word $580 (tile data at
+;           $B000). The level is added to the ASCII '0', so the display
+;           assumes a single decimal digit.
 ; *************************************************
 
 Menu_DrawPlayerInfo:
@@ -658,35 +666,38 @@ Menu_DrawPlayerInfo:
 ; before the "miles" text.
 ; In:       d0 - even track id (0,2,4,6,8); level from the highlighted player.
 ; Out:      Menu_ram_TempString gets an 8-byte text header + 5x20 chars; the
-;           value is written at offsets 94-96 of the record.
+;           fractional digit lands at offset 97, '.' at 96, and the integer
+;           digits follow backwards (94-95 for a two-digit value), so the value
+;           ends immediately before "miles" at offset 98.
 ; Clobbers: d1/a0/a1; d0 is preserved.
 ; Notes:    ROM $003B56-$003BE1. Menu_dRaceNameTable/unk_25EC0 hold five
-;           pointers indexed by track id. The name record is fixed at 5x20,
-;           so 108 bytes are copied. The level table is indexed by
-;           level-1; value = level_word * 16 / $210 (tenths), then /10:
-;           the remainder is the fractional digit and the quotient is written
-;           as integer digits in reverse. Level is not bounds-checked.
+;           longword pointers; d0*2 is the byte offset (d0 is already even).
+;           The name record is fixed at 5x20, so 108 bytes are copied. The
+;           level table is indexed by level-1; value = level_word * 16 / $210
+;           (tenths), then /10: the remainder is the fractional digit and the
+;           quotient is written as integer digits in reverse. Level is not
+;           bounds-checked.
 ; *************************************************
 
 Menu_BuildRaceTooltip:
-                move.w  d0,d1 ; track id -> word-index into pointer tables
+                move.w  d0,d1 ; even track id -> byte offset (id*2) for longword table
                 asl.w   #1,d1
                 lea     (Menu_dRaceNameTable).l,a0
                 movea.l (a0,d1.w),a0 ; name text record
                 lea     (Menu_ram_TempString).l,a1
-                move.w  4(a0),d1 ; height
-                mulu.w  6(a0),d1 ; * width = character count
-                addq.w  #7,d1 ; dbf count: 8-byte header + chars
+                move.w  4(a0),d1 ; header: y,x,height,width -> height
+                mulu.w  6(a0),d1 ; * width = character count (5*20 = 100)
+                addq.w  #7,d1 ; dbf count: 8-byte header + 100 chars = 108 bytes
 
 .loc_3B74:
                 move.b  (a0)+,(a1)+ ; copy header and all 100 chars
                 dbf     d1,.loc_3B74
-                suba.w  #$B,a1 ; 108-byte record: a1 -> offset 97 (last line)
+                suba.w  #$B,a1 ; 108-11 = 97: write backwards from the last line
                 lea     (unk_25EC0).l,a0
                 move.w  d0,d1
-                asl.w   #1,d1
+                asl.w   #1,d1 ; byte offset into the five longword track pointers
                 movea.l (a0,d1.w),a0 ; track record
-                movea.l (a0),a0 ; +$00 = level-word table
+                movea.l (a0),a0 ; +$00 = level-word table (5 words)
                 move.w  (Menu_ram_PlayerALevel).l,d1
                 tst.w   (Menu_ram_Player).l
                 beq.w   .loc_3BA4 ; A highlighted -> use A level
@@ -696,7 +707,7 @@ Menu_BuildRaceTooltip:
                 subq.w  #1,d1 ; levels are 1-based
                 asl.w   #1,d1
                 adda.w  d1,a0 ; level-word pointer
-                move.w  (a0),d1 ; distance in tenths
+                move.w  (a0),d1 ; level word; @UNKNOWN(U-0001): physical meaning/unit | guess: distance in tenths of a mile | next: compare level words with the in-game tooltip
                 mulu.w  #$10,d1
                 divu.w  #$210,d1 ; d1 = level_word * 16 / 528
                 andi.l  #$FFFF,d1 ; drop remainder word
@@ -722,15 +733,19 @@ Menu_BuildRaceTooltip:
 ; *************************************************
 ; Function MainMenu_HandleInput
 ; Handles a newly pressed button on the main menu.
-; In:  d0 - current SACBRLDU buttons
+; In:  d0 - newly pressed buttons (Changed & Buttons), SACBRLDU
 ;      Menu_ram_CurrentButtonsPtr - which player pressed
 ; Out: player mode/track/music/password screen updated
 ; Clobbers: d0-d2/a0-a1
-; Notes: A cycles player mode, B music, directions track, C password screen.
+; Notes: ROM $003BE2-$003F17. A cycles player mode 1 -> 3 -> 2 -> 1, B toggles
+;        music, Up/Right and Down/Left move the current track by +-2 (wrapping
+;        0..8), C opens the password screen for the player who pressed it.
+;        Button bits: Start $80, A $40, C $20, B $10, Right $08, Left $04,
+;        Down $02, Up $01.
 ; *************************************************
 
 MainMenu_HandleInput:
-                move.b  d0,(MainMenu_ram_CurrentButtons).l
+                move.b  d0,(MainMenu_ram_CurrentButtons).l ; edge mask -> SACBRLDU byte
                 btst    #6,(MainMenu_ram_CurrentButtons).l
                 beq.w   .checkB
 ; A pressed
@@ -783,9 +798,9 @@ MainMenu_HandleInput:
 .handleUpRight:
                 move.w  (Menu_ram_CurrentTrackId).l,d0
                 addq.w  #2,d0
-                cmp.w   #8,d0
+                cmp.w   #8,d0 ; five tracks use ids 0,2,4,6,8
                 ble.w   .loc_3D08
-                move.w  #0,d0
+                move.w  #0,d0 ; wrap past the last track
 .loc_3D08:
                 move.w  d0,(Menu_ram_CurrentTrackId).l
                 jsr     (Menu_DrawRaceSelection).l
@@ -803,8 +818,8 @@ MainMenu_HandleInput:
 .handleLeftDown:
                 move.w  (Menu_ram_CurrentTrackId).l,d0
                 subq.w  #2,d0
-                bpl.w   .loc_3D62
-                move.w  #8,d0
+                bpl.w   .loc_3D62 ; still >= 0
+                move.w  #8,d0 ; wrap before the first track
 .loc_3D62:
                 move.w  d0,(Menu_ram_CurrentTrackId).l
                 jsr     (Menu_DrawRaceSelection).l
@@ -821,7 +836,7 @@ MainMenu_HandleInput:
                 move.w  #(8*12),(Menu_ram_CurrentMessageId).l ; Press 'start' to exit
                 move.w  #30,(Menu_ram_MessageBlinkTimer).l
                 move.w  #240,(Menu_ram_NextMessageTimer).l
-                move.w  #$FFFF,(MenuPassword_ram_HoldTimer).l
+                move.w  #$FFFF,(MenuPassword_ram_HoldTimer).l ; no hold-repeat until a state change
                 move.w  #0,(MenuPassword_ram_HeldButtons).l
                 move.l  #MainMenu_ram_ChangedButtonsPlayerA,(Menu_ram_ChangedButtonsPtr).l
                 move.l  #MenuPassword_ram_StrPlayerAName,(MenuPassword_ram_StrPlayerNamePtr).l
@@ -833,14 +848,14 @@ MainMenu_HandleInput:
                 move.l  #MenuPassword_ram_StrPlayerBName,(MenuPassword_ram_StrPlayerNamePtr).l
                 move.l  #MenuPassword_ram_StrPlayerBPassword,(MenuPassword_ram_StrPlayerPasswordPtr).l
 .loc_3E12:
-                move.w  (dStringCodeTable + 2 * ' ').w,d0
+                move.w  (dStringCodeTable + 2 * ' ').w,d0 ; space tile index
                 addi.w  #$6000,d0 ; palette line 3
                 swap    d0
                 move.w  (dStringCodeTable + 2 * ' ').w,d0
-                addi.w  #$6000,d0
+                addi.w  #$6000,d0 ; build a 2-cell space/palette-3 longword
                 lea     (Menu_ram_FrameBuffer + $200).l,a0 ; y = 4
-; fill 17 lines with spaces
-                move.w  #$21F,d1
+; fill rows 4-20 (17 lines) with spaces
+                move.w  #$21F,d1 ; $220 longs = 64*17 cells
 .loopClear:
                 move.l  d0,(a0)+
                 dbf     d1,.loopClear
@@ -862,11 +877,11 @@ MainMenu_HandleInput:
                 lea     (Menu_ram_FrameBuffer).l,a1 ; destination
                 lea     (Intro_ram_ImageBuffer + $C8).l,a0 ; source
                 jsr     (WriteNametableToBuffer).w
-; encode Name and password text
+; encode the static "Name"/"Password" labels (word_4EEE is a 7x12 text record)
                 lea     (word_4EEE).l,a0
                 lea     (Intro_ram_ImageBuffer).l,a1
                 jsr     (EncodeString).w
-; write border for player B to frame buffer
+; write the label text for player B at x=24, y=7
                 lea     (word_4EEE).l,a0
                 move.w  6(a0),d0 ; width
                 move.w  4(a0),d1 ; height
@@ -877,7 +892,7 @@ MainMenu_HandleInput:
                 lea     (Intro_ram_ImageBuffer).l,a0 ; source
                 lea     (Menu_ram_FrameBuffer).l,a1 ; destination
                 jsr     (WriteNametableToBuffer).w
-; write border for player A to frame buffer
+; write the same label text for player A at x=4, y=7
                 lea     (word_4EEE).l,a0
                 move.w  6(a0),d0 ; width
                 move.w  4(a0),d1 ; height
@@ -902,33 +917,39 @@ MainMenu_HandleInput:
 
 ; *************************************************
 ; Function Menu_DrawRaceSelection
-; Draws the race badge and five race cards for the current track.
-; In:  d0 - current race offset (0,2,4,6,8)
-; Out: Menu_ram_FrameBuffer updated
+; Clears the race area, then draws the selected race badge and the five-card
+; carousel for the active player's places.
+; In:  d0 - current race id (even: 0,2,4,6,8); Menu_ram_Player selects A/B
+; Out: Menu_ram_FrameBuffer rows 6-19 updated; Menu_PlayerPlacesPtr set;
+;      Menu_ram_CurrentlyDrawnRaceCard ends at the far-left card's id
 ; Clobbers: d0-d6/a0-a1
-; Notes: cards show the active player's places; current/left/right/most-* positions.
+; Notes: ROM $003F18-$00408D. Rows 6-16 are cleared first. Race badges are 12x2
+;        cells (48 bytes) each in Race_ram_ImageBuffer2; the id is even, so
+;        id*$18 gives the byte offset. The five cards are R at
+;        x=14, R+2 at x=21, R+4 at x=25, R+8 at x=7 and R+6 at x=3 (all mod 10);
+;        each draws place[id] through Menu_DrawRaceCard.
 ; *************************************************
 
 Menu_DrawRaceSelection:
-                move.w  d0,(Menu_ram_CurrentlyDrawnRaceCard).l
-                lea     (Menu_ram_FrameBuffer + $300).l,a0 ; start from y = 6
-; clear 11 cell lines
+                move.w  d0,(Menu_ram_CurrentlyDrawnRaceCard).l ; save the selected id
+                lea     (Menu_ram_FrameBuffer + $300).l,a0 ; row 6 (64*2*6 = $300)
+; clear rows 6-16 (11 rows)
                 move.w  #$7FF,d1
                 swap    d1
-                move.w  #$7FF,d1
-                move.w  #$15F,d0
+                move.w  #$7FF,d1 ; $7FF07FF: two default-tile words
+                move.w  #$15F,d0 ; $160 longs = 64*11 cells
 .loopClear:
                 move.l  d1,(a0)+
                 dbf     d0,.loopClear
 
                 move.w  (Menu_ram_CurrentlyDrawnRaceCard).l,d0
                 andi.l  #$FFFF,d0
-                divu.w  #10,d0
-                swap    d0
-                andi.w  #$FFFE,d0
+                divu.w  #10,d0 ; @UNKNOWN(U-0003): purpose of this even normalization | guess: leftover encoding; identity for even ids 0..8 | next: audit all writers and try an odd id
+                swap    d0 ; low word = remainder (the id itself for 0..8)
+                andi.w  #$FFFE,d0 ; force an even id
 ; draw race badge
-                lea     (Race_ram_ImageBuffer2).l,a0 ; get race badges
-                mulu.w  #$18,d0
+                lea     (Race_ram_ImageBuffer2).l,a0 ; badge tilemaps (12x12 strip)
+                mulu.w  #$18,d0 ; even id -> id*$18 = raceIndex*48 bytes (12x2 cells)
                 adda.w  d0,a0
                 move.w  #12,d0 ; width
                 move.w  #2,d1 ; height
@@ -938,25 +959,25 @@ Menu_DrawRaceSelection:
                 move.w  #64,d6 ; plane width
                 lea     (Menu_ram_FrameBuffer).l,a1
                 jsr     (WriteNametableToBuffer).w
-; draw current race card
+; draw the selected race card (R) at x=14
                 lea     (Menu_ram_PlayerAPlaces).l,a0 ; player A
                 tst.w   (Menu_ram_Player).l
                 beq.w   .loc_3F92
                 lea     (Menu_ram_PlayerBPlaces).l,a0 ; player B
 .loc_3F92:
                 move.l  a0,(Menu_PlayerPlacesPtr).l
-                move.w  #0,d0
+                move.w  #0,d0 ; place is loaded from the array below
                 move.w  #14,d2 ; x
                 move.w  #10,d3 ; y
                 move.w  (Menu_ram_CurrentlyDrawnRaceCard).l,d1
                 andi.l  #$FFFF,d1
-                divu.w  #$A,d1
+                divu.w  #$A,d1 ; same even-id normalization (identity for 0..8)
                 swap    d1
                 andi.w  #$FFFE,d1
-                move.w  d1,(Menu_ram_CurrentlyDrawnRaceCard).l ; race id
-                move.w  (a0,d1.w),d0
+                move.w  d1,(Menu_ram_CurrentlyDrawnRaceCard).l ; race id -> place-array byte offset
+                move.w  (a0,d1.w),d0 ; place for this race
                 jsr     (Menu_DrawRaceCard).l
-; draw card to the left
+; draw the next race (R+2) to the right, at x=21
                 move.w  (Menu_ram_CurrentlyDrawnRaceCard).l,d1
                 addq.w  #2,d1 ; race id
                 cmp.w   #10,d1
@@ -969,7 +990,7 @@ Menu_DrawRaceSelection:
                 movea.l (Menu_PlayerPlacesPtr).l,a0
                 move.w  (a0,d1.w),d0
                 jsr     (Menu_DrawRaceCard).l
-; draw most left card
+; draw the race two ahead (R+4) at the far right, x=25
 .loc_3FFC:
                 move.w  (Menu_ram_CurrentlyDrawnRaceCard).l,d1
                 addq.w  #2,d1 ; race id
@@ -983,15 +1004,15 @@ Menu_DrawRaceSelection:
                 movea.l (Menu_PlayerPlacesPtr).l,a0
                 move.w  (a0,d1.w),d0
                 jsr     (Menu_DrawRaceCard).l
-; draw card to the right
+; draw the previous race (R-2 = R+8 mod 10) at x=7
                 move.w  (Menu_ram_CurrentlyDrawnRaceCard).l,d1
-                addq.w  #2,d1 ; race id
+                addq.w  #2,d1 ; R+6: saved for the far-left card
                 cmp.w   #$A,d1
                 bmi.w   .loc_4042
                 move.w  #0,d1
 .loc_4042:
                 move.w  d1,(Menu_ram_CurrentlyDrawnRaceCard).l
-                addq.w  #2,d1 ; race id
+                addq.w  #2,d1 ; R+8: draw this one
                 cmp.w   #$A,d1
                 bmi.w   .loc_4056
                 move.w  #0,d1
@@ -1001,8 +1022,8 @@ Menu_DrawRaceSelection:
                 movea.l (Menu_PlayerPlacesPtr).l,a0
                 move.w  (a0,d1.w),d0
                 jsr     (Menu_DrawRaceCard).l
-; draw most right card
-                move.w  (Menu_ram_CurrentlyDrawnRaceCard).l,d1 ; race id
+; draw the race two back (R-4 = R+6 mod 10) at the far left, x=3
+                move.w  (Menu_ram_CurrentlyDrawnRaceCard).l,d1 ; R+6 saved above
                 move.w  #3,d2 ; x
                 move.w  #6,d3 ; y
                 movea.l (Menu_PlayerPlacesPtr).l,a0
@@ -1015,58 +1036,67 @@ Menu_DrawRaceSelection:
 ; *************************************************
 ; Function Menu_DrawRaceCard
 ; Copies one race card and writes its place text ("1st/2nd/3rd/Nth").
-; In:  d0 - player place (0 = no text)
-;      d1 - race id, d2 - x, d3 - y
+; In:  d0 - player place (0 = no text; 1..19 supported)
+;      d1 - race id (even byte offset), d2 - x, d3 - y
 ; Out: Menu_ram_FrameBuffer updated (masked write)
 ; Clobbers: d0-d6/a0-a1
-; Notes: mask tile $7FF = default black; only those cells are replaced.
+; Notes: ROM $00408E-$00417B. Each card is 12x6 = 72 words (144 bytes) at
+;        Race_ram_ImageBuffer2+$120. Because d1 is even, d1*$48 steps by 144
+;        bytes (one card) per two ids. Place text occupies the four cells at
+;        row 5, columns 4-7; the surrounding cells are zeroed so card art does
+;        not show through. Only 10-19 are handled for two-digit places; 20+
+;        would emit a non-digit tile. Mask tile $7FF = default black, so only
+;        those cells replace the background.
 ; *************************************************
 
 Menu_DrawRaceCard:
-                lea     (Race_ram_ImageBuffer2 + $120).l,a0 ; get race cards nametable
-                mulu.w  #$48,d1
+                lea     (Race_ram_ImageBuffer2 + $120).l,a0 ; card tilemaps start here
+                mulu.w  #$48,d1 ; even id * $48 = (id/2)*144 bytes = card offset
                 adda.w  d1,a0
-; copy card to Intro_ram_ImageBuffer
+; copy one 12x6 card to Intro_ram_ImageBuffer
                 lea     (Intro_ram_ImageBuffer).l,a1
-                move.w  #35,d1 ; copy 72 table entries, $90 bytes, size of one card 12x6
+                move.w  #35,d1 ; 36 longs = 72 words = 144 bytes ($90)
 .loopCopy:
                 move.l  (a0)+,(a1)+
                 dbf     d1,.loopCopy
 
                 tst.w   d0
-                beq.w   .draw ; jump if place = 0
-                lea     (Intro_ram_ImageBuffer + $80).l,a0 ; get bottom mid tile entry
-                move.w  #0,-8(a0)
+                beq.w   .draw ; place 0 -> no text
+                lea     (Intro_ram_ImageBuffer + $80).l,a0 ; cell 64 = row 5, col 4
+                move.w  #0,-8(a0) ; clear row 5 cols 0-3
                 move.w  #0,-6(a0)
                 move.w  #0,-4(a0)
                 move.w  #0,-2(a0)
-                move.w  #0,8(a0)
+                move.w  #0,8(a0) ; clear row 5 cols 8-11
                 move.w  #0,$A(a0)
                 move.w  #0,$C(a0)
                 move.w  #0,$E(a0)
-                move.w  (dStringCodeTable + 2 * ' ').w,(a0) ; ' Xth'
-                move.w  (dStringCodeTable + 2 * 't').w,4(a0)
+                move.w  (dStringCodeTable + 2 * ' ').w,(a0) ; leading space (or tens digit)
+                move.w  (dStringCodeTable + 2 * 't').w,4(a0) ; default suffix "th"
                 move.w  (dStringCodeTable + 2 * 'h').w,6(a0)
                 cmp.w   #4,d0
-                bpl.w   .drawTens
-                move.w  (dStringCodeTable + 2 * 'r').w,4(a0) ; ' 3rd'
+                bpl.w   .drawTens ; 4th, 5th, ...
+                move.w  (dStringCodeTable + 2 * 'r').w,4(a0) ; 3rd
                 move.w  (dStringCodeTable + 2 * 'd').w,6(a0)
                 cmp.w   #3,d0
                 bpl.w   .drawTens
-                move.w  (dStringCodeTable + 2 * 'n').w,4(a0) ; ' 2nd'
+                move.w  (dStringCodeTable + 2 * 'n').w,4(a0) ; 2nd
                 cmp.w   #2,d0
                 bpl.w   .drawTens
-                move.w  (dStringCodeTable + 2 * 's').w,4(a0) ; ' 1st'
+                move.w  (dStringCodeTable + 2 * 's').w,4(a0) ; 1st
                 move.w  (dStringCodeTable + 2 * 't').w,6(a0)
 .drawTens:
                 cmp.w   #10,d0
-                bmi.w   .drawOnes
-                move.w  (dStringCodeTable + 2 * '1').w,(a0) ; '1Xth'
+                bmi.w   .drawOnes ; single-digit place
+                move.w  (dStringCodeTable + 2 * '1').w,(a0) ; 1X: tens digit
                 subi.w  #10,d0
 .drawOnes:
                 move.w  (dStringCodeTable + 2 * '0').w,2(a0)
-                add.w   d0,2(a0)
-                subi.w  #$680,(a0)+ ; shift to font tiles, which start from index 0
+                add.w   d0,2(a0) ; ones digit = '0' + place
+; The card map is written with base tile $680 (VRAM $D000), but these four
+; words must select font tiles at VRAM $0000. Subtract the base so the masked
+; writer's add.w d4 restores the original font tile index.
+                subi.w  #$680,(a0)+
                 subi.w  #$680,(a0)+
                 subi.w  #$680,(a0)+
                 subi.w  #$680,(a0)+
@@ -1088,18 +1118,23 @@ Menu_DrawRaceCard:
 ; In:  Menu_ram_CurrentMessageId (multiple of 8), Message_MsgArray
 ; Out: Menu_ram_FrameBuffer / Message_* updated
 ; Clobbers: d0-d6/a0-a1
-; Notes: the blink timer toggles the text; the show function draws the image.
+; Notes: ROM $00417C-$004225. Message_MsgArray has 8-byte entries:
+;        +$00 text pointer, +$04 show-function pointer; $FFFFFFFF ends a group.
+;        MessageBlinkTimer >= 0 hides the text (Message_ShowEmpty for static
+;        prompts, Message_Clear for animated ones); a negative timer reveals it,
+;        calls the show function, encodes and draws the text.
 ; *************************************************
 
 Menu_ShowMessage:
                 tst.w   (Menu_ram_MessageBlinkTimer).l
                 bmi.w   .showText
-                move.w  (Menu_ram_CurrentMessageId).l,d0 ;l only image is shown
+; blink-off phase: hide the text but keep the appropriate blank field
+                move.w  (Menu_ram_CurrentMessageId).l,d0
                 lea     (Message_MsgArray).l,a0
-                movea.l 4(a0,d0.w),a0 ; get ShowMessage function
+                movea.l 4(a0,d0.w),a0 ; show-function pointer
                 cmpa.l  #Message_ShowEmpty,a0
-                beq.w   .Message_ShowEmpty
-                jsr     (Message_Clear).l
+                beq.w   .Message_ShowEmpty ; static prompt -> blank space field
+                jsr     (Message_Clear).l ; animated prompt -> black field
                 bra.w   .return
 .Message_ShowEmpty:
                 jsr     (Message_ShowEmpty).l
@@ -1107,16 +1142,16 @@ Menu_ShowMessage:
 .showText:
                 move.w  (Menu_ram_CurrentMessageId).l,d0
                 lea     (Message_MsgArray).l,a0
-                movea.l 4(a0,d0.w),a0 ; get ShowMessage function
-                bmi.w   .return ; return if value is -1
-                jsr     (a0) ; call ShowMessage function
+                movea.l 4(a0,d0.w),a0 ; show-function pointer
+                bmi.w   .return ; -1 marks the end of the tooltip group
+                jsr     (a0) ; draw the prompt/icon for this id
                 move.w  (Menu_ram_CurrentMessageId).l,d0
                 lea     (Message_MsgArray).l,a0
-                movea.l (a0,d0.w),a0 ; get message text
-                cmpa.l  #0,a0 ; return if value is -1
+                movea.l (a0,d0.w),a0 ; text record pointer
+                cmpa.l  #0,a0 ; negative pointer means -1: no text
                 bmi.w   .return
                 lea     (Intro_ram_ImageBuffer).l,a1
-                bsr.w   EncodeString ; write to Intro_ram_ImageBuffer
+                bsr.w   EncodeString ; encode text -> tile indices
                 move.w  (Menu_ram_CurrentMessageId).l,d0
                 lea     (Message_MsgArray).l,a0
                 movea.l (a0,d0.w),a0

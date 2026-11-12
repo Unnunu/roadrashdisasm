@@ -12,4 +12,6 @@ an analysis document).
 
 | ID | Location | Symbol / line | What is unknown | Current best guess | Next step | Status | Evidence |
 |---|---|---|---|---|---|---|---|
-| TODO | TODO | TODO | TODO | TODO | TODO | TODO | TODO |
+| `U-0001` | `src/screens/menu_main.asm:710` | `Menu_BuildRaceTooltip` level word | physical meaning and unit of the `unk_25EC0` level-word entries | distance in tenths of a mile, displayed as one decimal | compare the five level words with the in-game tooltip distances; check `Track_LevelWords*` in `race_track_data.asm` | open | `[hypothesis]` |
+| `U-0002` | `src/screens/menu_main.asm:170` | `img_Gamepad` map `+$B48` | why the asset header advertises 12x9 while `Menu_Init` copies only the top 12x6 rows | the lower 3 rows are unused padding | inspect the full decompressed map/preview and search for other readers of `+$B48` | open | `[hypothesis]` |
+| `U-0003` | `src/screens/menu_main.asm:947` | `Menu_DrawRaceSelection` `divu #10 / swap / andi #$FFFE` | why the id is normalized through a divide when it is already even (identity for 0..8) | leftover from an odd-id or decimal encoding; the mask is the effective operation | audit every writer of `Menu_ram_CurrentlyDrawnRaceCard`; try an odd id in BlastEm | open | `[hypothesis]` |
