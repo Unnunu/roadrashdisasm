@@ -1,7 +1,7 @@
 ; *************************************************
 ; shop.asm - bike shop (select, buy, trade in)
 ; ROM range: $74AA-$8341
-; Status:    analyzed (static; shop is non-demo)
+; Status:    line-by-line complete (static; shop is non-demo; dynamic = user-described)
 ; API:       Shop_Init, Shop_GameTick, Shop_HandleInput
 ; *************************************************
 
@@ -32,15 +32,15 @@ Shop_Init:
 .loc_751A:
                 lea     (VdpCtrl).l,a0
                 lea     (VdpData).l,a1
-                move.w  #$8004,(a0) ; H-ints disabled, Pal Select 1, HVC latch disabled, Display gen enabled
-                move.w  #$8174,(a0) ; Display enabled, V-ints enabled, Height: 28, Mode 5, 64K VRAM
+                move.w  #$8004,(a0) ; reg0 $04: mode-5 fixed bit, H-int off, HV-counter latch off
+                move.w  #$8174,(a0) ; reg1 $74: display on, V-int on, DMA on, 28 rows (M2=0)
                 move.w  #$8210,(a0) ; Scroll A Name Table:    $4000
                 move.w  #$831C,(a0) ; Window Name Table:      $7000
                 move.w  #$8402,(a0) ; Scroll B Name Table:    $4000
                 move.w  #$8530,(a0) ; Sprite Attribute Table: $6000
                 move.w  #$870D,(a0) ; Backdrop Color: $D
                 move.w  #$8AFF,(a0) ; H-Int Counter: 255
-                move.w  #$8B02,(a0) ; E-ints disabled, V-Scroll: full, H-Scroll: cell
+                move.w  #$8B02,(a0) ; reg0B: external int off, V-scroll full, H-scroll tile/cell mode
                 move.w  #$8C81,(a0) ; Width: 40, Shadow/Highlight: disabled
                 move.w  #$8D19,(a0) ; HScroll Data Table:     $6400
                 move.w  #$8F02,(a0) ; Auto-increment: $2
@@ -51,7 +51,7 @@ Shop_Init:
                 move.l  #0,(VdpData).l ; clear first entry
                 move.l  #0,(VdpData).l
 ; H-scroll table $6400: 7 static strips, 9 scrolling strips (the bike band), 12 static
-                move.w  #$8F20,(a0) ; Auto-increment: $20
+                move.w  #$8F20,(a0) ; Auto-increment: $20 (one H-scroll entry per 2-cell strip)
                 VDP_VRAM_WRITE $6402,(a0)
                 move.w  #$160,(Shop_ScrollPos).l
 ; 7 strips: scroll = 0
@@ -142,7 +142,7 @@ Shop_Init:
                 move.w  #6,d1 ; height
                 move.w  #2,d2 ; x
                 move.w  #22,d3 ; y
-                move.w  #$500,d4 ; base tile index, address = $A000
+                move.w  #$500,d4 ; tile index $500 (VRAM $A000), palette 0
                 move.w  #$4000,d5 ; destination = Scroll A/B
                 move.w  #128,d6 ; plane width
                 lea     (Intro_ram_ImageBuffer + $B48).l,a0
@@ -160,7 +160,7 @@ Shop_Init:
                 move.w  #2,d1 ; height
                 move.w  #0,d2 ; x
                 move.w  #4,d3 ; y
-                move.w  #$8580,d4 ; base tile index, address = $B000, high priority
+                move.w  #$8580,d4 ; tile index $580 (VRAM $B000), palette 0, high priority
                 move.w  #$4000,d5 ; destination = Scroll A/B
                 move.w  #128,d6 ; plane width
                 lea     (Intro_ram_ImageBuffer + $C8).l,a0
@@ -178,12 +178,13 @@ Shop_Init:
                 move.w  #2,d1 ; height
                 move.w  #36,d2 ; x
                 move.w  #4,d3 ; y
-                move.w  #$8588,d4 ; base tile index, address = $B100, high priority
+                move.w  #$8588,d4 ; tile index $588 (VRAM $B100), palette 0, high priority
                 move.w  #$4000,d5 ; destination = Scroll A/B
                 move.w  #128,d6 ; plane width
                 lea     (Intro_ram_ImageBuffer + $148).l,a0
                 jsr     (WriteNametable).w
-; load palette
+; 64-colour screen palette from the shop_arrow_right blob + $C4
+; (asset spec screen_palettes.shop); 4 palette lines x 16 colours
                 lea     (Intro_ram_ImageBuffer + $C4).l,a0
                 movea.l (Global_ram_PalettePtr).l,a1
                 move.w  #7,d0
@@ -257,17 +258,17 @@ Shop_Init:
                 lea     (Shop_ImageBike3).l,a1
                 bsr.w   WriteNametableToBuffer
 ; draw the bike lineup: centre palette = selected bike, other bikes = previous bike
-                lea     (Shop_BikePalettes).l,a0
+                lea     (Shop_BikePalettes).l,a0 ; a0 = selected bike palette
                 move.w  (Shop_CurrentBikeId).l,d0
-                asl.w   #5,d0
+                asl.w   #5,d0 ; 32 bytes per 16-colour palette record
                 adda.w  d0,a0
-                lea     (Shop_BikePalettes).l,a1 ; current bike palette
+                lea     (Shop_BikePalettes).l,a1 ; a1 = previous bike palette
                 move.w  (Shop_CurrentBikeId).l,d0
                 subq.w  #1,d0
                 andi.w  #7,d0
                 asl.w   #5,d0
                 adda.w  d0,a1
-                move.w  (Shop_CurrentBikeId).l,d0 ; previous bike palette, used for all other bikes
+                move.w  (Shop_CurrentBikeId).l,d0 ; d0 = selected id for the draw positions
                 bsr.w   Shop_DrawBikes
 ; CREDITS/PRICE labels at (3,18)/(31,18), palette 3
 ; draw text 'CREDITS'
@@ -343,15 +344,17 @@ Shop_DrawBikeName:
                 lea     (Intro_ram_ImageBuffer).l,a1
                 bsr.w   EncodeString
 
+                ; all eight records share the same y/x/height/width header,
+                ; so the first record supplies the layout for every bike
                 movea.l (Shop_BikeDescriptions).l,a0
                 move.w  6(a0),d0 ; width
                 move.w  4(a0),d1 ; height
                 move.w  2(a0),d2 ; x
                 move.w  (a0),d3 ; y
-                move.w  #$6000,d4 ; base tile index, address = $0, palette line = 3
+                move.w  #$6000,d4 ; attribute word: palette 3, tile index 0 (font at VRAM $0)
                 move.w  #64,d6 ; plane width
                 lea     (Intro_ram_ImageBuffer).l,a0 ; source
-                lea     (Menu_ram_FrameBuffer).l,a1 ; deastination
+                lea     (Menu_ram_FrameBuffer).l,a1 ; destination
                 bsr.w   WriteNametableToBuffer
                 rts
 ; End of function Shop_DrawBikeName
@@ -365,7 +368,7 @@ Shop_DrawBikeName:
 ; *************************************************
 
 Shop_ShowBikeDescription:
-                asl.w   #3,d0
+                asl.w   #3,d0 ; 8 bytes per Message_MsgArray entry
                 addi.w  #(8*51),d0
                 move.w  d0,(Menu_ram_CurrentMessageId).l
                 move.w  #30,(Menu_ram_MessageBlinkTimer).l
@@ -404,13 +407,13 @@ Shop_GameTick:
                 jsr     (GetInputPlayerA).w
                 move.w  d0,(MainMenu_ram_ButtonsPlayerA).l
                 eor.w   d0,(MainMenu_ram_ChangedButtonsPlayerA).l
-                andi.w  #$80,d0
+                andi.w  #$80,d0 ; Start is checked while held
                 bne.w   .loc_7B30
                 move.w  (MainMenu_ram_ButtonsPlayerB).l,(MainMenu_ram_ChangedButtonsPlayerB).l
                 jsr     (GetInputPlayerB).w
                 move.w  d0,(MainMenu_ram_ButtonsPlayerB).l
                 eor.w   d0,(MainMenu_ram_ChangedButtonsPlayerB).l
-                andi.w  #$80,d0
+                andi.w  #$80,d0 ; Start is checked while held
                 bne.w   .loc_7B30
                 move.w  (MainMenu_ram_ChangedButtonsPlayerB).l,d0
                 beq.w   .loc_7A98
@@ -432,15 +435,15 @@ Shop_GameTick:
                 bpl.w   .loc_7B16
                 move.w  #$1E,(Menu_ram_MessageBlinkTimer).l
                 move.w  #$12C,(Menu_ram_NextMessageTimer).l
-                addq.w  #8,(Menu_ram_CurrentMessageId).l
-                cmpi.w  #$1E0,(Menu_ram_CurrentMessageId).l
+                addq.w  #8,(Menu_ram_CurrentMessageId).l ; next 8-byte message record
+                cmpi.w  #$1E0,(Menu_ram_CurrentMessageId).l ; defensive lower clamp (group 60)
                 bpl.w   .loc_7AF6
                 move.w  #$1E0,(Menu_ram_CurrentMessageId).l
 .loc_7AF6:
                 move.w  (Menu_ram_CurrentMessageId).l,d0
                 lea     (Message_MsgArray).w,a0
                 movea.l (a0,d0.w),a0
-                cmpa.l  #$FFFFFFFF,a0
+                cmpa.l  #$FFFFFFFF,a0 ; terminator -> restart the prompt cycle
                 bne.w   .loc_7B16
                 move.w  #$1E0,(Menu_ram_CurrentMessageId).l
 .loc_7B16:
@@ -451,10 +454,10 @@ Shop_GameTick:
                 jsr     (Audio_Update).l
                 rts
 .loc_7B30:
-                move.l  #$5F28,(RaceResults_ram_NextFunction).l
+                move.l  #$5F28,(RaceResults_ram_NextFunction).l ; $5F28 = RaceResults_Init
 .loc_7B3A:
                 jsr     (Audio_StopMusic).l
-                move.l  #0,(ram_UpdateFunction).l
+                move.l  #0,(ram_UpdateFunction).l ; stop the stage update loop
                 bra.s   .loc_7B28
 ; End of function Shop_GameTick
 
@@ -467,16 +470,17 @@ Shop_GameTick:
 ; *************************************************
 
 Shop_HandleInput:
-                move.b  d0,(Shop_ram_CurrentButtons).l
-                btst    #6,(Shop_ram_CurrentButtons).l
+                move.b  d0,(Shop_ram_CurrentButtons).l ; byte write; the upper byte stays stale
+                ; A is tested after B, so A wins if both are newly pressed
+                btst    #6,(Shop_ram_CurrentButtons).l ; A -> high score
                 beq.w   .loc_7B68
                 move.l  #HighScore_Init,(RaceResults_ram_NextFunction).l
 .loc_7B68:
-                btst    #4,(Shop_ram_CurrentButtons).l
+                btst    #4,(Shop_ram_CurrentButtons).l ; B -> results
                 beq.w   .loc_7B7E
                 move.l  #RaceResults_Init,(RaceResults_ram_NextFunction).l
 .loc_7B7E:
-                btst    #5,(Shop_ram_CurrentButtons).l
+                btst    #5,(Shop_ram_CurrentButtons).l ; C -> buy / trade in
                 beq.w   .loc_7C64
                 tst.w   (Menu_ram_Player).l
                 bne.w   .loc_7BF8
@@ -493,6 +497,7 @@ Shop_HandleInput:
                 move.w  (a0,d0.w),d0
                 asr.w   #1,d0
                 neg.w   d0
+                ; two word adds = a0 + 2*id (index into Shop_dPrices)
                 adda.w  (Shop_CurrentBikeId).l,a0
                 adda.w  (Shop_CurrentBikeId).l,a0
                 add.w   (a0),d0
@@ -519,6 +524,7 @@ Shop_HandleInput:
                 move.w  (a0,d0.w),d0
                 asr.w   #1,d0
                 neg.w   d0
+                ; two word adds = a0 + 2*id (index into Shop_dPrices)
                 adda.w  (Shop_CurrentBikeId).l,a0
                 adda.w  (Shop_CurrentBikeId).l,a0
                 add.w   (a0),d0
@@ -541,7 +547,7 @@ Shop_HandleInput:
                 move.w  (Shop_ScrollPos).l,d0
                 cmp.w   #$160,d0
                 bne.w   .loc_7CE0
-                lea     (Shop_BikePalettes).l,a1
+                lea     (Shop_BikePalettes).l,a1 ; a1 = palette of the replaced bike
                 move.w  (Shop_CurrentBikeId).l,d0
                 asl.w   #5,d0
                 adda.w  d0,a1
@@ -560,6 +566,8 @@ Shop_HandleInput:
                 bsr.w   Shop_ShowBikeDescription
                 bsr.w   Shop_PrepareMessages
                 bsr.w   Shop_DrawCreditsAndPrice
+                ; the new bike is already drawn while the band is still at the old
+                ; offset, so the first frames show the transient wrong model/palette
                 subi.w  #$D0,(Shop_ScrollPos).l
 .loc_7CE0:
 ; Left: previous bike, same rest condition
@@ -568,7 +576,7 @@ Shop_HandleInput:
                 move.w  (Shop_ScrollPos).l,d0
                 cmp.w   #$160,d0
                 bne.w   .locret_7D5C
-                lea     (Shop_BikePalettes).l,a1
+                lea     (Shop_BikePalettes).l,a1 ; a1 = palette of the replaced bike
                 move.w  (Shop_CurrentBikeId).l,d0
                 asl.w   #5,d0
                 adda.w  d0,a1
@@ -603,7 +611,7 @@ Shop_HandleInput:
 
 Shop_DrawCreditsAndPrice:
 ; draw credit amount string
-                move.w  #$6000,d4
+                move.w  #$6000,d4 ; default: palette 3 (normal text)
                 lea     (Menu_ram_TempString).l,a0
                 move.w  #19,(a0)+ ; y
                 move.w  #0,(a0)+ ; x
@@ -630,11 +638,11 @@ Shop_DrawCreditsAndPrice:
                 asl.w   #1,d1
                 clr.l   d0
                 move.w  (a1,d1.w),d0 ; get current bike price
-                cmp.l   d0,d2
-                bmi.w   .loc_7DD6
-                move.w  #$4000,d4 ; not enough money : palette line 2
+                cmp.l   d0,d2 ; d2 = credits, d0 = selected price
+                bmi.w   .loc_7DD6 ; credits < price: keep palette 3 (normal text)
+                move.w  #$4000,d4 ; credits >= price: palette 2 (highlight)
 .loc_7DD6:
-                subq.w  #3,a0
+                subq.w  #3,a0 ; Race_FormatNumber writes backwards from a0
                 move.l  d2,d0
                 bsr.w   Race_FormatNumber
                 lea     (Menu_ram_TempString).l,a0
@@ -660,11 +668,12 @@ Shop_DrawCreditsAndPrice:
                 asl.w   #1,d0
                 andi.l  #$FFFF,d0
                 move.w  (a1,d0.w),d0
-                subq.w  #4,a0
+                subq.w  #4,a0 ; leave room for the backward-formatted price
                 bsr.w   Race_FormatNumber
                 bra.w   .loc_7E64
 .alreadyOwned:
-                move.l  #$72732920,-(a0) ; text '(its yours)'
+                ; write "(its yours) " backwards, one long at a time
+                move.l  #$72732920,-(a0)
                 move.l  #$20796F75,-(a0)
                 move.l  #$28697473,-(a0)
 .loc_7E64:
@@ -690,7 +699,7 @@ Shop_DrawString:
                 move.w  4(a0),d1
                 move.w  2(a0),d2
                 move.w  (a0),d3
-                move.w  #$40,d6
+                move.w  #$40,d6 ; frame-buffer width 64 cells
                 lea     (Intro_ram_ImageBuffer).l,a0
                 lea     (Menu_ram_FrameBuffer).l,a1
                 bsr.w   WriteNametableToBuffer
@@ -706,7 +715,7 @@ Shop_DrawString:
 ; *************************************************
 
 Shop_ShowAlreadyOwned:
-                move.w  #$1D8,(Menu_ram_CurrentMessageId).l
+                move.w  #$1D8,(Menu_ram_CurrentMessageId).l ; message 59 ($1D8 = 59*8)
                 move.w  #$1E,(Menu_ram_MessageBlinkTimer).l
                 move.w  #$12C,(Menu_ram_NextMessageTimer).l
                 lea     (Message_StrAlreadyOwnBike).w,a0
@@ -724,11 +733,11 @@ Shop_ShowAlreadyOwned:
                 move.w  (Shop_CurrentBikeId).l,d0
                 asl.w   #2,d0
                 movea.l (a0,d0.w),a0
-                addq.w  #8,a0
-                move.w  -2(a0),d0
-                suba.w  d0,a1
-                sub.w   d0,d1
-                asr.w   #1,d1
+                addq.w  #8,a0 ; skip the 8-byte header -> bike name row
+                move.w  -2(a0),d0 ; +6 = width (name length)
+                suba.w  d0,a1 ; rewind to the start of the prompt's last row
+                sub.w   d0,d1 ; d1 = prompt width - name width
+                asr.w   #1,d1 ; horizontal centering offset
                 suba.w  d1,a1
                 subq.w  #1,d0
 .loc_7EFA:
@@ -746,7 +755,7 @@ Shop_ShowAlreadyOwned:
 ; *************************************************
 
 Shop_ShowCannotAfford:
-                move.w  #$1D8,(Menu_ram_CurrentMessageId).l
+                move.w  #$1D8,(Menu_ram_CurrentMessageId).l ; message 59 ($1D8 = 59*8)
                 move.w  #$1E,(Menu_ram_MessageBlinkTimer).l
                 move.w  #$12C,(Menu_ram_NextMessageTimer).l
                 lea     (Message_StrNeedMoreCredit).w,a0
@@ -764,11 +773,11 @@ Shop_ShowCannotAfford:
                 move.w  (Shop_CurrentBikeId).l,d0
                 asl.w   #2,d0
                 movea.l (a0,d0.w),a0
-                addq.w  #8,a0
-                move.w  -2(a0),d0
-                suba.w  d0,a1
-                sub.w   d0,d1
-                asr.w   #1,d1
+                addq.w  #8,a0 ; skip the 8-byte header -> bike name row
+                move.w  -2(a0),d0 ; +6 = width (name length)
+                suba.w  d0,a1 ; rewind to the start of the prompt's last row
+                sub.w   d0,d1 ; d1 = prompt width - name width
+                asr.w   #1,d1 ; horizontal centering offset
                 suba.w  d1,a1
                 subq.w  #1,d0
 .loc_7F5A:
@@ -804,11 +813,11 @@ Shop_PrepareMessages:
                 move.w  (Shop_CurrentBikeId).l,d0
                 asl.w   #2,d0
                 movea.l (a0,d0.w),a0
-                addq.w  #6,a0
-                move.w  (a0)+,d0
-                suba.w  d0,a1
-                sub.w   d0,d1
-                asr.w   #1,d1
+                addq.w  #6,a0 ; point at the width field of the name record
+                move.w  (a0)+,d0 ; width = name length, a0 -> name row
+                suba.w  d0,a1 ; rewind to the start of the prompt's last row
+                sub.w   d0,d1 ; d1 = prompt width - name width
+                asr.w   #1,d1 ; horizontal centering offset
                 suba.w  d1,a1
                 subq.w  #1,d0
 .loc_7FA0:
@@ -833,11 +842,11 @@ Shop_PrepareMessages:
                 andi.w  #7,d0
                 asl.w   #2,d0
                 movea.l (a0,d0.w),a0
-                addq.w  #6,a0
-                move.w  (a0)+,d0
-                suba.w  d0,a1
-                sub.w   d0,d1
-                asr.w   #1,d1
+                addq.w  #6,a0 ; point at the width field of the name record
+                move.w  (a0)+,d0 ; width = name length, a0 -> name row
+                suba.w  d0,a1 ; rewind to the start of the prompt's last row
+                sub.w   d0,d1 ; d1 = prompt width - name width
+                asr.w   #1,d1 ; horizontal centering offset
                 suba.w  d1,a1
                 subq.w  #1,d0
 .loc_7FEA:
@@ -860,11 +869,11 @@ Shop_PrepareMessages:
                 andi.w  #7,d0
                 asl.w   #2,d0
                 movea.l (a0,d0.w),a0
-                addq.w  #6,a0
-                move.w  (a0)+,d0
-                suba.w  d0,a1
-                sub.w   d0,d1
-                asr.w   #1,d1
+                addq.w  #6,a0 ; point at the width field of the name record
+                move.w  (a0)+,d0 ; width = name length, a0 -> name row
+                suba.w  d0,a1 ; rewind to the start of the prompt's last row
+                sub.w   d0,d1 ; d1 = prompt width - name width
+                asr.w   #1,d1 ; horizontal centering offset
                 suba.w  d1,a1
                 subq.w  #1,d0
 .loc_8034:
@@ -885,27 +894,29 @@ Shop_PrepareMessages:
 Shop_DrawBikes:
                 move.w  d0,-(sp) ; save d0
 ; write palette line 2, for bike in center
+; @UNKNOWN(U-0010): dst w4 comes from the next palette's w0 (a0=base+10, $16(a0));
+; source w13 is never copied. Guess: fixed transparent colour. Next: render/capture.
                 movea.l (Global_ram_PalettePtr).l,a2
                 adda.w  #$40,a2 ; get palette 2 offset
-                move.l  (a0)+,(a2)+ ; copy entries 0-3 -> 0-3
-                move.l  (a0)+,(a2)+
-                addq.w  #2,a0 ; skip entry 4 in source
-                move.w  $16(a0),(a2)+ ; copy entry 13 -> 4
-                move.l  (a0)+,(a2)+ ; copy entries 5-12 -> 5-12
-                move.l  (a0)+,(a2)+
-                move.l  (a0)+,(a2)+
-                move.l  (a0)+,(a2)+
+                move.l  (a0)+,(a2)+ ; w0-w1 (a long = two colours)
+                move.l  (a0)+,(a2)+ ; w2-w3
+                addq.w  #2,a0 ; skip source w4
+                move.w  $16(a0),(a2)+ ; a0 = base+10, so +$16 -> next palette w0 (U-0010)
+                move.l  (a0)+,(a2)+ ; w5-w6
+                move.l  (a0)+,(a2)+ ; w7-w8
+                move.l  (a0)+,(a2)+ ; w9-w10
+                move.l  (a0)+,(a2)+ ; w11-w12
 ; write palette line 3, for bikes right and left
                 movea.l (Global_ram_PalettePtr).l,a2
                 adda.w  #$60,a2
-                move.l  (a1)+,(a2)+
-                move.l  (a1)+,(a2)+
-                addq.w  #2,a1
-                move.w  $16(a1),(a2)+
-                move.l  (a1)+,(a2)+
-                move.l  (a1)+,(a2)+
-                move.l  (a1)+,(a2)+
-                move.l  (a1)+,(a2)+
+                move.l  (a1)+,(a2)+ ; w0-w1
+                move.l  (a1)+,(a2)+ ; w2-w3
+                addq.w  #2,a1 ; skip source w4
+                move.w  $16(a1),(a2)+ ; next palette w0 -> dst w4
+                move.l  (a1)+,(a2)+ ; w5-w6
+                move.l  (a1)+,(a2)+ ; w7-w8
+                move.l  (a1)+,(a2)+ ; w9-w10
+                move.l  (a1)+,(a2)+ ; w11-w12
 ; the bike before the previous one
                 lea     (Shop_BikeImageTable).l,a0
                 move.w  (sp),d0
@@ -917,7 +928,7 @@ Shop_DrawBikes:
                 move.w  #9,d1 ; height
                 move.w  #3,d2 ; x
                 move.w  #7,d3 ; y
-                move.w  #$E000,d4 ; base tile index = $0, palette line = 3, high priority
+                move.w  #$E000,d4 ; attribute word: priority + palette 3; tile index comes from the map
                 move.w  #$4000,d5 ; destination = Scroll A/B
                 move.w  #128,d6 ; plane width
                 jsr     (WriteNametable).w
@@ -932,7 +943,7 @@ Shop_DrawBikes:
                 move.w  #9,d1 ; height
                 move.w  #29,d2 ; x
                 move.w  #7,d3 ; y
-                move.w  #$E000,d4 ; base tile index = $0, palette line = 3, high priority
+                move.w  #$E000,d4 ; attribute word: priority + palette 3; tile index comes from the map
                 move.w  #$4000,d5 ; destination = Scroll A/B
                 move.w  #128,d6 ; plane width
                 jsr     (WriteNametable).w
@@ -945,7 +956,7 @@ Shop_DrawBikes:
                 move.w  #9,d1 ; height
                 move.w  #55,d2 ; x
                 move.w  #7,d3 ; y
-                move.w  #$C000,d4 ; base tile index = $0, palette line = 2, high priority
+                move.w  #$C000,d4 ; attribute word: priority + palette 2; tile index comes from the map
                 move.w  #$4000,d5 ; destination = Scroll A/B
                 move.w  #128,d6 ; plane width
                 jsr     (WriteNametable).w
@@ -960,7 +971,7 @@ Shop_DrawBikes:
                 move.w  #9,d1 ; height
                 move.w  #81,d2 ; x
                 move.w  #7,d3 ; y
-                move.w  #$E000,d4 ; base tile index = $0, palette line = 3, high priority
+                move.w  #$E000,d4 ; attribute word: priority + palette 3; tile index comes from the map
                 move.w  #$4000,d5 ; destination = Scroll A/B
                 move.w  #128,d6 ; plane width
                 jsr     (WriteNametable).w
@@ -975,7 +986,7 @@ Shop_DrawBikes:
                 move.w  #9,d1 ; height
                 move.w  #107,d2 ; x
                 move.w  #7,d3 ; y
-                move.w  #$E000,d4 ; base tile index = $0, palette line = 3, high priority
+                move.w  #$E000,d4 ; attribute word: priority + palette 3; tile index comes from the map
                 move.w  #$4000,d5 ; destination = Scroll A/B
                 move.w  #128,d6 ; plane width
                 jsr     (WriteNametable).w
@@ -998,22 +1009,22 @@ Shop_UpdateScroll:
                 subi.w  #$160,d0 ; scroll speed = Shop_ScrollPos - $160
                 beq.w   .return ; if ScrollPos == $160 then return
 ; adjust speed so it's absolute values doesn't exceed 8
-                cmp.w   #8,d0
+                cmp.w   #8,d0 ; signed: d0 <= +8
                 ble.w   .loc_8192
                 move.w  #8,d0
 .loc_8192:
-                cmp.w   #$FFF8,d0
+                cmp.w   #$FFF8,d0 ; signed: d0 >= -8
                 bpl.w   .loc_819E
                 move.w  #$FFF8,d0
 .loc_819E:
 ; fill scroll table
-                sub.w   d0,(Shop_ScrollPos).l
+                sub.w   d0,(Shop_ScrollPos).l ; one step toward the $160 centre
                 lea     (VdpCtrl).l,a0
                 lea     (VdpData).l,a1
-                move.w  #$8F20,(a0) ; Auto-increment: $20
+                move.w  #$8F20,(a0) ; Auto-increment: $20 (one H-scroll entry per 2-cell strip)
                 VDP_VRAM_WRITE $64E2,(a0)
 ; fill scroll table
-                move.w  #8,d0
+                move.w  #8,d0 ; 9 centre entries, stride $20
                 move.w  (Shop_ScrollPos).l,d1
                 neg.w   d1
 .loc_81C6:
@@ -1025,7 +1036,8 @@ Shop_UpdateScroll:
                 rts
 ; End of function Shop_UpdateScroll
 
-; eight bike name/power/weight strings (selected by bike id)
+; eight bike name/power/weight records (selected by bike id);
+; header = y, x, height, width; two rows of 14 characters (name, stats)
 Shop_BikeDescriptions:
     dc.l Shop_StrShuriken400
     dc.l Shop_StrPanda600
@@ -1069,7 +1081,8 @@ Shop_StrDiablo1000:
     dc.b "  Diablo 1000 "
     dc.b "150 HP 450 lbs"
 
-; bike prices in dollars (indexed by bike id)
+; bike prices in dollars (indexed by bike id); DrawCredits uses half the
+; current bike price as the trade-in credit
 Shop_dPrices:
     dc.w 400
     dc.w 500
@@ -1080,7 +1093,8 @@ Shop_dPrices:
     dc.w 2000
     dc.w 2500
 
-; bike id -> one of the three 18x9 image maps
+; bike id -> one of the three 18x9 image maps; the eight bikes reuse
+; three models and differ by the Shop_BikePalettes colour record
 Shop_BikeImageTable:
     dc.l Shop_ImageBike3
     dc.l Shop_ImageBike3

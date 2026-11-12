@@ -1,7 +1,7 @@
 # Module card: `src/screens/shop.asm`
 
 - **ROM range:** `0x0074AA`–`0x008341` (`src/screens/endlevel.asm` starts at `0x8342`)
-- **Status:** analyzed (static; shop is non-demo, rendering dynamic TODO)
+- **Status:** line-by-line (static; shop is non-demo; dynamic = user-described)
 - **Related:** `docs/architecture.md`, `docs/reverse-engineering.md`,
   `docs/hardware.md`, `docs/ram-map.md`, `docs/analysis/shop.md`
 
@@ -53,13 +53,18 @@ from the results/high-score screens; Start returns to the results.
 
 | Function | Address | Contract | Algorithm | Data | Hardware | Why | Dynamic | Status |
 |----------|---------|----------|-----------|------|----------|-----|---------|--------|
-| `Shop_Init` | `0x74AA` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
-| `Shop_GameTick` | `0x79F8` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
-| `Shop_HandleInput` | `0x7B4C` | [x] | [x] | [x] | - | [x] | [ ] | analyzed |
-| `Shop_DrawCreditsAndPrice` | `0x7D5E` | [x] | [x] | [x] | - | [x] | [ ] | analyzed |
-| `Shop_PrepareMessages` | `0x7F62` | [x] | [x] | [x] | - | [x] | [ ] | analyzed |
-| `Shop_DrawBikes` | `0x803C` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
-| `Shop_UpdateScroll` | `0x8178` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
+| `Shop_Init` | `0x74AA` | [x] | [x] | [x] | [x] | [x] | [ ] | line-by-line |
+| `Shop_DrawBikeName` | `0x7996` | [x] | [x] | [x] | - | [x] | [ ] | line-by-line |
+| `Shop_ShowBikeDescription` | `0x79DA` | [x] | [x] | [x] | - | [x] | [ ] | line-by-line |
+| `Shop_GameTick` | `0x79F8` | [x] | [x] | [x] | [x] | [x] | [ ] | line-by-line |
+| `Shop_HandleInput` | `0x7B4C` | [x] | [x] | [x] | - | [x] | [ ] | line-by-line |
+| `Shop_DrawCreditsAndPrice` | `0x7D5E` | [x] | [x] | [x] | - | [x] | [ ] | line-by-line |
+| `Shop_DrawString` | `0x7E70` | [x] | [x] | [x] | - | [x] | [ ] | line-by-line |
+| `Shop_ShowAlreadyOwned` | `0x7EA2` | [x] | [x] | [x] | - | [x] | [ ] | line-by-line |
+| `Shop_ShowCannotAfford` | `0x7F02` | [x] | [x] | [x] | - | [x] | [ ] | line-by-line |
+| `Shop_PrepareMessages` | `0x7F62` | [x] | [x] | [x] | - | [x] | [ ] | line-by-line |
+| `Shop_DrawBikes` | `0x803C` | [x] | [x] | [x] | [x] | [x] | [ ] | line-by-line |
+| `Shop_UpdateScroll` | `0x8178` | [x] | [x] | [x] | [x] | [x] | [ ] | line-by-line |
 
 Detailed listing/table/purchase logic: `docs/analysis/shop.md`.
 
@@ -76,16 +81,18 @@ Detailed listing/table/purchase logic: `docs/analysis/shop.md`.
 Credits = money + current bike price/2; price = selected bike price. Owned -> "You
 already own a ..."; insufficient -> "You need more credit ..."; otherwise money -=
 (price - current/2), set the bike id, redraw, regenerate the password. The credits box
-uses palette 2 when insufficient, otherwise palette 3.
+uses palette 3 when insufficient (normal grey-blue text) and palette 2 when the credits
+cover the price.
 
 ## Hacks / bugs / quirks
 
 - Cell-mode H-scroll table `$6400` with auto-increment `$20`; other screens use
   `$6000`/full scroll. `[static]`
-- Palette copy skips source entry 4 and maps entry 13 to destination entry 4; three
-  base bike images are reused for eight bikes. `[static]`
+- Palette copy skips source w4 and takes destination w4 from the next palette's w0
+  (`U-0010`); three base bike images are reused for eight bikes. `[static]`
 - "(its yours)" is assembled from three immediate longs written backwards. `[static]`
-- `Shop_ram_CurrentButtons` is unnamed in `src/core/ram_const.asm`.
+- Left/Right redraw the new bike before the scroll animation finishes, so the first
+  frames show a transient wrong model/palette (user-observed). `[static]`/`[dynamic]`
 
 ## Verified facts
 
@@ -93,15 +100,18 @@ uses palette 2 when insufficient, otherwise palette 3.
 - `[static]` Eight bikes, stats/prices and the image/palette tables parsed.
 - `[static]` Start -> results; A -> high score; B -> results; C -> buy; Left/Right select.
 - `[static]` Description message (51+bike*8) for 10 s, then group 60 prompts.
+- `[dynamic]` Layout: one centre bike plus one edge sliver on each side; layered
+  title/arrows/grey backdrop/bikes/texts/gamepad (user-described native console).
+- `[static]` Credits/price are palette 3 when insufficient, palette 2 when affordable.
 
 ## Hypotheses
 
-- `[hypothesis]` The window has transparent cells exposing the scrolling plane bike band.
-  Test: capture the shop VRAM/window in BlastEm.
-- `[hypothesis]` The eight palette variants are the bike colours. Test: render them.
+- None open: window transparency and the eight palette variants are confirmed by the
+  user's native-console description (`[dynamic]`).
 
 ## Experiments performed
 
 | Goal | Setup / breakpoint | Observed | Conclusion |
 |------|--------------------|----------|------------|
 | Capture the shop | — (non-demo, needs input) | — | static analysis only |
+| User description | native console, results -> C | centre bike + edge slivers; slide one position; layered view; normal-colour price when short on cash | confirms layout, scroll, transparency and palette warning `[dynamic]` |

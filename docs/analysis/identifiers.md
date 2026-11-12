@@ -335,7 +335,7 @@ uses. It exists so later analysis can decide whether a rename is worth doing.
 | `Race_FormatMoney` | routine | `race_core.asm ($C6C4)` | race_results: backwards right-aligned cash formatter | good | `[static]` | keep | - | high | - |
 | `Race_FormatNumber` | routine | `race_core.asm ($C79A)` | race_results/shop/race: backwards number formatter for fines/costs | good | `[static]` | keep | - | high | - |
 | `HighScore_Init` | routine | `highscore.asm ($6DC0)` | race_results: A opens the high-score screen | good | `[static]` | keep | - | high | - |
-| `Shop_Init` | routine | `shop.asm ($74AA)` | race_results: C opens the bike shop | good | `[static]` | keep | - | high | - |
+| `Shop_Init` | routine | `shop.asm:17 ($74AA)` | race_results/shop: C opens the shop; builds the whole screen | good | `[static]` | keep | - | high | - |
 | `RaceResults_TitleTiles` | data | `rom_assets.asm ($AF26C)` | race_results: results title tiles (27x2 map) | good | `[static]` | keep (renamed from `unk_AF26C`) | - | high | - |
 | `RaceResults_BustedTitleTiles` | data | `rom_assets.asm ($7ED66)` | race_results: busted title tiles ($15x2 map) | good | `[static]` | keep (renamed from `unk_7ED66`) | - | high | - |
 | `RaceResults_TrackImagePtrs` | data | `race_misc_data.asm ($7E670)` | race_results: five long pointers to per-track images | good | `[static]` | keep (renamed from `unk_7E670`) | - | high | - |
@@ -364,3 +364,38 @@ uses. It exists so later analysis can decide whether a rename is worth doing.
 | `ImgHighScoreBadge` | asset | `rom_assets.asm:10` (`$7EB72`) | highscore: yellow badge to `$B000`, drawn five times | good | `[static]` | keep | - | high | - |
 | `FontHighScoreTable` | asset | `rom_assets.asm:146` (`$A2BAA`) | highscore: 20-wide table font to `$800` | good | `[static]` | keep | - | high | - |
 | `FontHighScoreDigits` | asset | `rom_assets.asm:149` (`$A2E68`) | highscore: 10 digit glyphs (0-9) to `$1000`; no tile base references it | good | `[static]` | keep (renamed from `unk_A2E68`) | - | high | `U-0009` |
+| `Shop_DrawBikeName` | routine | `shop.asm:339 ($7996)` | shop: encode/draw the selected bike name+stats at (13,18) | good | `[static]` | keep | - | high | - |
+| `Shop_ShowBikeDescription` | routine | `shop.asm:367 ($79DA)` | shop: select description message 51..58 for 600 frames | good | `[static]` | keep | - | high | - |
+| `Shop_GameTick` | routine | `shop.asm:385 ($79F8)` | shop: frame DMA, H-scroll, Start->results, pad edges, message cycle | good | `[static]` | keep | - | high | - |
+| `Shop_HandleInput` | routine | `shop.asm:469 ($7B4C)` | shop: A high score, B results, C buy/trade-in, Left/Right select | good | `[static]` | keep | - | high | - |
+| `Shop_DrawCreditsAndPrice` | routine | `shop.asm:604 ($7D5E)` | shop: credits + price; palette 2 when affordable, palette 3 when not | good | `[static]` | keep | - | high | - |
+| `Shop_DrawString` | routine | `shop.asm:684 ($7E70)` | shop: encode/draw a string with the caller palette word | good | `[static]` | keep | - | high | - |
+| `Shop_ShowAlreadyOwned` | routine | `shop.asm:708 ($7EA2)` | shop: dynamic "You already own a ..." message 59 | good | `[static]` | keep | - | high | - |
+| `Shop_ShowCannotAfford` | routine | `shop.asm:748 ($7F02)` | shop: dynamic "You need more credit ..." message 59 | good | `[static]` | keep | - | high | - |
+| `Shop_PrepareMessages` | routine | `shop.asm:789 ($7F62)` | shop: build the buy/left/right prompt records | good | `[static]` | keep | - | high | - |
+| `Shop_DrawBikes` | routine | `shop.asm:885 ($803C)` | shop: palette lines 2/3 + five bike images on the plane | good | `[static]` | keep | - | high | - |
+| `Shop_UpdateScroll` | routine | `shop.asm:996 ($8178)` | shop: clamp +/-8 and animate the H-scroll band back to $160 | good | `[static]` | keep | - | high | - |
+| `Shop_BikeDescriptions` | data | `shop.asm:1029 ($81D2)` | shop: eight pointers to name/power/weight records | good | `[static]` | keep | - | high | - |
+| `Shop_StrShuriken400` | data | `shop.asm:1039 ($81F2)` | shop: bike id 0 name/power/weight record | good | `[static]` | keep | - | high | - |
+| `Shop_StrPanda600` | data | `shop.asm:1043 ($8216)` | shop: bike id 1 name/power/weight record | good | `[static]` | keep | - | high | - |
+| `Shop_StrBanzai750` | data | `shop.asm:1047 ($823A)` | shop: bike id 2 name/power/weight record | good | `[static]` | keep | - | high | - |
+| `Shop_StrKamikaze750` | data | `shop.asm:1051 ($825E)` | shop: bike id 3 name/power/weight record | good | `[static]` | keep | - | high | - |
+| `Shop_StrShuriken1000` | data | `shop.asm:1055 ($8282)` | shop: bike id 4 name/power/weight record | good | `[static]` | keep | - | high | - |
+| `Shop_StrFerruci850` | data | `shop.asm:1059 ($82A6)` | shop: bike id 5 name/power/weight record | good | `[static]` | keep | - | high | - |
+| `Shop_StrPanda750` | data | `shop.asm:1063 ($82CA)` | shop: bike id 6 name/power/weight record | good | `[static]` | keep | - | high | - |
+| `Shop_StrDiablo1000` | data | `shop.asm:1067 ($82EE)` | shop: bike id 7 name/power/weight record | good | `[static]` | keep | - | high | - |
+| `Shop_dPrices` | data | `shop.asm:1073 ($8312)` | shop: eight bike prices; half the current price is trade-in credit | good | `[static]` | keep | - | high | - |
+| `Shop_BikeImageTable` | data | `shop.asm:1084 ($8322)` | shop: eight ids -> one of three 18x9 RAM maps [3,3,3,1,1,2,1,2] | good | `[static]` | keep | - | high | - |
+| `Shop_BikePalettes` | data | `race_misc_data.asm:86 ($7E370)` | shop/race_core: eight 32-byte 16-colour bike palettes | good | `[static]` | keep | - | high | - |
+| `Shop_CurrentBikeId` | RAM | `ram_const.asm:84 ($FF0950)` | shop: selected bike id 0..7 | good | `[static]` | keep | - | high | - |
+| `Shop_ram_CurrentButtons` | RAM | `ram_const.asm:85 ($FF0952)` | shop: low byte of the pad state being handled (upper byte stale) | narrow | `[static]` | keep | - | medium | - |
+| `Shop_ScrollPos` | RAM | `ram_const.asm:86 ($FF0954)` | shop: H-scroll band position (centre $160) | good | `[static]` | keep | - | high | - |
+| `Shop_ImageBike1` | RAM | `ram_const.asm:87 ($FF0956)` | shop: 18x9 nametable map for bike model 1 | good | `[static]` | keep | - | high | - |
+| `Shop_ImageBike2` | RAM | `ram_const.asm:88 ($FF0A9A)` | shop: 18x9 nametable map for bike model 2 | good | `[static]` | keep | - | high | - |
+| `Shop_ImageBike3` | RAM | `ram_const.asm:89 ($FF0BDE)` | shop: 18x9 nametable map for bike model 3 | good | `[static]` | keep | - | high | - |
+| `ImgShopArrowLeft` | asset | `rom_assets.asm:125 ($9E784)` | shop: 4x2 left arrow tiles to $B000 | good | `[static]` | keep | - | high | - |
+| `ImgShopArrowRight` | asset | `rom_assets.asm:128 ($9E874)` | shop: 4x2 right arrow tiles to $B100; its palette (+$C4) becomes the screen palette | good | `[static]` | keep | - | high | - |
+| `ImgShopBike1` | asset | `rom_assets.asm:131 ($9EA1E)` | shop: bike model 1 tiles to $C000; 18x9 map to Shop_ImageBike1 | good | `[static]` | keep | - | high | - |
+| `ImgShopBike2` | asset | `rom_assets.asm:134 ($9FDDE)` | shop: bike model 2 tiles to $D000; 18x9 map to Shop_ImageBike2 | good | `[static]` | keep | - | high | - |
+| `ImgShopBike3` | asset | `rom_assets.asm:137 ($A122A)` | shop: bike model 3 tiles to $E000; 18x9 map to Shop_ImageBike3 | good | `[static]` | keep | - | high | - |
+| `DmaWriteCRAM` | routine | `race_physics.asm:49 ($0D96A)` | shop/race: upload Global_ram_PalettePtr to CRAM while the shop scroll moves | good | `[static]` | keep | - | high | - |
