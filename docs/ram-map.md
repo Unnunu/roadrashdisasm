@@ -8,6 +8,9 @@ meaning, size, invariants and overlap notes.
 Status tags: `[static]` from code; `[dynamic]` observed; `[confirmed]` both;
 `[hypothesis]` unverified; `TODO` unknown.
 
+**Usage:** for a normal pass, `grep -n '$FFxxxx'` or the field name and read only that
+row/section. Read the whole map only when auditing cross-phase ownership/overlaps.
+
 ## Conventions
 
 - Address format: `$FFxxxx` (24-bit). Some modules (e.g. `src/logoEA/logoEA.asm`) use the equivalent

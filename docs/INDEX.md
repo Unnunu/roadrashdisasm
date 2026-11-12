@@ -2,17 +2,23 @@
 
 Read this index first. Then open only the file needed for the current task.
 
+For a build session, use the fast path: `STATE.md` + task file + target source + its
+analysis/module card, then `line-by-line-checklist.md`. Large registries
+(`callgraph.md`, `ram-map.md`, `analysis/identifiers.md`) are lookup tables: grep the
+symbol/row and read only that slice.
+
 ## Top-level
 
 | File | When to read |
 |---|---|
 | `architecture.md` | ROM layout, boot flow, screen/module map, high-level ownership. |
-| `callgraph.md` | Find callers/callees or navigate the function graph. |
+| `callgraph.md` | Find callers/callees or navigate the function graph (grep by symbol). |
 | `coding-style.md` | Naming, comments, headers, RAM/overlay conventions. |
 | `glossary.md` | Unknown project terminology. |
 | `hardware.md` | VDP, DMA, controllers, Z80, interrupt/hardware behavior. |
-| `line-by-line-analysis.md` | Line-by-line pass procedure, markers, identifier audit. |
-| `ram-map.md` | Resolve RAM ranges, owners, fields and aliases. |
+| `line-by-line-checklist.md` | Compact build checklist for a line-by-line pass. |
+| `line-by-line-analysis.md` | Full rules, markers, identifier audit, calibration. |
+| `ram-map.md` | Resolve RAM ranges, owners, fields and aliases (grep by address/name). |
 | `references.md` | External references and sources. |
 | `reverse-engineering.md` | Evidence tags, BlastEm workflow, experiment format. |
 

@@ -19,6 +19,27 @@ python3 tools/assets.py all      # split + render local previews (optional)
 and the final line (`Matched OK` or `No matching`); the warnings above it are expected.
 To see only the verdict: `./build.sh 2>&1 | tail -n 3`.
 
+## Tool / request efficiency
+
+The API bills every assistant message, including tool-call arguments. Keep sessions
+cheap:
+
+- **Batch independent calls** (reads, greps, git/build checks) in one message.
+- **Bulk edits:** one script + one mapping file (e.g. `/tmp/opencode/<task>.py` and
+  `<task>.json`), run once. Never retype the mapping in later heredocs.
+- **Pervasive changes:** prefer one `Write` of the final file content. For small edits,
+  use `Edit` with minimal unique anchors, not whole functions.
+- **Read once:** read a file once, then use `grep -n` / `sed -n` for later lookups.
+- **Two builds per task:** one baseline and one final combined with
+  `python3 tools/assets.py check` and `git diff --check`.
+- **Request budget:** aim for ~30 tool calls per file pass. If exceeded, stop and
+  re-plan in the task file instead of continuing with many small edits.
+- **Repeated patterns:** explain once, then reference the first explanation.
+- **Large registries** (`identifiers.md`, `callgraph.md`, `ram-map.md`): search the
+  relevant row/section; do not read the whole file.
+- For a line-by-line pass, use the compact `docs/line-by-line-checklist.md` by default;
+  open `docs/line-by-line-analysis.md` only when a rule or edge case is unclear.
+
 ## Session workflow
 
 - One session = one task.
@@ -46,8 +67,9 @@ Before opening `docs/`, read `docs/INDEX.md` and open only the relevant file.
 | RAM regions, fields, ownership | `docs/ram-map.md` |
 | VDP, DMA, controllers, Z80 | `docs/hardware.md` |
 | Source identifiers, comments, headers | `docs/coding-style.md` |
-| Line-by-line pass procedure and markers | `docs/line-by-line-analysis.md` |
-| Identifier quality map and rename verdicts | `docs/analysis/identifiers.md` |
+| Compact line-by-line build checklist | `docs/line-by-line-checklist.md` |
+| Full line-by-line rules, markers, calibration | `docs/line-by-line-analysis.md` |
+| Identifier quality map and rename verdicts (grep rows) | `docs/analysis/identifiers.md` |
 | Live semantic gaps (`@UNKNOWN`) | `docs/analysis/unknowns.md` |
 | Evidence rules, BlastEm, experiments | `docs/reverse-engineering.md` |
 | Function index and call graph | `docs/callgraph.md` |

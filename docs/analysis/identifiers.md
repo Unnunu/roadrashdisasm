@@ -10,6 +10,9 @@ uses. It exists so later analysis can decide whether a rename is worth doing.
 - Only `[confirmed]` evidence may justify a rename; renames are a separate task.
 - The per-file summary lives in `docs/analysis/<file>.md`; this file is the source of
   truth.
+- **Usage:** do not read the whole table during a normal pass. `grep -n '<identifier>'`
+  here (or read the per-file summary) and read only the matching rows. Append new rows
+  at the end; do not reorder existing rows.
 
 | Identifier | Kind | Defined | Used in (file: role) | Name quality | Evidence | Rename verdict | Proposed | Confidence | Unknown ID |
 |---|---|---|---|---|---|---|---|---|---|
