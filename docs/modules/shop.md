@@ -40,7 +40,7 @@ from the results/high-score screens; Start returns to the results.
 - `Shop_CurrentBikeId` `$FF0950` (0..7); `Shop_ScrollPos` `$FF0954` (centre `$160`);
   `Shop_ImageBike1/2/3` `$FF0956/$FF0A9A/$FF0BDE` (18x9 RAM maps); `Shop_ram_CurrentButtons`
   current buttons (unnamed); `Shop_StrBuyNewBike` `$FF06EA`; dynamic messages
-  `ram_FF089A`/`ram_FF07C2`/`ram_FF082E`.
+  `Message_ram_DynamicRecord`/`ram_FF07C2`/`ram_FF082E`.
 - ROM: `Shop_BikeDescriptions` `$81D2` (8 pointers), `Shop_dPrices` `$8312`
   (400/500/700/800/1200/1400/2000/2500), `Shop_BikeImageTable` `$8322`
   `[3,3,3,1,1,2,1,2]`, `Shop_BikePalettes` `$7E370` (8 x 32 bytes).

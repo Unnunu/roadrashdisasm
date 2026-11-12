@@ -2141,7 +2141,7 @@ Race_ComputeResults:
                 lea     (Menu_ram_PlayerAPlaces).l,a1
                 lea     (ram_FF0510).l,a2
                 lea     (Menu_ram_MoneyPlayerA).l,a3
-                lea     (ram_FF0526).l,a4
+                lea     (Race_ram_PlayerAOutcome).l,a4
                 lea     (Menu_ram_PlayerALevel).l,a6
                 bra.w   .loc_C48C
 .loc_C44E:
@@ -2156,7 +2156,7 @@ Race_ComputeResults:
                 lea     (Menu_ram_PlayerBPlaces).l,a1
                 lea     (ram_FF0514).l,a2
                 lea     (Menu_ram_MoneyPlayerB).l,a3
-                lea     (ram_FF0528).l,a4
+                lea     (Race_ram_PlayerBOutcome).l,a4
                 lea     (Menu_ram_PlayerBLevel).l,a6
 .loc_C48C:
                 move.w  #0,(RaceResults_ram_Amount).l

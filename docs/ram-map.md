@@ -350,7 +350,7 @@ See `docs/analysis/race_physics.md`.
 
 | Address | Name | Size | Meaning |
 |---|---|---|---|
-| `$FF0526`/`$FF0528` | `ram_FF0526/28` | 2 each | Player A/B outcome (0 = incomplete, >4 = worse than 4th, 4 = level complete). |
+| `$FF0526`/`$FF0528` | `Race_ram_PlayerAOutcome`/`Race_ram_PlayerBOutcome` | 2 each | Player A/B outcome (0 = incomplete, >4 = worse than 4th, 4 = level complete). |
 | `$FF0910` | `RaceResults_ram_NextFunction` | 4 | Next-screen function pointer (RaceResults/HighScore/Shop). |
 | `$FF0914` | `RaceResults_ram_DrawRoutine` | 4 | Active draw routine pointer (set, not read). |
 | `$FF0918` | `RaceResults_ram_Outcome` | 2 | Copied outcome; `4` selects the end-level screen. |
@@ -358,6 +358,7 @@ See `docs/analysis/race_physics.md`.
 | `$FF04C8` | `Race_EventBuffer` | `$40` | 16-long race event/sort buffer; first word `$FFFF` = busted/destroyed. |
 | `$FF1B1A` | `Race_CopIndex` | 2 | Cop/officer index (1..5); 0 = bike destroyed. |
 | `$FF1414`/`FF1418`/`FF141A` | `ram_FF1414/18/1A` | - | Standings string header/text, height, width. |
+| `$FF067E`+4 | `MenuPassword_StrPasswordStatus+4` | 2 | Status-box height field; results shrink it 5 -> 3 to hide the password rows with negative money. |
 
 ROM tables: `$19D32` (level, money>=0, 5x4), `$19DD2` (level, money<0, 5x2),
 `$19E22` (cop, money>=0, 5x4), `$19EC2` (cop, money<0, 5x2), 8-byte
@@ -390,7 +391,7 @@ The screen draws entries 0..4 (table font `$800`) and the player rows at the off
 | `$FF0A9A` | `Shop_ImageBike2` | `$144` | 18x9 bike map. |
 | `$FF0BDE` | `Shop_ImageBike3` | `$144` | 18x9 bike map. |
 | `$FF06EA` | `Shop_StrBuyNewBike` | TODO | "Press C to buy ..." + bike name. |
-| `$FF089A`/`$FF07C2`/`$FF082E` | dynamic messages | TODO | Owned/can't-afford and left/right bike names. |
+| `$FF089A`/`$FF07C2`/`$FF082E` | `Message_ram_DynamicRecord`/dynamic messages | TODO | Owned/can't-afford and left/right bike names. |
 
 ROM: `Shop_BikeDescriptions` `$81D2`, `Shop_dPrices` `$8312`, `Shop_BikeImageTable`
 `$8322`, `Shop_BikePalettes` `$7E370` (8 x 32 bytes). Purchase: credits = money +

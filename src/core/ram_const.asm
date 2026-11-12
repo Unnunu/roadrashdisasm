@@ -34,8 +34,8 @@ Menu_ram_MoneyPlayerB equ $FF051C
 ram_FF0520 equ $FF0520
 ram_FF0522 equ $FF0522
 ram_FF0524 equ $FF0524
-ram_FF0526 equ $FF0526
-ram_FF0528 equ $FF0528
+Race_ram_PlayerAOutcome equ $FF0526
+Race_ram_PlayerBOutcome equ $FF0528
 HighScore_ram_PlayerATableOffset equ $FF052A
 HighScore_ram_PlayerBTableOffset equ $FF052C
 Menu_ram_PlayerAPlaces equ $FF052E ; size $A
@@ -65,12 +65,11 @@ Message_ram_ButtonBlinkCounter equ $FF05E6
 Message_ram_ButtonBlinkPeriod equ $FF05E8
 HighScore_ram_Table equ $FF05EA
 MenuPassword_StrPasswordStatus equ $FF067E
-ram_FF0682 equ $FF0682
 Shop_StrBuyNewBike equ $FF06EA
 Menu_ram_TempString equ $FF0756
 ram_FF07C2 equ $FF07C2
 ram_FF082E equ $FF082E
-ram_FF089A equ $FF089A
+Message_ram_DynamicRecord equ $FF089A
 ram_FF0906 equ $FF0906
 ram_FF0908 equ $FF0908
 ram_FF090A equ $FF090A

@@ -74,14 +74,14 @@ the show function.
 | 27 | `$FFFFFFFF` | `$FFFFFFFF` | end |
 | 28-33 | `MenuPassword_StrPasswordStatus`, `Message_StrComplete4thPlace`, Start/A/B/C | | race results: worse than 4th |
 | 34 | `$FFFFFFFF` | `$FFFFFFFF` | end |
-| 35-40 | `MenuPassword_StrPasswordStatus`, `ram_FF089A`, Start/A/B/C | | race results: level cleared |
+| 35-40 | `MenuPassword_StrPasswordStatus`, `Message_ram_DynamicRecord`, Start/A/B/C | | race results: level cleared |
 | 41 | `$FFFFFFFF` | `$FFFFFFFF` | end |
 | 42-46 | `Message_StrBlankCell` (no-op) + Start/A/B/C | | high-score screen |
 | 47 | `$FFFFFFFF` | `$FFFFFFFF` | end |
 | 48-49 | `Message_StrBlank`, `Message_StrPressStartTrackSelection` | Empty/Start | end-level / victory |
 | 50 | `$FFFFFFFF` | `$FFFFFFFF` | end |
 | 51-58 | `Message_StrBikeDescShuriken400` … `...Diablo1000` | `Message_ShowEmpty` | bike descriptions (shop) |
-| 59-66 | `ram_FF089A`, `Message_StrTradeInCredit`, `ram_FF07C2`+`Message_BlinkDirPadHorizontal`, `ram_FF082E`+`Message_BlinkDirPadHorizontal`, `Shop_StrBuyNewBike`+C, Start/A/B | | shop tooltips |
+| 59-66 | `Message_ram_DynamicRecord`, `Message_StrTradeInCredit`, `ram_FF07C2`+`Message_BlinkDirPadHorizontal`, `ram_FF082E`+`Message_BlinkDirPadHorizontal`, `Shop_StrBuyNewBike`+C, Start/A/B | | shop tooltips |
 | 67 | `$FFFFFFFF` | `$FFFFFFFF` | end |
 
 `Menu_BuildRaceTooltip` writes the race distance into the fifth line of the selected
@@ -155,7 +155,7 @@ for 32 frames and off for 32 (≈1 s at 60 Hz). `Message_ram_ButtonBlinkCounter`
   `Message_StrComplete4thPlace` `0x52CE`, `Message_StrCongratulations` `0x533A`,
   `Message_StrCaughtByCops` `0x56AC`, `Message_StrCantAffordBail` `0x56D8`,
   `Message_StrBikeNeedsRepairs` `0x5704`, `Message_StrNoMoneyForRepairs` `0x5730`.
-- `ram_FF089A`, `ram_FF07C2`, `ram_FF082E`, `Shop_StrBuyNewBike`,
+- `Message_ram_DynamicRecord`, `ram_FF07C2`, `ram_FF082E`, `Shop_StrBuyNewBike`,
   `Menu_ram_TempString` and `MenuPassword_StrPasswordStatus` are runtime text records
   with the same 8-byte header + character layout, built by the owning screens.
 

@@ -194,7 +194,7 @@ uses. It exists so later analysis can decide whether a rename is worth doing.
 | `Shop_StrBuyNewBike` | RAM | `ram_const.asm` (`$FF06EA`) | shop/message: runtime 5x20 "Press C to buy ..." record | good | `[static]` | keep | - | high | - |
 | `ram_FF07C2` | RAM | `ram_const.asm` (`$FF07C2`) | shop/message: runtime 5x20 left-bike prompt record | placeholder | `[static]` | rename-later | `Shop_StrLeftBike` | medium | - |
 | `ram_FF082E` | RAM | `ram_const.asm` (`$FF082E`) | shop/message: runtime 5x20 right-bike prompt record | placeholder | `[static]` | rename-later | `Shop_StrRightBike` | medium | - |
-| `ram_FF089A` | RAM | `ram_const.asm` (`$FF089A`) | shop/race_results/message: runtime 5x20 dynamic message record | placeholder | `[static]` | rename-later | `Message_ram_DynamicRecord` | medium | - |
+| `Message_ram_DynamicRecord` | RAM | `ram_const.asm:72` (`$FF089A`) | shop/race_results/message: runtime 5x20 dynamic message record | good | `[static]` | keep (renamed from `ram_FF089A`) | - | high | - |
 | `RiderSprites_Build` | routine | `rider_sprites.asm:48` (`$5760`) | rider_sprites: build linked rider/bike SAT chain | good | `[static]` | keep | - | high | - |
 | `RiderSprites_BuildAlt` | routine | `rider_sprites.asm:224` (`$593E`) | rider_sprites: unused wrapper | good | `[static]` | keep | - | high | - |
 | `RiderSprites_StripTable` | data | `rider_sprites.asm:248` (`$5944`) | rider_sprites: 16 x 8-byte per-block SAT layout table | good | `[static]` | keep | - | high | - |
@@ -222,7 +222,7 @@ uses. It exists so later analysis can decide whether a rename is worth doing.
 | `RiderIntro_RecordTable` | data | `race_data_tables.asm:8` (`$19A12`) | rider_intro: 5 levels x 5 tracks x 4 variants, 8-byte (quote,image) records | good | `[static]` | keep | - | high | - |
 | `Race_ram_ActiveController` | RAM | `ram_const.asm:287` (`$FF1ADA`) | rider_intro/race: 0/1 controller that exited the intro | good | `[static]` | keep | - | high | - |
 | `ram_FF0520` | RAM | `ram_const.asm:34` (`$FF0520`) | rider_intro: selected player's 2-bit "extra" field; selects variant 3/overlay | placeholder | `[static]` | blocked-unknown | `Player_ram_Extra` | low | `U-0004` |
-| `unk_7EA66` | data | `rom_assets.asm:7` (`$7EA66`) | rider_intro/endlevel/results: portrait panel image (11 tiles + 12x14 map) | placeholder | `[static]` | rename-later | `RiderIntro_PortraitPanel` | medium | - |
+| `RiderIntro_PortraitPanel` | data | `rom_assets.asm:7` (`$7EA66`) | rider_intro/endlevel/results: portrait panel image (11 tiles + 12x14 map) | good | `[static]` | keep (renamed from `unk_7EA66`) | - | high | - |
 | `unk_AF902` | data | `rom_assets.asm:176` (`$AF902`) | rider_intro: Natasha portrait image (header name parsed) | placeholder | `[static]` | rename-later | `RiderIntro_NatashaImage` | medium | - |
 | `unk_B1506` | data | `rom_assets.asm:180` (`$B1506`) | rider_intro: conditional overlay drawn over Natasha's portrait | placeholder | `[static]` | blocked-unknown | `RiderIntro_NatashaBike` | low | `U-0008` |
 | `RiderIntro_Quote_Natasha_01` | data | `rider_intro_quotes.asm:14` (`$16E70`) | rider_intro: intro quote for Natasha (portrait 0); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_16E70`) | - | high | - |
@@ -311,3 +311,45 @@ uses. It exists so later analysis can decide whether a rename is worth doing.
 | `RiderIntro_Quote_OConnor_01` | data | `rider_intro_quotes.asm:545` (`$18302`) | rider_intro: intro quote for O'Connor (portrait 5); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_18302`) | - | high | - |
 | `RiderIntro_Quote_OConnor_02` | data | `rider_intro_quotes.asm:552` (`$18346`) | rider_intro: intro quote for O'Connor (portrait 5); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_18346`) | - | high | - |
 | `RiderIntro_QuoteData` | data alias | `rider_intro_quotes.asm:1143` (`$16E70`) | rider_intro: aliases the first intro quote; no current reader | narrow | `[static]` | rename-later | `RiderIntro_FirstQuote` | medium | - |
+| `RaceResults_Init` | routine | `race_results.asm ($5F28)` | race_results: outcome copy, VDP setup, layout dispatch, status box, audio | good | `[static]` | keep | - | high | - |
+| `RaceResults_DrawStandings` | routine | `race_results.asm ($62CE)` | race_results: title, track image/palette, standings, player row | good | `[static]` | keep | - | high | - |
+| `RaceResults_DrawBusted` | routine | `race_results.asm ($647E)` | race_results: busted title/panel, cop portrait/quote, fine or GAME OVER | good | `[static]` | keep | - | high | - |
+| `RaceResults_DrawRepair` | routine | `race_results.asm ($67AC)` | race_results: repair panel, level portrait/quote, cost or GAME OVER | good | `[static]` | keep | - | high | - |
+| `RaceResults_GameTick` | routine | `race_results.asm ($6A90)` | race_results: per-frame DMA, input, message cycle, exit | good | `[static]` | keep | - | high | - |
+| `RaceResults_HandleInput` | routine | `race_results.asm ($6BD4)` | race_results: A high score, B status box, C shop | good | `[static]` | keep | - | high | - |
+| `DrawString` | routine | `race_results.asm ($6C5E)` | race_results: unused text draw helper (dead: no callers) | good | `[static]` | keep | - | high | - |
+| `Race_ram_PlayerAOutcome` | RAM | `ram_const.asm:37 ($FF0526)` | race_core/intro/endlevel/race_results: player A race outcome (0/>4/4) | good | `[static]` | keep (renamed) | - | high | - |
+| `Race_ram_PlayerBOutcome` | RAM | `ram_const.asm:38 ($FF0528)` | race_core/intro/endlevel/race_results: player B race outcome (0/>4/4) | good | `[static]` | keep (renamed) | - | high | - |
+| `RaceResults_ram_NextFunction` | RAM | `ram_const.asm:78 ($FF0910)` | race_results/highscore/shop: next-screen pointer | good | `[static]` | keep | - | high | - |
+| `RaceResults_ram_DrawRoutine` | RAM | `ram_const.asm:79 ($FF0914)` | race_results: active draw routine pointer (written, never read) | good | `[static]` | keep | - | high | - |
+| `RaceResults_ram_Outcome` | RAM | `ram_const.asm:80 ($FF0918)` | race_results: copied outcome; 4 selects the end-level screen | good | `[static]` | keep | - | high | - |
+| `RaceResults_ram_Amount` | RAM | `ram_const.asm:81 ($FF091A)` | race_results: fine/repair amount for the bust/repair message | good | `[static]` | keep | - | high | - |
+| `RaceResults_ram_CurrentButtons` | RAM | `ram_const.asm:82 ($FF091C)` | race_results: current pad byte passed to HandleInput | good | `[static]` | keep | - | high | - |
+| `Menu_ram_PlayerLevel` | RAM | `ram_const.asm:27 ($FF050A)` | race_results/rider_intro/shop/endlevel: 1-based player level | good | `[static]` | keep | - | high | - |
+| `ram_FF1414` | RAM | `ram_const.asm:176 ($FF1414)` | race_results: standings text record (header + chars) | placeholder | `[static]` | rename-later | RaceResults_ram_StandingsRecord | medium | - |
+| `ram_FF1418` | RAM | `ram_const.asm:177 ($FF1418)` | race_results: standings text height | placeholder | `[static]` | rename-later | RaceResults_ram_StandingsHeight | medium | - |
+| `ram_FF141A` | RAM | `ram_const.asm:178 ($FF141A)` | race_results: standings text width | placeholder | `[static]` | rename-later | RaceResults_ram_StandingsWidth | medium | - |
+| `Race_EventBuffer` | RAM | `ram_const.asm:25 ($FF04C8)` | race_results/race_core: 16-long event buffer; first word $FFFF = busted/destroyed | good | `[static]` | keep | - | high | - |
+| `Race_CopIndex` | RAM | `ram_const.asm:313 ($FF1B1A)` | race_results/race_core: cop index 1..5; 0 = bike destroyed | good | `[static]` | keep | - | high | - |
+| `Race_ComputeResults` | routine | `race_core.asm ($C3F8)` | race_results: computes outcome, fine/repair, places, password | good | `[static]` | keep | - | high | - |
+| `Race_FormatMoney` | routine | `race_core.asm ($C6C4)` | race_results: backwards right-aligned cash formatter | good | `[static]` | keep | - | high | - |
+| `Race_FormatNumber` | routine | `race_core.asm ($C79A)` | race_results/shop/race: backwards number formatter for fines/costs | good | `[static]` | keep | - | high | - |
+| `HighScore_Init` | routine | `highscore.asm ($6DC0)` | race_results: A opens the high-score screen | good | `[static]` | keep | - | high | - |
+| `Shop_Init` | routine | `shop.asm ($74AA)` | race_results: C opens the bike shop | good | `[static]` | keep | - | high | - |
+| `RaceResults_TitleTiles` | data | `rom_assets.asm ($AF26C)` | race_results: results title tiles (27x2 map) | good | `[static]` | keep (renamed from `unk_AF26C`) | - | high | - |
+| `RaceResults_BustedTitleTiles` | data | `rom_assets.asm ($7ED66)` | race_results: busted title tiles ($15x2 map) | good | `[static]` | keep (renamed from `unk_7ED66`) | - | high | - |
+| `RaceResults_TrackImagePtrs` | data | `race_misc_data.asm ($7E670)` | race_results: five long pointers to per-track images | good | `[static]` | keep (renamed from `unk_7E670`) | - | high | - |
+| `RaceResults_TrackImageOffsets` | data | `race_misc_data.asm ($7E684)` | race_results: five word image offsets in the staging buffer | good | `[static]` | keep (renamed from `unk_7E684`) | - | high | - |
+| `RaceResults_TrackNametableOffsets` | data | `race_misc_data.asm ($7E68E)` | race_results: five word nametable offsets | good | `[static]` | keep (renamed from `unk_7E68E`) | - | high | - |
+| `RaceResults_TrackPaletteOffsets` | data | `race_misc_data.asm ($7E698)` | race_results: five word palette offsets | good | `[static]` | keep (renamed from `unk_7E698`) | - | high | - |
+| `RaceResults_CopTablePos` | data | `race_data_tables.asm ($19E22)` | race_results: cop portraits, money>=0, 5x4 8-byte records | good | `[static]` | keep | - | high | - |
+| `RaceResults_CopTableNeg` | data | `race_data_tables.asm ($19EC2)` | race_results: cop portraits, money<0, 5x2 8-byte records | good | `[static]` | keep | - | high | - |
+| `RaceResults_LevelTablePos` | data | `race_data_tables.asm ($19D32)` | race_results: level portraits, money>=0, 5x4 8-byte records | good | `[static]` | keep | - | high | - |
+| `RaceResults_LevelTableNeg` | data | `race_data_tables.asm ($19DD2)` | race_results: level portraits, money<0, 5x2 8-byte records | good | `[static]` | keep | - | high | - |
+| `RaceResults_StrNextLevelShort` | data | `race_results.asm ($6C94)` | race_results: dead 5x20 'next level' text (duplicate of endlevel $8C96) | good | `[static]` | keep (renamed from `unk_6C94`) | - | high | - |
+| `RaceResults_StrNotReadyEncoded` | data | `race_results.asm ($6D00)` | race_results: dead 20-byte ASCII with bit 7 set 'You aren't ready for' (duplicate $8D02) | good | `[static]` | keep (renamed from `unk_6D00`) | - | high | - |
+| `RaceResults_StrNotReadyTail` | data | `race_results.asm ($6D14)` | race_results: dead continuation text (duplicate of endlevel $8D16) | good | `[static]` | keep (renamed from `unk_6D14`) | - | high | - |
+| `RaceResults_StrContinuePlay` | data | `race_results.asm ($6D50)` | race_results: dead 3x16 'Continue play at' text (duplicate $8D52) | good | `[static]` | keep (renamed from `unk_6D50`) | - | high | - |
+| `RaceResults_StrNextLevel` | data | `race_results.asm ($6D88)` | race_results: dead 3x16 'The next level' text (duplicate $8D8A) | good | `[static]` | keep (renamed from `unk_6D88`) | - | high | - |
+| `VDP_VRAM_WRITE` | macro | `hw_const.asm:9` | race_results and other screens: staged VRAM write helper | good | `[static]` | keep | - | high | - |
+| `VDP_VSRAM_WRITE` | macro | `hw_const.asm:25` | race_results and other screens: staged VSRAM write helper | good | `[static]` | keep | - | high | - |

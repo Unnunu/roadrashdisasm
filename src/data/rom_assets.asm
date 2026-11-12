@@ -4,13 +4,13 @@
 ; *************************************************
 
 RomTail: ; $7EA66
-unk_7EA66 equ RomTail
+RiderIntro_PortraitPanel equ RomTail
     binclude "assets/images/result_panel/data.bin"
 
 ImgHighScoreBadge: ; $7EB72
     binclude "assets/images/highscore_badge/data.bin"
 
-unk_7ED66: ; $7ED66
+RaceResults_BustedTitleTiles: ; $7ED66
     binclude "assets/images/results_busted/data.bin"
 
 img_MainMenu_RaceSelectionBackground: ; $7F02C
@@ -170,7 +170,7 @@ img_Intro_Title: ; $ACA00
 img_MainMenu_Background: ; $AE8CE
     binclude "assets/images/menu_background/data.bin"
 
-unk_AF26C: ; $AF26C
+RaceResults_TitleTiles: ; $AF26C
     binclude "assets/tilesets/results_image_extra/data.bin"
 
 unk_AF902: ; $AF902

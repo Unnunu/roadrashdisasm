@@ -43,7 +43,7 @@ opponents and regenerates the password, and returns to the main menu.
 | Victory animation tiles | `EndLevel_AnimationTiles` -> `$5C00` (`Animation_ram_BaseTile=$2E0`) |
 | Window image | `EndLevel_WindowImage` -> `$2020`, 40x14 at (0,4) |
 | Font | `$0` |
-| Character panel | `unk_7EA66` -> `$9000`, portrait `$C000` |
+| Character panel | `RiderIntro_PortraitPanel` -> `$9000`, portrait `$C000` |
 
 ## Animation
 
@@ -65,7 +65,7 @@ opponents and regenerates the password, and returns to the main menu.
 
 ## Level-up character screen
 
-- Same portrait layout as `src/screens/rider_intro.asm`: panel `unk_7EA66` at (2,5) 12x14, portrait
+- Same portrait layout as `src/screens/rider_intro.asm`: panel `RiderIntro_PortraitPanel` at (2,5) 12x14, portrait
   at (3,6) 10x12, name at (3,19), quote at (16,y/2) with stride 128.
 - Rider table `EndLevel_LevelRiderTable` (`0x19F12`): 5 levels x 2 variants (8-byte
   `quote_ptr,image_ptr` records, same asset format). Level 1-5 variants include the
@@ -77,7 +77,7 @@ opponents and regenerates the password, and returns to the main menu.
 
 ## `EndLevel_AdvanceLevel` (level advance)
 
-- Player A/B: clear the outcome (`ram_FF0526/28`), clear the five places
+- Player A/B: clear the outcome (`Race_ram_PlayerAOutcome/BOutcome`), clear the five places
   (`Menu_ram_PlayerA/BPlaces +0/2/4/6/8`), increment the level
   (`Menu_ram_PlayerA/BLevel`), clamp at 5, rebuild the opponent list
   (`Menu_ram_PlayerA/BOpponents` = `$4B` then 15 words `(level-1)*$F + 0..14`), and

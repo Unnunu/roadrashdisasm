@@ -103,7 +103,7 @@ ROM text, not a transcription bug.
 |---|---|---|
 | Planes A/B `$4000` | main-menu background image, 40x28 | `(0,0)`, base tile `$400`, plane width 128 |
 | Planes A/B | gamepad image, 12x6 | `(2,22)`, base tile `$500` -> `$A000` |
-| Window `$7000` | portrait panel `unk_7EA66`, 12x14 | `(2,5)`, base `$580` -> `$B000` (11 tiles + map) |
+| Window `$7000` | portrait panel `RiderIntro_PortraitPanel`, 12x14 | `(2,5)`, base `$580` -> `$B000` (11 tiles + map) |
 | Window | rider portrait, 10x12 | `(3,6)`, base `$600` -> `$C000` |
 | Window | extra overlay, 6x7 | `(6,9)`, base `$680` -> `$D000` |
 | Window | name, 10x1 | `(3,19)`, base `$6000` (font palette 3) |
@@ -121,7 +121,7 @@ The VDP setup is the same as the main menu: planes A/B `$4000`, window `$7000`
 2. Write the VDP registers; clear SAT/HScroll (16 bytes at `$6000`), VSRAM, the
    default tile `$FFE0` (32 bytes), the visible 128x28 cells at `$4000` (`$700`
    longs), and the frame buffer (`$E00` bytes) to `$7FF`.
-3. Load/draw the background, gamepad and portrait `unk_7EA66` (see table).
+3. Load/draw the background, gamepad and portrait `RiderIntro_PortraitPanel` (see table).
 4. Pick the opponent record (above), then:
    - read the name from the image header string pointer;
    - `UncompressW` the portrait; write to VRAM `$C000`; draw 10x12 at `(3,6)`;

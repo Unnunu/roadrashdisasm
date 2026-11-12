@@ -117,7 +117,7 @@ RiderIntro_Init:
                 dbf     d0,.loopClearFB
 
 ; load the portrait panel (11 tiles + 12x14 nametable) to VRAM $B000
-                lea     (unk_7EA66).l,a3
+                lea     (RiderIntro_PortraitPanel).l,a3
                 lea     (Intro_ram_ImageBuffer).l,a1
                 jsr     (UncompressB).l
 

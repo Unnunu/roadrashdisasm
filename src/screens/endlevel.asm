@@ -230,7 +230,7 @@ EndLevel_InitVictoryCharacter:
 .loc_870E:
                 move.l  d1,(a0)+
                 dbf     d0,.loc_870E
-                lea     (unk_7EA66).l,a3
+                lea     (RiderIntro_PortraitPanel).l,a3
                 lea     (Intro_ram_ImageBuffer).l,a1
                 jsr     (UncompressB).l
                 move.l  #$9000,d0
@@ -394,7 +394,7 @@ EndLevel_InitVictoryCharacter:
 EndLevel_AdvanceLevel:
                 tst.w   (Menu_ram_Player).l
                 bne.w   .loc_89B4
-                clr.w   (ram_FF0526).l
+                clr.w   (Race_ram_PlayerAOutcome).l
                 clr.w   (Menu_ram_PlayerAPlaces + 0).l
                 clr.w   (Menu_ram_PlayerAPlaces + 2).l
                 clr.w   (Menu_ram_PlayerAPlaces + 4).l
@@ -418,7 +418,7 @@ EndLevel_AdvanceLevel:
                 dbf     d1,.loc_89A8
                 bra.w   .loc_8A14
 .loc_89B4:
-                clr.w   (ram_FF0528).l
+                clr.w   (Race_ram_PlayerBOutcome).l
                 clr.w   (Menu_ram_PlayerBPlaces + 0).l
                 clr.w   (Menu_ram_PlayerBPlaces + 2).l
                 clr.w   (Menu_ram_PlayerBPlaces + 4).l

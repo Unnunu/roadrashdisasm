@@ -79,7 +79,7 @@ The C and Start draw paths clear the field twice (the entry clear is redundant
   `...Congratulations`, `...TradeInCredit`, `...BikeDescShuriken400`…`...Diablo1000`,
   `...CaughtByCops`, `...CantAffordBail`, `...BikeNeedsRepairs`,
   `...NoMoneyForRepairs`.
-- Runtime text records (`ram_FF089A`, `ram_FF07C2`, `ram_FF082E`, `Shop_StrBuyNewBike`,
+- Runtime text records (`Message_ram_DynamicRecord`, `ram_FF07C2`, `ram_FF082E`, `Shop_StrBuyNewBike`,
   `Menu_ram_TempString`, `MenuPassword_StrPasswordStatus`) use the same 8-byte header +
   character layout and are built by the owning screens.
 

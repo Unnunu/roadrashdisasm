@@ -512,9 +512,9 @@ Message_MsgArray:
     dc.l Message_StrPressCNewBikes,Message_BlinkButtonC
     dc.l $FFFFFFFF,$FFFFFFFF
 
-; Race results, level cleared (35-40); ram_FF089A is the live congratulations text
+; Race results, level cleared (35-40); Message_ram_DynamicRecord is the live congratulations text
     dc.l MenuPassword_StrPasswordStatus,Message_ShowEmpty ; index 35
-    dc.l ram_FF089A,Message_ShowEmpty
+    dc.l Message_ram_DynamicRecord,Message_ShowEmpty
     dc.l Message_StrPressStartTrackSelection,Message_BlinkButtonStart
     dc.l Message_StrPressAHighScores,Message_BlinkButtonA
     dc.l Message_StrPressBRaceResults,Message_BlinkButtonB
@@ -546,7 +546,7 @@ Message_MsgArray:
 ; Shop tooltips (59-66): dynamic owned/cannot-afford string (index 59),
 ; trade-in note, left/right bike prompts, and the standard Start/A/B/C prompts.
 ; Shop_GameTick cycles 60-66; index 59 is selected by the two dynamic builders.
-    dc.l ram_FF089A,Message_ShowEmpty ; index 59
+    dc.l Message_ram_DynamicRecord,Message_ShowEmpty ; index 59
     dc.l Message_StrTradeInCredit,Message_ShowEmpty
     dc.l ram_FF07C2,Message_BlinkDirPadHorizontal
     dc.l ram_FF082E,Message_BlinkDirPadHorizontal
@@ -786,7 +786,7 @@ Message_StrPressRightDirPad:
     dc.b "                    "
 
 ; Shop dynamic-message prefixes. Shop_ShowAlreadyOwned/ShowCannotAfford copy
-; these records into ram_FF089A and append the current bike name on the
+; these records into Message_ram_DynamicRecord and append the current bike name on the
 ; two rows that end in "a".
 Message_StrAlreadyOwnBike:
     dc.w 23,10,3,20
@@ -819,7 +819,7 @@ Message_StrComplete4thPlace:
     dc.b " before you can go  "
     dc.b " to the next level  "
 
-; RaceResults_Init copies this record to ram_FF089A and adds the current
+; RaceResults_Init copies this record to Message_ram_DynamicRecord and adds the current
 ; Menu_ram_PlayerLevel (clamped to 4) to the ASCII '1' at row 4, column 14.
 ; @UNKNOWN(U-0006): intended displayed level | guess: the text shows the next
 ; level because the level is 1-based elsewhere | next: compare this text with

@@ -31,7 +31,7 @@ of a level are finished in 1st-4th (`RaceResults_ram_Outcome == 4`).
 2. `GameTick`/`UpdateAnimation`: play the level animation (`EndLevel_FrameCounts` frame counts,
    script `EndLevel_AnimationScript`, x/y `$80`); 5-frame DMA/swap; wait for Start release or 2 s;
    `EndLevel_ram_AnimFrame = -1` -> `InitCharacterScreen`.
-3. `InitCharacterScreen`: panel `unk_7EA66`, rider from `EndLevel_LevelRiderTable` (level-1, two
+3. `InitCharacterScreen`: panel `RiderIntro_PortraitPanel`, rider from `EndLevel_LevelRiderTable` (level-1, two
    variants), name/quote/palette; `EndLevel_AdvanceLevel`; message group `0x180`.
 4. `GameTickCharacterScreen`: DMA window `$3000`; Start held exits; 2 s message cycle.
 

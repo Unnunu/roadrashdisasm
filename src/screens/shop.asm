@@ -699,9 +699,9 @@ Shop_DrawString:
 
 ; *************************************************
 ; Function Shop_ShowAlreadyOwned
-; Builds "You already own a ..." (Message_StrAlreadyOwnBike + bike name) in ram_FF089A (id 59).
+; Builds "You already own a ..." (Message_StrAlreadyOwnBike + bike name) in Message_ram_DynamicRecord (id 59).
 ; In:  Shop_CurrentBikeId
-; Out: ram_FF089A; message id 59; 5 s timer
+; Out: Message_ram_DynamicRecord; message id 59; 5 s timer
 ; Clobbers: d0/d1/a0/a1
 ; *************************************************
 
@@ -710,7 +710,7 @@ Shop_ShowAlreadyOwned:
                 move.w  #$1E,(Menu_ram_MessageBlinkTimer).l
                 move.w  #$12C,(Menu_ram_NextMessageTimer).l
                 lea     (Message_StrAlreadyOwnBike).w,a0
-                lea     (ram_FF089A).l,a1
+                lea     (Message_ram_DynamicRecord).l,a1
                 move.l  (a0)+,(a1)+
                 move.w  (a0),d0
                 move.w  2(a0),d1
@@ -739,9 +739,9 @@ Shop_ShowAlreadyOwned:
 
 ; *************************************************
 ; Function Shop_ShowCannotAfford
-; Builds "You need more credit to buy a ..." (Message_StrNeedMoreCredit + bike name) in ram_FF089A.
+; Builds "You need more credit to buy a ..." (Message_StrNeedMoreCredit + bike name) in Message_ram_DynamicRecord.
 ; In:  Shop_CurrentBikeId
-; Out: ram_FF089A; message id 59; 5 s timer
+; Out: Message_ram_DynamicRecord; message id 59; 5 s timer
 ; Clobbers: d0/d1/a0/a1
 ; *************************************************
 
@@ -750,7 +750,7 @@ Shop_ShowCannotAfford:
                 move.w  #$1E,(Menu_ram_MessageBlinkTimer).l
                 move.w  #$12C,(Menu_ram_NextMessageTimer).l
                 lea     (Message_StrNeedMoreCredit).w,a0
-                lea     (ram_FF089A).l,a1
+                lea     (Message_ram_DynamicRecord).l,a1
                 move.l  (a0)+,(a1)+
                 move.w  (a0),d0
                 move.w  2(a0),d1

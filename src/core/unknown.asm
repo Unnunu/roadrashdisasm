@@ -29,7 +29,7 @@ loc_7E6A2 equ $7E6A2
 
 ; Rider intro portrait images (11 unique in the ROM tail).
 
-; Results-screen track images (pointed to by unk_7E670).
+; Results-screen track images (pointed to by RaceResults_TrackImagePtrs).
 
 SONG_INTRO equ 1
 
@@ -55,7 +55,7 @@ PLAYER_LEVEL_START equ 1
 ; Default starting bike id.
 BIKE_ID_START equ 0
 
-; Race outcome values (ram_FF0526/28).
+; Race outcome values (Race_ram_PlayerAOutcome/BOutcome).
 RACE_OUTCOME_NONE equ 0
 
 ; Race place value for a race that has not been played.

@@ -20,6 +20,6 @@ image/nametable/palette pointer tables.
 | `RaceHud_NeedleScript` (needle script) | `0x7DEAA` | [x] | [~] | [x] | [x] | [x] | [ ] | partial |
 | `Shop_BikePalettes` | `0x7E370` | [x] | - | [x] | [x] | [x] | [ ] | analyzed |
 | `unk_7E470` (actor palettes) | `0x7E470` | [x] | - | [x] | [x] | [x] | [ ] | analyzed |
-| `unk_7E670/684/68E/698` | `0x7E670`+ | [x] | - | [x] | [x] | [x] | [ ] | analyzed |
+| `RaceResults_TrackImagePtrs/684/68E/698` | `0x7E670`+ | [x] | - | [x] | [x] | [x] | [ ] | analyzed |
 
 Detailed analysis: `docs/analysis/race_misc_data.md`.

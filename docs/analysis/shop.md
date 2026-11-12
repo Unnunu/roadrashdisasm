@@ -94,7 +94,7 @@ with the window's transparent cells exposing the scrolling bike band.
   `Message_StrPressLeftDirPad` + previous name, `Message_StrPressRightDirPad` + next
   name.
 - `Shop_ShowAlreadyOwned`/`Shop_ShowCannotAfford` build the dynamic messages in
-  `ram_FF089A` from `Message_StrAlreadyOwnBike` / `Message_StrNeedMoreCredit` + the
+  `Message_ram_DynamicRecord` from `Message_StrAlreadyOwnBike` / `Message_StrNeedMoreCredit` + the
   current bike name (id 59, 5 s).
 
 ## Input
@@ -110,7 +110,7 @@ then shifts the scroll position by `-$D0`/`+$D0`.
 - `Shop_CurrentBikeId` `$FF0950` (0..7); `Shop_ram_CurrentButtons` current buttons (unnamed);
   `Shop_ScrollPos` `$FF0954` (centre `$160`); `Shop_ImageBike1/2/3`
   `$FF0956/$FF0A9A/$FF0BDE` (18x9 maps); `Shop_StrBuyNewBike` `$FF06EA`;
-  `ram_FF089A`/`ram_FF07C2`/`ram_FF082E` dynamic messages.
+  `Message_ram_DynamicRecord`/`ram_FF07C2`/`ram_FF082E` dynamic messages.
 - ROM: `Shop_BikeDescriptions` `$81D2` (8 pointers), `Shop_dPrices` `$8312` (8 words),
   `Shop_BikeImageTable` `$8322` (8 pointers), `Shop_BikePalettes` `$7E370`
   (8 x 32 bytes, referenced from `src/core/unknown.asm`).

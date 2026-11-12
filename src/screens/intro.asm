@@ -372,7 +372,7 @@ Intro_InitPlayerA:
 ; Fresh player A state: level 1, no race outcome, no progress, $100, bike 0,
 ; and no recorded place in any of the five races.
                 move.w  #PLAYER_LEVEL_START,(Menu_ram_PlayerALevel).l
-                move.w  #RACE_OUTCOME_NONE,(ram_FF0526).l
+                move.w  #RACE_OUTCOME_NONE,(Race_ram_PlayerAOutcome).l
                 move.w  #0,(ram_FF0522).l ; 2-bit password field (meaning TODO)
                 move.l  #0,(ram_FF0510).l ; 20-bit progress value
                 move.l  #100,(Menu_ram_MoneyPlayerA).l ; starting money = $100
@@ -461,7 +461,7 @@ Intro_InitPlayerB:
 ; Fresh player B state: level 1, no race outcome, no progress, $100, bike 0,
 ; and no recorded place in any of the five races.
                 move.w  #PLAYER_LEVEL_START,(Menu_ram_PlayerBLevel).l
-                move.w  #RACE_OUTCOME_NONE,(ram_FF0528).l
+                move.w  #RACE_OUTCOME_NONE,(Race_ram_PlayerBOutcome).l
                 move.w  #0,(ram_FF0524).l ; 2-bit password field (meaning TODO)
                 move.l  #0,(ram_FF0514).l ; 20-bit progress value
                 move.l  #100,(Menu_ram_MoneyPlayerB).l ; starting money = $100

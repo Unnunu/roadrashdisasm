@@ -15,10 +15,10 @@
 | `RaceHud_NeedleScript` | `0x7DEAA` | `0x4C6` | HUD speed/RPM needle animation script (tilemap + frames). |
 | `Shop_BikePalettes` | `0x7E370` | `0x100` | 8 bike palettes x 32 bytes. |
 | `unk_7E470` | `0x7E470` | `0x200` | 16 actor palettes x 32 bytes (`Race_LoadActorPalette`). |
-| `unk_7E670` | `0x7E670` | `0x14` | 5 track-image pointers + terminator (results). |
-| `unk_7E684` | `0x7E684` | `0xA` | 5 per-track image offsets (results). |
-| `unk_7E68E` | `0x7E68E` | `0xA` | 5 per-track nametable offsets (results). |
-| `unk_7E698` | `0x7E698` | `0xA` | 5 per-track palette offsets (results). |
+| `RaceResults_TrackImagePtrs` | `0x7E670` | `0x14` | 5 track-image pointers + terminator (results). |
+| `RaceResults_TrackImageOffsets` | `0x7E684` | `0xA` | 5 per-track image offsets (results). |
+| `RaceResults_TrackNametableOffsets` | `0x7E68E` | `0xA` | 5 per-track nametable offsets (results). |
+| `RaceResults_TrackPaletteOffsets` | `0x7E698` | `0xA` | 5 per-track palette offsets (results). |
 
 ## Consumers
 
@@ -30,7 +30,7 @@
 - `Shop_*`: `Shop_BikePalettes` (`8*32`) for the bike selection.
 - `Race_LoadActorPalette`: `unk_7E470 + index*32`, copies 8 longs (32 bytes) to the
   global palette.
-- `src/screens/race_results.asm`: `unk_7E670[track]` -> compressed track image; `unk_7E684/68E/698`
+- `src/screens/race_results.asm`: `RaceResults_TrackImagePtrs[track]` -> compressed track image; `RaceResults_TrackImageOffsets` / `RaceResults_TrackNametableOffsets` / `RaceResults_TrackPaletteOffsets`
   are added to the current track id and dereferenced as image/nametable/palette offsets
   (5 entries each).
 
@@ -40,7 +40,7 @@
   guard value.
 - `RaceHud_NeedleScript` frame table/tilemap exact layout (script renderer is documented in
   `docs/analysis/animation.md`).
-- `unk_7E670` entry count (5 tracks) and the pointer to the 5th/terminator semantics.
+- `RaceResults_TrackImagePtrs` entry count (5 tracks) and the pointer to the 5th/terminator semantics.
 - Dynamic verification of the results track images/palettes.
 
 ## Rename proposals

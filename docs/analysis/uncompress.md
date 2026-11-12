@@ -30,7 +30,7 @@
     the ring, advancing the ring/window.
 - Output stops when the 32-bit size counter reaches 0. Inputs: `a3` = compressed data,
   `a1` = output; the routines save/restore all registers (`movem`).
-- Verified with a Python decoder: `unk_7EA66` 0x2B8, `img_Gamepad` 0xC20,
+- Verified with a Python decoder: `RiderIntro_PortraitPanel` 0x2B8, `img_Gamepad` 0xC20,
   `img_MainMenu_Background` 0xDA8, character image `0xAF902` 0x1058 bytes.
 
 ## `UncompressB` (byte format, `0x9B9E`)

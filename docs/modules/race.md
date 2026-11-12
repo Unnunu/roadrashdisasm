@@ -160,7 +160,7 @@ Detailed top-level flow: `docs/analysis/race.md`; actors: `docs/analysis/race_ac
   top-level. `[dynamic]` active opponents also show `$68=$42` (bit1+bit6), so the
   bit1 meaning must be reconciled before renaming it.
 - `[static]` Track record/streams/spawn/bike data initialization.
-- `[static]` Race outcome fields (`ram_FF0526/28`, `Race_EventBuffer`, `RaceResults_ram_Outcome`).
+- `[static]` Race outcome fields (`Race_ram_PlayerAOutcome/BOutcome`, `Race_EventBuffer`, `RaceResults_ram_Outcome`).
 - `[static]` Actor tables: 76 definitions, 16-pointer rider list (player A + 15
   opponents), graphics/static tables (parsed from `baserom.md`).
 - `[static]` Spawn flow: `Race_SpawnTick` -> opponent (ahead, x+$200000) or traffic

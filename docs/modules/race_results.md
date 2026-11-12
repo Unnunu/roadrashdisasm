@@ -1,7 +1,7 @@
 # Module card: `src/screens/race_results.asm`
 
 - **ROM range:** `0x005F28`–`0x006DBF` (`src/screens/highscore.asm` starts at `0x6DC0`)
-- **Status:** analyzed (static; demo skips the screen, rendering dynamic TODO)
+- **Status:** analyzed; line-by-line pass done (static; demo skips the screen, rendering dynamic TODO)
 - **Related:** `docs/architecture.md`, `docs/reverse-engineering.md`,
   `docs/hardware.md`, `docs/ram-map.md`, `docs/analysis/race_results.md`
 
@@ -26,7 +26,7 @@ open the shop (C), or inspect the cash/password (B).
 
 ## Control flow / state machine
 
-1. `Init`: set timers; copy `ram_FF0526/28` -> `RaceResults_ram_Outcome`; choose message group
+1. `Init`: set timers; copy `Race_ram_PlayerAOutcome/BOutcome` -> `RaceResults_ram_Outcome`; choose message group
    21/28/35; VDP setup; background/gamepad/font; choose layout:
    `RaceResults_DrawStandings` if `Race_EventBuffer != $FFFF`, else cops (`Race_CopIndex != 0`) or repair.
    DMA; fill the cash/password box; patch the congratulations level; audio.
@@ -36,20 +36,23 @@ open the shop (C), or inspect the cash/password (B).
 
 ## RAM / ROM & structures
 
-- `ram_FF0526/28` per-player outcome -> `RaceResults_ram_Outcome`: 0 = course not completed, >4 =
+- `Race_ram_PlayerAOutcome/BOutcome` per-player outcome -> `RaceResults_ram_Outcome`: 0 = course not completed, >4 =
   4th place not reached, 4 = level complete (EndLevel).
 - `Race_EventBuffer` 16-long event/sort buffer; first word `$FFFF` = busted/destroyed.
 - `Race_CopIndex` cop index (1..5) or 0 = bike destroyed; `RaceResults_ram_Amount` fine/repair.
 - `ram_FF1414/18/1A` standings string header/text, height, width.
 - `RaceResults_ram_NextFunction` next-screen pointer (HighScore/Shop/RaceResults); `RaceResults_ram_DrawRoutine` set but
   unread; `Menu_ram_PlayerLevel` for fine/repair/congratulations.
+- `MenuPassword_StrPasswordStatus` is reused as a 5-row x 12-column status box; its `+4`
+  word is the height field, decreased from 5 to 3 to hide the password rows when the
+  player has negative money.
 - Result portrait tables: `$19D32` (level, money>=0, 5x4), `$19DD2` (level, money<0,
   5x2), `$19E22` (cop, money>=0, 5x4), `$19EC2` (cop, money<0, 5x2); 8-byte records
   `quote_ptr, image_ptr` (same asset format as `src/screens/rider_intro.asm`).
 - Track images: `$7E670` pointers, `$7E684` image offsets, `$7E68E` nametable offsets,
   `$7E698` palette offsets.
 - Messages: groups 21 (`Message_StrCompleteEveryCourse`), 28
-  (`Message_StrComplete4thPlace`), 35 (`ram_FF089A`/`Message_StrCongratulations`) plus
+  (`Message_StrComplete4thPlace`), 35 (`Message_ram_DynamicRecord`/`Message_StrCongratulations`) plus
   Start/A/B/C prompts; bust/repair strings `Message_StrCaughtByCops`/
   `Message_StrCantAffordBail`/`Message_StrBikeNeedsRepairs`/`Message_StrNoMoneyForRepairs`.
 
@@ -74,13 +77,16 @@ Detailed listing and table parse: `docs/analysis/race_results.md`.
 - Uses `UncompressW/B`, `WriteTilesetToVRAM`, `WriteNametable(ToBuffer)`, `EncodeString`,
   `Menu_ShowMessage`, `DmaWriteVRAM`, `GetInputPlayerA/B`, `Rand_NextWord`, `Race_FormatMoney`,
   `Race_FormatNumber`, `Audio_Update/3/4`.
-- Race outcome fields are computed by `Race_ComputeResults` in `src/race/race.asm`.
+- Race outcome fields are computed by `Race_ComputeResults` in `src/race/race_core.asm`.
 
 ## Hacks / bugs / quirks
 
 - `RaceResults_ram_DrawRoutine` is set to the active draw routine but never read. `[static]`
+- The negative-money portrait tables use `and.w ($8).w` (bus-error vector high word =
+  `$0000`), so their reported random variant is always the first record; the RNG advances.
+- `StrNotReadyEncoded` is ASCII with bit 7 set; `EncodeString` would render it as spaces.
 - `DrawString` (`0x6C5E`) is unused; the source notes it may not belong to this file.
-- The tail data `unk_6C94`/`6D00`/`6D14`/`6D50`/`6D88` is unreferenced (dead/legacy).
+- The tail data `RaceResults_StrNextLevelShort`/`6D00`/`6D14`/`6D50`/`6D88` is unreferenced (dead/legacy).
 - Start exits while **held**; A/C are new-press edges; B shows the cash box.
 
 ## Verified facts
