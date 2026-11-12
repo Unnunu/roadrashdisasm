@@ -3,24 +3,35 @@
 - **Module / routine:** password entry screen, player name/password editing, password
   validation/parsing/generation
 - **ROM range:** `0x002446`–`0x0033FF` (`src/screens/menu_main.asm` starts at `0x3400`)
-- **Status:** analyzed (password format/checksum reimplemented; exact visual cursor TODO)
+- **Status:** analyzed line-by-line (password format/checksum reimplemented); dynamic
+  confirmation of the cursor visuals still TODO
 - **Source:** `src/screens/menu_password.asm`
-- **Related:** `docs/architecture.md`, `docs/hardware.md`, `docs/ram-map.md`
+- **Related:** `docs/architecture.md`, `docs/hardware.md`, `docs/ram-map.md`,
+  `docs/analysis/menu_main.md`, `docs/analysis/unknowns.md`
 
 ## Coverage matrix
 
-| Function | Address | Contract | Algorithm | Data | Hardware | Why | Dynamic | Status |
-|----------|---------|----------|-----------|------|----------|-----|---------|--------|
-| `MenuPassword_GameTick` | `0x24CC` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
-| `MenuPassword_HandleInput` | `0x2710` | [x] | [x] | [x] | [x] | [x] | - | analyzed |
-| `MenuPassword_UpdateStatus` | `0x2A1E` | [x] | [x] | [x] | - | [x] | - | analyzed |
-| `MenuPassword_SetCursorPos` | `0x2B18` | [x] | [x] | [x] | [x] | [x] | - | analyzed |
-| `MenuPassword_SelectCurrentTrack` | `0x2B2E` | [x] | [x] | [x] | - | [x] | - | analyzed |
-| `MenuPassword_SwapPlayerBlocks` | `0x2BEE` | [x] | [x] | [x] | [x] | [x] | - | analyzed |
+`Line` = line-by-line comment pass. `Algorithm`/`Data`/`Hardware`/`Why` are covered in
+the source comments and below.
+
+| Function | Address | Contract | Algorithm | Data | Hardware | Why | Line | Status |
+|----------|---------|----------|-----------|------|----------|-----|------|--------|
+| `MenuPassword_GameTick` | `0x24CC` | [x] | [x] | [x] | [x] | [x] | [x] | analyzed |
+| `MenuPassword_HandleInput` | `0x2710` | [x] | [x] | [x] | [x] | [x] | [x] | analyzed |
+| `MenuPassword_UpdateStatus` | `0x2A1E` | [x] | [x] | [x] | - | [x] | [x] | analyzed |
+| `MenuPassword_SetCursorPos` | `0x2B18` | [x] | [x] | [x] | [x] | [x] | [x] | analyzed |
+| `MenuPassword_SelectCurrentTrack` | `0x2B2E` | [x] | [x] | [x] | - | [x] | [x] | analyzed |
+| `MenuPassword_SwapPlayerBlocks` | `0x2BEE` | [x] | [x] | [x] | [x] | [x] | [x] | analyzed |
 | `MenuPassword_ValidatePassword` | `0x2C32` | [x] | [x] | [x] | - | [x] | [x] | analyzed (Python) |
-| `MenuPassword_ParsePassword` | `0x2D1E` | [x] | [x] | [x] | - | [x] | - | analyzed |
+| `MenuPassword_ParsePassword` | `0x2D1E` | [x] | [x] | [x] | - | [x] | [x] | analyzed |
 | `MenuPassword_CreatePassword` | `0x2F3A` | [x] | [x] | [x] | - | [x] | [x] | analyzed (Python) |
-| `MenuPassword_DrawNamesAndPasswords` | `0x3306` | [x] | [x] | [x] | [x] | [x] | - | analyzed |
+| `MenuPassword_DrawNamesAndPasswords` | `0x3306` | [x] | [x] | [x] | [x] | [x] | [x] | analyzed |
+
+Data blocks in the file:
+
+- `Menu_DefaultPassword` (`0x2446`): 24-char template, checksum invalid.
+- `Menu_DefaultName` (`0x245E`): 10-char initial name `"Player A  "`.
+- `unk_2468` (`0x2468`): unreferenced 5x20 text block, marked dead.
 
 ## Screen / VDP context
 
@@ -31,145 +42,225 @@
 - Text uses font tile base `$6000` (palette line 3) and `WriteNametableToBuffer`
   (plane width 64) after `EncodeString`.
 - `MenuPassword_SetCursorPos` writes the **high byte** of `d0` into the frame buffer cell
-  (`y*128 + x*2`); the game calls it with `$6000` to restore the text palette and `0`
-  to draw/erase the cursor cell. The character (low byte) is unchanged.
+  (`offset = y*128 + x*2`); the game calls it with `$6000` to restore palette 3 and `0`
+  to draw/erase the cursor cell (palette 0). The character (low byte) is unchanged.
 - The VDP context is `Menu_Init` (`src/screens/menu_main.asm`): planes A/B share `$4000`, the window
   nametable at `$7000` holds the 64x28 frame buffer, and the window covers the screen
   (`WindowY=28`). The password DMA destination `$7200` is therefore window row 4; the
   64x24 password area occupies rows 4-27. The sprite and H-scroll tables overlap at
   `$6000` (unused by this screen).
 
-## Input / editing
+## Text records and encoding
 
-`MenuPassword_GameTick` (`0x24CC`):
+Name and password strings are text records consumed by `EncodeString`/`DecodeString`:
+
+```text
++$00 y (word)  +$02 x (word)  +$04 height (word)  +$06 width (word)
++$08 .. height*width ASCII bytes
+```
+
+- Names are `1x10`; passwords are `2x12` (24 characters, row-major).
+- `EncodeString` maps each ASCII byte through `dStringCodeTable` (128 words, indexed
+  by `char*2`) to a font tile index. Unsupported bytes and controls map to space (36).
+- `DecodeString` maps tile indices 0..49 back to ASCII through `dStringDecodeTable`.
+- The alphabet is 50 entries: `0-9`, `A-Z`, space, and the punctuation in
+  `dStringDecodeTable` (`? ! , . ; : $ ( ) + - " '`). The editor can therefore enter
+  glyphs that the password fields do not use; the checksum masks them down.
+- All checksum work is done on **tile indices**, not on ASCII bytes.
+
+## Password data structure (24 characters, 2 rows of 12)
+
+`w[i]` = character `i` in row-major order (row 0 = `w0..w11`, row 1 = `w12..w23`).
+
+| Words | Field | Encoding |
+|---|---|---|
+| `w0..w4` | race places 0..4 | low nibble; 0 = no recorded place (`RACE_PLACE_NONE`) |
+| `w5..w6` | separator spaces | not editable, skipped by the checksum |
+| `w7..w10` | 20-bit field, unit unknown (`U-0005`) | 5 bits each; `w7` = bits 19..15 … `w10` = bits 4..0 |
+| `w11..w16` | 24-bit signed money | six nibbles, MSB first; stored as `(nibble << 1)` |
+| `w17..w18` | separator spaces | not editable, skipped by the checksum |
+| `w19` | level | 3 bits (`& 7`) |
+| `w20` | bike id + extra | bits 0..2 = bike id; bits 3..4 = extra 2-bit field (`U-0004`) |
+| `w21..w23` | checksum | see below |
+
+### Why the money characters are even before checksum insertion
+
+Each money character is a tile index equal to `nibble << 1` (`CreatePassword`). This
+leaves bit0 free for one checksum bit. `ParsePassword` recovers a nibble with `>>1`;
+the parser also accepts odd characters, because validation has already constrained
+their low bits.
+
+### Stored-state mapping
+
+| Password field | Player A | Player B |
+|---|---|---|
+| level `w19 & 7` | `Menu_ram_PlayerALevel` | `Menu_ram_PlayerBLevel` |
+| places `w0..w4 & $F` | `Menu_ram_PlayerAPlaces` | `Menu_ram_PlayerBPlaces` |
+| 20-bit field `w7..w10` | `ram_FF0510` | `ram_FF0514` |
+| money `w11..w16` | `Menu_ram_MoneyPlayerA` | `Menu_ram_MoneyPlayerB` |
+| bike id `w20 & 7` | `Menu_ram_BikeIdPlayerA` | `Menu_ram_BikeIdPlayerB` |
+| extra `(w20 >> 3) & 3` | `ram_FF0522` | `ram_FF0524` |
+
+`ParsePassword` also rebuilds the 16-word opponent list as `$4B` (the player's own
+definition id) followed by `(level-1)*15 + 0..14`.
+
+## Checksum
+
+`MenuPassword_ValidatePassword` first encodes the password string into 24 tile-index
+words in `Intro_ram_ImageBuffer`, then:
+
+```text
+sum  = w0+w1+w2+w3+w4 + w7+w8+w9+w10 + (w11..w16 & ~1) + w19+w20
+mask = (w11&1) | (w12&1)<<1 | (w13&1)<<2 | (w14&1)<<3 | (w15&1)<<4 | (w16&1)<<5
+
+valid iff:
+  (sum & $3F) == mask
+  (w21 ^ w22 ^ w23) & $1F == 0
+  w21 == (w7+w8+w9+w10+w11) & $1F
+  w22 == (w12+w13+w14+w15+w16) & $1F
+```
+
+`w23` is therefore always `w21 ^ w22`. The `ROXR.B` sequence collects the low bit of
+`w11..w16` MSB-first into `d2`; `LSR.W #2` then aligns them with `w11` in bit0. The
+`move.w #$FFFF,d0` at function entry is dead (overwritten before use).
+
+`d0` = 0 on success (valid), non-zero on failure; `d1` = `sum`.
+
+### Generation (`MenuPassword_CreatePassword`)
+
+1. `EncodeString` the existing password first. Only `w5,w6,w17,w18` are not overwritten
+   below, so this preserves the four separator spaces (the editor never changes them).
+2. Write `w0..w4`, `w7..w16`, `w19`, `w20`; zero `w21..w23`.
+3. `DecodeString` to the password string, then `ValidatePassword` to obtain `sum` in
+   `d1` (the same sum the validator computes).
+4. OR the six low bits of `sum` into bit0 of `w11..w16`.
+5. Set `w21 = sum(w7..w11) & $1F`, `w22 = sum(w12..w16) & $1F`,
+   `w23 = w21 ^ w22`, then `DecodeString` the final text.
+
+## Screen flow and input
+
+`MenuPassword_GameTick` (`0x24CC`, ROM `$24CC-$270F`):
 
 - DMA the frame buffer to VRAM `$7200`.
-- Read pads A/B; `ChangedButtons = old ^ new`.
-- Start handling: if Start is currently pressed -> keep editing; if the **changed** Start
-  bit is set (released) -> `.endStage`. The password screen exits on Start **release**.
-- Draw/restore the cursor, handle newly pressed buttons, hold-repeat (30-frame delay,
-  then every 8 frames), blink the message/tooltip, `Menu_ShowMessage`, `Audio_Update`.
-- `.endStage`: `MenuPassword_UpdateStatus` (validate/parse + status), `Menu_DrawPlayerInfo`, clear the
-  `FrameBuffer + $280` region with `$67FF67FF`, `Menu_DrawRaceSelection`, redraw player
-  info, install `MainMenu_GameTick`.
+- Read pads A/B; `ChangedButtons = old XOR new` (press and release edges).
+- Start handling: if Start is currently pressed -> keep editing; if the **changed**
+  Start bit is set (release, because the press branch did not take it) -> `.endStage`.
+  The password screen exits on Start **release**.
+- Restore the previous cursor cell (`$6000`) at the stored `CursorX/CursorY`, handle
+  newly pressed buttons, hold-repeat, then draw the cursor (`0`) at the (possibly new)
+  `CursorX/CursorY`.
+- `MessageBlinkTimer` (30 frames) toggles the tooltip text; `NextMessageTimer` (240
+  frames) advances `Menu_ram_CurrentMessageId` by 8. The id is a **byte offset** into
+  `Message_MsgArray` (8-byte entries). The password screen starts at 96 (index 12,
+  first password tooltip) and cycles indices 12-15; the `$FFFFFFFF` group terminator
+  wraps it back to 96. If the id ever falls below 96 it is snapped back to 96, but
+  `d0` was read before the snap, so that first post-wrap terminator test uses the stale
+  offset for one frame (the id itself is already repaired).
+- `Menu_ShowMessage`, `Audio_Update`.
+- `.endStage`: `MenuPassword_UpdateStatus`, `Menu_DrawPlayerInfo`, clear rows 5-21
+  with `$67FF` (default tile `$7FF`, palette 3), `Menu_DrawRaceSelection`,
+  `Menu_DrawPlayerInfo`, install `MainMenu_GameTick`.
+
+### Cursor semantics
+
+The cursor is a palette toggle in an existing character cell, not a sprite. The screen
+column is `4` (A) or `24` (B) plus `CursorX`:
+
+| Row | `CursorY` | `CursorX` range | Meaning |
+|---|---|---|---|
+| Name | 9 | 1..10 | character index `CursorX-1` (name record starts at x=5) |
+| Password row 0 | 15 | 0..11 | character index `CursorX` (password record starts at x=4) |
+| Password row 1 | 16 | 0..11 | character index `12 + CursorX` |
+
+Password columns 5 and 6 are the two separator spaces: Right maps 5 -> 7, Left maps
+6 -> 4, so they are never edit targets. Down/Up preserve the screen column, with
+5 -> 4 / 6 -> 7 when entering the password rows and 0 -> 1 / >10 -> 10 when returning
+to the name row.
 
 `MenuPassword_HandleInput` (`d0` = current SACBRLDU buttons):
 
 | Button | Action |
 |---|---|
-| A (`$40`) | previous password character (tile index -1, wrap to 49) |
-| B (`$10`) | next password character (+1, wrap to 0) |
-| C (`$20`) | switch player A/B (swap display blocks, update pointers) |
-| Right (`$08`) / Left (`$04`) | move cursor horizontally (special cases for the name row) |
-| Down (`$02`) / Up (`$01`) | move cursor vertically between name/password rows |
+| A (`$40`) | previous glyph in the 50-entry alphabet (wrap 0 -> 49) |
+| B (`$10`) | next glyph (wrap 49 -> 0) |
+| C (`$20`) | validate/apply current player, then switch to the other player |
+| Right (`$08`) / Left (`$04`) | move cursor horizontally (special cases above) |
+| Down (`$02`) / Up (`$01`) | move cursor between name/password rows |
 | Start (`$80`) | exit on release (handled in GameTick) |
 
-The character alphabet is `dStringDecodeTable` (`"0123456789A..Z ?!,.;:$()+-"'`); the
-name row uses `MenuPassword_ram_StrPlayerAName/BName`, the two password rows use
-`MenuPassword_ram_StrPlayerAPassword/BPassword`. The cursor X/Y and special-case limits
-are at `HandleInput`; the name row is Y=9, the password rows Y=15/16.
+Hold-repeat: a newly pressed single U/D/L/R/B/A sets `HoldTimer=30` and
+`HeldButtons=mask`; after the delay it repeats every 8 frames while no edge occurs.
+C and Start are not in the repeat mask, and simultaneous presses do not repeat. The
+same handler is used for name and password strings; the address is
+`8 + (Y-15)*width + index` (the name row is remapped to `Y=15`, `index-1`).
 
-## Password format (24 characters, 2 lines of 12)
+## Status message (`MenuPassword_UpdateStatus`, `0x2A1E`)
 
-The password characters are font tile indices (from `EncodeString`), not ASCII. The
-default string `Menu_DefaultPassword` ("01234  5678901234  56789") is only a **template**
-and is invalid (see below); the player edits/enters a real password.
+- Selects `Message_MsgArray` index 5 (offset 40, `MenuPassword_StrPasswordStatus`) and
+  copies the 5x16 template `unk_4E20` (`"PASSWORD INVALID"`, `"OLD LEVEL IS: 0"`).
+- Centers the 10-character player name on row 0: `text + (16-10)/2`.
+- Calls `ValidatePassword`. On success it changes row 2 from `"PASSWORD INVALID"` to
+  `"PASSWORD   VALID"` (three spaces overwrite `" IN"`) and row 4 from `"OLD"` to
+  `"NEW"`, then calls `ParsePassword` and `MenuPassword_SelectCurrentTrack`.
+- Whether valid or not, it writes `ASCII '0' + level` at row 4, column 14.
 
-| Word indices | Contents |
-|---|---|
-| 0-4 | places in the 5 races (low nibble each) |
-| 5-6 | separator spaces (skipped by the checksum) |
-| 7-10 | 20-bit progress value `ram_FF0510` (5 bits each) |
-| 11-16 | 24-bit signed money (6 nibbles, each stored as value << 1; bit0 = checksum) |
-| 17-18 | separator spaces |
-| 19 | player level (3 bits) |
-| 20 | bits 0-2 bike id, bits 3-4 `ram_FF0522` (2 bits) |
-| 21-23 | checksum characters |
+## Track selection (`MenuPassword_SelectCurrentTrack`, `0x2B2E`)
 
-### Checksum (`MenuPassword_ValidatePassword`, `0x2C32`)
+The places array is five words; the even track id (0,2,4,6,8) is also the byte offset
+used by `race_core.asm`/`race_results.asm`.
 
-Let `w[0..23]` be the word array:
+- Return the first race whose place is 0 (not yet played).
+- If all five races have a place, return the race with the largest place (worst
+  finish). `CMP/BPL` skips on `>=`, so ties keep the earlier race.
 
-1. `sum = w[0]+w[1]+w[2]+w[3]+w[4] + w[7]+w[8]+w[9]+w[10]`
-   `+ (w[11]&~1)+...+(w[16]&~1) + w[19]+w[20]`.
-2. `mask` = the six low bits of `w[11]..w[16]` (LSB of each, in order), packed into a
-   6-bit value.
-3. Require `(sum & $3F) == mask`.
-4. Require `(w[21] ^ w[22] ^ w[23]) & $1F == 0`.
-5. Require `w[21] == (w[7]+w[8]+w[9]+w[10]+w[11]) & $1F`.
-6. Require `w[22] == (w[12]+w[13]+w[14]+w[15]+w[16]) & $1F`.
+## Player switching (`MenuPassword_SwapPlayerBlocks`, `0x2BEE`)
 
-`d0` = 0 on success (valid), non-zero on failure; `d1` = `sum`.
-
-### Generation (`MenuPassword_CreatePassword`, `0x2F3A`)
-
-The reverse: encode the current state into the 24 words, patch the low bits of
-`w[11]..w[16]` from the low bits of `sum` (making check 3 pass), set
-`w[21] = sum(w[7..11]) & $1F`, `w[22] = sum(w[12..16]) & $1F`,
-`w[23] = w[21] ^ w[22]`, then `DecodeString` into the password string. Player A/B use
-`Menu_ram_*PlayerA/B` state and `ram_FF0510`/`ram_FF0514`.
-
-`[static]` A Python reimplementation of the validator/generator was run:
-
-- default template `01234  5678901234  56789` -> **invalid** (sum=63, mask=21);
-- initial state (places 0, progress 0, money 100, level 1, bike 0, extra 0) ->
-  **valid password `00000  00001010D8  101MN`** (two lines `00000  00001` /
-  `010D8  101MN`), validation sum=21, mask=21.
-
-This is a static result; the game's `CreatePassword`/`ParsePassword` should accept it
-(dynamic verification possible by entering it in the password menu).
-
-## Parsing (`MenuPassword_ParsePassword`, `0x2D1E`)
-
-For player A/B (selected by `d0`), a valid password is applied to:
-
-- level `w[19] & 7` -> `Menu_ram_PlayerALevel/BLevel`; opponents =
-  `$4B, (level-1)*15 + 0..14`;
-- places `w[0..4] & $F` -> `Menu_ram_PlayerA/BPlaces`;
-- 20-bit progress `w[7..10]` (5 bits each) -> `ram_FF0510`/`ram_FF0514`;
-- 24-bit signed money `w[11..16]` -> `Menu_ram_MoneyPlayerA/B`;
-- bike id `w[20] & 7`, extra 2 bits `(w[20] >> 3) & 3` -> `ram_FF0522`/`ram_FF0524`.
+Swaps two 16-cell wide, 14-row panels (rows 5-18): left at `x=2`, right at `x=22`
+(8 longs per row, then `+$60` to the same column of the next row). The destination
+panel's top-left cell must be the blank space tile (`$6000 + space`), otherwise the
+swap is skipped. Only the newly selected side carries the selection border, so the
+visible effect is moving the border; `MenuPassword_DrawNamesAndPasswords` then redraws
+both name/password fields at their fixed positions.
 
 ## Other functions
 
-- `MenuPassword_UpdateStatus` (`0x2A1E`): builds the status string (`MenuPassword_StrPasswordStatus`
-  `$FF067E`, template `unk_2468`/`unk_4E20`), calls `ValidatePassword`; if valid writes
-  "NEW", calls `ParsePassword` and `MenuPassword_SelectCurrentTrack`; writes the level digit; on invalid, the
-  template remains.
-- `MenuPassword_SelectCurrentTrack` (`0x2B2E`): selects `Menu_ram_CurrentTrackId` from the player's 5 race
-  places (iterates the places array, tracks the maximum/worst place; track ids 0,2,4,6,8).
-- `MenuPassword_SwapPlayerBlocks` (`0x2BEE`): swaps the player A/B name/password display blocks in
-  `FrameBuffer + $280` (14 rows x 8 longs) when switching players with C.
-- `MenuPassword_DrawNamesAndPasswords` (`0x3306`): encodes and draws all four strings
-  (A/B name and password) into the frame buffer with `WriteNametableToBuffer`.
+- `MenuPassword_DrawNamesAndPasswords` (`0x3306`): redraws all four records (A/B name
+  and password) at the `y/x` stored in each header with palette 3 and plane width 64.
+- `MenuPassword_SetCursorPos` (`0x2B18`): writes one cell's high byte (palette),
+  leaving the tile index intact.
 
 ## Verified facts
 
 - `[static]` The password is 24 font-tile indices with the field layout above and a
   6-bit embedded checksum plus three checksum characters.
-- `[static]` The default `Menu_DefaultPassword` is a template with an invalid checksum;
-  a Python reimplementation of the generator produces a valid password for the initial
-  state: `00000  00001010D8  101MN`.
+- `[static]` The default `Menu_DefaultPassword` is a template with an invalid checksum:
+  `sum & $3F = 63`, `mask = 21`.
+- `[static]` A Python reimplementation validates both the template (invalid) and the
+  initial-state password `00000  00001010D8  101MN` (valid, `sum=21`, `mask=21`). Its
+  money nibbles decode to `0x000064 = 100`, level 1, bike 0.
 - `[static]` The screen exits to the main menu on Start **release** and applies the
-  password via `ParsePassword`.
+  password via `ParsePassword` only when `ValidatePassword` succeeds.
 - `[static]` The screen is a 64x24 window into `Menu_ram_FrameBuffer` DMA'd to VRAM
   `$7200`; VDP registers come from the main-menu setup.
+- `[static]` `MenuPassword_SelectCurrentTrack` selects the first unplayed race, or the
+  worst-place race when all five are played.
+- `[static]` `unk_2468` has no 32-bit pointer reference in the ROM and is dead data.
 
 ## Hypotheses / open questions
 
-- `[hypothesis]` `ram_FF0510`/`ram_FF0514` are a 20-bit progress/points value; the two
-  `ram_FF0522/24` bits are an extra bike/upgrade selector. Names/meaning TODO.
-- `[hypothesis]` `MenuPassword_SelectCurrentTrack` chooses the race with the worst recorded place (max place)
-  as the current track; confirm with menu/race behavior.
+- `U-0004` `[hypothesis]`: `ram_FF0522/24` is a 2-bit bike/upgrade or small progress
+  state; `race_core.asm` adjusts it around `$C41A`/`$C45C`.
+- `U-0005` `[hypothesis]`: `ram_FF0510/14` is a 20-bit progress/points value; unit
+  unknown.
 - `[ ]` Confirm the sample password in BlastEm (enter it in the password menu).
-- `[ ]` Confirm the exact cursor visual (high-byte palette toggle) and the `MenuPassword_SwapPlayerBlocks`
-  block swap.
-- `[x]` The main-menu VDP setup is now known: window `$7000`, password rows 4-27 at
-  `$7200` (see `docs/analysis/menu_main.md`).
+- `[ ]` Confirm the exact cursor visual (high-byte palette toggle) and the
+  `MenuPassword_SwapPlayerBlocks` panel swap.
 
 ## Rename proposals (apply only on request)
 
 | Current | Proposed | Evidence | Confidence |
 |---------|----------|----------|------------|
-| `MenuPassword_ValidatePassword` | `MenuPassword_VerifyChecksum` | checksum checks | high |
-
+| `MenuPassword_ValidatePassword` | `MenuPassword_VerifyChecksum` | checksum checks only | high |
+| `unk_4E20` | `MenuPassword_StrStatusTemplate` | 5x16 status template | medium |
+| `ram_FF0510`/`ram_FF0514` | `Player_ram_Field20A/B` | blocked by `U-0005` | low |
+| `ram_FF0522`/`ram_FF0524` | `Player_ram_ExtraA/B` | blocked by `U-0004` | low |

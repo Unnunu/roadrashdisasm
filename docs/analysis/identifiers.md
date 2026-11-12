@@ -105,3 +105,26 @@ uses. It exists so later analysis can decide whether a rename is worth doing.
 | `MenuPassword_ram_StrPlayerAPassword` | RAM | `ram_const.asm` (`$FF042A`) | menu_main: A password record (header + 24 chars) | good | `[static]` | keep | - | high | - |
 | `MenuPassword_ram_StrPlayerBName` | RAM | `ram_const.asm` (`$FF04B6`) | menu_main: B name record | good | `[static]` | keep | - | high | - |
 | `MenuPassword_ram_StrPlayerBPassword` | RAM | `ram_const.asm` (`$FF044A`) | menu_main: B password record | good | `[static]` | keep | - | high | - |
+| `MenuPassword_HandleInput` | routine | `menu_password.asm:269` (`$2710`) | menu_password: apply presses to name/password, move cursor | good | `[static]` | keep | - | high | - |
+| `MenuPassword_UpdateStatus` | routine | `menu_password.asm:490` (`$2A1E`) | menu_password: status text, validate/parse password | good | `[static]` | keep | - | high | - |
+| `MenuPassword_SetCursorPos` | routine | `menu_password.asm:587` (`$2B18`) | menu_password: write one cell's palette/high byte | good | `[static]` | keep | - | high | - |
+| `MenuPassword_SwapPlayerBlocks` | routine | `menu_password.asm:683` (`$2BEE`) | menu_password: move the 16x14 selection panel | good | `[static]` | keep | - | high | - |
+| `MenuPassword_ValidatePassword` | routine | `menu_password.asm:735` (`$2C32`) | menu_password: checksum verification | good | `[static]` | keep | - | high | - |
+| `MenuPassword_ParsePassword` | routine | `menu_password.asm:857` (`$2D1E`) | menu_password: password words -> player state | good | `[static]` | keep | - | high | - |
+| `MenuPassword_CreatePassword` | routine | `menu_password.asm:1063` (`$2F3A`) | menu_password; race_core/shop/endlevel: state -> password | good | `[static]` | keep | - | high | - |
+| `Menu_DefaultPassword` | data | `menu_password.asm:47` | menu_password/intro: 24-char template (invalid checksum) | good | `[static]` | keep | - | high | - |
+| `Menu_DefaultName` | data | `menu_password.asm:53` | intro: initial "Player A  " name | good | `[static]` | keep | - | high | - |
+| `unk_2468` | data | `menu_password.asm:58` | unreferenced 5x20 status text (dead data) | placeholder | `[static]` | keep | - | medium | - |
+| `MenuPassword_StrPasswordStatus` | RAM | `ram_const.asm` (`$FF067E`) | menu_password: 5x16 status record | good | `[static]` | keep | - | high | - |
+| `unk_4E20` | data | `message.asm:540` | menu_password: "PASSWORD INVALID" status template | placeholder | `[static]` | rename-later | `MenuPassword_StrStatusTemplate` | medium | - |
+| `dStringDecodeTable` | data | `intro.asm:806` (`$23D0`) | menu_password: font tile index -> ASCII | good | `[static]` | keep | - | high | - |
+| `DecodeString` | routine | `intro.asm:777` (`$22B2`) | menu_password: password words -> string | good | `[static]` | keep | - | high | - |
+| `MenuPassword_ram_CurrentButtons` | RAM | `ram_const.asm` (`$FF05C6`) | menu_password: input byte latched for the edit handlers | good | `[static]` | keep | - | high | - |
+| `Menu_ram_PlayerAOpponents` | RAM | `ram_const.asm` (`$FF0546`) | menu_password: 16-word A opponent definition list | good | `[static]` | keep | - | high | - |
+| `Menu_ram_PlayerBOpponents` | RAM | `ram_const.asm` (`$FF0566`) | menu_password: 16-word B opponent definition list | good | `[static]` | keep | - | high | - |
+| `Menu_ram_BikeIdPlayerA` | RAM | `ram_const.asm` (`$FF0542`) | menu_password: A bike id (`w20` bits 0..2) | good | `[static]` | keep | - | high | - |
+| `Menu_ram_BikeIdPlayerB` | RAM | `ram_const.asm` (`$FF0544`) | menu_password: B bike id | good | `[static]` | keep | - | high | - |
+| `ram_FF0510` | RAM | `ram_const.asm` (`$FF0510`) | menu_password: A 20-bit password field (`w7..w10`) | placeholder | `[static]` | blocked-unknown | `Player_ram_Field20A` | low | `U-0005` |
+| `ram_FF0514` | RAM | `ram_const.asm` (`$FF0514`) | menu_password: B 20-bit password field | placeholder | `[static]` | blocked-unknown | `Player_ram_Field20B` | low | `U-0005` |
+| `ram_FF0522` | RAM | `ram_const.asm` (`$FF0522`) | menu_password/intro/race: A 2-bit extra field | placeholder | `[static]` | blocked-unknown | `Player_ram_ExtraA` | low | `U-0004` |
+| `ram_FF0524` | RAM | `ram_const.asm` (`$FF0524`) | menu_password/intro/race: B 2-bit extra field | placeholder | `[static]` | blocked-unknown | `Player_ram_ExtraB` | low | `U-0004` |
