@@ -561,7 +561,7 @@
     },
     {
       "id": "highscore_extra",
-      "label": "unk_A2E68",
+      "label": "FontHighScoreDigits",
       "aliases": [],
       "address": "0xA2E68",
       "size": "0xF4",

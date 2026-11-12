@@ -31,7 +31,7 @@ after `src/core/top_level.asm` (`0x7EA66`–`0xBFFFF`) is split into labelled `b
 | `$A270C` | `img_mainMenu_PlayerSelection` | main menu |
 | `$A27D4` | `img_Intro_Font` | intro |
 | `$A2BAA` | `FontHighScoreTable` | high score |
-| `$A2E68` | `unk_A2E68` | high score |
+| `$A2E68` | `FontHighScoreDigits` | high-score digit font (10 glyphs `0`-`9`) |
 | `$A2F5C` | `ImgHighScoreTitle` | high score |
 | `$A37AA` | `img_MainMenu_RaceBadges` | main menu |
 | `$A4498` | `img_mainMenu_RaceCards` | main menu |

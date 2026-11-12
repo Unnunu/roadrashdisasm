@@ -1,7 +1,7 @@
 # Module card: `src/screens/highscore.asm`
 
 - **ROM range:** `0x006DC0`–`0x0074A9` (`src/screens/shop.asm` starts at `0x74AA`)
-- **Status:** analyzed (static; demo path can reach it)
+- **Status:** analyzed line-by-line (static; demo path can reach it)
 - **Related:** `docs/architecture.md`, `docs/reverse-engineering.md`,
   `docs/hardware.md`, `docs/ram-map.md`, `docs/analysis/highscore.md`
 
@@ -41,17 +41,18 @@ play A/B/C select high score/results/shop and a release returns to the results.
 - `HighScore_ram_CurrentButtons` (`$FF094E`); `MainMenu_ram_DemoMode` (`$FF3692`);
   `RaceResults_ram_NextFunction` next-screen pointer; `Menu_ram_CurrentMessageId/NextMessageTimer`.
 - Assets: `ImgHighScoreTitle` title -> `$9000`, `ImgHighScoreBadge` badge -> `$B000`,
-  `FontHighScoreTable` table font -> `$800`, `unk_A2E68` -> `$1000` (use TODO),
+  `FontHighScoreTable` table font -> `$800`, `FontHighScoreDigits` -> `$1000`
+  (10 digit glyphs, no tile base references them here: `U-0009`),
   `img_Intro_Font` -> `$0`, background -> `$8000`, gamepad -> `$A000`.
 
 ## Coverage matrix
 
 | Function | Address | Contract | Algorithm | Data | Hardware | Why | Dynamic | Status |
 |----------|---------|----------|-----------|------|----------|-----|---------|--------|
-| `HighScore_Init` | `0x6DC0` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
-| `HighScore_GameTick_Demo` | `0x72BA` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
-| `HighScore_GameTick` | `0x732E` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
-| `HighScore_HandleInput` | `0x7460` | [x] | [x] | [x] | - | [x] | [ ] | analyzed |
+| `HighScore_Init` | `0x6DC0` | [x] | [x] | [x] | [x] | [x] | [ ] | line-by-line |
+| `HighScore_GameTick_Demo` | `0x72BA` | [x] | [x] | [x] | [x] | [x] | [ ] | line-by-line |
+| `HighScore_GameTick` | `0x732E` | [x] | [x] | [x] | [x] | [x] | [ ] | line-by-line |
+| `HighScore_HandleInput` | `0x7460` | [x] | [x] | [x] | - | [x] | [ ] | line-by-line |
 
 Detailed listing/table: `docs/analysis/highscore.md`.
 
@@ -65,32 +66,45 @@ Detailed listing/table: `docs/analysis/highscore.md`.
 ## Hacks / bugs / quirks
 
 - Top five rows use the table font at `$800`; player rows use the regular font `$0`;
-  the `$1000` font is loaded but not visibly used. `[static]`
+  the `$1000` digit font (`FontHighScoreDigits`) is loaded but no tile base uses it
+  here (`U-0009`). `[static]`
 - Player rows can duplicate a top-five entry after sorting (`Race_UpdateHighScoreTable` keeps the offset).
 - The demo and normal ticks both end on a release edge; A/B/C are new-press edges.
-- Background palette is copied from `ImageBuffer+$4E4` (the background palette).
+- The palette is copied from `ImageBuffer+$4E4` *after* the title decompression, i.e.
+  from `ImgHighScoreTitle` (asset spec `screen_palettes.highscore`), not from the
+  background. `[static]`
+- The SAT clear writes only two zero entries (16 bytes); entry 0 (`link=0`) terminates
+  the list. `[static]`
+- The message-id lower-bound clamp (`cmpi.w #(8*42)`) is unreachable after `addq`. `[static]`
+- The demo timer uses `Menu_ram_NextMessageTimer` and runs 601 decrements. `[static]`
 
 ## Verified facts
 
-- `[static]` Demo: release or 600 frames; on release `DemoMode=0` -> menu, else race.
+- `[static]` Demo: release or a 600-frame timer (601 ticks); on release `DemoMode=0`
+  -> menu, else race.
 - `[static]` Normal: release -> results; A -> high score, B -> results, C -> shop.
 - `[static]` Table header `(22,16,7,20)`; 7 x 20 entries; player offsets 20*5/20*6.
 - `[static]` Message group 42; 300-frame cycle; 600-frame initial timer.
+- `[static]` Palette source is the title blob (`+$4E4`), 4 palettes / 64 colours.
+- `[static]` SAT clear = two entries; tile `$7FF` blank pattern at VRAM `$FFE0`.
+- `[static]` `FontHighScoreDigits` is a 10-glyph digit font (`0`-`9`), loaded at `$1000`
+  and not referenced by any tile base on this screen (`U-0009`).
 
 ## Hypotheses
 
-- `[hypothesis]` The `$1000` font is a leftover or used by the title; test: inspect VRAM
-  during the screen.
+- `[hypothesis]` `FontHighScoreDigits` is vestigial on this screen (`U-0009`). Test:
+  BlastEm breakpoint at `$72A0` after the frame DMA, then search VRAM `$7000`/`$4000`
+  for tile words `$0080`-`$0089`; also `b 37AA` and check `d4` (never `$80`).
 - `[hypothesis]` The duplicate player row is intentional (table font vs regular font).
 
 ## Rename proposals (apply only on request)
 
-| Current | Proposed | Evidence | Confidence |
-|---------|----------|----------|------------|
-| `unk_A2E68` | `FontHighScoreExtra` | loaded at `$1000`, use TODO | low |
+- Applied in the line-by-line pass: `unk_A2E68` -> `FontHighScoreDigits` (the blob is a
+  10-glyph digit font `0`-`9`; preview at `assets/tilesets/highscore_extra/`).
 
 ## Experiments performed
 
 | Goal | Setup / breakpoint | Observed | Conclusion |
 |------|--------------------|----------|------------|
 | Capture the screen | — (not run this session) | — | static analysis only |
+| Identify `$1000` font | asset split preview (`assets/tilesets/highscore_extra/`) | 10 glyphs `0`-`9` | `FontHighScoreDigits`; display use still open (`U-0009`) |

@@ -14,7 +14,7 @@
 |---|---|---|
 | Image with embedded palette + map | intro background, menu race cards, highscore title, endlevel window, result panel, race HUD, 5 track images, 11 portraits | header `$0808xxxx` → tiles → 128-byte palette → `(w,h)` → map |
 | Image with external palette + map | gamepad, highscore badge, intro title, race-selection background, shop bikes, race badges, password selection | header → tiles → `(w,h)` → map; palette from the screen |
-| Tileset / font | intro font, highscore font, shop arrow left, player selection, extra tiles | header → tiles; layout/atlas |
+| Tileset / font | intro font, highscore table font, high-score digit font (`FontHighScoreDigits`, 10 glyphs `0`-`9`), shop arrow left, player selection, extra tiles | header → tiles; layout/atlas |
 | Map only | `unk_9B2F0` 40×17, `unk_9B7A6` 3×17 | first long `(w,h)` → entries |
 | Raw tiles/animation | `EndLevel_AnimationTiles`, `EndLevel_AnimationData` | raw bytes / animation stream |
 | Standalone palettes | `Shop_BikePalettes` 8×16, `unk_7E470` 16×16 | 32 bytes/palette |

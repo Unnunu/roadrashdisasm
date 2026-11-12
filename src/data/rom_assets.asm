@@ -146,7 +146,7 @@ img_Intro_Font: ; $A27D4
 FontHighScoreTable: ; $A2BAA
     binclude "assets/tilesets/highscore_font/data.bin"
 
-unk_A2E68: ; $A2E68
+FontHighScoreDigits: ; $A2E68
     binclude "assets/tilesets/highscore_extra/data.bin"
 
 ImgHighScoreTitle: ; $A2F5C

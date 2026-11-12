@@ -353,3 +353,14 @@ uses. It exists so later analysis can decide whether a rename is worth doing.
 | `RaceResults_StrNextLevel` | data | `race_results.asm ($6D88)` | race_results: dead 3x16 'The next level' text (duplicate $8D8A) | good | `[static]` | keep (renamed from `unk_6D88`) | - | high | - |
 | `VDP_VRAM_WRITE` | macro | `hw_const.asm:9` | race_results and other screens: staged VRAM write helper | good | `[static]` | keep | - | high | - |
 | `VDP_VSRAM_WRITE` | macro | `hw_const.asm:25` | race_results and other screens: staged VSRAM write helper | good | `[static]` | keep | - | high | - |
+| `HighScore_GameTick` | routine | `highscore.asm:406` (`$732E`) | highscore: normal tick (frame DMA, release/new-press, message cycle) | good | `[static]` | keep | - | high | - |
+| `HighScore_GameTick_Demo` | routine | `highscore.asm:364` (`$72BA`) | highscore: attract tick (release edge or 600-frame timer) | good | `[static]` | keep | - | high | - |
+| `HighScore_HandleInput` | routine | `highscore.asm:484` (`$7460`) | highscore: A/B/C -> restart/results/shop | good | `[static]` | keep | - | high | - |
+| `HighScore_ram_Table` | RAM | `ram_const.asm:66` (`$FF05EA`) | highscore/intro/race_core: header + 7x20 high-score table | good | `[static]` | keep | - | high | - |
+| `HighScore_ram_PlayerATableOffset` | RAM | `ram_const.asm:39` (`$FF052A`) | highscore/intro/race_core: player A row byte offset | good | `[static]` | keep | - | high | - |
+| `HighScore_ram_PlayerBTableOffset` | RAM | `ram_const.asm:40` (`$FF052C`) | highscore/intro/race_core: player B row byte offset | good | `[static]` | keep | - | high | - |
+| `HighScore_ram_CurrentButtons` | RAM | `ram_const.asm:83` (`$FF094E`) | highscore: low byte of the pad state handled by A/B/C | narrow | `[static]` | keep | - | medium | - |
+| `ImgHighScoreTitle` | asset | `rom_assets.asm:152` (`$A2F5C`) | highscore: 20x2 title to `$9000`; its palette (+$4E4) is loaded to 4 palettes | good | `[static]` | keep | - | high | - |
+| `ImgHighScoreBadge` | asset | `rom_assets.asm:10` (`$7EB72`) | highscore: yellow badge to `$B000`, drawn five times | good | `[static]` | keep | - | high | - |
+| `FontHighScoreTable` | asset | `rom_assets.asm:146` (`$A2BAA`) | highscore: 20-wide table font to `$800` | good | `[static]` | keep | - | high | - |
+| `FontHighScoreDigits` | asset | `rom_assets.asm:149` (`$A2E68`) | highscore: 10 digit glyphs (0-9) to `$1000`; no tile base references it | good | `[static]` | keep (renamed from `unk_A2E68`) | - | high | `U-0009` |
