@@ -166,8 +166,8 @@ This is distinct from the RAM-staged list consumed by `Race_AddStagedObjects`
 - `Race_ProjectObject` projects the object into the current `Road_ObjectArray` record; the
   shape index is `byte2_low + $173`, the per-shape depth comes from
   `ram_FFD77C`, and the type data comes from the 8-byte `Race_TrackObjectTypeTable` records;
-- record flags carry the shadow/priority/mirror bits already documented for
-  `Road_DrawObject`.
+- record flags carry the mirror/facing, priority and two-part bits already documented
+  for `Road_DrawObject`.
 
 `Race_BuildTrackObjects` maintains the same stream cursor during normal play: it rewinds when
 past entries are behind the player, advances when the next entry is visible, and

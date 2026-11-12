@@ -76,8 +76,8 @@ background palette.
    to `$A000`.
 3. Badge `ImgHighScoreBadge` to `$B000`, drawn five times at y = 5/8/11/14/17.
 4. Fonts: `img_Intro_Font` -> `$0`, `FontHighScoreTable` -> `$800` (table font),
-   `FontHighScoreDigits` -> `$1000` (10 digit glyphs; loaded but no tile base uses it,
-   `U-0009`).
+   `FontHighScoreDigits` -> `$1000` (10 digit glyphs; loaded but never drawn,
+   `U-0009` resolved as vestigial).
 5. Clear 22 frame-buffer rows (1408 words) to `$7FF`, six rows (384 words) to spaces;
    encode the table (`EncodeString` uses only height/width); draw the 5 top rows and the
    two player rows; DMA 1792 words to `$7000`.
@@ -113,7 +113,8 @@ C -> `Shop_Init`. The pointer is consumed by the top level.
 
 - The table font at `$800` is used for the top five rows; the player rows use the
   regular font at `$0`. `FontHighScoreDigits` (10 digit glyphs, `0`-`9`) is loaded at
-  `$1000` but no tile base references it on this screen (`U-0009`). `[static]`
+  `$1000` but never drawn: all tile bases are `$400/$480/$500/$580` or `$40/$0`
+  (`U-0009` resolved, wontfix). `[static]`
 - The demo tick and the normal tick both use release edges; the normal A/B/C actions use
   new-press edges. `[static]`
 - The player A/B rows can duplicate an entry that has moved into the top five after
@@ -142,7 +143,7 @@ results screen (A) in the native console.
   clamp is unreachable; `HandleInput` writes a byte.
 - Applied rename: `unk_A2E68` -> `FontHighScoreDigits` (content is ten digit glyphs
   `0`-`9`; stable preview in `assets/tilesets/highscore_extra/`).
-- New open item: `U-0009` (where, if anywhere, the `$1000` digit font is displayed).
+- `U-0009` resolved: the `$1000` digit font is loaded but never displayed (wontfix).
 
 ## Rename proposals (apply only on request)
 

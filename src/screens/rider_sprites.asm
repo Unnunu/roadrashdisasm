@@ -25,7 +25,7 @@
 ; SAT entry layout (4 words): Y, size/link, tile/priority, X.
 ;   size/link = (size_code << 8) | link_index
 ;   tile      = priority | ram_FFDE5E | Animation_ram_BaseTile | tile_index
-; priority ($8000) is set for sprites above Y=$118. When ram_FF133A is set the
+; priority ($8000) is set for sprites above Y=$118. When Road_ram_MirrorFlag is set the
 ; pass is horizontally mirrored: tiles get the H-flip bit $800 and X is stepped
 ; left instead of right. Entries are chained through the low byte of the
 ; size/link word, starting at Animation_ram_SpriteIndex.
@@ -41,7 +41,7 @@
 ; Out: SAT entries at Race_ram_CurrentSpriteAttributeTable;
 ;      Animation_ram_SpriteIndex / Animation_ram_TileIndex
 ; Clobbers: d0-d7, a0, a1
-; Notes: See the overview above. A mirrored pass is emitted when ram_FF133A != 0.
+; Notes: See the overview above. A mirrored pass is emitted when Road_ram_MirrorFlag != 0.
 ;        The chain ends at tile index $150 or when the SAT index reaches $50.
 ; *************************************************
 
@@ -120,10 +120,10 @@ RiderSprites_Build:
                 move.w  d6,(ram_FF090E).l   ; tile cursor at the start of the row
                 move.w  (ram_FFDE6E).l,d7
                 addi.w  #$80,d7             ; X base
-; @UNKNOWN(U-0007): high-level purpose of the mirrored pass (shadow/reflection
-;  vs. an opposite-facing object) | guess: per-object mirror from RoadObject_Flags
-;  bit15, also used by Road_ScaleShape | next: render an object with that bit set
-                tst.w   (ram_FF133A).l
+; U-0007: RoadObject_Flags bit15 is a horizontal-mirror/facing flag. It is the
+;  same bit tested by Road_ScaleShape/Road_ProjectShape*, so the mirrored pass
+;  draws the left-facing variant; it is not a separate shadow/reflection layer.
+                tst.w   (Road_ram_MirrorFlag).l
                 beq.w   .loc_584A
                 add.w   (ram_FF1336).l,d7   ; mirrored pass: shift start by 2*FF1336
                 add.w   (ram_FF1336).l,d7
@@ -158,7 +158,7 @@ RiderSprites_Build:
 .loc_5886:
                 or.w    (ram_FFDE5E).l,d6   ; object palette/priority/base bits
                 add.w   (Animation_ram_BaseTile).l,d6
-                tst.w   (ram_FF133A).l
+                tst.w   (Road_ram_MirrorFlag).l
                 beq.w   .loc_58A4
                 ori.w   #$800,d6            ; mirrored pass: horizontal flip
                 sub.w   $594A(a1),d7        ; and step X left by the sprite width
@@ -185,7 +185,7 @@ RiderSprites_Build:
 ; ---------------------------------------------------------------------------
 
 .loc_58EA:
-                tst.w   (ram_FF133A).l
+                tst.w   (Road_ram_MirrorFlag).l
                 bne.w   .loc_58F8
                 add.w   $594A(a1),d7        ; normal pass: step X right by the width
 .loc_58F8:
@@ -239,7 +239,7 @@ RiderSprites_BuildAlt:
 ;   +2  size/link = ((4*C + R) << 8)   VDP size field; low byte is the link
 ;   +4  tile step = (R+1)*(C+1)        tiles consumed by one sprite
 ;   +6  X step    = 8*(C+1)            sprite width in pixels (subtracted when
-;                                      ram_FF133A mirroring is active)
+;                                      Road_ram_MirrorFlag mirroring is active)
 ;
 ; A record therefore describes a (C+1) x (R+1) tile sprite; the size nibble is
 ; consistent with Animation_dTileCountMinus1 (tile count = (R+1)*(C+1)).

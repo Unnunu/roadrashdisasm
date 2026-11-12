@@ -60,7 +60,7 @@ caller in the disassembled source; likely an unused/alternate strip generator.
 | `+4` | `RoadObject_Scale` | scale (`<<2` -> `ram_FF1350`, movement per frame). |
 | `+6` | `RoadObject_Limit` | horizon/limit (`ram_FF136A`). |
 | `+8` | `RoadObject_Shape` | shape index into `Road_ShapeTable` -> `ram_FF1348`. |
-| `+$A` | `RoadObject_Flags` | bit15 = shadow/overlay (`ram_FF133A`); bits 12-13 -> `ram_FF133E` (`<<1`); bit7 of `$B` = special/two-part path; low 3 bits = sprite rows to copy. |
+| `+$A` | `RoadObject_Flags` | bit15 = horizontal-mirror/facing bit (`Road_ram_MirrorFlag`); it is the same bit as byte `+$B` bit7 and selects the special/two-part mirrored shape path; bits 12-13 -> `ram_FF133E` (`<<1`); low 3 bits = sprite rows to copy. |
 | `+$C` | `RoadObject_XOffset` | sprite x offset. |
 | `+$E`,`+$10` | `RoadObject_ReservedE/10` | not read by this module (race-side data). |
 | `+$12` | `RoadObject_Shape2` | second shape index (two-part object). |
@@ -70,9 +70,9 @@ rendering each object and restores them on overflow.
 
 ## `Road_DrawObject` (object renderer)
 
-1. Reset `ram_FFDE62`, `ram_FF133A`; copy the record x/y to `ram_FFDE6E/70` and the
+1. Reset `ram_FFDE62`, `Road_ram_MirrorFlag`; copy the record x/y to `ram_FFDE6E/70` and the
    adjusted copies to `ram_FF1342/44`; `ram_FF1350 = scale<<2`; `ram_FF136A = +6`.
-2. Shadow: if `+$A` bit15 is set, `ram_FF133A=1`.
+2. Mirror/facing: if `+$A` bit15 is set, `Road_ram_MirrorFlag=1` (same bit as `+$B` bit7).
 3. Priority bits: `(flags & $3000)<<1` -> `ram_FF133E`.
 4. Shape: `Road_ShapeTable[+8]` -> `ram_FF1348`; second shape `Road_ShapeTable[+$12]` ->
    `ram_FF134C`.
@@ -107,7 +107,11 @@ rendering each object and restores them on overflow.
   per-strip byte offsets; the routine emits four destination bytes per inner step,
   advances the source by those offsets, loops over `$1F` rows, then repeats for the
   right strip. `ram_FF0D28` drives `Road_ClearEdgeTiles` for the remaining rows.
-  The exact tile/row pixel mapping and the `ram_FFDE66/68/6A` strides are still TODO.
+  Writer strides `[static]`: `ram_FFDE6A` is the primary 4-byte row gap (`$7C` =
+  31*4); `ram_FFDE66` is the alternate gap used for a short/single-row strip
+  (`R*8+$1C`, selected when the strip has fewer than `$1F` rows); `ram_FFDE68` is
+  the per-column destination advance derived from the first row's tile span. The
+  exact tile/row pixel mapping remains TODO.
 - `RiderSprites_Build` builds the rider/bike chain; the object x/y/scale/shape are fed from the
   `ram_FFDE*` fields.
 
@@ -139,7 +143,7 @@ rendering each object and restores them on overflow.
 - Object list/array: `Road_VisibleObjectList`, `Road_ObjectArray` (0x14 records).
 - Road: `ram_FF0D26/0D28/0D2A/0D2E/102E`, `ram_FF132E/1330/1332/1336`,
   `ram_FF136A` (horizon), `ram_FF1366` (chain end).
-- Object/projection: `ram_FF133A` (shadow), `ram_FF133C` (mirror), `ram_FF133E`
+- Object/projection: `Road_ram_MirrorFlag` (facing/mirror), `ram_FF133C` (strip mirror), `ram_FF133E`
   (priority), `ram_FF1340/1342/1344/1348/134C/1350/1354/1356/1358/135A/135C/135E/1360/1362/1364`.
 - Sprite state: `Animation_ram_SpriteIndex/TileIndex/BaseTile`, `ram_FFDE5E..70`,
   `Race_ram_CurrentSpriteAttributeTable` (double-buffered `$FF479C`/`$FF4E1C`),
@@ -151,7 +155,7 @@ rendering each object and restores them on overflow.
   `1,2,3,4,9,0,A,B,5,6,C,D,E,7,8,F` (16 objects); the SAT alternates
   `$FF479C`/`$FF4E1C` (double buffer).
 - `Road_DrawObject` records (x,y,scale,horizon,shape,flags,...):
-  - `$FFD390`: `FEBA 008A 4000 008A 0056 8081 ...` (shadow flag set).
+  - `$FFD390`: `FEBA 008A 4000 008A 0056 8081 ...` (mirror/facing bit set).
   - `$FFD3A4`: `FE66 008A 4000 008A 0057 2081 ...`.
   - `$FFD430`: `FF30 0060 5174 0060 01C3 1184 FF56 0380 00AC 01C4`.
 - First `Road_DrawStrip`: `d0=d1=$10000`, shape entry `$05994E` (`20 36 ...`);
@@ -168,6 +172,6 @@ rendering each object and restores them on overflow.
   animation state with `RiderSprites_Build`/`src/race/animation.asm`. `[static]`
 - The object `+$E`/`+$10` words are not read here; they belong to the race-side object
   logic. `[static]`
-- TODO: exact row/tile mapping, the `$C0/$200` constants and interpolation edge
+- TODO: exact row/tile pixel mapping, the `$C0/$200` constants and interpolation edge
   cases; map the 16 demo objects to their race roles (player/opponents/props).
 

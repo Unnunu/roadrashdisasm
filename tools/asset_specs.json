@@ -703,9 +703,9 @@
     },
     {
       "id": "portrait_0",
-      "label": "unk_AF902",
+      "label": "RiderIntro_Portrait_0",
       "aliases": [
-        "RiderIntro_Portrait_0"
+        "unk_AF902"
       ],
       "address": "0xAF902",
       "size": "0x1C04",
@@ -720,8 +720,10 @@
     },
     {
       "id": "intro_natasha_overlay",
-      "label": "unk_B1506",
-      "aliases": [],
+      "label": "RiderIntro_NatashaFaceOverlay",
+      "aliases": [
+        "unk_B1506"
+      ],
       "address": "0xB1506",
       "size": "0x9DC",
       "category": "images",

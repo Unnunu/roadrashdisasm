@@ -214,6 +214,15 @@ combat handlers are in `race_combat.asm`.
 
 ## Rename proposals
 
+## Natasha encounter counter (U-0004)
+
+`Race_UpdateActorActions` (`0x12F60`) compares the current actor index `$71` with
+`ram_FF1ADB` (Natasha's per-level actor index from `unk_D19A`). While the current-race
+flag `ram_FF0520 == 3`, Natasha is routed through the alternate action-profile branch
+(`profile+4`) instead of the default opponent handler. The flag is set when player A
+attacks Natasha in `Race_UpdateActorPairImpact` and is persisted/decayed by
+`Race_ComputeResults`.
+
 Applied in R2: `Race_ActorProfileTable` (`unk_259C0`), `Race_ActorActionTable`
 (`unk_12D16`), `Race_StaticActionTable` (`unk_25A44`), `Race_UpdateActorActions`
 (`sub_12EA2`), `Race_DispatchActorAction` (`sub_16458`), `Race_ClampActorY`

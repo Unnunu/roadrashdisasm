@@ -78,8 +78,8 @@ Detailed listing and the grid model: `docs/analysis/rider_sprites.md`.
 - The `$8000` sentinel in `ram_FFDE68` marks "row stride not computed"; it is replaced
   after the first row.
 - Entries with `Y >= $118` do not get the priority bit `$8000`.
-- The mirror pass (`ram_FF133A`, from `RoadObject_Flags` bit15) sets the H-flip bit
-  `$800` and walks X left; the previous "shadow/overlay" wording is `U-0007`.
+- The mirror pass (`Road_ram_MirrorFlag`, from `RoadObject_Flags` bit15) sets the H-flip bit
+  `$800` and walks X left. `U-0007` resolved: this is the facing/mirror bit, not a shadow.
 
 ## Verified facts
 
@@ -88,14 +88,14 @@ Detailed listing and the grid model: `docs/analysis/rider_sprites.md`.
   tile step `(R+1)*(C+1)`, X `8*(C+1)`.
 - `[hardware]` `$8000` = priority, `$800` = H-flip in the SAT tile word.
 - `[dynamic]` Demo race hits `RiderSprites_Build`; chain observed at `$FF479C` with
-  sprite index 6, tile index `$27`, mirror offset `$10` (`ram_FF133A=1`).
+  sprite index 6, tile index `$27`, mirror offset `$10` (`Road_ram_MirrorFlag=1`).
 
 ## Hypotheses
 
 - `[hypothesis]` `d0/d1` are the animation direction/size from `Road_DrawStrip`. Test:
   analyze `Road_DrawStrip` and break at `$5760` entry.
-- `[hypothesis]` The mirrored pass is a per-object mirror (shadow/reflection vs.
-  opposite-facing object is `U-0007`).
+- `[static]` The mirrored pass is a per-object horizontal mirror/facing pass
+  (`U-0007` resolved).
 
 ## Experiments performed
 

@@ -173,11 +173,10 @@ img_MainMenu_Background: ; $AE8CE
 RaceResults_TitleTiles: ; $AF26C
     binclude "assets/tilesets/results_image_extra/data.bin"
 
-unk_AF902: ; $AF902
-RiderIntro_Portrait_0 equ unk_AF902
+RiderIntro_Portrait_0: ; $AF902
     binclude "assets/images/portrait_0/data.bin"
 
-unk_B1506: ; $B1506
+RiderIntro_NatashaFaceOverlay: ; $B1506
     binclude "assets/images/intro_natasha_overlay/data.bin"
 
 RiderIntro_Portrait_1: ; $B1EE2

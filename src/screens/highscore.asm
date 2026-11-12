@@ -198,8 +198,8 @@ HighScore_Init:
                 move.w  #$80,d6
                 lea     (Intro_ram_ImageBuffer + $528).l,a0
                 jsr     (WriteNametable).w
-; fonts: regular at $0, table font at $800, digit font at $1000 (loaded but not
-; referenced by any tile base on this screen: U-0009)
+; fonts: regular at $0, table font at $800, digit font at $1000 (loaded but never
+; used: no draw below references tile base $80; U-0009 resolved as vestigial)
                 lea     (img_Intro_Font).l,a3
                 lea     (Intro_ram_ImageBuffer).l,a1
                 jsr     (UncompressW).l
@@ -215,7 +215,8 @@ HighScore_Init:
                 move.l  #$800,d0
                 lea     (Intro_ram_ImageBuffer).l,a0
                 jsr     (WriteTilesetToVRAM).l
-; digit font to VRAM $1000 (tile base $80); no tile base $80 is used below (U-0009)
+; digit font to VRAM $1000 (tile base $80); no tile base $80 is used below,
+; so this load is vestigial (U-0009)
                 lea     (FontHighScoreDigits).l,a3
                 lea     (Intro_ram_ImageBuffer).l,a1
                 jsr     (UncompressW).l

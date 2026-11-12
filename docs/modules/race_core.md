@@ -34,6 +34,8 @@ actor definition tables. This is the code executed around the `race_hud` module.
 | actor definitions | `0xCCDA` | [x] | [x] | [x] | - | [x] | - | parsed |
 
 Detailed flow/structures: `docs/analysis/race.md`; actors: `docs/analysis/race_actors.md`.
+`unk_D19A` holds Natasha's actor index per level; `Race_ComputeResults` latches and
+decays the persisted Natasha encounter counter (`U-0004`).
 
 Dynamic actor init was captured before/after `Race_InitActorPositions` (`0xB72A`,
 `0xA544`); see `docs/analysis/race_actors.md` for the field matrix and dump names.

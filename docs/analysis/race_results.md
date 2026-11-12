@@ -43,7 +43,7 @@ A opens the high-score table; C opens the bike shop; B shows the cash/password b
 | `Race_EventBuffer` | 16-long race sort/event buffer; first word `$FFFF` = busted or bike destroyed. |
 | `Race_CopIndex` | Cop/officer index (1..5) when busted; 0 = bike destroyed. |
 | `RaceResults_ram_Amount` | Fine/repair amount: cop fine = `PlayerLevel * $14`; repair = 10% of the bike price (`Shop_dPrices`), deducted from money. |
-| `ram_FF1414`/`FF1418`/`FF141A` | Standings string header/text, height, width (built by `src/race/race_core.asm`). |
+| `RaceResults_ram_StandingsRecord/Height/Width` | Standings string header/text, height, width (built by `src/race/race_core.asm`). |
 | `Menu_ram_PlayerLevel` | Level (1..5) for the fine, repair and congratulations text. |
 
 Message group by outcome: 0 -> index 21 (`Message_StrCompleteEveryCourse`: complete
@@ -58,7 +58,7 @@ before the level advances, so it reads as the next level (2..5; `U-0006` resolve
 - Track image `RaceResults_TrackImagePtrs[track]` -> `$B000`, 36x11 at (2,5), base `$580`;
   nametable `RaceResults_TrackNametableOffsets[track]+4`; palette `RaceResults_TrackPaletteOffsets[track]`; image offset
   `RaceResults_TrackImageOffsets[track]` (all zero).
-- Standings `ram_FF1414`: encode, set palette 3 (`$6000`) on all cells; player's place
+- Standings `RaceResults_ram_StandingsRecord`: encode, set palette 3 (`$6000`) on all cells; player's place
   from `Menu_ram_PlayerAPlaces/BPlaces[track]` (clamped to 4), clear bit `$2000`
   (palette 2) on that row; draw at the header position with stride 64.
 - The player's row is the only visually distinct row; the top 4 finishers come from the

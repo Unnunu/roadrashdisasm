@@ -3435,6 +3435,8 @@ Race_UpdateActorActions:
                 move.b  (ram_FF1ADB).l,d0
                 cmp.b   $71(a1),d0
                 bne.w   .loc_12FA6
+; U-0004: during the 3-race Natasha encounter window, Natasha uses the
+; alternate action profile instead of the default opponent behavior.
                 cmpi.w  #3,(ram_FF0520).l
                 bne.w   .loc_12FD8
 

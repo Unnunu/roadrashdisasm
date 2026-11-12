@@ -42,7 +42,7 @@ play A/B/C select high score/results/shop and a release returns to the results.
   `RaceResults_ram_NextFunction` next-screen pointer; `Menu_ram_CurrentMessageId/NextMessageTimer`.
 - Assets: `ImgHighScoreTitle` title -> `$9000`, `ImgHighScoreBadge` badge -> `$B000`,
   `FontHighScoreTable` table font -> `$800`, `FontHighScoreDigits` -> `$1000`
-  (10 digit glyphs, no tile base references them here: `U-0009`),
+  (10 digit glyphs, loaded but never drawn: `U-0009` resolved, wontfix),
   `img_Intro_Font` -> `$0`, background -> `$8000`, gamepad -> `$A000`.
 
 ## Coverage matrix
@@ -66,8 +66,8 @@ Detailed listing/table: `docs/analysis/highscore.md`.
 ## Hacks / bugs / quirks
 
 - Top five rows use the table font at `$800`; player rows use the regular font `$0`;
-  the `$1000` digit font (`FontHighScoreDigits`) is loaded but no tile base uses it
-  here (`U-0009`). `[static]`
+  the `$1000` digit font (`FontHighScoreDigits`) is loaded but never drawn; no draw
+  uses tile base `$80` (`U-0009` resolved, wontfix). `[static]`
 - Player rows can duplicate a top-five entry after sorting (`Race_UpdateHighScoreTable` keeps the offset).
 - The demo and normal ticks both end on a release edge; A/B/C are new-press edges.
 - The palette is copied from `ImageBuffer+$4E4` *after* the title decompression, i.e.
@@ -88,14 +88,8 @@ Detailed listing/table: `docs/analysis/highscore.md`.
 - `[static]` Palette source is the title blob (`+$4E4`), 4 palettes / 64 colours.
 - `[static]` SAT clear = two entries; tile `$7FF` blank pattern at VRAM `$FFE0`.
 - `[static]` `FontHighScoreDigits` is a 10-glyph digit font (`0`-`9`), loaded at `$1000`
-  and not referenced by any tile base on this screen (`U-0009`).
-
-## Hypotheses
-
-- `[hypothesis]` `FontHighScoreDigits` is vestigial on this screen (`U-0009`). Test:
-  BlastEm breakpoint at `$72A0` after the frame DMA, then search VRAM `$7000`/`$4000`
-  for tile words `$0080`-`$0089`; also `b 37AA` and check `d4` (never `$80`).
-- `[hypothesis]` The duplicate player row is intentional (table font vs regular font).
+  and never drawn (`U-0009` resolved, wontfix).
+- `[static]` The duplicate player row is intentional (table font vs regular font).
 
 ## Rename proposals (apply only on request)
 
@@ -107,4 +101,4 @@ Detailed listing/table: `docs/analysis/highscore.md`.
 | Goal | Setup / breakpoint | Observed | Conclusion |
 |------|--------------------|----------|------------|
 | Capture the screen | — (not run this session) | — | static analysis only |
-| Identify `$1000` font | asset split preview (`assets/tilesets/highscore_extra/`) | 10 glyphs `0`-`9` | `FontHighScoreDigits`; display use still open (`U-0009`) |
+| Identify `$1000` font | asset split preview (`assets/tilesets/highscore_extra/`) | 10 glyphs `0`-`9`; no draw uses base `$80` | `FontHighScoreDigits`, loaded but unused (`U-0009` wontfix) |

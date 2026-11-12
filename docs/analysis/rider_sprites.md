@@ -42,8 +42,9 @@ runtime into a rectangular grid of VDP sprites (max 4x4 cells each).
 4. Entries are written sequentially from `Animation_ram_SpriteIndex` and chained by
    the low byte of the size/link word. `Animation_ram_TileIndex` is the shared tile
    cursor: it advances by the tile step of each cell and stops the chain at `$150`.
-5. A second "mirror" pass is selected by `ram_FF133A`: it sets the H-flip bit `$800`
-   on the tile word and walks X *left* instead of right (see `U-0007`).
+5. A second "mirror" pass is selected by `Road_ram_MirrorFlag`: it sets the H-flip bit `$800`
+   on the tile word and walks X *left* instead of right. `U-0007` resolved: the flag is
+   the object's horizontal-mirror/facing bit, not a shadow/reflection layer.
 
 ## Caller contract (`Road_DrawStrip`)
 
@@ -51,7 +52,7 @@ runtime into a rectangular grid of VDP sprites (max 4x4 cells each).
 - `d1` = `(ram_FF1330 + 1)` rounded up to a multiple of 8 (`ram_FF1330` = interpolated
   right-edge/height count). Both inputs are therefore `tiles*8`.
 - Before the call the caller sets `ram_FFDE6E/70` (base X/Y) and, on a mirrored
-  object, `ram_FF133A = 1` (`Road_DrawObject`, `RoadObject_Flags` bit15).
+  object, `Road_ram_MirrorFlag = 1` (`Road_DrawObject`, `RoadObject_Flags` bit15).
 - After the call the caller checks `ram_FFDE62` (chain end/overflow) and
   `ram_FF1366` (tile-budget/list overflow) to abort or restore the animation cursors.
 
@@ -138,7 +139,7 @@ values are fully explained (no unverified per-record meanings remain).
 | `$FF090C` | `ram_FF090C` | Vertical block count. |
 | `$FF090E` | `ram_FF090E` | Tile cursor at the start of the current row. |
 | `$FF1336` | `ram_FF1336` | Mirror X offset (applied as `2*value` on the mirrored pass). |
-| `$FF133A` | `ram_FF133A` | Mirror pass flag (from `RoadObject_Flags` bit15). |
+| `$FF133A` | `Road_ram_MirrorFlag` | Mirror pass flag (from `RoadObject_Flags` bit15). |
 | `$FF1366` | `ram_FF1366` | Second chain-end flag (tile-budget/SAT overflow). |
 
 ## `RiderSprites_BuildAlt`
@@ -152,7 +153,7 @@ The demo race reached `RiderSprites_Build`'s return (`$593C`). Observed state:
 - `Animation_ram_SpriteIndex=6`, `Animation_ram_TileIndex=$27`, `Animation_ram_BaseTile=0`.
 - `ram_FFDE5E..70 = 0000 0027 0000 0006 005C 0200 007C FEAA 0053`.
 - `ram_FF0906..0E = 0000 0040 0001 0001 0018`;
-  `ram_FF1336=0010`, `ram_FF133A=0001`, `ram_FF1366=0000`.
+  `ram_FF1336=0010`, `Road_ram_MirrorFlag=0001`, `ram_FF1366=0000`.
 - SAT base `$FF479C`, entries:
   - `0144 0401 8800 00F8`
   - `0130 0402 8802 0134`
@@ -175,13 +176,13 @@ routine writes, so they are not a 1:1 check of the table rows.
 - `[hardware]` In the SAT tile word, `$8000` is priority and `$800` is H-flip (see
   `UpdateAnimation`'s `$7800`/`$8000` masks).
 - `[dynamic]` The demo race calls `RiderSprites_Build`; the SAT chain and a mirrored
-  (`ram_FF133A=1`) entry set were observed.
+  (`Road_ram_MirrorFlag=1`) entry set were observed.
 
 ## Hypotheses / open questions
 
 - `[hypothesis]` The `d0/d1` inputs are the animation direction/size derived by
   `Road_DrawStrip` (left/right edge strip counts -> tile extents).
-- `[hypothesis]` `ram_FF133A` (object flags bit15) mirrors the whole object; whether the
-  mirrored copy is a shadow/reflection or an opposite-facing object is `U-0007`.
+- `[static]` `Road_ram_MirrorFlag` (object flags bit15) mirrors the whole object; it is the
+  horizontal-mirror/facing bit also used by the shape projection (`U-0007` resolved).
 - `[ ]` Confirm `ram_FFDE66/68/6A` byte semantics in `Road_WriteTileColumns`
   (road_render analysis TODO).

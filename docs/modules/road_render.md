@@ -38,11 +38,11 @@ copy the chain into the SAT with the x offset/clipping, then the second shape.
 
 - Visible list `Road_VisibleObjectList` (`$FF1D50`); object array `Road_ObjectArray` (`$FFD37C`),
   0x14-byte records: x, y, scale, horizon, shape, flags, x offset, second shape.
-- Record flags: bit15 shadow, bits 12-13 priority, bit7 of `$B` special/two-part, low
+- Record flags: bit15 mirror/facing (= bit7 of `$B`, selects the special mirrored path), bits 12-13 priority, low
   3 bits sprite rows.
 - Road: `ram_FF0D26/0D28/0D2A/0D2E/102E`, `ram_FF132E/1330/1332/1336`,
   `ram_FF136A` (horizon), `ram_FF1366` (chain end).
-- Projection: `ram_FF133A/133C/133E/1340/1342/1344/1348/134C/1350/1354/1356/1358/135A/135C/135E/1360/1362/1364`.
+- Projection: `Road_ram_MirrorFlag/133C/133E/1340/1342/1344/1348/134C/1350/1354/1356/1358/135A/135C/135E/1360/1362/1364`.
 - Sprite state: `Animation_ram_SpriteIndex/TileIndex/BaseTile`, `ram_FFDE5E..70`,
   `Race_ram_CurrentSpriteAttributeTable` (double-buffered `$FF479C`/`$FF4E1C`),
   `Race_ram_CurrentSpriteTileArray`.

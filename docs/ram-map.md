@@ -101,8 +101,9 @@ is analyzed:
 | `$FF067E` | `MenuPassword_StrPasswordStatus` | TODO | Password status message string. |
 
 The player state used by the password system: `Menu_ram_Player` `$FF0508`, levels
-`$FF050C/$FF050E`, money `$FF0518/$FF051C`, career score `$FF0510/$FF0514`, extra field `$FF0522/$FF0524` (0..3, current
-`$FF0520`), places `$FF052E/$FF0538`, opponents `$FF0546/$FF0566`, bike ids
+`$FF050C/$FF050E`, money `$FF0518/$FF051C`, career score `$FF0510/$FF0514`, Natasha
+encounter counter `$FF0522/$FF0524` (0..3, current-race `$FF0520`), places `$FF052E/$FF0538`,
+opponents `$FF0546/$FF0566`, bike ids
 `$FF0542/$FF0544`.
 
 ### Main menu (`src/screens/menu_main.asm`)
@@ -128,8 +129,8 @@ The player state used by the password system: `Menu_ram_Player` `$FF0508`, level
 
 | Address | Name | Size | Meaning |
 |---|---|---|---|
-| `$FF0520` | `ram_FF0520` | 2 | Current player's "extra" field (0..3), copied from `$FF0522`/`$FF0524`. |
-| `$FF0522`/`$FF0524` | `ram_FF0522/24` | 2 each | Player A/B 2-bit password "extra" field (not the bike id). |
+| `$FF0520` | `ram_FF0520` | 2 | Current-race Natasha encounter flag (0/3), copied from `$FF0522`/`$FF0524`; selects intro variant 3 and the face overlay. |
+| `$FF0522`/`$FF0524` | `ram_FF0522/24` | 2 each | Player A/B persisted Natasha encounter counter (0..3, decays one step per race; not the bike id). |
 | `$FF1ADA` | `Race_ram_ActiveController` | 2 | 0/1: controller that exited the intro (used by the race). |
 | `$FF0508` | `Menu_ram_Player` | 2 | 0 = A, `$FFFF` = B. |
 | `$FF050C`/`$FF050E` | `Menu_ram_PlayerALevel/PlayerBLevel` | 2 each | Table level index (1..5). |
@@ -357,7 +358,7 @@ See `docs/analysis/race_physics.md`.
 | `$FF091A` | `RaceResults_ram_Amount` | 2 | Fine/repair amount formatted into the bust/repair message. |
 | `$FF04C8` | `Race_EventBuffer` | `$40` | 16-long race event/sort buffer; first word `$FFFF` = busted/destroyed. |
 | `$FF1B1A` | `Race_CopIndex` | 2 | Cop/officer index (1..5); 0 = bike destroyed. |
-| `$FF1414`/`FF1418`/`FF141A` | `ram_FF1414/18/1A` | - | Standings string header/text, height, width. |
+| `$FF1414`/`FF1418`/`FF141A` | `RaceResults_ram_StandingsRecord/Height/Width` | - | Standings string header/text, height, width. |
 | `$FF067E`+4 | `MenuPassword_StrPasswordStatus+4` | 2 | Status-box height field; results shrink it 5 -> 3 to hide the password rows with negative money. |
 
 ROM tables: `$19D32` (level, money>=0, 5x4), `$19DD2` (level, money<0, 5x2),
@@ -378,8 +379,8 @@ See `docs/analysis/race_results.md`.
 
 The screen draws entries 0..4 (table font `$800`) and the player rows at the offsets
 (regular font `$0`). Assets: title `$A2F5C`, badge `$7EB72`, fonts `$A2BAA`->`$800`,
-`FontHighScoreDigits` (`$A2E68`)->`$1000` (10 digit glyphs, no tile base uses it on this
-screen: `U-0009`). Four palettes (64 colours) are taken from the title blob at `+$4E4`.
+`FontHighScoreDigits` (`$A2E68`)->`$1000` (10 digit glyphs, loaded but never drawn:
+`U-0009` wontfix). Four palettes (64 colours) are taken from the title blob at `+$4E4`.
 See `docs/analysis/highscore.md`.
 
 ### Bike shop (`src/screens/shop.asm`)
@@ -474,7 +475,7 @@ Script: `{tilemap, frame_count, frame_ptrs[]}`; frame: `count`, then
 | `$FFD37C` | `Road_ObjectArray` | 0x14/entry | Object array: x,y,scale,horizon,shape,flags,x offset,second shape. |
 | `$FF0D26`/`$FF0D2A`/`$FF0D2E`/`$FF102E` | road buffers | - | Tile cursor, strip data, left/right strip offsets. |
 | `$FF132E`/`$FF1330`/`$FF1332`/`$FF1336` | road strip state | 2 each | Strip counts/height/x offset. |
-| `$FF133A`/`$FF133C`/`$FF133E` | object flags | 2 each | Shadow, mirror, priority bits. |
+| `$FF133A`/`$FF133C`/`$FF133E` | object flags | 2 each | Mirror/facing, strip mirror, priority bits. |
 | `$FF1340`/`$FF1342`/`$FF1344` | projection | 2 each | Acceleration, base x/y. |
 | `$FF1348`/`$FF134C` | shape pointers | 4 each | Current/second shape data. |
 | `$FF1350` | scale | 4 | Object scale (`record+4 << 2`). |
@@ -591,8 +592,8 @@ Rider/bike sprite builder (`src/screens/rider_sprites.asm`):
 | `$FF0908` | `ram_FF0908` | 2 | Row/tile stride. |
 | `$FF090A`/`$FF090C` | `ram_FF090A/C` | 2 each | Column/row counts. |
 | `$FF090E` | `ram_FF090E` | 2 | Starting tile index. |
-| `$FF1336` | `ram_FF1336` | 2 | Shadow/overlay X offset. |
-| `$FF133A` | `ram_FF133A` | 2 | Shadow/overlay flag. |
+| `$FF1336` | `ram_FF1336` | 2 | Mirror/facing X offset. |
+| `$FF133A` | `Road_ram_MirrorFlag` | 2 | Mirror/facing flag (object flags bit15). |
 | `$FF1366` | `ram_FF1366` | 2 | Second chain-end flag. |
 | `$5944` | `RiderSprites_StripTable` | `$80` | Per-strip SAT table (16 records x 8 bytes). |
 

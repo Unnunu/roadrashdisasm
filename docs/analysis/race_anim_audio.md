@@ -40,6 +40,8 @@ unreferenced helpers.
   by `Race_ram_FrameDelay` (on-foot/`$6E` gated).
 - `Race_ScaleImpactDamage`/`Race_ApplyCollisionImpact`/`Race_ExchangeCollisionSpeed` handle impact/damage side effects; their
   callers and exact collision rules remain TODO.
+- `Race_UpdateActorPairImpact` sets `ram_FF0520=3` when player A attacks the actor whose
+  `$71` index equals `ram_FF1ADB`, i.e. Natasha (`U-0004`).
 
 ## Data / RAM
 

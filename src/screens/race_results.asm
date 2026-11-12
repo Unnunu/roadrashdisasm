@@ -255,7 +255,7 @@ RaceResults_Init:
 ; *************************************************
 ; Function RaceResults_DrawStandings
 ; Normal race results: title, track image/palette, top finishers, player row highlight.
-; In:  ram_FF1414/18/1A standings record, Menu_ram_PlayerAPlaces/BPlaces,
+; In:  RaceResults_ram_StandingsRecord/Height/Width standings record, Menu_ram_PlayerAPlaces/BPlaces,
 ;      Menu_ram_CurrentTrackId
 ; Out: Menu_ram_FrameBuffer standings, VRAM $9000/$B000, global palette
 ; Clobbers: d0-d6, a0-a3
@@ -337,13 +337,13 @@ RaceResults_DrawStandings:
                 move.l  (a0)+,(a1)+
                 dbf     d0,.copyPal3
 ; draw the finishers; the player's row uses palette 2, the others palette 3
-                lea     (ram_FF1414).l,a0
+                lea     (RaceResults_ram_StandingsRecord).l,a0
                 lea     (Intro_ram_ImageBuffer).l,a1
                 bsr.w   EncodeString
 
                 lea     (Intro_ram_ImageBuffer).l,a0
-                move.w  (ram_FF141A).l,d0
-                mulu.w  (ram_FF1418).l,d0
+                move.w  (RaceResults_ram_StandingsWidth).l,d0
+                mulu.w  (RaceResults_ram_StandingsHeight).l,d0
                 subq.w  #1,d0
 .loc_63FA:
                 ori.w   #$6000,(a0)+ ; palette bits 14-13 = 3
@@ -362,17 +362,17 @@ RaceResults_DrawStandings:
 .loc_642E:
 ; player row = (clamped place - 1); * width * 2 gives a word offset
                 subq.w  #1,d0
-                mulu.w  (ram_FF141A).l,d0
+                mulu.w  (RaceResults_ram_StandingsWidth).l,d0
                 asl.w   #1,d0
                 lea     (Intro_ram_ImageBuffer).l,a0
                 adda.w  d0,a0
-                move.w  (ram_FF141A).l,d0
+                move.w  (RaceResults_ram_StandingsWidth).l,d0
                 subq.w  #1,d0
 .loc_6448:
                 andi.w  #$DFFF,(a0)+ ; clear bit 13: palette 3 -> palette 2
                 dbf     d0,.loc_6448
 
-                lea     (ram_FF1414).l,a0
+                lea     (RaceResults_ram_StandingsRecord).l,a0
                 move.w  6(a0),d0 ; width
                 move.w  4(a0),d1 ; height
                 move.w  2(a0),d2 ; x

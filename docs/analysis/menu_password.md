@@ -80,7 +80,7 @@ Name and password strings are text records consumed by `EncodeString`/`DecodeStr
 | `w11..w16` | 24-bit signed money | six nibbles, MSB first; stored as `(nibble << 1)` |
 | `w17..w18` | separator spaces | not editable, skipped by the checksum |
 | `w19` | level | 3 bits (`& 7`) |
-| `w20` | bike id + extra | bits 0..2 = bike id; bits 3..4 = extra 2-bit field (`U-0004`) |
+| `w20` | bike id + Natasha counter | bits 0..2 = bike id; bits 3..4 = per-player Natasha encounter counter (`U-0004`) |
 | `w21..w23` | checksum | see below |
 
 ### Why the money characters are even before checksum insertion
@@ -96,7 +96,7 @@ their low bits.
 |---|---|---|
 | level `w19 & 7` | `Menu_ram_PlayerALevel` | `Menu_ram_PlayerBLevel` |
 | places `w0..w4 & $F` | `Menu_ram_PlayerAPlaces` | `Menu_ram_PlayerBPlaces` |
-| 20-bit field `w7..w10` | `ram_FF0510` | `ram_FF0514` |
+| 20-bit field `w7..w10` | `Player_ram_CareerScoreA` | `Player_ram_CareerScoreB` |
 | money `w11..w16` | `Menu_ram_MoneyPlayerA` | `Menu_ram_MoneyPlayerB` |
 | bike id `w20 & 7` | `Menu_ram_BikeIdPlayerA` | `Menu_ram_BikeIdPlayerB` |
 | extra `(w20 >> 3) & 3` | `ram_FF0522` | `ram_FF0524` |
@@ -249,9 +249,11 @@ both name/password fields at their fixed positions.
 
 ## Hypotheses / open questions
 
-- `U-0004` `[hypothesis]`: `ram_FF0522/24` is a 2-bit bike/upgrade or small progress
-  state; `race_core.asm` adjusts it around `$C41A`/`$C45C`.
-- `U-0005` `[static]` resolved: `ram_FF0510/14` is the 20-bit career score / high-score
+- `U-0004` `[static]` resolved: `ram_FF0522/24` is a per-player 3-race Natasha encounter
+  counter. `unk_D19A` holds Natasha's actor index per level; attacking her sets
+  `ram_FF0520=3`; `Race_ComputeResults` latches/decays the persisted value around
+  `$C41A`/`$C45C`. A non-zero value forces the fourth intro variant and the face overlay.
+- `U-0005` `[static]` resolved: `Player_ram_CareerScoreA/B` is the 20-bit career score / high-score
   value. `Race_ComputeResults` adds `unk_D1A0[place]*level` to it (together with money),
   `Race_UpdateHighScoreTable` uses it for the high-score entry, and nothing ever spends
   it.
@@ -264,5 +266,6 @@ both name/password fields at their fixed positions.
 | Current | Proposed | Evidence | Confidence |
 |---------|----------|----------|------------|
 | `MenuPassword_ValidatePassword` | `MenuPassword_VerifyChecksum` | checksum checks only | high |
-| `ram_FF0510`/`ram_FF0514` | `Player_ram_CareerScoreA/B` | career score / high-score value (`U-0005`) | medium |
-| `ram_FF0522`/`ram_FF0524` | `Player_ram_ExtraA/B` | blocked by `U-0004` | low |
+| `ram_FF0522`/`ram_FF0524` | `Player_ram_NatashaCounterA/B` | per-player encounter counter (`U-0004`) | medium |
+
+`ram_FF0510/14` -> `Player_ram_CareerScoreA/B` was applied in the static-unknowns pass.

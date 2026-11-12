@@ -1585,6 +1585,7 @@ Race_UpdateActorPairImpact:
                 move.b  (ram_FF1ADB).l,d2
                 cmp.b   $71(a2),d2
                 bne.w   .loc_14910
+; U-0004: player A attacked Natasha (actor index match) -> latch the encounter flag
                 move.w  #3,(ram_FF0520).l
 
 .loc_14910:

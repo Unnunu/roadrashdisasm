@@ -21,7 +21,7 @@
 `src/core/top_level.asm` calls `RiderIntro_Init`/`RiderIntro_GameTick` at `0x7E78C`/`0x7E790` after
 the main-menu fade, **only when `MainMenu_ram_DemoMode == 0`** (`0x7E782`); the demo
 branch (`0x7E7CC`) goes to the high-score demo instead. The screen shows the rider you
-will race next: portrait, name, a taunt/quote, and an optional extra overlay, then
+will race next: portrait, name, a taunt/quote, and an optional face overlay, then
 returns to the race when the held button is released (or after the message timer expires).
 
 ## Opponent table (`RiderIntro_RecordTable`, `0x19A12`)
@@ -32,11 +32,11 @@ returns to the race when the held button is released (or after the message timer
 - That is `[5 levels][5 tracks][4 variants]`: the variant is a random opponent pick.
 - Selection (`0x5BC8`): `d0 = Rand_NextWord & $18`; repeat while `d0 == $18`; if
   `d0 == 0` and `ram_FF0520 > 0`, use `$18` instead. So variants 0/1/2 are random;
-  variant 3 (Natasha) replaces variant 0 when the selected player's "extra" field is
-  non-zero.
+  variant 3 (Natasha) replaces variant 0 when the selected player's Natasha encounter
+  counter is non-zero.
 - `ram_FF0520` is copied from `ram_FF0522` (player A) or `ram_FF0524` (player B),
-  selected by `Menu_ram_Player`. These are the 2-bit password "extra" field, **not** the
-  bike id (`Menu_ram_BikeIdPlayerA/B` is `$FF0542/$FF0544`).
+  selected by `Menu_ram_Player`. These are the per-player Natasha encounter counters,
+  **not** the bike id (`Menu_ram_BikeIdPlayerA/B` is `$FF0542/$FF0544`).
 - Parsed opponents include Natasha, Biff, Slater, O'Leary, O'Rourke, Ikira, O'Connor,
   Sergio, Helldog, O'Shea; e.g. level 1 track 0 variants = Natasha, Biff, Slater,
   Natasha (variant 3); level 5 track 0 = O'Connor, Sergio, Helldog, O'Connor.
@@ -105,7 +105,7 @@ ROM text, not a transcription bug.
 | Planes A/B | gamepad image, 12x6 | `(2,22)`, base tile `$500` -> `$A000` |
 | Window `$7000` | portrait panel `RiderIntro_PortraitPanel`, 12x14 | `(2,5)`, base `$580` -> `$B000` (11 tiles + map) |
 | Window | rider portrait, 10x12 | `(3,6)`, base `$600` -> `$C000` |
-| Window | extra overlay, 6x7 | `(6,9)`, base `$680` -> `$D000` |
+| Window | face overlay, 6x7 | `(6,9)`, base `$680` -> `$D000` |
 | Window | name, 10x1 | `(3,19)`, base `$6000` (font palette 3) |
 | Window | quote, 19x4 | `(16,3)`, stride 128 -> rows 3,5,7,9 |
 | Window | message field 40x6 | rows 22-27 (message system) |
@@ -130,8 +130,9 @@ The VDP setup is the same as the main menu: planes A/B `$4000`, window `$7000`
      front, encode and draw it at `(3,19)`;
    - encode the quote and draw it at `(16, y/2)` with destination stride 128
      (double-spaced rows).
-5. If the image is `unk_AF902` (Natasha) and `ram_FF0520 > 0`, load `unk_B1506`
-   (`UncompressB`) and draw a 6x7 overlay at `(6,9)` from `ImageBuffer+$548`.
+5. If the image is `RiderIntro_Portrait_0` (Natasha) and `ram_FF0520 > 0`, load
+   `RiderIntro_NatashaFaceOverlay` (`UncompressB`) and draw a 6x7 face overlay at
+   `(6,9)` from `ImageBuffer+$548`.
 6. Load the font at VRAM `$0`; `Menu_ShowMessage`; DMA the 64x28 frame buffer to
    `$7000`.
 
@@ -156,9 +157,10 @@ the blinking Start icon, index 20 = terminator. The screen therefore auto-exits 
   `WriteNametable` overwrites) while the tile map still references base tile `$400`
   (`$8000`). The visible background relies on the tiles left by the main menu; entering
   this screen directly (debug) would show a wrong background. `[static]`
-- The variant-3 record and the extra `unk_B1506` overlay are used only when the
-  selected player's "extra" field is non-zero and the opponent image is `unk_AF902`.
-  The overlay's exact identity is `U-0008`. `[static]`
+- The variant-3 record and the `RiderIntro_NatashaFaceOverlay` are used only when the
+  selected player's encounter counter is non-zero and the opponent image is
+  `RiderIntro_Portrait_0`. The asset preview shows a close-up face/expression layer,
+  not a bike (`U-0008` resolved). `[static]`
 - The 10-character name is centered by counting trailing minus leading spaces,
   halving the surplus and right-rotating the field that many times. `[static]`
 - The quote's destination Y is the header Y shifted right by one; with the 128-cell
@@ -174,7 +176,8 @@ the blinking Start icon, index 20 = terminator. The screen therefore auto-exits 
 - Renamed the 85 intro-only quote records to `RiderIntro_Quote_<Rider>_<NN>` and
   updated `RiderIntro_RecordTable`, the `RiderIntro_QuoteData` alias, and docs. The 70
   results/end-level quotes keep `RaceQuote_*`; portraits are unchanged.
-- Open: `U-0008` overlay identity; dynamic rendering still unconfirmed.
+- `U-0008` resolved: the overlay is a close-up Natasha face/expression layer, drawn
+  only during the non-zero encounter counter. Dynamic rendering is still optional.
 
 ## Dynamic status
 
@@ -188,10 +191,8 @@ path), then inspect VRAM `$7000`/the portrait palette. Rendering/positions above
 
 | Current | Proposed | Evidence | Confidence |
 |---------|----------|----------|------------|
-| `unk_AF902` | `RiderIntro_NatashaImage` | name parsed from header | medium |
-| `unk_B1506` | `RiderIntro_NatashaBike` | overlay when extra != 0 (`U-0008`) | low |
-| `ram_FF0520` | `Menu_ram_PlayerExtra` | password "extra" field | medium |
+| `ram_FF0520` | `Player_ram_NatashaCounter` | current-race encounter flag (`U-0004`) | medium |
 
-The quote labels were renamed during the line-by-line pass (see above); this table
-lists the remaining asset/RAM proposals, which need a separate task.
+The quote and asset labels were renamed during the line-by-line pass (see above); the
+remaining RAM rename is a separate task.
 

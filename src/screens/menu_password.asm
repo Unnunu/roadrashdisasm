@@ -24,8 +24,8 @@
 ;                                         for a hidden checksum bit
 ;   w17..w18 separator spaces             not editable, not in the checksum
 ;   w19      level (3 bits)
-;   w20      bits 0..2 bike id, bits 3..4 extra (ram_FF0522/ram_FF0524;
-;            meaning @UNKNOWN(U-0004))
+;   w20      bits 0..2 bike id, bits 3..4 Natasha encounter counter for player A/B
+;            (ram_FF0522/ram_FF0524; see Race_ComputeResults, U-0004)
 ;   w21..w23 checksum characters
 ;
 ; Checksum (MenuPassword_ValidatePassword, tile indices, not raw values):
@@ -847,9 +847,9 @@ MenuPassword_ValidatePassword:
 ; Notes: ROM $002D1E-$002F39. Level = w19 & 7. The opponent list is $4B (the
 ;        player's own definition id) followed by (level-1)*15 + 0..14.
 ;        Places = w0..w4 & $F. The 20-bit progress is reassembled MSB-first
-;        from 5-bit pieces of w7..w10 into ram_FF0510/ram_FF0514. Money is six
+;        from 5-bit pieces of w7..w10 into Player_ram_CareerScoreA/B. Money is six
 ;        nibbles w11..w16 (nibble = char >> 1), MSB first, sign-extended from
-;        24 bits. w20 supplies the 3-bit bike id and the 2-bit extra field.
+;        24 bits. w20 supplies the 3-bit bike id and the 2-bit Natasha counter.
 ;        The inline "char #N" labels in the older comments counted 1-based
 ;        over the 20 non-space data characters; word indices are used below.
 ; *************************************************
@@ -903,8 +903,8 @@ MenuPassword_ParsePassword:
                 move.w  20(a0),d0
                 andi.w  #$1F,d0
                 or.w    d0,d1
-; combine them all into 20 bit integer to ram_FF0510
-                move.l  d1,(ram_FF0510).l ; career score / high-score value (U-0005)
+; combine them all into 20 bit integer to Player_ram_CareerScoreA
+                move.l  d1,(Player_ram_CareerScoreA).l ; career score / high-score value (U-0005)
 ; w11: money nibble 5 (bits 23..20); bit0 is the embedded checksum
                 move.w  22(a0),d0
                 lsl.w   #3,d0
@@ -942,11 +942,11 @@ MenuPassword_ParsePassword:
                 asr.l   #8,d0
 ; and write to Menu_ram_MoneyPlayerA
                 move.l  d0,(Menu_ram_MoneyPlayerA).l
-; w20: bits 3..4 -> ram_FF0522
+; w20: bits 3..4 -> ram_FF0522 (Natasha encounter counter, U-0004)
                 move.w  40(a0),d0
                 asr.w   #3,d0
                 andi.w  #3,d0
-                move.w  d0,(ram_FF0522).l ; @UNKNOWN(U-0004): meaning of this 2-bit field | guess: bike/upgrade state | next: audit readers in race_core.asm and shop.asm
+                move.w  d0,(ram_FF0522).l ; persisted counter: 3 after attacking Natasha, decays each race
 ; w20: bits 0..2 -> bike id (0..7)
                 move.w  40(a0),d0
                 andi.w  #7,d0
@@ -980,7 +980,7 @@ MenuPassword_ParsePassword:
                 andi.w  #$F,(a1)+
                 move.w  8(a0),(a1)
                 andi.w  #$F,(a1)+
-; 20-bit progress: w7..w10 -> ram_FF0514 (same packing as player A)
+; 20-bit progress: w7..w10 -> Player_ram_CareerScoreB (same packing as player A)
                 move.w  $E(a0),d0
                 lsl.l   #8,d0
                 lsl.l   #7,d0
@@ -998,7 +998,7 @@ MenuPassword_ParsePassword:
                 move.w  $14(a0),d0
                 andi.w  #$1F,d0
                 or.w    d0,d1
-                move.l  d1,(ram_FF0514).l
+                move.l  d1,(Player_ram_CareerScoreB).l
 ; w11..w16 -> 24-bit signed money (same packing as player A)
                 move.w  $16(a0),d0
                 lsl.w   #3,d0
@@ -1029,7 +1029,7 @@ MenuPassword_ParsePassword:
                 asl.l   #8,d0
                 asr.l   #8,d0
                 move.l  d0,(Menu_ram_MoneyPlayerB).l
-; w20: bits 3..4 -> ram_FF0524 (same field as U-0004); bits 0..2 -> bike id
+; w20: bits 3..4 -> ram_FF0524 (same Natasha counter for player B); bits 0..2 -> bike id
                 move.w  $28(a0),d0
                 asr.w   #3,d0
                 andi.w  #3,d0
@@ -1081,21 +1081,21 @@ MenuPassword_CreatePassword:
                 move.w  (a1)+,8(a0)
                 andi.w  #$F,8(a0)
 ; w7..w10 = 5-bit pieces of the 20-bit progress (MSB first)
-                move.l  (ram_FF0510).l,d0
+                move.l  (Player_ram_CareerScoreA).l,d0
                 andi.l  #$F8000,d0
                 lsr.l   #8,d0
                 lsr.l   #7,d0
                 move.w  d0,$E(a0)
-                move.l  (ram_FF0510).l,d0
+                move.l  (Player_ram_CareerScoreA).l,d0
                 andi.l  #$7C00,d0
                 lsr.l   #8,d0
                 lsr.l   #2,d0
                 move.w  d0,$10(a0)
-                move.l  (ram_FF0510).l,d0
+                move.l  (Player_ram_CareerScoreA).l,d0
                 andi.l  #$3E0,d0
                 lsr.l   #5,d0
                 move.w  d0,$12(a0)
-                move.l  (ram_FF0510).l,d0
+                move.l  (Player_ram_CareerScoreA).l,d0
                 andi.l  #$1F,d0
                 move.w  d0,$14(a0)
 ; w11..w16 = six money nibbles, MSB first, each stored as (nibble << 1)
@@ -1195,7 +1195,7 @@ MenuPassword_CreatePassword:
                 bra.w   .locret_3304
 .loc_3126:
 ; Player B ---------------------------------------------------------------
-; Same sequence with B state: ram_FF0514/0524, MoneyPlayerB, BikeIdPlayerB.
+; Same sequence with B state: Player_ram_CareerScoreB/0524, MoneyPlayerB, BikeIdPlayerB.
                 lea     (MenuPassword_ram_StrPlayerBPassword).l,a0
                 lea     (Intro_ram_ImageBuffer).l,a1
                 jsr     (EncodeString).w
@@ -1211,21 +1211,21 @@ MenuPassword_CreatePassword:
                 andi.w  #$F,6(a0)
                 move.w  (a1)+,8(a0)
                 andi.w  #$F,8(a0)
-                move.l  (ram_FF0514).l,d0
+                move.l  (Player_ram_CareerScoreB).l,d0
                 andi.l  #$F8000,d0
                 lsr.l   #8,d0
                 lsr.l   #7,d0
                 move.w  d0,$E(a0)
-                move.l  (ram_FF0514).l,d0
+                move.l  (Player_ram_CareerScoreB).l,d0
                 andi.l  #$7C00,d0
                 lsr.l   #8,d0
                 lsr.l   #2,d0
                 move.w  d0,$10(a0)
-                move.l  (ram_FF0514).l,d0
+                move.l  (Player_ram_CareerScoreB).l,d0
                 andi.l  #$3E0,d0
                 lsr.l   #5,d0
                 move.w  d0,$12(a0)
-                move.l  (ram_FF0514).l,d0
+                move.l  (Player_ram_CareerScoreB).l,d0
                 andi.l  #$1F,d0
                 move.w  d0,$14(a0)
                 move.l  (Menu_ram_MoneyPlayerB).l,d0

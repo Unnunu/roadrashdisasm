@@ -126,7 +126,7 @@ Reviewed from the generated previews (`[dynamic]`, user visual review):
 |---|---|
 | `race_track_background_0..4` | One stacked strip split into upper/lower halves: upper = distant background (sky/mountains/forest), lower = nearer background. The game parallax-scrolls both layers. |
 | `race_image_0` | Cloud layer; scrolls horizontally as the track turns. |
-| `intro_natasha_overlay` | Natasha face overlay; previously rendered with the wrong intro palette, now uses the Natasha portrait palette (`portrait0`). |
+| `intro_natasha_overlay` | `RiderIntro_NatashaFaceOverlay`: close-up Natasha face/expression layer (not a bike); previously rendered with the wrong intro palette, now uses the Natasha portrait palette (`portrait0`). |
 | `race_road` | Road-tile/side strip; previews rendered for all five track palettes. |
 | `results_busted` | Result/busted panel strip; preview generated with the result-panel palette. |
 | `results_image_extra` | Result-screen extra tiles; preview generated with the result-panel palette. |

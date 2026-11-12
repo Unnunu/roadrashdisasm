@@ -1132,7 +1132,7 @@ Race_InitVariables:
                 move.w  #0,(ram_FFDE78).l
                 move.w  #0,(ram_FFDE7A).l
                 move.w  #0,(ram_FFDE7C).l
-                move.w  #0,(ram_FF0520).l
+                move.w  #0,(ram_FF0520).l ; current-race Natasha encounter flag (U-0004)
                 move.w  (Menu_ram_PlayerALevel).l,(Menu_ram_PlayerLevel).l
                 tst.w   (Menu_ram_Player).l
                 beq.w   .loc_B6AC
@@ -2130,6 +2130,8 @@ Race_ComputeResults:
                 lea     (ram_FF0586).l,a0
                 tst.w   (Menu_ram_Player).l
                 bne.w   .loc_C44E
+; U-0004: decay the persisted Natasha counter (3->2->1->0) and latch the
+; current race's encounter flag (3) into it.
                 move.w  (ram_FF0522).l,d0
                 subq.w  #1,d0
                 bpl.w   .loc_C41A
@@ -2139,12 +2141,13 @@ Race_ComputeResults:
                 move.w  d0,(ram_FF0522).l
                 move.w  (Menu_ram_BikeIdPlayerA).l,d0
                 lea     (Menu_ram_PlayerAPlaces).l,a1
-                lea     (ram_FF0510).l,a2
+                lea     (Player_ram_CareerScoreA).l,a2
                 lea     (Menu_ram_MoneyPlayerA).l,a3
                 lea     (Race_ram_PlayerAOutcome).l,a4
                 lea     (Menu_ram_PlayerALevel).l,a6
                 bra.w   .loc_C48C
 .loc_C44E:
+; same decay/latch for player B
                 move.w  (ram_FF0524).l,d0
                 subq.w  #1,d0
                 bpl.w   .loc_C45C
@@ -2154,7 +2157,7 @@ Race_ComputeResults:
                 move.w  d0,(ram_FF0524).l
                 move.w  (Menu_ram_BikeIdPlayerB).l,d0
                 lea     (Menu_ram_PlayerBPlaces).l,a1
-                lea     (ram_FF0514).l,a2
+                lea     (Player_ram_CareerScoreB).l,a2
                 lea     (Menu_ram_MoneyPlayerB).l,a3
                 lea     (Race_ram_PlayerBOutcome).l,a4
                 lea     (Menu_ram_PlayerBLevel).l,a6
@@ -2209,7 +2212,7 @@ Race_ComputeResults:
                 lea     (unk_D1A0).l,a0
                 move.w  (a0,d2.w),d4 ; place points (0,75,50,30,20,18,...)
                 mulu.w  (a6),d4 ; * level
-                add.l   d4,(a2) ; career score (ram_FF0510/14), high-score value (U-0005)
+                add.l   d4,(a2) ; career score (Player_ram_CareerScoreA/B), high-score value (U-0005)
                 add.l   d4,(a3) ; spendable money
                 move.w  (a1),(a4)
                 beq.w   .loc_C58A
@@ -2263,12 +2266,12 @@ Race_UpdateHighScoreTable:
                 lea     (HighScore_ram_Table + 8).l,a0
                 lea     (MenuPassword_ram_StrPlayerAName + 8).l,a1
                 lea     (HighScore_ram_PlayerATableOffset).l,a2
-                move.l  (ram_FF0510).l,d0
+                move.l  (Player_ram_CareerScoreA).l,d0
                 tst.w   (Menu_ram_Player).l
                 beq.w   .loc_C60C
                 lea     (MenuPassword_ram_StrPlayerBName + 8).l,a1
                 lea     (HighScore_ram_PlayerBTableOffset).l,a2
-                move.l  (ram_FF0514).l,d0
+                move.l  (Player_ram_CareerScoreB).l,d0
 .loc_C60C:
                 move.w  (a2),d1
                 adda.w  d1,a0
@@ -2505,7 +2508,7 @@ Race_BuildStandings:
                 mulu.w  d1,d0
                 addq.w  #7,d0
                 lea     (unk_D1C0).l,a0
-                lea     (ram_FF1414).l,a1
+                lea     (RaceResults_ram_StandingsRecord).l,a1
 .loc_C886:
                 move.b  (a0)+,(a1)+
                 dbf     d0,.loc_C886
@@ -2516,10 +2519,10 @@ Race_BuildStandings:
                 cmp.w   #3,d0
                 ble.w   .loc_C8B0
 .loc_C8A8:
-                addi.w  #1,(ram_FF1418).l
+                addi.w  #1,(RaceResults_ram_StandingsHeight).l
 .loc_C8B0:
                 move.w  #0,$E(a0)
-                move.w  (ram_FF141A).l,d1
+                move.w  (RaceResults_ram_StandingsWidth).l,d1
                 move.w  d1,d2
                 asl.w   #1,d2
                 add.w   d2,d1
@@ -2568,7 +2571,7 @@ Race_BuildStandings:
 
 .loc_C948:
                 movea.l a1,a0
-                adda.w  (ram_FF141A).l,a0
+                adda.w  (RaceResults_ram_StandingsWidth).l,a0
                 subq.w  #1,a0
                 move.l  #'    ',-3(a0)
                 move.l  #'    ',-7(a0)
@@ -2607,7 +2610,7 @@ Race_BuildStandings:
                 move.l  (a2)+,4(a1)
                 move.l  (a2)+,8(a1)
                 move.w  (a2)+,$C(a1)
-                adda.w  (ram_FF141A).l,a1
+                adda.w  (RaceResults_ram_StandingsWidth).l,a1
                 dbf     d3,.loc_C90E
                 rts
 ; End of function Race_BuildStandings
@@ -2932,6 +2935,9 @@ Race_ActorDefinitionTable:
 
     dc.b    0,  0,   0, 0,  0,   0, "Player def"
 
+; per-level actor index of Natasha (player = 0, then the level's opponent list)
+; U-0004: Race_InitVariables copies the level entry to ram_FF1ADB, which the
+; attack handler compares against RaceActor_Index to detect an attack on Natasha.
 unk_D19A:
     dc.b    4, 4, 3, 5, 4, 0
 

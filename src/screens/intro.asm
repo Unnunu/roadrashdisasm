@@ -302,7 +302,7 @@ Intro_Init:
                 move.w  #TRACK_ID_SIERRA_NEVADA,(Menu_ram_CurrentTrackId).l
                 move.w  #PLAYER_MODE_A,(Menu_ram_PlayerMode).l
                 move.w  #PLAYER_LEVEL_START,(Menu_ram_PlayerLevel).l
-                move.w  #0,(ram_FF0520).l ; TODO: meaning not confirmed
+                move.w  #0,(ram_FF0520).l ; current-race Natasha counter (U-0004)
                 move.w  #PLAYER_SLOT_A,(Menu_ram_Player).l
 ; Build the persistent player A/B records (name/password, level, money, bike,
 ; places, opponent list) and put their names into the high-score table.
@@ -373,8 +373,8 @@ Intro_InitPlayerA:
 ; and no recorded place in any of the five races.
                 move.w  #PLAYER_LEVEL_START,(Menu_ram_PlayerALevel).l
                 move.w  #RACE_OUTCOME_NONE,(Race_ram_PlayerAOutcome).l
-                move.w  #0,(ram_FF0522).l ; 2-bit password field (meaning TODO)
-                move.l  #0,(ram_FF0510).l ; 20-bit progress value
+                move.w  #0,(ram_FF0522).l ; Natasha encounter counter, player A (U-0004)
+                move.l  #0,(Player_ram_CareerScoreA).l ; 20-bit career/high-score value
                 move.l  #100,(Menu_ram_MoneyPlayerA).l ; starting money = $100
                 move.w  #BIKE_ID_START,(Menu_ram_BikeIdPlayerA).l
                 move.w  #RACE_PLACE_NONE,(Menu_ram_PlayerAPlaces + 0).l
@@ -462,8 +462,8 @@ Intro_InitPlayerB:
 ; and no recorded place in any of the five races.
                 move.w  #PLAYER_LEVEL_START,(Menu_ram_PlayerBLevel).l
                 move.w  #RACE_OUTCOME_NONE,(Race_ram_PlayerBOutcome).l
-                move.w  #0,(ram_FF0524).l ; 2-bit password field (meaning TODO)
-                move.l  #0,(ram_FF0514).l ; 20-bit progress value
+                move.w  #0,(ram_FF0524).l ; Natasha encounter counter, player B (U-0004)
+                move.l  #0,(Player_ram_CareerScoreB).l ; 20-bit career/high-score value
                 move.l  #100,(Menu_ram_MoneyPlayerB).l ; starting money = $100
                 move.w  #BIKE_ID_START,(Menu_ram_BikeIdPlayerB).l
                 move.w  #RACE_PLACE_NONE,(Menu_ram_PlayerBPlaces + 0).l

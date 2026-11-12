@@ -55,11 +55,11 @@ characters, switches players, validates the entered password, applies it to the 
 |---|---|
 | 0-4 | places in the 5 races (low nibble; 0 = not played) |
 | 5-6 | separator spaces |
-| 7-10 | 20-bit career score (`ram_FF0510`/`ram_FF0514`, 5 bits each; `U-0005`) |
+| 7-10 | 20-bit career score (`Player_ram_CareerScoreA`/`Player_ram_CareerScoreB`, 5 bits each; `U-0005`) |
 | 11-16 | 24-bit signed money (nibbles << 1; bit0 = checksum) |
 | 17-18 | separator spaces |
 | 19 | level (3 bits) |
-| 20 | bike id (3 bits) + 2 extra bits (`ram_FF0522`/`ram_FF0524`; `U-0004`) |
+| 20 | bike id (3 bits) + 2-bit Natasha encounter counter (`ram_FF0522`/`ram_FF0524`; `U-0004`) |
 | 21-23 | checksum chars (sum of 7-11, sum of 12-16, XOR of those) |
 
 Checksum: `sum = w0-4 + w7-10 + (w11-16 & ~1) + w19-20`; the mask is the low bits of
@@ -102,7 +102,7 @@ finish). The even id (0,2,4,6,8) doubles as the byte offset into the places arra
 - Status string `MenuPassword_StrPasswordStatus` `$FF067E`; template `MenuPassword_StrStatusTemplate`
   (`0x4E20`, 5x16).
 - Menu/player state: `Menu_ram_Player` `$FF0508`, levels `$FF050C/$FF050E`, money
-  `$FF0518/$FF051C`, 20-bit fields `$FF0510/$FF0514`, extra bits `$FF0522/$FF0524`,
+  `$FF0518/$FF051C`, 20-bit fields `$FF0510/$FF0514`, Natasha counter `$FF0522/$FF0524`,
   places `$FF052E/$FF0538`, opponents `$FF0546/$FF0566`, bike ids `$FF0542/$FF0544`.
 - `Menu_ram_FrameBuffer` `$FFB62C` (size `$E00`).
 - `Menu_DefaultPassword` `0x2446`, `Menu_DefaultName` `0x245E`, dead `unk_2468`
@@ -144,9 +144,9 @@ See `docs/analysis/menu_password.md` for the full matrix.
 
 ## Hypotheses / open questions
 
-- `U-0004` `[hypothesis]`: the 2-bit `ram_FF0522/24` field is a bike/upgrade or small
-  progress state.
-- `U-0005` `[static]` resolved: the 20-bit `ram_FF0510/14` field is the career
+- `U-0004` `[static]` resolved: the 2-bit `ram_FF0522/24` field is a per-player 3-race
+  Natasha encounter counter (latch `3`, decay each race).
+- `U-0005` `[static]` resolved: the 20-bit `Player_ram_CareerScoreA/B` field is the career
   score / high-score value (credited per race, never spent).
 - `[ ]` Confirm the sample password in BlastEm.
 - `[ ]` Confirm the cursor visual and the `SwapPlayerBlocks` panel swap.

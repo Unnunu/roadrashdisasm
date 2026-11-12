@@ -40,7 +40,7 @@ open the shop (C), or inspect the cash/password (B).
   4th place not reached, 4 = level complete (EndLevel).
 - `Race_EventBuffer` 16-long event/sort buffer; first word `$FFFF` = busted/destroyed.
 - `Race_CopIndex` cop index (1..5) or 0 = bike destroyed; `RaceResults_ram_Amount` fine/repair.
-- `ram_FF1414/18/1A` standings string header/text, height, width.
+- `RaceResults_ram_StandingsRecord/Height/Width` standings string header/text, height, width.
 - `RaceResults_ram_NextFunction` next-screen pointer (HighScore/Shop/RaceResults); `RaceResults_ram_DrawRoutine` set but
   unread; `Menu_ram_PlayerLevel` for fine/repair/congratulations.
 - `MenuPassword_StrPasswordStatus` is reused as a 5-row x 12-column status box; its `+4`

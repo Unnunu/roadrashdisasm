@@ -10,7 +10,7 @@
 
 Replaces the single `RomTail` bridge with labelled `binclude` chunks for the known
 asset/code boundaries: high-score/menu/intro/shop/end-level images, fonts, the results
-track images, the 11 rider portraits, the Natasha overlay, and the ROM checksum routine.
+track images, the 11 rider portraits, the Natasha face overlay, and the ROM checksum routine.
 
 Asset payloads are generated from `baserom.md` by `tools/assets.py` into `assets/`
 (git-ignored); `src/data/rom_assets.asm` includes `assets/<category>/<id>/data.bin`. The asset

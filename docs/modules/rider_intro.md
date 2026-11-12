@@ -49,8 +49,9 @@ to the race and records the controller in `Race_ram_ActiveController`.
   actual 22-column rendering differ; bytes are preserved.
 - The 11 unique portrait images are at `$AF902-$BE628`, in the ROM tail after the
   current `$7EA65` build coverage.
-- `ram_FF0520` = selected player's 2-bit "extra" field (`$FF0522`/`$FF0524`); variant 3
-  and the `unk_B1506` overlay are used when it is non-zero and the image is `unk_AF902`.
+- `ram_FF0520` = selected player's encounter counter (`$FF0522`/`$FF0524`); variant 3
+  and the `RiderIntro_NatashaFaceOverlay` are used when it is non-zero and the image is
+  `RiderIntro_Portrait_0`.
 - `Menu_ram_Player` selects A/B; `Menu_ram_PlayerALevel/BLevel` and
   `Menu_ram_CurrentTrackId` select the record.
 - Frame buffer `Menu_ram_FrameBuffer` (`$FFB62C`, 64x28) DMA'd to VRAM `$7000`.
@@ -80,7 +81,7 @@ Detailed listing, table parse and layout: `docs/analysis/rider_intro.md`.
 - Quote rows are double-spaced by using destination stride 128 (rows 3,5,7,9); the
   destination Y is the header Y shifted right by one. `[static]`
 - Variant 3 is not chosen randomly; it replaces variant 0 only when the player's
-  "extra" field is non-zero. `[static]`
+  Natasha encounter counter is non-zero. `[static]`
 - The 10-character name is centered by counting trailing minus leading spaces,
   halving the surplus and right-rotating the field. `[static]`
 - The portrait palette overwrites all 64 global palette words. `[static]`
@@ -100,21 +101,16 @@ Detailed listing, table parse and layout: `docs/analysis/rider_intro.md`.
 
 ## Hypotheses
 
-- `[hypothesis]` `unk_B1506` is Natasha's bike/overlay (`U-0008`); `ram_FF0520` is a
-  bike/opponent class. Test: render `unk_B1506` and the portrait with the game palette.
+- `[static]` `RiderIntro_NatashaFaceOverlay` is a close-up Natasha face/expression layer
+  (`U-0008` resolved); it is drawn only while the encounter counter is non-zero.
 - `[hypothesis]` The `$4000` background write is a leftover/bug (should be `$8000`).
   Test: enter the screen right after `RiderIntro_Init` without the main menu and inspect
   VRAM.
 
 ## Rename proposals (apply only on request)
 
-| Current | Proposed | Evidence | Confidence |
-|---------|----------|----------|------------|
-| `unk_AF902` | `RiderIntro_NatashaImage` | parsed name | medium |
-| `unk_B1506` | `RiderIntro_NatashaBike` | conditional overlay (`U-0008`) | low |
-
-The intro quote labels were renamed during the line-by-line pass; this table lists the
-remaining asset proposals, which need a separate task.
+The intro quote and asset labels were renamed during the line-by-line pass; no asset
+renames remain on this screen.
 
 ## Experiments performed
 

@@ -484,7 +484,8 @@ Road_DrawObjects:
 ; Function Road_DrawObject
 ; Renders one 0x14-byte object record: projection/shape(s), road strip, sprite chain
 ; copy into the SAT with clipping. Record fields: +0 x, +2 y, +4 scale, +6 horizon,
-; +8 shape, +$A flags, +$C x offset, +$12 second shape.
+; +8 shape, +$A flags, +$C x offset, +$12 second shape. Flags bit15 is the
+; horizontal-mirror/facing bit (same bit as byte +$B bit7), not a shadow flag.
 ; In:  a0 - object record; current animation indices
 ; Out: SAT chain; ram_FF1366 end flag; Animation_ram_SpriteIndex
 ; Clobbers: d0-d7, a0-a2
@@ -492,7 +493,7 @@ Road_DrawObjects:
 
 Road_DrawObject:
                 move.w  #0,(ram_FFDE62).l
-                move.w  #0,(ram_FF133A).l
+                move.w  #0,(Road_ram_MirrorFlag).l
                 clr.l   d0
                 move.w  RoadObject_X(a0),(ram_FFDE6E).l
                 move.w  (ram_FFDE6E).l,(ram_FF1342).l
@@ -504,7 +505,7 @@ Road_DrawObject:
                 move.w  RoadObject_Limit(a0),(ram_FF136A).l
                 move.w  RoadObject_Flags(a0),d1
                 bpl.w   .loc_94DC
-                move.w  #1,(ram_FF133A).l
+                move.w  #1,(Road_ram_MirrorFlag).l
 .loc_94DC:
                 move.w  #0,(ram_FF133C).l
                 move.w  d1,d7

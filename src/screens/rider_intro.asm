@@ -8,8 +8,8 @@
 ; *************************************************
 ; Function RiderIntro_Init
 ; Builds the rider/opponent intro: VDP setup, background/gamepad/portrait, opponent
-; record (RiderIntro_RecordTable), name/quote/palette, optional bike overlay, font, message, DMA.
-; In:  Menu_ram_Player, PlayerA/BLevel, CurrentTrackId, ram_FF0520 (extra field)
+; record (RiderIntro_RecordTable), name/quote/palette, optional face overlay, font, message, DMA.
+; In:  Menu_ram_Player, PlayerA/BLevel, CurrentTrackId, ram_FF0520 (Natasha counter)
 ; Out: Menu_ram_FrameBuffer -> VRAM $7000; VRAM $A000-$D000 assets; palette
 ; Clobbers: d0-d7, a0-a3
 ; Notes: ROM $0059C4-$005E65. Only reached on the non-demo path
@@ -136,8 +136,8 @@ RiderIntro_Init:
                 jsr     (WriteNametableToBuffer).w
 
 .loc_5BAA:
-; select the opponent record: copy the player's 2-bit "extra" field, then pick a
-; random variant (0/8/$10; $18 is used instead of 0 when extra != 0)
+; select the opponent record: copy the player's Natasha encounter counter, then pick a
+; random variant (0/8/$10; $18 is used instead of 0 when the counter != 0)
                 move.w  (ram_FF0522).l,(ram_FF0520).l
                 tst.w   (Menu_ram_Player).l
                 beq.w   .loc_5BC8
@@ -328,16 +328,15 @@ RiderIntro_Init:
                 bsr.w   WriteNametableToBuffer
 
                 move.l  (sp)+,d0 ; image pointer saved before the portrait decode
-; @UNKNOWN(U-0008): exact identity of the overlay loaded below (Natasha's bike
-; vs. another face/vehicle layer) | guess: Natasha's bike | next: render $D000
-; in BlastEm with the extra field != 0.
-; Natasha's default image with a non-zero extra field also shows the overlay
-                cmp.l   #unk_AF902,d0
+; U-0008: a close-up face/expression overlay (asset preview), not a bike. It is
+; drawn over Natasha's portrait only while the encounter counter (U-0004) is
+; non-zero, so it is the rivalry-reaction layer.
+                cmp.l   #RiderIntro_Portrait_0,d0
                 bne.w   .loc_5E2C
                 tst.w   (ram_FF0520).l
                 ble.w   .loc_5E2C
 
-                lea     (unk_B1506).l,a3
+                lea     (RiderIntro_NatashaFaceOverlay).l,a3
                 lea     (Intro_ram_ImageBuffer).l,a1
                 jsr     (UncompressW).l
 

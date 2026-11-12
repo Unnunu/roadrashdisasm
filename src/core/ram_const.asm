@@ -27,8 +27,8 @@ Menu_ram_Player equ $FF0508 ; 0 if Player A else 0xFFFF
 Menu_ram_PlayerLevel equ $FF050A
 Menu_ram_PlayerALevel equ $FF050C
 Menu_ram_PlayerBLevel equ $FF050E
-ram_FF0510 equ $FF0510
-ram_FF0514 equ $FF0514
+Player_ram_CareerScoreA equ $FF0510
+Player_ram_CareerScoreB equ $FF0514
 Menu_ram_MoneyPlayerA equ $FF0518
 Menu_ram_MoneyPlayerB equ $FF051C
 ram_FF0520 equ $FF0520
@@ -98,7 +98,7 @@ ram_FF132E equ $FF132E
 ram_FF1330 equ $FF1330
 ram_FF1332 equ $FF1332
 ram_FF1336 equ $FF1336
-ram_FF133A equ $FF133A
+Road_ram_MirrorFlag equ $FF133A
 ram_FF133C equ $FF133C
 ram_FF133E equ $FF133E
 ram_FF1340 equ $FF1340
@@ -173,9 +173,9 @@ ram_FF1408 equ $FF1408
 ram_FF140A equ $FF140A
 ram_FF140E equ $FF140E
 RaceTrack_Data6 equ $FF1410
-ram_FF1414 equ $FF1414
-ram_FF1418 equ $FF1418
-ram_FF141A equ $FF141A
+RaceResults_ram_StandingsRecord equ $FF1414
+RaceResults_ram_StandingsHeight equ $FF1418
+RaceResults_ram_StandingsWidth equ $FF141A
 ram_FF141C equ $FF141C
 RaceHud_ram_NameTimer equ $FF14B8
 RaceHud_ram_NameFlags equ $FF14B9

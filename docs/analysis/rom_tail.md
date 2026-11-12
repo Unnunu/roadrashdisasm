@@ -41,13 +41,13 @@ after `src/core/top_level.asm` (`0x7EA66`–`0xBFFFF`) is split into labelled `b
 | `$AE8CE` | `img_MainMenu_Background` | main menu |
 | `$AF26C` | `RaceResults_TitleTiles` | results |
 | `$AF902`..`$BE628` | 11 intro portraits | `RiderIntro_RecordTable` |
-| `$B1506` | `unk_B1506` | Natasha bike overlay |
+| `$B1506` | `RiderIntro_NatashaFaceOverlay` | Natasha face/expression overlay |
 
 ## Known code / asset boundaries
 
 The 53 labels include `Boot_CheckRomChecksum` (`$7FF98`), `EndLevel_WindowImage`
 (`$7F400`), `img_Gamepad` (`$7F834`), `EndLevel_AnimationTiles/Data`,
-`RaceResults_TrackImage_0..4`, the 11 `RiderIntro_Portrait_*`, `unk_B1506`, and the
+`RaceResults_TrackImage_0..4`, the 11 `RiderIntro_Portrait_*`, `RiderIntro_NatashaFaceOverlay`, and the
 high-score/menu/intro/shop/end-level image/font labels. See `src/data/rom_assets.asm`.
 
 ## TODO

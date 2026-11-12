@@ -127,10 +127,10 @@ uses. It exists so later analysis can decide whether a rename is worth doing.
 | `Menu_ram_PlayerBOpponents` | RAM | `ram_const.asm` (`$FF0566`) | menu_password: 16-word B opponent definition list | good | `[static]` | keep | - | high | - |
 | `Menu_ram_BikeIdPlayerA` | RAM | `ram_const.asm` (`$FF0542`) | menu_password: A bike id (`w20` bits 0..2) | good | `[static]` | keep | - | high | - |
 | `Menu_ram_BikeIdPlayerB` | RAM | `ram_const.asm` (`$FF0544`) | menu_password: B bike id | good | `[static]` | keep | - | high | - |
-| `ram_FF0510` | RAM | `ram_const.asm` (`$FF0510`) | menu_password/race_core: A 20-bit career score / high-score value (`w7..w10`) | narrow | `[static]` | rename-later | `Player_ram_CareerScoreA` | medium | `U-0005` resolved |
-| `ram_FF0514` | RAM | `ram_const.asm` (`$FF0514`) | menu_password/race_core: B 20-bit career score / high-score value | narrow | `[static]` | rename-later | `Player_ram_CareerScoreB` | medium | `U-0005` resolved |
-| `ram_FF0522` | RAM | `ram_const.asm` (`$FF0522`) | menu_password/intro/race: A 2-bit extra field | placeholder | `[static]` | blocked-unknown | `Player_ram_ExtraA` | low | `U-0004` |
-| `ram_FF0524` | RAM | `ram_const.asm` (`$FF0524`) | menu_password/intro/race: B 2-bit extra field | placeholder | `[static]` | blocked-unknown | `Player_ram_ExtraB` | low | `U-0004` |
+| `Player_ram_CareerScoreA` | RAM | `ram_const.asm` (`$FF0510`) | menu_password/race_core: A 20-bit career score / high-score value (`w7..w10`) | narrow | `[static]` | keep (renamed from `ram_FF0510`) | - | medium | `U-0005` resolved |
+| `Player_ram_CareerScoreB` | RAM | `ram_const.asm` (`$FF0514`) | menu_password/race_core: B 20-bit career score / high-score value | narrow | `[static]` | keep (renamed from `ram_FF0514`) | - | medium | `U-0005` resolved |
+| `ram_FF0522` | RAM | `ram_const.asm` (`$FF0522`) | menu_password/intro/race: A persisted Natasha encounter counter (0..3) | narrow | `[static]` | rename-later | `Player_ram_NatashaCounterA` | medium | `U-0004` resolved |
+| `ram_FF0524` | RAM | `ram_const.asm` (`$FF0524`) | menu_password/intro/race: B persisted Natasha encounter counter (0..3) | narrow | `[static]` | rename-later | `Player_ram_NatashaCounterB` | medium | `U-0004` resolved |
 | `Message_ShowNoop` | routine | `message.asm:56` (`$4268`) | message: no-op show function; also the rts ending `Message_ShowEmpty` | good | `[static]` | keep (renamed from `sub_4268`) | - | high | - |
 | `Message_BlinkButtonA` | routine | `message.asm:103` (`$42AA`) | message/Menu_ShowMessage: blink A-button icon | good | `[static]` | keep | - | high | - |
 | `Message_DrawButtonA` | routine | `message.asm:128` (`$42D0`) | message: draw-only A-button entry | good | `[static]` | keep | - | high | - |
@@ -215,16 +215,16 @@ uses. It exists so later analysis can decide whether a rename is worth doing.
 | `ram_FF090C` | RAM | `ram_const.asm:77` (`$FF090C`) | rider_sprites: vertical block count | placeholder | `[static]` | rename-later | `Rider_ram_RowBlocks` | medium | - |
 | `ram_FF090E` | RAM | `ram_const.asm:78` (`$FF090E`) | rider_sprites: tile cursor at row start | placeholder | `[static]` | rename-later | `Rider_ram_RowStartTile` | medium | - |
 | `ram_FF1336` | RAM | `ram_const.asm:101` (`$FF1336`) | road_render/rider_sprites: mirror X offset | placeholder | `[static]` | rename-later | `Road_ram_MirrorXOffset` | medium | - |
-| `ram_FF133A` | RAM | `ram_const.asm:102` (`$FF133A`) | road_render/rider_sprites: mirror pass flag (object flags bit15) | placeholder | `[static]` | rename-later | `Road_ram_MirrorFlag` | medium | `U-0007` |
+| `Road_ram_MirrorFlag` | RAM | `ram_const.asm:102` (`$FF133A`) | road_render/rider_sprites: mirror pass flag (object flags bit15) | good | `[static]` | keep (renamed from `ram_FF133A`) | - | high | `U-0007` resolved |
 | `ram_FF1366` | RAM | `ram_const.asm:120` (`$FF1366`) | road_render/rider_sprites: tile-budget/SAT chain-end flag | placeholder | `[static]` | rename-later | `Road_ram_ChainEndAlt` | medium | - |
 | `RiderIntro_Init` | routine | `rider_intro.asm:20` (`$59C4`) | rider_intro: build the intro screen (VDP, assets, opponent record, name/quote, DMA) | good | `[static]` | keep | - | high | - |
 | `RiderIntro_GameTick` | routine | `rider_intro.asm:393` (`$5E66`) | rider_intro: per-frame DMA, pad release edge, timed message | good | `[static]` | keep | - | high | - |
 | `RiderIntro_RecordTable` | data | `race_data_tables.asm:8` (`$19A12`) | rider_intro: 5 levels x 5 tracks x 4 variants, 8-byte (quote,image) records | good | `[static]` | keep | - | high | - |
 | `Race_ram_ActiveController` | RAM | `ram_const.asm:287` (`$FF1ADA`) | rider_intro/race: 0/1 controller that exited the intro | good | `[static]` | keep | - | high | - |
-| `ram_FF0520` | RAM | `ram_const.asm:34` (`$FF0520`) | rider_intro: selected player's 2-bit "extra" field; selects variant 3/overlay | placeholder | `[static]` | blocked-unknown | `Player_ram_Extra` | low | `U-0004` |
+| `ram_FF0520` | RAM | `ram_const.asm:34` (`$FF0520`) | rider_intro/race: current-race Natasha encounter flag (0/3); selects variant 3/overlay | narrow | `[static]` | rename-later | `Player_ram_NatashaCounter` | medium | `U-0004` resolved |
 | `RiderIntro_PortraitPanel` | data | `rom_assets.asm:7` (`$7EA66`) | rider_intro/endlevel/results: portrait panel image (11 tiles + 12x14 map) | good | `[static]` | keep (renamed from `unk_7EA66`) | - | high | - |
-| `unk_AF902` | data | `rom_assets.asm:176` (`$AF902`) | rider_intro: Natasha portrait image (header name parsed) | placeholder | `[static]` | rename-later | `RiderIntro_NatashaImage` | medium | - |
-| `unk_B1506` | data | `rom_assets.asm:180` (`$B1506`) | rider_intro: conditional overlay drawn over Natasha's portrait | placeholder | `[static]` | blocked-unknown | `RiderIntro_NatashaBike` | low | `U-0008` |
+| `RiderIntro_Portrait_0` | data | `rom_assets.asm:176` (`$AF902`) | rider_intro: Natasha portrait image (header name parsed) | good | `[static]` | keep (renamed from `unk_AF902`) | - | high | - |
+| `RiderIntro_NatashaFaceOverlay` | data | `rom_assets.asm:180` (`$B1506`) | rider_intro: close-up Natasha face/expression overlay drawn during the encounter counter | good | `[static]` | keep (renamed from `unk_B1506`) | - | high | `U-0008` resolved |
 | `RiderIntro_Quote_Natasha_01` | data | `rider_intro_quotes.asm:14` (`$16E70`) | rider_intro: intro quote for Natasha (portrait 0); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_16E70`) | - | high | - |
 | `RiderIntro_Quote_Natasha_02` | data | `rider_intro_quotes.asm:22` (`$16EC4`) | rider_intro: intro quote for Natasha (portrait 0); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_16EC4`) | - | high | - |
 | `RiderIntro_Quote_Natasha_03` | data | `rider_intro_quotes.asm:29` (`$16F08`) | rider_intro: intro quote for Natasha (portrait 0); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_16F08`) | - | high | - |
@@ -326,9 +326,9 @@ uses. It exists so later analysis can decide whether a rename is worth doing.
 | `RaceResults_ram_Amount` | RAM | `ram_const.asm:81 ($FF091A)` | race_results: fine/repair amount for the bust/repair message | good | `[static]` | keep | - | high | - |
 | `RaceResults_ram_CurrentButtons` | RAM | `ram_const.asm:82 ($FF091C)` | race_results: current pad byte passed to HandleInput | good | `[static]` | keep | - | high | - |
 | `Menu_ram_PlayerLevel` | RAM | `ram_const.asm:27 ($FF050A)` | race_results/rider_intro/shop/endlevel: 1-based player level | good | `[static]` | keep | - | high | - |
-| `ram_FF1414` | RAM | `ram_const.asm:176 ($FF1414)` | race_results: standings text record (header + chars) | placeholder | `[static]` | rename-later | RaceResults_ram_StandingsRecord | medium | - |
-| `ram_FF1418` | RAM | `ram_const.asm:177 ($FF1418)` | race_results: standings text height | placeholder | `[static]` | rename-later | RaceResults_ram_StandingsHeight | medium | - |
-| `ram_FF141A` | RAM | `ram_const.asm:178 ($FF141A)` | race_results: standings text width | placeholder | `[static]` | rename-later | RaceResults_ram_StandingsWidth | medium | - |
+| `RaceResults_ram_StandingsRecord` | RAM | `ram_const.asm:176 ($FF1414)` | race_results/race_core: standings text record (header + chars) | good | `[static]` | keep (renamed from `ram_FF1414`) | - | high | - |
+| `RaceResults_ram_StandingsHeight` | RAM | `ram_const.asm:177 ($FF1418)` | race_results/race_core: standings text height | good | `[static]` | keep (renamed from `ram_FF1418`) | - | high | - |
+| `RaceResults_ram_StandingsWidth` | RAM | `ram_const.asm:178 ($FF141A)` | race_results/race_core: standings text width | good | `[static]` | keep (renamed from `ram_FF141A`) | - | high | - |
 | `Race_EventBuffer` | RAM | `ram_const.asm:25 ($FF04C8)` | race_results/race_core: 16-long event buffer; first word $FFFF = busted/destroyed | good | `[static]` | keep | - | high | - |
 | `Race_CopIndex` | RAM | `ram_const.asm:313 ($FF1B1A)` | race_results/race_core: cop index 1..5; 0 = bike destroyed | good | `[static]` | keep | - | high | - |
 | `Race_ComputeResults` | routine | `race_core.asm ($C3F8)` | race_results: computes outcome, fine/repair, places, password | good | `[static]` | keep | - | high | - |
@@ -363,7 +363,7 @@ uses. It exists so later analysis can decide whether a rename is worth doing.
 | `ImgHighScoreTitle` | asset | `rom_assets.asm:152` (`$A2F5C`) | highscore: 20x2 title to `$9000`; its palette (+$4E4) is loaded to 4 palettes | good | `[static]` | keep | - | high | - |
 | `ImgHighScoreBadge` | asset | `rom_assets.asm:10` (`$7EB72`) | highscore: yellow badge to `$B000`, drawn five times | good | `[static]` | keep | - | high | - |
 | `FontHighScoreTable` | asset | `rom_assets.asm:146` (`$A2BAA`) | highscore: 20-wide table font to `$800` | good | `[static]` | keep | - | high | - |
-| `FontHighScoreDigits` | asset | `rom_assets.asm:149` (`$A2E68`) | highscore: 10 digit glyphs (0-9) to `$1000`; no tile base references it | good | `[static]` | keep (renamed from `unk_A2E68`) | - | high | `U-0009` |
+| `FontHighScoreDigits` | asset | `rom_assets.asm:149` (`$A2E68`) | highscore: 10 digit glyphs (0-9) to `$1000`; loaded but never drawn | good | `[static]` | keep (renamed from `unk_A2E68`) | - | high | `U-0009` wontfix |
 | `Shop_DrawBikeName` | routine | `shop.asm:339 ($7996)` | shop: encode/draw the selected bike name+stats at (13,18) | good | `[static]` | keep | - | high | - |
 | `Shop_ShowBikeDescription` | routine | `shop.asm:367 ($79DA)` | shop: select description message 51..58 for 600 frames | good | `[static]` | keep | - | high | - |
 | `Shop_GameTick` | routine | `shop.asm:385 ($79F8)` | shop: frame DMA, H-scroll, Start->results, pad edges, message cycle | good | `[static]` | keep | - | high | - |
