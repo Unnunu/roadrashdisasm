@@ -399,3 +399,30 @@ uses. It exists so later analysis can decide whether a rename is worth doing.
 | `ImgShopBike2` | asset | `rom_assets.asm:134 ($9FDDE)` | shop: bike model 2 tiles to $D000; 18x9 map to Shop_ImageBike2 | good | `[static]` | keep | - | high | - |
 | `ImgShopBike3` | asset | `rom_assets.asm:137 ($A122A)` | shop: bike model 3 tiles to $E000; 18x9 map to Shop_ImageBike3 | good | `[static]` | keep | - | high | - |
 | `DmaWriteCRAM` | routine | `race_physics.asm:49 ($0D96A)` | shop/race: upload Global_ram_PalettePtr to CRAM while the shop scroll moves | good | `[static]` | keep | - | high | - |
+| `EndLevel_Init` | routine | `endlevel.asm:29 ($8342)` | endlevel: VDP, background/window/tiles/font, race-animation state | good | `[static]` | keep | - | high | - |
+| `EndLevel_InitVictoryCharacter` | routine | `endlevel.asm:220 ($8682)` | endlevel: panel, rider portrait/name/quote/palette, AdvanceLevel | good | `[static]` | keep | - | high | - |
+| `EndLevel_AdvanceLevel` | routine | `endlevel.asm:422 ($8946)` | endlevel: level++ (clamp 5), places/outcome clear, opponents, password | good | `[static]` | keep | - | high | - |
+| `EndLevel_GameTickVictoryCharacter` | routine | `endlevel.asm:494 ($8A1A)` | endlevel: window DMA, Start-held exit, message group $180 | good | `[static]` | keep | - | high | - |
+| `EndLevel_GameTick` | routine | `endlevel.asm:558 ($8AEE)` | endlevel: swap-delay DMA/SAT and end-stage switch | good | `[static]` | keep | - | high | - |
+| `EndLevel_UpdateAnimation` | routine | `endlevel.asm:615 ($8B94)` | endlevel: per-level frame limit, UpdateAnimation2, end input | good | `[static]` | keep | - | high | - |
+| `EndLevel_FrameCounts` | data | `endlevel.asm:685 ($8C8C)` | endlevel: five inclusive last frame indices (35,54,81,91,123) | good | `[static]` | keep | - | high | - |
+| `unk_8C96` | data | `endlevel.asm:690 ($8C96)` | endlevel: dead 5x20 text; duplicate of `RaceResults_StrNextLevelShort` | placeholder | `[static]` | rename-later | `EndLevel_StrNextLevelShort` | medium | - |
+| `unk_8D02` | data | `endlevel.asm:700 ($8D02)` | endlevel: dead bit-7 ASCII ("You aren't ready for"); duplicate of `RaceResults_StrNotReadyEncoded` | placeholder | `[static]` | rename-later | `EndLevel_StrNotReadyEncoded` | medium | - |
+| `unk_8D16` | data | `endlevel.asm:706 ($8D16)` | endlevel: dead text; duplicate of `RaceResults_StrNotReadyTail` | placeholder | `[static]` | rename-later | `EndLevel_StrNotReadyTail` | medium | - |
+| `unk_8D52` | data | `endlevel.asm:710 ($8D52)` | endlevel: dead text; duplicate of `RaceResults_StrContinuePlay` | placeholder | `[static]` | rename-later | `EndLevel_StrContinuePlay` | medium | - |
+| `unk_8D8A` | data | `endlevel.asm:717 ($8D8A)` | endlevel: dead text; duplicate of `RaceResults_StrNextLevel` | placeholder | `[static]` | rename-later | `EndLevel_StrNextLevel` | medium | - |
+| `EndLevel_AnimationScript` | data | `endlevel.asm:727 ($8DC2)` | endlevel: `UpdateAnimation2` script; 123 pointers into the decompressed animation buffer | good | `[static]` | keep | - | high | - |
+| `EndLevel_LevelRiderTable` | data | `race_data_tables.asm:101 ($19F12)` | endlevel: 5 levels x 2 quote/portrait records | good | `[static]` | keep | - | high | - |
+| `EndLevel_AnimationTiles` | asset | `rom_assets.asm:74 ($80000)` | endlevel: compressed tile set -> VRAM `$5C00` | good | `[static]` | keep | - | high | - |
+| `EndLevel_AnimationData` | asset | `rom_assets.asm:77 ($8BF12)` | endlevel: compressed frame stream -> `$5066` bytes in `Intro_ram_ImageBuffer` | good | `[static]` | keep | - | high | - |
+| `EndLevel_WindowImage` | asset | `rom_assets.asm:19 ($7F400)` | endlevel: 40x14 window image -> VRAM `$2020`, palette `+$2E4` | good | `[static]` | keep | - | high | - |
+| `Intro_TitleScrollTable` | RAM | `ram_const.asm:585 ($FF439C)` | endlevel/rider_intro: H-scroll table `$400` + SAT half `$280` | good | `[static]` | keep | - | high | - |
+| `UpdateAnimation2` | routine | `animation.asm:101 ($16926)` | endlevel: build SAT entries without copying tiles | good | `[static]` | keep | - | high | - |
+| `Race_SwapFrames` | routine | `race_core.asm:1586 ($BBFE)` | endlevel/race: flip the next HScroll/SAT/HUD/sprite buffers | good | `[static]` | keep | - | high | - |
+| `Race_FinishFrame` | routine | `race_core.asm:1644 ($BD24)` | endlevel/race: publish the current frame and flip current buffers | good | `[static]` | keep | - | high | - |
+| `Race_ram_NextScrollTable` | RAM | `ram_const.asm:564 ($FF38A4)` | endlevel/race: next H-scroll/SAT base pointer | good | `[static]` | keep | - | high | - |
+| `Race_ram_SpriteSize1` | RAM | `ram_const.asm:592 ($FFD32C)` | endlevel/race: sprite-size buffer 1 | good | `[static]` | keep | - | high | - |
+| `Race_ram_SpriteSize2` | RAM | `ram_const.asm:593 ($FFD32E)` | endlevel/race: sprite-size buffer 2 | good | `[static]` | keep | - | high | - |
+| `Race_ram_SpriteDestination` | RAM | `ram_const.asm:639 ($FFDE5C)` | endlevel/race: sprite destination tile base (`$8680`/`$C680` parity) | narrow | `[static]` | keep | - | medium | - |
+| `EndLevel_ram_AnimFrame` | RAM | `ram_const.asm:90 ($FF0D22)` | endlevel: animation frame; `-1` ends the stage | good | `[static]` | keep | - | high | - |
+| `EndLevel_ram_SpriteSwapDelay` | RAM | `ram_const.asm:91 ($FF0D24)` | endlevel: swap countdown; reload 5 gives a 6-GameTick DMA period | good | `[static]` | keep | - | high | - |

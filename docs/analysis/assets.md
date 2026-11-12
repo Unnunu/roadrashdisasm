@@ -16,7 +16,7 @@
 | Image with external palette + map | gamepad, highscore badge, intro title, race-selection background, shop bikes, race badges, password selection | header → tiles → `(w,h)` → map; palette from the screen |
 | Tileset / font | intro font, highscore table font, high-score digit font (`FontHighScoreDigits`, 10 glyphs `0`-`9`), shop arrow left, player selection, extra tiles | header → tiles; layout/atlas |
 | Map only | `unk_9B2F0` 40×17, `unk_9B7A6` 3×17 | first long `(w,h)` → entries |
-| Raw tiles/animation | `EndLevel_AnimationTiles`, `EndLevel_AnimationData` | raw bytes / animation stream |
+| Raw tiles/animation | `EndLevel_AnimationTiles`, `EndLevel_AnimationData` | raw tiles; script frame stream |
 | Standalone palettes | `Shop_BikePalettes` 8×16, `unk_7E470` 16×16 | 32 bytes/palette |
 | Embedded palettes | in the image buffers above | 128 bytes, 64 colors |
 
@@ -157,7 +157,9 @@ and palette regions.
 - `race_map_0` (`unk_9B2F0`, 40×17): base tile `$4180` points at VRAM `$3000`;
   the tile source/layout is still unknown. Candidate previews exist, but the
   correct tileset is not confirmed.
-- `endlevel_animation_data` (`0x8BF12`): animation stream, raw data; format TODO.
+- `endlevel_animation_data` (`0x8BF12`): compressed frame stream; decompresses to
+  `$5066` bytes at runtime. `EndLevel_AnimationScript` (`$8DC2`) holds the 123 frame
+  pointers into that buffer; per-frame sprite layout remains TODO.
 
 Shape IDs are not asset files. They are indices into `Road_ShapeTable`
 (`0x3BF1A`, 564 entries) in `src/data/road_shapes.asm`; the shape data is

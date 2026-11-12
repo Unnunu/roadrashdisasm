@@ -51,12 +51,24 @@ when the tiles are preloaded in VRAM (e.g. `EndLevel_UpdateAnimation`).
 - Race HUD needles (`RaceHud_NeedleScript` script), `RiderSprites_Build`, `EndLevel_UpdateAnimation`,
   and raced actor/sprite code; `UpdateAnimation2` for preloaded VRAM.
 
+## End-level script
+
+`EndLevel_AnimationScript` (`$8DC2-$8FB3`, `0x1F2` bytes) is an `UpdateAnimation2` script:
+`.l` tilemap base `$80000` (`EndLevel_AnimationTiles`, unused by `UpdateAnimation2`),
+`.w` last frame index `122`, then 123 `.l` pointers. The pointers are absolute addresses
+in the decompressed `EndLevel_AnimationData` buffer at `Intro_ram_ImageBuffer` (`$5066`
+bytes); they run from `+$0000` to `+$5024` and are strictly increasing. Frames 0 and 1
+are empty (0 sprites); level cut-offs use the inclusive indices in
+`EndLevel_FrameCounts`.
+
 ## Open questions
 
-- Individual animation scripts (`RaceHud_NeedleScript`, `unk_7DF??`, end-level `$8DC2`) and frames.
+- Individual animation frame data (`RaceHud_NeedleData`, `unk_7DF??`, end-level
+  `EndLevel_AnimationData`) and the per-frame sprite layout.
 - The exact SAT link/priority semantics and maximum sprite counts.
 - Dynamic verification of scripts and tile copies.
 
 ## Rename proposals
 
-Applied: `unk_169A0` -> `Animation_dTileCountMinus1`. Scripts are TODO.
+Applied: `unk_169A0` -> `Animation_dTileCountMinus1`. Individual scripts/frames remain
+TODO.

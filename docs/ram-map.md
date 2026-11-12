@@ -490,15 +490,18 @@ SAT is double-buffered: `$FF479C`/`$FF4E1C`. Shape table `Road_ShapeTable` (`$3B
 
 | Address | Name | Size | Meaning |
 |---|---|---|---|
-| `-` | `EndLevel_ram_AnimFrame` | 2 | Victory animation frame; `-1` ends the animation stage. |
-| `$FF0D24` | `EndLevel_ram_SpriteSwapDelay` | 2 | 5-frame sprite-table swap delay. |
+| `$FF0D22` | `EndLevel_ram_AnimFrame` | 2 | Victory animation frame; `-1` ends the animation stage. |
+| `$FF0D24` | `EndLevel_ram_SpriteSwapDelay` | 2 | Sprite-table swap delay; reload 5 gives a 6-GameTick DMA period. |
 
 The module reuses the race animation state (`Animation_ram_BaseTile=$2E0`,
 `Race_ram_FrameReady/FrameReady2`, `Race_ram_*SpriteAttributeTable`,
 `Race_ram_*ScrollTable`, `Race_ram_SpriteDestination=$8680`) with `Intro_TitleScrollTable`
-buffers. Level-up rider table `$19F12` (5 levels x 2), frame counts `$8C8C`,
-animation script `$8DC2`, tiles `$80000`, window image `$7F400`. `EndLevel_AdvanceLevel` advances the
-level/opponents/password. See `docs/analysis/endlevel.md`.
+buffers. Level-up rider table `$19F12` (5 levels x 2); `EndLevel_FrameCounts` `$8C8C`
+holds inclusive last frame indices (35,54,81,91,123); `EndLevel_AnimationScript`
+`$8DC2-$8FB3` has 123 pointers into the `$5066`-byte decompressed
+`EndLevel_AnimationData` at `$8BF12`; tiles `$80000`, window image `$7F400`.
+`EndLevel_AdvanceLevel` advances the level/opponents/password. See
+`docs/analysis/endlevel.md`.
 
 ### Track data decoder (`src/race/track_data.asm`)
 
