@@ -195,3 +195,25 @@ uses. It exists so later analysis can decide whether a rename is worth doing.
 | `ram_FF07C2` | RAM | `ram_const.asm` (`$FF07C2`) | shop/message: runtime 5x20 left-bike prompt record | placeholder | `[static]` | rename-later | `Shop_StrLeftBike` | medium | - |
 | `ram_FF082E` | RAM | `ram_const.asm` (`$FF082E`) | shop/message: runtime 5x20 right-bike prompt record | placeholder | `[static]` | rename-later | `Shop_StrRightBike` | medium | - |
 | `ram_FF089A` | RAM | `ram_const.asm` (`$FF089A`) | shop/race_results/message: runtime 5x20 dynamic message record | placeholder | `[static]` | rename-later | `Message_ram_DynamicRecord` | medium | - |
+| `RiderSprites_Build` | routine | `rider_sprites.asm:48` (`$5760`) | rider_sprites: build linked rider/bike SAT chain | good | `[static]` | keep | - | high | - |
+| `RiderSprites_BuildAlt` | routine | `rider_sprites.asm:224` (`$593E`) | rider_sprites: unused wrapper | good | `[static]` | keep | - | high | - |
+| `RiderSprites_StripTable` | data | `rider_sprites.asm:248` (`$5944`) | rider_sprites: 16 x 8-byte per-block SAT layout table | good | `[static]` | keep | - | high | - |
+| `Race_ram_CurrentSpriteAttributeTable` | RAM | `ram_const.asm:567` (`$FF38AC`) | race/rider_sprites: SAT base pointer | good | `[static]` | keep | - | high | - |
+| `Animation_ram_TileIndex` | RAM | `ram_const.asm:642` (`$FFDE60`) | animation/rider_sprites: tile cursor | good | `[static]` | keep | - | high | - |
+| `Animation_ram_SpriteIndex` | RAM | `ram_const.asm:644` (`$FFDE64`) | animation/rider_sprites: next free SAT slot | good | `[static]` | keep | - | high | - |
+| `Animation_ram_BaseTile` | RAM | `ram_const.asm:603` (`$FFD34A`) | animation/rider_sprites: base tile added to entries | good | `[static]` | keep | - | high | - |
+| `ram_FFDE5E` | RAM | `ram_const.asm:641` (`$FFDE5E`) | road_render/rider_sprites: object palette/priority/base bits | placeholder | `[static]` | rename-later | `Road_ram_SpriteTileBits` | medium | - |
+| `ram_FFDE62` | RAM | `ram_const.asm:643` (`$FFDE62`) | road_render/rider_sprites: chain-end/overflow flag | placeholder | `[static]` | rename-later | `Road_ram_ChainEnd` | medium | - |
+| `ram_FFDE66` | RAM | `ram_const.asm:645` (`$FFDE66`) | road_render/rider_sprites: road-writer within-row stride | placeholder | `[static]` | rename-later | `Road_ram_TileRowStrideAlt` | medium | - |
+| `ram_FFDE68` | RAM | `ram_const.asm:646` (`$FFDE68`) | road_render/rider_sprites: road-writer row stride | placeholder | `[static]` | rename-later | `Road_ram_TileRowStride` | medium | - |
+| `ram_FFDE6A` | RAM | `ram_const.asm:647` (`$FFDE6A`) | road_render/rider_sprites: road-writer within-row stride | placeholder | `[static]` | rename-later | `Road_ram_TileColStride` | medium | - |
+| `ram_FFDE6E` | RAM | `ram_const.asm:649` (`$FFDE6E`) | road_render/rider_sprites: object base X | placeholder | `[static]` | rename-later | `Road_ram_ObjectX` | medium | - |
+| `ram_FFDE70` | RAM | `ram_const.asm:650` (`$FFDE70`) | road_render/rider_sprites: object base Y | placeholder | `[static]` | rename-later | `Road_ram_ObjectY` | medium | - |
+| `ram_FF0906` | RAM | `ram_const.asm:74` (`$FF0906`) | rider_sprites: horizontal remainder code C as byte offset | placeholder | `[static]` | rename-later | `Rider_ram_ColCode` | medium | - |
+| `ram_FF0908` | RAM | `ram_const.asm:75` (`$FF0908`) | rider_sprites: vertical remainder code R as byte offset | placeholder | `[static]` | rename-later | `Rider_ram_RowCode` | medium | - |
+| `ram_FF090A` | RAM | `ram_const.asm:76` (`$FF090A`) | rider_sprites: horizontal block count | placeholder | `[static]` | rename-later | `Rider_ram_ColBlocks` | medium | - |
+| `ram_FF090C` | RAM | `ram_const.asm:77` (`$FF090C`) | rider_sprites: vertical block count | placeholder | `[static]` | rename-later | `Rider_ram_RowBlocks` | medium | - |
+| `ram_FF090E` | RAM | `ram_const.asm:78` (`$FF090E`) | rider_sprites: tile cursor at row start | placeholder | `[static]` | rename-later | `Rider_ram_RowStartTile` | medium | - |
+| `ram_FF1336` | RAM | `ram_const.asm:101` (`$FF1336`) | road_render/rider_sprites: mirror X offset | placeholder | `[static]` | rename-later | `Road_ram_MirrorXOffset` | medium | - |
+| `ram_FF133A` | RAM | `ram_const.asm:102` (`$FF133A`) | road_render/rider_sprites: mirror pass flag (object flags bit15) | placeholder | `[static]` | rename-later | `Road_ram_MirrorFlag` | medium | `U-0007` |
+| `ram_FF1366` | RAM | `ram_const.asm:120` (`$FF1366`) | road_render/rider_sprites: tile-budget/SAT chain-end flag | placeholder | `[static]` | rename-later | `Road_ram_ChainEndAlt` | medium | - |
