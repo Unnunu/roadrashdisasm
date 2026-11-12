@@ -3,11 +3,14 @@
 ; ROM range: $25856-$259B5; included from main.asm
 ; *************************************************
 
-; Race_ActorList: player A + 15 opponents (actor structs $80 each)
+; Race_ActorList: player A + 15 opponents (actor structs $80 each).
+; Entry 0 = PlayerA, entry 1 = ram_FF1F2A, entries 2..15 = Race_ActorStruct_2..15.
+; Race_InitActorLists copies entry 0 to ram_FF1A08, then entry 9 (Struct_9)..15,
+; and Race_ActorListMid (Struct_2..) to the opponent free list.
 Race_ActorList:
     dc.l    RacePlayerA
     dc.l    ram_FF1F2A
-Race_ActorListMid: ; $2585E (sub-list used by Race_InitActorLists)
+Race_ActorListMid: ; $2585E (points at Race_ActorStruct_2; 14 entries + sentinel)
     dc.l    Race_ActorStruct_2
     dc.l    Race_ActorStruct_3
     dc.l    Race_ActorStruct_4
@@ -34,7 +37,10 @@ Race_StaticActorList:
 unk_258A6:
     dc.b    $00,$FF,$2F,$AA,$FF,$FF,$FF,$FF
 
-; Per-actor shadow/snapshot struct pointers indexed by actor +$71.
+; Per-actor shadow/snapshot struct pointers indexed by actor +$71 (16 entries).
+; The slots live at $FF26AA + i*$80, but entries 2 and 9 are swapped in the table:
+; index 2 -> $FF2B2A (slot 9) and index 9 -> $FF27AA (slot 2); all others follow
+; the natural order. Byte-exact ROM data; do not "fix" without evidence.
 Race_ActorShadowTable:
     dc.b    $00,$FF,$26,$AA,$00,$FF,$27,$2A,$00,$FF,$2B,$2A,$00,$FF,$28,$2A
     dc.b    $00,$FF,$28,$AA,$00,$FF,$29,$2A,$00,$FF,$29,$AA,$00,$FF,$2A,$2A

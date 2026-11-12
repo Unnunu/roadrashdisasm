@@ -124,7 +124,7 @@ routines; `+$06` is its low word, not an independent X coordinate.
 
 | Offset | Width | Role / status | Evidence |
 |---|---|---|---|
-| `+$00` | word | current screen/draw Y; source uses `0(a1)` | `[dynamic]` steering `$35`; hard-left `$FF89`; no-steer `$A0` |
+| `+$00` | word | current screen/draw Y; source uses `0(a1)` | `[confirmed]` E1-1: `$30 = $00-$36` after `0x10FE4`; `[dynamic]` steering `$35`; hard-left `$FF89`; no-steer `$A0` |
 | `+$02` | word | `PosZ` (existing name) | `[static]` endlevel/HInt |
 | `+$04` | long | current X position; `RaceActor_X/XLow` are one 32-bit value | `[confirmed]` `$04 = $1E + $26` in all snapshots |
 | `+$06` | word | low word of `+$04`; no separate field | same |
@@ -136,13 +136,14 @@ routines; `+$06` is its low word, not an independent X coordinate.
 | `+$1A` | word | previous draw/road Y copied from `+$30` at `Race_UpdateActorX` entry | `[dynamic]` steering `$31` vs `$30=$35`; hard-left `$FFE4` |
 | `+$1C` | word | `RaceActor_PreviousCollisionOffset`; copy of `$32` before movement | `[static]` R29 |
 | `+$1E` | long | previous X; `Race_UpdateActorX` copies current `+$04` here before adding `+$26` | `[confirmed]` `$04-$1E=$26`; initial spawn value before movement |
-| `+$22`/`+$24` | word | X/Y screen delta/velocity; `$22` non-zero under steering | `[dynamic]` `$09/0` steering; zero no-steer |
+| `+$22`/`+$24` | word | Y correction (`$22`, added to `$00`); `$24` is write-only | `[confirmed]` E1-2: `$22 = d0` then `$00 += d0`; `[dynamic]` `$09/0` steering; zero no-steer |
 | `+$26` | long | frame distance = `Speed * Race_ram_FrameDelay` | `[confirmed]` Player `$EE*7=$682`, Opp `$111*7=$777`; steering `$2D15*7=$13B93` |
 | `+$2A` | word | screen/road Y offset; source derives from `+$02`/road value | `[dynamic]` `-$08` no-steer, `$223` steering; exact role TODO |
 | `+$2C`/`+$2E` | word | impact/speed fraction pair; source writes from Speed | `[static]`; zero in snapshots |
-| `+$30` | word | current road/target Y; `+$1A` keeps the previous value | `[dynamic]` steering `$35`; hard-left `$FFEA`; no-steer `$A0` |
+| `+$30` | word | current road/target Y; `+$1A` keeps the previous value | `[confirmed]` E1-1: `$30 = $00-$36`; `[dynamic]` steering `$35`; hard-left `$FFEA`; no-steer `$A0` |
 | `+$32` | word | `RaceActor_CollisionOffset`; projected collision penetration; zero outside collisions | `[static/dynamic]`; R25 |
-| `+$36`/`+$38`/`+$3A`/`+$3C` | word | `RoadYTarget`/`CurveDelta`/`CurveAccum`/`CurveStep` | `[static/dynamic]` steering `5/$22B/3/0`; R30 |
+| `+$34` | word | signed shape bucket from `Race_BuildActorObjectList` | `[confirmed]` E1-3: negative sets H-flip `$8000`; not steering |
+| `+$36`/`+$38`/`+$3A`/`+$3C` | word | `RoadYTarget`/`CurveDelta`/`CurveAccum`/`CurveStep` | `[confirmed]` E1-1/E1-4: `$36` accumulator; `$3C` write-only `sub_115C6` input; `[dynamic]` steering `5/$22B/3/0`; R30 |
 | `+$3E`/`+$40`/`+$42` | word | curve/lean state; `$42` signed | `[confirmed]` `$42=-$49` left, `+$49` right; `$3E/$40` zero in test; R22/R23 names `Curve`/`LeanCurve` |
 | `+$46` | word | curve/direction sign; AI flips it | `[dynamic]` `-$03` under forced steering |
 | `+$4A` | word | collision/proximity extent | `[dynamic]` `$0D` active, `$0E` hard-left; `[static]` `Race_UpdateCollision` |
@@ -329,3 +330,58 @@ Applied in R1: `RaceActor_X` (`$04`), `RaceActor_XLow` (`$06`),
 `RaceActor_Acceleration` (`$14`), `RaceActor_FrameDistance` (`$26`),
 `RaceActor_Lean` (`$42`), `RaceActor_TileBase` (`$5C`),
 `RaceActor_Rating` (`$66`).
+
+## L1 actor-core static pass (2026-11-12)
+
+This pass verified the L1 hubs and produced field matrix v1 in `docs/analysis/race_map.md`
+(authoritative for writers/readers). Key results:
+
+- **List split confirmed.** `Race_InitActorLists` copies `Race_ActorList` entry 0
+  (PlayerA) to `ram_FF1A08`, then entry 9 (`Race_ActorStruct_9`)..15, giving the 8-entry
+  AI loop `PlayerA + Struct_9..15`. `Race_ActorListMid` points at `Struct_2`, and the
+  7-entry opponent free list is `Struct_2..8` (matches the dumps).
+- **`$00` vs `$1A` vs `$30` resolved.** `$00` is the absolute draw/screen Y after the
+  road-band clamp; `$36` (`RoadYTarget`) is the curve accumulator; the clamp writes
+  `$30 = -(RoadYTarget - $00)` (road-relative Y) and movement copies it to `$1A` at the
+  next frame start. Collision/pair code reads `$1A/$30`, not `$00`.
+- **`$08` is the `Road_ShapeTable` index.** `sub_12414` does
+  `(Road_ShapeTable)[8(a0)]`; `$0A` carries shape flags (bit14 = horizontal flip).
+- **`$34`** is a signed actor shape/lean variant written by `Race_BuildActorObjectList`
+  and consumed by the shape selectors and `Race_ApplyCrashImpact` (`>= 3` test).
+- **`$58`/`$76`** are animation outputs: `$58` is the frame token copied to the actor
+  object's `+8`; `$76` is the animation flag byte read with `btst #0` by
+  `Race_BuildActorObjectList`.
+- **Not actor fields:** `$48`, `$64`, `$7A`, `$7C`, `$7E` belong to the VScroll/rearview
+  and object buffers (the same offsets appear with a non-actor base). `$24` and `$44` are
+  actor writes with no reader in the current source (reserved/write-only).
+- **Shadow table permutation.** `Race_ActorShadowTable` has 16 slots at `$FF26AA + i*$80`,
+  but table entries 2 and 9 are swapped (`idx2 -> $FF2B2A`, `idx9 -> $FF27AA`). This is
+  byte-exact ROM data, not a disassembly typo.
+- **`Race_SetupActorSprite` consumes ambient `d4`** as the additional `Y±d4` candidate
+  span; neither the routine nor `Race_SetupActor` initializes it (`U-0011`). Only the
+  extra candidate buckets are affected, not the base `AnimIndex`.
+- Experiment Pack E1 (five checks) is in `race_map.md`; results are in the dynamic
+  pass below.
+
+## L1 actor-core dynamic pass (2026-11-12)
+
+E1 was executed with `analysis/capture_L1b_*` on the demo race (60 s headless run).
+
+- **`$00/$30/$36` (confirmed).** At `0x10FE4` the stored `$30` equals `$00-$36`
+  (sample `$00=$FF57`, `$36=$FFEC`, `$30=$FF6B`); `$1A` keeps the previous frame.
+- **`$22` (confirmed).** `sub_113A4` stores `d0` in `$22` and adds the same value to
+  `$00` at `0x113C4`; a positive/negative `d0` moved `$00` accordingly. `sub_113CA`
+  has the identical add but was not reached on the player path.
+- **`$34` (confirmed).** Shape-selector reads show `$34=+1` -> flip bit clear and
+  `$34=-1/-2` -> `$8000` set; the magnitude selects the shape index. Forcing
+  `RaceBike_ram_CurrentSteering` to `±$600` left `$34=0`, so `$34` is not the steering
+  input. It is the signed bucket computed by `Race_BuildActorObjectList`.
+- **`$36-$3C` (confirmed roles).** `$36` is the road-target accumulator used by
+  `$30 = $00-$36`; `$38/$3A` change inside movement; `$3C` is a write-only copy of
+  `sub_115C6`'s input `d1` (also reset in `sub_13A26`).
+- **`d4` (`U-0011`, AI path closed).** A full demo produced 4169
+  `Race_SetupActorSprite` calls, all from the AI path (`ret=0x10FE8`) with `d4=0`.
+  No spawn-path call (`ret=0x16E24`) occurred, so the spawn value stays open.
+- **Demo collision survey.** 9 pair Y-overlap contacts (one with `RacePlayerA`), 0
+  object/static impacts, 0 crash-entry hits, and no player fall. `Race_ApplyCrashImpact`
+  is gated on `DemoMode == 0`, so crash/fall experiments need a non-demo run.

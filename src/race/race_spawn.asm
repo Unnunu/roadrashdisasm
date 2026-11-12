@@ -197,7 +197,9 @@ Race_SpawnTick:
 
 ; *************************************************
 ; Function Race_CheckOpponentAhead
-; Recycles an actor that is too far ahead of the player progress.
+; Recycles an actor that is too far ahead of the player progress. The first
+; opponent (ram_FF1F2A) is exempt, and so is the case where progress+$20 is still
+; below RaceTrack_Data1 (the track end), i.e. recycling only starts near the end.
 ; In:  a1 - actor, a2 - free list
 ; Out: a1 - still valid or $FFFFFFFF; free list
 ; Clobbers: d0/d1/a1
@@ -271,7 +273,8 @@ Race_GetActorDistance:
 ; *************************************************
 ; Function Race_SpawnOpponent
 ; Pops a free opponent, checks it is not too far ahead, activates it and places it
-; ahead of the player.
+; ahead of the player. Special case: if the pop returns ram_FF1F2A and its
+; ControlFlags bit6 is already set, activation is skipped (first opponent is kept).
 ; In:  Race_ram_OpponentFreeList free list, player A x
 ; Out: actor fields/active list; a1
 ; Clobbers: d0/a1/a2
@@ -519,10 +522,13 @@ Race_InitTrafficActor:
 
 ; *************************************************
 ; Function Race_SetupActor
-; Common actor setup: curve at the actor position, flags, sprite/tile base.
-; In:  a1 - actor
-; Out: actor fields
-; Clobbers: d0/a4; calls Race_SetupActorSprite
+; Common actor setup after spawn/recycle: samples Track_CurveBuffer at the actor X
+; into $08/$0C, clears ControlFlags bits 4/0, sets $5C = ram_FF18A8 and AnimState
+; = $FF, zeroes $00/$02/$0A/$2C/$32/$36/$38/$3A/$3C, makes $30 positive and copies
+; it to $1A/$00, then calls Race_SetupActorSprite.
+; In:  a1 - actor; Track_CurveBuffer; ram_FF18A8
+; Out: actor fields/previous X; $1A/$00 = abs($30)
+; Clobbers: d0/a4; calls Race_SetupActorSprite (which also consumes d4)
 ; *************************************************
 
 Race_SetupActor:

@@ -133,3 +133,26 @@ treats record byte 2 as an object type and the low nibble as lane offset. See
 |---|---|---|---|
 | `Race_ram_ActiveActorList` | `Race_ActiveActorList` | active list | high |
 | `Race_ram_OpponentFreeList`/`Race_ram_TrafficFreeList` | `Race_OpponentFreeList`/`Race_TrafficFreeList` | free lists | high |
+
+## L1 actor-core static pass (2026-11-12)
+
+- **Init split:** `Race_InitActorLists` builds `ram_FF1A08` = PlayerA +
+  `Race_ActorStruct_9..15` (8 entries) and `Race_ram_OpponentFreeList` =
+  `Race_ActorStruct_2..8` (7 entries), matching `actor_post_create_ram.bin`.
+  `Race_ram_ActiveActorList` (`$FF1A0C`) then aliases the last 7 entries of
+  `ram_FF1A08`, so it holds the opponents while the count still includes PlayerA.
+- **`Race_SpawnOpponent` special case:** if the pop returns `ram_FF1F2A` and its
+  `ControlFlags` bit6 is already set, activation/init are skipped.
+- **`Race_CheckOpponentAhead`:** the first opponent is exempt, and recycling only starts
+  once `PlayerProgress + $20 >= RaceTrack_Data1` (track-end threshold) and the actor is
+  ahead of that value.
+- **`Race_SetupActor` detail:** samples `Track_CurveBuffer` at
+  `((X & $FF) * 2 + $C) & $1FF` into `$08` and `$0C`; clears `ControlFlags` bits 4/0;
+  sets `$5C = ram_FF18A8`, `AnimState = $FF`; zeroes
+  `$00/$02/$0A/$2C/$32/$36/$38/$3A/$3C`; makes `$30` positive and copies it to
+  `$1A` and `$00`; then calls `Race_SetupActorSprite` (which consumes ambient `d4`,
+  `U-0011`).
+- **Recycle:** `Race_RecycleActor` stores `X / Race_ram_ActorDistanceScale` (long high
+  word) into `$66` for reuse as a distance; `Race_RecycleOpponent` only moves the
+  pointer between lists.
+- Field ownership is authoritative in `docs/analysis/race_map.md` (matrix v1).

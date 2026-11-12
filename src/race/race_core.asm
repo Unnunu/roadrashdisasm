@@ -1148,9 +1148,12 @@ Race_InitVariables:
 
 ; *************************************************
 ; Function Race_InitActorLists
-; Builds the actor/object pointer tables and counts from Race_ActorList/Race_ActorListMid.
+; Builds the AI-loop list (ram_FF1A08) and the opponent free list from
+; Race_ActorList/Race_ActorListMid. No object lists are touched here.
 ; In:  -
-; Out: ram_FF1A08/Race_ram_OpponentFreeList lists; Race_ram_ActiveActorCount; sentinels
+; Out: ram_FF1A08 = PlayerA + Race_ActorStruct_9..15 (8 entries);
+;      Race_ram_OpponentFreeList = Race_ActorStruct_2..8 (7 entries);
+;      Race_ram_ActiveActorCount = 8; sentinels
 ; Clobbers: d0/a1/a2
 ; *************************************************
 
@@ -1158,12 +1161,12 @@ Race_InitActorLists:
                 move.w  #0,(Race_ram_SpawnTimer).l
                 move.w  #0,(Race_ram_TrafficFreeList).l
                 move.w  #1,(Race_ram_ActiveActorCount).l
-; first actor pointer (player A) then the second actor group
+; first actor pointer (player A); (a1) is not advanced
                 lea     (Race_ActorList).l,a1
                 lea     (ram_FF1A08).l,a2
                 move.l  (a1),(a2)+
 
-; skip to the second group (+$24 from the second entry)
+; +$24 from the list start = entry 9 (Race_ActorStruct_9); copy 7 opponents
                 adda.w  #$24,a1
                 move.w  #6,d0
 .loc_B6F2:
@@ -1174,7 +1177,7 @@ Race_InitActorLists:
                 move.l  #$FFFFFFFF,(a2)
                 lea     (Race_ram_OpponentFreeList).l,a2
                 move.w  #0,(a2)+
-; middle group (exact 8+7 split TODO)
+; middle group: Race_ActorStruct_2..8 (7 free opponents)
                 lea     (Race_ActorListMid).l,a1
                 move.w  #6,d0
 .loc_B71A:
@@ -1187,7 +1190,9 @@ Race_InitActorLists:
 
 ; *************************************************
 ; Function Race_InitActorPositions
-; Initializes the actor screen positions/scales (0x1A/0x30 fields) in the list.
+; Initializes the initial actor positions for the 8-entry AI-loop list:
+; $00/$1A/$30 (draw/previous/road-relative Y) alternate $A0/$20, and
+; $04/$1E (X/previous X) start at $80000 and step $30000 every second actor.
 ; In:  ram_FF1A08 list
 ; Out: actor structs
 ; Clobbers: d0-d3/a0/a1

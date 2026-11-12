@@ -1133,10 +1133,13 @@ Race_UpdateActorMovement:
 
 ; *************************************************
 ; Function Race_UpdateActorShadow
-; Advances the per-actor shadow/snapshot copy used for rendering and collision.
-; In:  a1 - actor; Race_ram_FrameDelay
-; Out: shadow actor movement fields; main actor unchanged
-; Clobbers: d0-d7/a0-a6
+; Advances the per-actor shadow/snapshot copy: applies acceleration/speed, runs the
+; normal or fall movement on the shadow, clamps its X to within +/-$A0000 of the
+; real actor X. Used for rendering/interpolation; the passed actor is not moved.
+; In:  a1 - real actor; Race_ram_FrameDelay; Race_ActorShadowTable[a1+$71]
+; Out: shadow actor movement fields (4(a1)/PreviousX clamped); real actor unchanged
+; Calls sub_13BD8 (sets shadow acceleration) and movement helpers
+; Clobbers: d0-d7/a0-a6 (saved/restored)
 ; *************************************************
 
 Race_UpdateActorShadow:
@@ -1238,9 +1241,10 @@ Race_UpdateActorShadow:
 
 ; *************************************************
 ; Function Race_SaveActorShadow
-; Copies the actor state into its shadow/snapshot slot and marks it synced.
-; In:  a1 - actor
-; Out: shadow copy; ram_FF176A=1
+; Copies the whole $80-byte actor state (32 longs) into its shadow slot, halves the
+; shadow $2C (curve/impact scale) and marks the shadow as synced.
+; In:  a1 - actor; Race_ActorShadowTable[a1+$71]
+; Out: shadow copy; shadow $2C >>= 1; ram_FF176A=1
 ; Clobbers: d0/a0-a1
 ; *************************************************
 
@@ -4240,10 +4244,16 @@ Race_ScaleActorSpeed:
 
  ; *************************************************
 ; Function Race_SetupActorSprite
-; Sets up an actor sprite/position after spawn/recycle.
-; In:  a1 - actor; Track_CurveBuffer
-; Out: actor fields
-; Clobbers: all
+; Sets up an actor sprite/position after spawn/recycle: derives AnimIndex from the
+; actor Y ($30>>6 + 3, clamped to 0..5) and registers up to three target-candidate
+; buckets (Y, Y+d4, Y-d4) for the AI bucket table.
+; In:  a1 - actor; d4 - caller-provided Y span (NOT set by this routine)
+; Out: RaceActor_AnimIndex; ram_FF178A/ram_FF1792 candidate buckets
+; Clobbers: d0/d1/d2/a0 (d4 is an input)
+; @UNKNOWN(U-0011): d4 is an ambient register here. E1 observed d4=0 on every
+; AI-path call in a full demo (4169 calls); the spawn path (Race_SetupActor) was not
+; reached, so its value there is still unproven. Only the extra Y+d4/Y-d4 candidate
+; buckets are affected, not the base AnimIndex.
 ; *************************************************
 
 Race_SetupActorSprite:

@@ -1,6 +1,6 @@
 # Race map: timeline, dataflow, field ownership and captures
 
-- **Status:** v0 (built from existing analysis docs and RAM snapshots; no new behavior claims)
+- **Status:** v2 (L1 static pass + Experiment Pack E1 dynamic checks integrated)
 - **Sources:** `docs/analysis/race.md`, `race_actors.md`, `race_ai.md`, `race_movement.md`,
   `race_speed.md`, `race_impact.md`, `race_spawn.md`, `road_render.md`, `docs/ram-map.md`,
   `tasks/race_understanding_program.md`
@@ -45,51 +45,80 @@ Pad (Race_GetInput)
   -> nearest opponent/place -> results/standings/money
 ```
 
-## Actor field ownership matrix v0
+## Actor field ownership matrix v2
+
+v2 integrates the Experiment Pack E1 dynamic checks (`analysis/capture_L1b_*`) into the
+v1 static close. New in v2:
+
+- `$00`/`$30`/`$36` confirmed dynamically: after the store at `0x10FE4`,
+  `$30 == $00 - $36`; `$00` is the draw/screen Y and `$36` the road target.
+- `$22` confirmed dynamically: `sub_113A4` computes `d0`, stores it in `$22` and adds
+  it to `$00` (`0x113C4`); `sub_113CA` has the same add but was not exercised.
+- `$34` confirmed dynamically: the shape selectors consume the signed bucket written by
+  `Race_BuildActorObjectList`; negative values set H-flip `$8000`. Steering forced to
+  `±$600` left `$34 == 0`, so it is not the lean/steer input.
+- `$36-$3C`: `$36` is the road-target accumulator, `$38`/`$3A` change inside movement,
+  `$3C` is a write-only copy of `sub_115C6`'s input `d1`.
+- E1-5: `d4` was `0` on every AI-path `Race_SetupActorSprite` call in a full 60 s demo
+  (4169 calls); the spawn path was not reached (`U-0011` stays open for spawn).
+
+v1 changes from v0:
+
+- `$00` vs `$30` ownership is resolved: `$00` is the absolute draw/screen Y after the
+  road-band clamp; `$30` is the road-relative Y (`drawY - RoadYTarget`) used by
+  movement/collision, and `$1A` is its previous value.
+- `$08` is confirmed as the `Road_ShapeTable` index (`sub_12414` does
+  `(Road_ShapeTable)[8(a0)]`); `$0A` carries shape flags (bit14 = horizontal flip).
+- `$22` is an accumulated Y correction applied to `$00`; `$34` is a signed actor shape
+  variant; `$58` is the animation frame token copied to the actor object's `+8`; `$76`
+  is the animation flag byte consumed by `Race_BuildActorObjectList`.
+- `$24`, `$44` are written but never read in the current source; `$48`, `$64`, `$7A`,
+  `$7C`, `$7E` are **not actor fields** (the same offsets belong to the VScroll/rearview
+  and object buffers); `$02` is also written by `sub_115C6`.
+- Residual semantic questions are listed in the last column and in Experiment Pack E1.
 
 Widths match the actual instruction sizes: `$04/$1E/$26` are longs, the
 `$68-$78` block is byte-wise, everything else is a word. Offsets inside a long field
-(`$06`, `$20`, `$28`) are aliases, not separate rows. "Not documented" means the
-existing docs do not identify a writer/reader yet; it is an open question, not a
-guess.
+(`$06`, `$20`, `$28`) are aliases, not separate rows. A `-` in Readers/Writers means
+"none found in `src/`"; it is not a guess.
 
 | Offset | Width | Symbol | Writers | Readers | Evidence | Open question |
 |---|---|---|---|---|---|---|
-| `$00` | word | (unnamed) | `Race_InitActorPositions`, movement/static updater via `$36/$38`/`$30` | draw/HUD path | `[dynamic]` steering `$35`, hard-left `$FF89` | exact draw-Y ownership vs `$30` |
-| `$02` | word | `RaceActor_PosZ` | not documented | main HInt / endlevel debug | `[static]` | writer/origin |
-| `$04` | long | `RaceActor_X` | `Race_InitActorPositions`, `Race_UpdateActorX/Movement/FallMovement`, `Race_InitOpponent/TrafficActor` | target selection, collision, camera | `[confirmed]` `$04=$1E+$26` | - |
+| `$00` | word | (unnamed) | road-band clamp in `Race_UpdateActorAI`/`Race_UpdateActorShadow`; Y-correction adders `sub_113A4`/`sub_113CA`/`Race_HandleInputOnFoot`; `Race_InitActorPositions`; `Race_SetupActor` | `Race_UpdateActorAI`/`Shadow` Y-delta math; `sub_113CA`/`Race_HandleInputOnFoot`; sprite projection | `[confirmed]` E1-1: `$30 = $00-$36` after `0x10FE4` | absolute draw/screen Y |
+| `$02` | word | `RaceActor_PosZ` | `Race_CreateActors` (0); `sub_115C6` (base Z) | `sub_115C6`; collision/crash projection; main HInt/endlevel | `[static]` | exact projection term in `$2A` |
+| `$04` | long | `RaceActor_X` | `Race_InitActorPositions`, movement/fall, spawn init | target selection, collision, camera | `[confirmed]` `$04=$1E+$26` | - |
 | `$06` | word | `RaceActor_XLow` | same as `$04` | same as `$04` | `[confirmed]` low word of `$04` | no independent field |
-| `$08` | word | (unnamed) | `Race_SetupActor`, impact/crash paths | animation code | `[static]` | animation/impact register role |
-| `$0A` | word | (unnamed) | `Race_SetupActor` | animation code | `[static]` | role |
-| `$0C` | word | (unnamed) | `Race_SetupActor`, `Race_ApplyCollisionImpact` | animation code | `[static]` | role |
-| `$0E` | word | (unnamed) | not documented | not documented | - | open |
-| `$10` | word | (unnamed) | not documented | not documented | - | open |
+| `$08` | word | (unnamed) | `Race_SetupActor` (curve sample); `Race_HandleInputOnFoot`/movement; crash/action handlers | `sub_12414` indexes `Road_ShapeTable`; pair collision | `[static]` | road-shape index (name candidate) |
+| `$0A` | word | (unnamed) | `Race_SetupActor` (0); crash/action handlers | `sub_12414` (bit14 = flip) | `[static]` | full shape-flag bit map |
+| `$0C` | word | (unnamed) | `sub_113CA` (steering); `Race_SetupActor` (curve sample) | pair collision, crash impact, `sub_11CC8` -> `RaceBike_ram_CurrentSteering` | `[static]` | current steering/curve sample |
+| `$0E` | word | (unnamed) | `Race_UpdateActorFallMovement` | `sub_12414` (Y threshold) | `[static]` | fall-path Y threshold |
+| `$10` | word | (unnamed) | `Race_UpdateActorFallMovement` | `sub_12414` (Y offset) | `[static]` | fall-path Y offset |
 | `$12` | word | `RaceActor_Speed` | `Race_UpdateActorAI`, `Race_InitOpponent/TrafficActor`, impact | speed display, curve limit, AI | `[confirmed]` Player `$EE`, steering `$2D15` | - |
-| `$14` | word | `RaceActor_Acceleration` | `Race_UpdateActorSpeedState` | `Race_UpdateActorAI` | `[confirmed]` `$22` low speed, `$0E` at `$2D15` | gear-table branch coverage |
+| `$14` | word | `RaceActor_Acceleration` | `Race_UpdateActorSpeedState`, `sub_13BD8` | `Race_UpdateActorAI`, shadow update | `[confirmed]` `$22` low speed, `$0E` at `$2D15` | gear-table branch coverage |
 | `$16` | word | `RaceActor_Type` | `Race_CreateActors` | `Race_UpdateStaticActors`, speed state | `[confirmed]` 2/3/4; static anomaly | static `$16=0` after update |
 | `$18` | word | `RaceActor_Gear` | `Race_UpdateActorSpeedState` | `Race_UpdateActorSpeedState` | `[static]`; demo kept `0` | upshift condition |
-| `$1A` | word | (unnamed) | `Race_UpdateActorMovement/X`, `Race_SetupActor` | movement/curve math | `[dynamic]` `$31` vs `$30=$35` | exact previous-Y semantics |
+| `$1A` | word | (unnamed) | movement/fall start (`= $30`); `Race_SetupActor`; `Race_UpdateActorAI` restore | pair collision, `Race_ClampActorPairY`, `sub_12070` | `[static/dynamic]` `$31` vs `$30=$35` | previous road-relative Y (name candidate) |
 | `$1C` | word | `RaceActor_PreviousCollisionOffset` | movement backup from `$32` | `Race_ApplyCollisionImpact` | `[static]` | - |
 | `$1E` | long | `RaceActor_PreviousX` | `Race_UpdateActorX/Movement/FallMovement`, spawn setup | target scans, impact | `[confirmed]` `$04-$1E=$26` | - |
-| `$22` | word | (unnamed) | `Race_UpdateActorPairImpact` (adds `AttackOverlap`) | not documented | `[static]` | X/Y screen delta role |
-| `$24` | word | (unnamed) | not documented | not documented | `[dynamic]` zero under steering | open |
-| `$26` | long | `RaceActor_FrameDistance` | `Race_UpdateActorAI`, movement | movement | `[confirmed]` `Speed*FrameDelay` | - |
-| `$2A` | word | (unnamed) | `Race_ApplyCollisionImpact/Crash`, `sub_115C6` | impact/render | `[static/dynamic]` `$1C39`, `$223` | projection origin |
-| `$2C` | word | (unnamed) | `Race_ApplyCollisionImpact`, `sub_115C6` | impact | `[static]` | impact scale vs curve state |
-| `$2E` | word | (unnamed) | `Race_ApplyCollisionImpact`, `sub_115C6` | impact | `[static]` | speed-loss accumulator |
-| `$30` | word | `RaceActor_PosY` | movement clamp, `Race_SetupActor` | HUD/HInt, movement | `[dynamic]` `$A0`, hard-left `$FFEA` | - |
-| `$32` | word | `RaceActor_CollisionOffset` | collision path | pair collision | `[static]`; zero outside contact | - |
-| `$34` | word | (unnamed) | not documented | `Race_ApplyCrashImpact` (`>=3` test) | `[static]` | role |
-| `$36` | word | `RaceActor_RoadYTarget` | movement (`+= curve_step`) | Y clamp | `[static/dynamic]` `5` | target vs accumulator wording |
+| `$22` | word | (unnamed) | road-band clamp overshoot; `Race_HandleInputOnFoot`; `sub_113A4`/`sub_113CA`; pair impact (adds `AttackOverlap`) | applied to `$00` by `sub_113A4`/`sub_113CA`; `Race_AdjustActorTrackPositions` | `[confirmed]` E1-2: `$22 == d0`, then `$00 += d0` at `0x113C4` | - |
+| `$24` | word | (unnamed) | `Race_CreateActors` (0) | - | `[static]` write-only | unused/reserved |
+| `$26` | long | `RaceActor_FrameDistance` | `Race_UpdateActorAI`, movement | movement, impact | `[confirmed]` `Speed*FrameDelay` | - |
+| `$2A` | word | (unnamed) | `sub_115C6` | `sub_115C6`, impact/crash projection | `[static]`; `$1C39`, `$223` | exact projection term |
+| `$2C` | word | (unnamed) | movement (max curve); `sub_115C6`; `Race_SaveActorShadow` (`>>1`); setup/advance (0) | `sub_115C6`, impact | `[static]` | curve/impact scale semantics |
+| `$2E` | word | (unnamed) | `sub_115C6`; `Race_AdvanceActorProgress` (0) | `sub_115C6`; crash (`>=$2D`), `sub_12BD2` (`>=$1E`) | `[static]` | speed-loss accumulator |
+| `$30` | word | `RaceActor_PosY` | road-band clamp (AI/shadow); `Race_InitActorPositions`; `Race_SetupActor`; AI restore from `$1A` | movement start (-> `$1A`); `Race_HandleInputOnFoot`; collision/sprite projection | `[confirmed]` E1-1: `$30 = $00-$36` at `0x10FE4`; `$1A` keeps the previous frame | road-relative Y (`drawY - RoadYTarget`) |
+| `$32` | word | `RaceActor_CollisionOffset` | `sub_115C6` collision path | pair collision; copied to `$1C` | `[static]`; zero outside contact | - |
+| `$34` | word | (unnamed) | `Race_BuildActorObjectList` | shape selectors, `Race_ApplyCrashImpact` (`>=3`) | `[confirmed]` E1-3: signed bucket drives the selector; negative sets H-flip `$8000`; not steering | signed shape variant |
+| `$36` | word | `RaceActor_RoadYTarget` | movement (`+= curve_step`), fall (`-=`) | road-band clamp | `[confirmed]` E1-1/E1-4: accumulator; `$30 = $00-$36` | - |
 | `$38` | word | `RaceActor_CurveDelta` | movement | `sub_115C6` | `[static/dynamic]` `$22B` | - |
 | `$3A` | word | `RaceActor_CurveAccum` | movement | `sub_115C6` | `[static/dynamic]` `3` | - |
-| `$3C` | word | `RaceActor_CurveStep` | movement | `sub_115C6` | `[static/dynamic]` `0` | observed write-only |
+| `$3C` | word | `RaceActor_CurveStep` | `sub_115C6`; reset in `sub_13A26` | - | `[confirmed]` E1-4: write-only copy of `sub_115C6` input `d1` | - |
 | `$3E` | word | `RaceActor_Curve` | `Race_UpdateBikeCurve` | `Race_UpdateActorSpeedState` | `[static]` | limit branch coverage |
 | `$40` | word | `RaceActor_LeanCurve` | `Race_UpdateBikeCurve` | lean/curve math | `[static]` | - |
 | `$42` | word | `RaceActor_Lean` | `Race_UpdateBikeLean` | not documented | `[confirmed]` `±$49` | readers |
-| `$44` | word | (unnamed) | not documented | not documented | - | open |
-| `$46` | word | `RaceActor_CurveDirection` | `Race_SteerTowardTarget`, `Race_ClampActorY` | static action / clamp | `[dynamic]` `-$03` | sign convention |
-| `$48` | word | (unnamed) | not documented | not documented | - | open |
+| `$44` | word | (unnamed) | `sub_12BD2`, `sub_12C9A` | - | `[static]` write-only | unused/reserved |
+| `$46` | word | `RaceActor_CurveDirection` | `Race_SteerTowardTarget`, `Race_ClampActorY` | speed correction/road steering | `[dynamic]` `-$03` | sign convention |
+| `$48` | word | (unnamed) | - (VScroll `$48(a0)` only) | - | `[static]` not an actor field | unused for actors |
 | `$4A` | word | `RaceActor_CollisionExtent` | collision path | `Race_UpdateCollision` | `[dynamic]` `$0D`/`$0E` | - |
 | `$4C` | word | `RaceActor_CollisionExtentUpper` | `Race_GetCollisionExtent` | pair separation | `[static/dynamic]` | - |
 | `$4E` | word | `RaceActor_CollisionExtentLower` | `Race_GetCollisionExtent` | pair separation | `[static/dynamic]` | - |
@@ -97,13 +126,13 @@ guess.
 | `$52` | word | `RaceActor_AttackOverlap` | combat/attack | pair impact | `[dynamic]` `$42`/`$33` | - |
 | `$54` | word | `RaceActor_FallState` | `Race_ApplyFallKnockdown` | crash/fall path | `[static]` `$11` | player-specific delay? |
 | `$56` | word | `RaceActor_RespawnTimer` | `Race_CreateActors` (`$FFFF`), static updater | static update | `[static/dynamic]` | - |
-| `$58` | word | (unnamed) | not documented | not documented | - | open |
+| `$58` | word | (unnamed) | `Race_UpdateAnimation` (race_anim_audio) | `Race_BuildActorObjectList` copies to actor object `+8` | `[static]` | animation frame token |
 | `$5A` | word | `RaceActor_AttackCooldown` | combat | dispatcher | `[static]` | - |
 | `$5C` | word | `RaceActor_TileBase` | `Race_CreateActors`, `Race_SetupActor`, knockdown budget | animation/impact | `[confirmed]` Player `$A00 -> $507` | dual tile-base/health role |
 | `$5E` | word | (unnamed) | `Race_CreateActors` | sprite setup | `[static]` graphics `+$A` | exact sprite field |
 | `$60` | word | (unnamed) | `Race_CreateActors` | sprite setup | `[static]` graphics `+$C` | exact sprite field |
-| `$62` | word | (unnamed) | not documented | not documented | - | open |
-| `$64` | word | (unnamed) | not documented | not documented | - | open |
+| `$62` | long | (unnamed) | movement/advance (`= Race_ram_ProgressSnapshotB`) | not documented | `[static]` | late-race progress snapshot |
+| `$64` | word | (unnamed) | - (VScroll/object writers only) | - | `[static]` not an actor field | unused for actors |
 | `$66` | word | `RaceActor_Rating` | `Race_CreateActors`, `Race_RecycleActor` | spawn/init speed | `[confirmed]` def byte5*100 | recycle distance reuse |
 | `$68` | byte | `RaceActor_ControlFlags` | `Race_GetInput`, AI, impact, spawn | AI/movement/impact | `[confirmed]` bit6 active | bit0/4/5/7 split |
 | `$69` | byte | `RaceActor_StateFlags` | combat/AI | pair collision, dispatcher | `[confirmed]` attack bits; `$04` steering | bit0/1/7 split |
@@ -115,16 +144,91 @@ guess.
 | `$6F` | byte | `RaceActor_AnimFrame` | impact/animation | animation | `[dynamic]` | frame mapping |
 | `$70` | byte | `RaceActor_AnimTimer` | animation | animation | `[static]`; zero active | cadence |
 | `$71` | byte | `RaceActor_Index` | `Race_CreateActors` | target tables/standings | `[confirmed]` 0..15, static `$10/$11`, extra `$12` | - |
-| `$72` | byte | `RaceActor_AnimIndex` | `Race_SetupActorSprite` | animation | `[static/dynamic]` values 3/5 | - |
+| `$72` | byte | `RaceActor_AnimIndex` | `Race_SetupActorSprite` | animation/candidate buckets | `[static/dynamic]` values 3/5 | - |
 | `$73` | byte | `RaceActor_Palette` | `Race_CreateActors` | sprite attributes | `[confirmed]` | - |
 | `$74` | byte | `RaceActor_ActionProfile` | `Race_CreateActors` | action/profile tables | `[confirmed]` profiles 0..19 | static profile assignment |
 | `$75` | byte | `RaceActor_GraphicsIndex` | `Race_CreateActors` | curve limit / sprite setup | `[confirmed]` | - |
-| `$76` | byte | (unnamed) | not documented | not documented | - | open (`$77` is byte) |
+| `$76` | byte | (unnamed) | `Race_UpdateAnimation` (race_anim_audio) | `Race_BuildActorObjectList` (`btst #0`, `move.b`) | `[static]` | animation flag byte |
 | `$77` | byte | (unnamed) | `Race_CreateActors` (def byte4) | not documented | `[static]` | meaning (class/tier?) |
-| `$78` | byte | (unnamed) | `Race_ApplyCrashImpact` (`$1E` hold) | bike-curve timer use | `[static]` | timer vs state flag |
-| `$7A` | word | (unnamed) | not documented | not documented | - | open |
-| `$7C` | word | (unnamed) | not documented | not documented | - | open |
-| `$7E` | word | (unnamed) | not documented | not documented | `[dynamic]` zero | open |
+| `$78` | byte | (unnamed) | `Race_ApplyCrashImpact` (`$1E` hold); `Race_UpdateBikeCurve` | bike-curve timer use | `[static]` | timer vs state flag |
+| `$7A` | word | (unnamed) | - (VScroll writer only) | - | `[static]` not an actor field | unused for actors |
+| `$7C` | word | (unnamed) | - (rearview/VScroll buffer) | `Race_DrawRearviewMirror` (not an actor) | `[static]` not an actor field | unused for actors |
+| `$7E` | word | (unnamed) | - (VScroll writer only) | - | `[static]` not an actor field | unused for actors |
+
+## Experiment Pack E1 (residual L1 fields)
+
+At most five checks; run in `race_L1_actor_core_b.md`. Breakpoints are bare hex PC.
+
+```
+E1-1  $00 vs $30 draw-Y split
+Goal:        confirm $00 = absolute screen Y and $30 = drawY - RoadYTarget
+Scenario:    demo race, steering frames
+Breakpoint:  0x10FDE (after clamp, before neg d1)
+Commands:    p/x $ff1eaa+$00 ; p/x $ff1eaa+$30 ; p/x $ff1eaa+$36
+Report:      $00, $30, $36 and the instruction's d1
+Decision:    if $00-$36 == $30 -> confirmed; otherwise keep the $00/$30 row open
+
+E1-2  $22 Y-correction role
+Goal:        confirm $22 is applied to $00 by sub_113A4/sub_113CA
+Scenario:    pair contact / road-band overshoot
+Breakpoint:  0x10FDE
+Commands:    p/x $ff1eaa+$22 ; p/x $ff1eaa+$00
+Report:      $22 before/after and the $00 delta
+Decision:    if delta($00) == delta($22) -> confirmed
+
+E1-3  $34 shape variant
+Goal:        confirm $34 is the signed shape/lean selector consumed by the selectors
+Scenario:    lean left/right and a crash frame
+Breakpoint:  0x14486 (Race_ApplyCollisionImpact) and a Race_SelectActor*Shape entry
+Commands:    p/x $ff1eaa+$34 ; p/x $ff1eaa+$08 ; p/x $ff1eaa+$0A
+Report:      $34/$08/$0A and the selected shape pointer
+Decision:    if the selector uses $34 as an index/sign -> confirmed
+
+E1-4  $36-$3C accumulator roles
+Goal:        confirm $36 is an accumulator and $3C is write-only
+Scenario:    normal steering frames
+Breakpoint:  sub_115C6 entry (0x115C6)
+Commands:    p/x $ff1eaa+$36 ; p/x $ff1eaa+$38 ; p/x $ff1eaa+$3A ; p/x $ff1eaa+$3C
+Report:      the four words before/after the call
+Decision:    if only $38/$3A/$3C change and $36 changes elsewhere -> confirmed
+
+E1-5  d4 at Race_SetupActorSprite (U-0011)
+Goal:        find the value of d4 on the AI path and at spawn
+Scenario:    one AI frame and one opponent spawn
+Breakpoint:  0x13746 (Race_SetupActorSprite entry)
+Commands:    p/x $d4 ; p/x $ff1eaa+$30 ; p/x $ff1eaa+$72
+Report:      d4 and whether the extra candidate buckets are valid
+Decision:    if d4 is stable per-path -> close U-0011 as ambient-but-deterministic
+```
+
+
+## Experiment E1 results (dynamic)
+
+Runs: `analysis/capture_L1b_demo_survey.gdb`, `capture_L1b_fields.gdb`,
+`capture_L1b_shapes.gdb`, `capture_L1b_shape_sign.gdb`, `capture_L1b_d4.gdb`; traces in
+`analysis/notes/L1b_*`.
+
+| Check | Breakpoint / window | Observed | Decision |
+|---|---|---|---|
+| E1-1 `$00/$30/$36` | `0x10FDE`/`0x10FE4`, demo PlayerA | `d1 = $36-$00`; stored `$30 = $00-$36` (e.g. `$00=$FF57`, `$36=$FFEC`, `$30=$FF6B`) | confirmed |
+| E1-2 `$22` | `0x113C4`, demo PlayerA | `$22 == d0` before the add (`d0=$FFF6`); the next frame's `$00` moved by it | confirmed |
+| E1-3 `$34` | `0x101E6`/`0x1022C`/`0x10254`, demo | `$34=+1` -> flip 0; `$34=-1/-2` -> flip `$8000`; forced steering `±$600` left `$34=0` | confirmed |
+| E1-4 `$36-$3C` | `0x10F6C`/`0x115C6`, demo | `$36/$38/$3A` update inside movement; `$3C` receives `sub_115C6`'s `d1` and is never read | confirmed |
+| E1-5 `d4` | `0x13746`, full demo | 4169 calls, all AI path (`ret=0x10FE8`), `d4=0`; no spawn (`ret=0x16E24`) calls | AI path closed; spawn open |
+
+### Demo collision/crash survey
+
+A full 60 s demo (`capture_L1b_demo_survey.gdb`) counted the contact/crash entry points:
+
+- pair Y-overlap branch `0x127EA`: 9 hits, one involving `RacePlayerA`
+  (`a1=$FF1EAA`, `a2=$FF242A`);
+- object/static impact `0x14486`: 0 hits;
+- crash impact `0x11B7A`: 0 hits — it is gated on `DemoMode == 0`
+  (`race_ai.asm:227-236`), so the demo cannot enter the player crash path;
+- `Race_ApplyFallKnockdown` `0x14C3C`: 6 pair entries, none with `RacePlayerA`.
+
+Natural demo collisions therefore exist but are rare and never produce a player crash;
+crash/fall experiments need a non-demo run.
 
 ## Register-base and list warning
 
@@ -162,6 +266,11 @@ already used for them. New checks follow the Experiment Pack format in
 | Off-road transition | `0x10E66` after 300 forced-left frames: `$68` bit3, `$30/$36/$00` | hard curve vs off-road bit |
 | Road objects | running/`road_objects` dump: `$FFDE72` count, `Road_ObjectArray`, `Road_VisibleObjectList` | object count is `ram_FFDE72` (22 in the demo), not `Race_ram_TrackObjectCount` |
 | Pair impact | `0x14486` (`Race_ApplyCollisionImpact`): `$1C/$2A/$2C/$2E/$54/$5C` | impact/damage post-state; return breakpoint still TODO |
+| E1-1/E1-4 actor fields | `0x10FDE`/`0x10FE4`/`0x10F6C`/`0x115C6`, demo PlayerA | `$30 = $00-$36`; `$36` accumulator; `$3C` write-only |
+| E1-2 Y correction | `0x113C4`, demo PlayerA | `$22 = d0`, then `$00 += d0` |
+| E1-3 shape variant | `0x101E6`/`0x1022C`/`0x10254`, demo | signed `$34` -> shape index + H-flip |
+| E1-5 ambient `d4` | `0x13746`, full demo | 4169 AI-path calls, `d4=0`; no spawn |
+| Demo collision/crash | `0x127EA`/`0x14486`/`0x11B7A`/`0x14C3C`, full demo | 9 pair contacts (1 player), 0 crash/object, no player fall |
 | Static/extra actors | running dump: static `$16/$30/$46/$56/$74`; `$FF2FAA` `$71` | static layout anomaly vs extra slot activation |
 
 ## Tooling and validation
@@ -202,5 +311,7 @@ Observed on the checked-in dumps:
 | L6 | Camera -> road profile -> objects -> projection -> shapes -> render | may run in parallel after L1 |
 | L7 | HUD, animation data, standings/results/money/highscore | last |
 
-The next task after this map is `tasks/race_L1_actor_core_a.md` (field matrix v1 +
-Experiment Pack E1), per `tasks/race_understanding_program.md`.
+The L1 actor-core dynamic pass is complete (`tasks/race_L1_actor_core_b.md`): matrix v2
+integrates E1. The next task is `tasks/race_L2_control_a.md` (input -> speed/gear/lean/
+curve), per `tasks/race_understanding_program.md`. `U-0011` remains open only for the
+spawn path, which needs a normal-mode/traffic run.

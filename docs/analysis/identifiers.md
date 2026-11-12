@@ -426,3 +426,32 @@ uses. It exists so later analysis can decide whether a rename is worth doing.
 | `Race_ram_SpriteDestination` | RAM | `ram_const.asm:639 ($FFDE5C)` | endlevel/race: sprite destination tile base (`$8680`/`$C680` parity) | narrow | `[static]` | keep | - | medium | - |
 | `EndLevel_ram_AnimFrame` | RAM | `ram_const.asm:90 ($FF0D22)` | endlevel: animation frame; `-1` ends the stage | good | `[static]` | keep | - | high | - |
 | `EndLevel_ram_SpriteSwapDelay` | RAM | `ram_const.asm:91 ($FF0D24)` | endlevel: swap countdown; reload 5 gives a 6-GameTick DMA period | good | `[static]` | keep | - | high | - |
+| `Race_InitActorLists` | routine | `race_core.asm:1160 ($B6C4)` | race_core: build ram_FF1A08 (PlayerA+Struct_9..15) and the 7-entry opponent free list | good | `[static]` | keep | - | high | - |
+| `Race_InitActorPositions` | routine | `race_core.asm:1201 ($B72A)` | race_core: initial $00/$04/$1A/$1E/$30 for the 8 AI-loop actors | good | `[static]` | keep | - | high | - |
+| `Race_CreateActors` | routine | `race_core.asm:2728 ($CAD0)` | race_core: definition/ID list -> player/opponent structs, static group, extra index $12 | good | `[static]` | keep | - | high | - |
+| `Race_ActivateActor` | routine | `race_spawn.asm:444 ($16D0A)` | race_spawn: append actor to Race_ram_ActiveActorList, count++ | good | `[static]` | keep | - | high | - |
+| `Race_RemoveActiveActor` | routine | `race_spawn.asm:584 ($16E26)` | race_spawn: shift the active list, count-- | good | `[static]` | keep | - | high | - |
+| `Race_PushFreeActor` | routine | `race_spawn.asm:614 ($16E48)` | race_spawn: push a1 onto the free list at a2 (count at +0, pointers at +2) | good | `[static]` | keep | - | high | - |
+| `Race_PopFreeActor` | routine | `race_spawn.asm:634 ($16E54)` | race_spawn: pop a free actor; $FFFFFFFF when empty | good | `[static]` | keep | - | high | - |
+| `Race_RecycleActor` | routine | `race_spawn.asm:404 ($16CAE)` | race_spawn: first-opponent level transition or traffic free push; $66 = X/scale | narrow | `[static]` | keep | - | high | - |
+| `Race_RecycleOpponent` | routine | `race_spawn.asm:382 ($16C9A)` | race_spawn: push to opponent free list and remove from active | good | `[static]` | keep | - | high | - |
+| `Race_InitOpponentActor` | routine | `race_spawn.asm:469 ($16D2A)` | race_spawn: place opponent $200000 ahead, Speed=rating, setup, curve clamp | good | `[static]` | keep | - | high | - |
+| `Race_InitTrafficActor` | routine | `race_spawn.asm:499 ($16D60)` | race_spawn: place traffic $100000 behind, set PreviousX, Speed=rating, setup, clamp | good | `[static]` | keep | - | high | - |
+| `Race_SetupActor` | routine | `race_spawn.asm:534 ($16D9A)` | race_spawn: curve sample -> $08/$0C, reset flags/fields, $30 abs -> $1A/$00, sprite setup | good | `[static]` | keep | - | high | - |
+| `Race_ApplyActorRating` | routine | `race_spawn.asm:346 ($16C4E)` | race_spawn: opponent id -> definition byte5*100 -> $66 (dead `a0` load) | good | `[static]` | keep | - | high | - |
+| `Race_UpdateActorShadow` | routine | `race_ai.asm:1145 ($1180C)` | race_ai: advance the shadow copy (accel/speed/movement), clamp shadow X to ±$A0000 | good | `[static]` | keep | - | high | - |
+| `Race_SaveActorShadow` | routine | `race_ai.asm:1251 ($11906)` | race_ai: copy $80 bytes to the shadow, `$2C>>=1`, ram_FF176A=1 | good | `[static]` | keep | - | high | - |
+| `Race_SetupActorSprite` | routine | `race_ai.asm:4259 ($13746)` | race_ai: AnimIndex from Y, register up to 3 target-candidate buckets; uses ambient d4 (E1: `d4=0` on the AI path; spawn path open) | good | `[static]/[dynamic]` | keep | - | high | `U-0011` |
+| `Race_GetActorDistance` | routine | `race_spawn.asm:262 ($16BC8)` | race_spawn: Rating($66) * ActorDistanceScale >> 16 | good | `[static]` | keep | - | high | - |
+| `Race_ActorList` | data | `race_actor_tables.asm:10 ($25856)` | race_core: PlayerA, ram_FF1F2A, Struct_2..15, sentinel | good | `[static]` | keep | - | high | - |
+| `Race_ActorListMid` | data | `race_actor_tables.asm:13 ($2585E)` | race_core: free-opponent sub-list Struct_2..15 + sentinel | good | `[static]` | keep | - | high | - |
+| `Race_StaticActorList` | data | `race_actor_tables.asm:31 ($2589A)` | race_core: static actor slots $FF2EAA/$FF2F2A + sentinel | good | `[static]` | keep | - | high | - |
+| `Race_ActorShadowTable` | data | `race_actor_tables.asm:44 ($258AE)` | race_ai: 16 shadow pointers indexed by +$71; entries 2/9 are swapped slots | narrow | `[static]` | keep | - | high | - |
+| `Race_ActorGraphicsTable` | data | `race_actor_tables.asm:51 ($258EE)` | race_core: 10 graphics records selected by definition graphics index | good | `[static]` | keep | - | high | - |
+| `Race_ActorLevelBase` | data | `race_core.asm:2854 ($CCD0)` | race_core: first opponent id per level (0/15/30/45/60) | good | `[static]` | keep | - | high | - |
+| `Race_ActorDefinitionTable` | data | `race_core.asm:2860 ($CCDA)` | race_core: 76 x 16-byte actor definitions + Player def | good | `[static]` | keep | - | high | - |
+| `ram_FF1A08` | RAM | `ram_const.asm:244 ($FF1A08)` | race_core/ai: AI-loop actor pointer list (8 entries: PlayerA + 7 opponents) | narrow | `[static]` | rename-later | `Race_ram_AiActorList` | medium | - |
+| `Race_ram_ActiveActorList` | RAM | `ram_const.asm` (`$FF1A0C`) | race_spawn/ai: active opponent list (starts one pointer into ram_FF1A08) | good | `[static]` | keep | - | high | - |
+| `Race_ram_ActiveActorCount` | RAM | `ram_const.asm` (`$FF1A06`) | race_spawn/ai: active count including PlayerA (8 at init) | good | `[static]` | keep | - | high | - |
+| `Race_ram_OpponentFreeList` | RAM | `ram_const.asm` (`$FF1982`) | race_spawn: 7-entry free opponent list (count at +0) | good | `[static]` | keep | - | high | - |
+| `Race_ram_TrafficFreeList` | RAM | `ram_const.asm` (`$FF19C4`) | race_spawn: traffic free list; empty at init | good | `[static]` | keep | - | high | - |
