@@ -26,6 +26,7 @@ symbol/row and read only that slice.
 
 | File | When to read |
 |---|---|
+| `analysis/acceptance.md` | Race-subsystem acceptance record: criteria, waivers, verification. |
 | `analysis/animation.md` | Sprite animation state/data and related helpers. |
 | `analysis/assets.md` | Asset split/render pipeline and preview status. |
 | `analysis/asset_verification.md` | Verify extracted assets against ROM/runtime dumps. |

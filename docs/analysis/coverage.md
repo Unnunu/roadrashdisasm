@@ -25,10 +25,10 @@ Legend: `[x]` done, `[~]` partial, `[ ]` not started.
 | Boot/runtime/IRQ/input | `main`, `top_level`, `fade` | [x] | [~] | [~] | [~] | HInt/input helper semantics, state transitions |
 | Logo/intro | `logoEA`, `intro` | [x] | [~] | [~] | [~] | exact title visuals/timing |
 | Menus/screens | `menu_*`, `message`, `shop`, `highscore`, `endlevel`, `race_results`, `rider_intro` | [x] | [~] | [~] | [~] | non-demo captures; shop layout user-described |
-| Race core/HUD/spawn | `race_core`, `race_hud*`, `race_spawn` | [x] | [~] | [~] | [~] | L1/L2 (E1/E2), R30 (v5), L5 (E5), L7 (E7, v9) and U-0017 done: four populations, `Data5` split, reserved opponent, static respawn, extra slot; stamina regen/baseline; HUD cells/needle/odometer, standings/results/money and crash-script selection confirmed |
-| Actor AI/movement/combat | `race_ai`, `race_combat`, `race_anim_audio` | [x] | [~] | [~] | [~] | L2 (E2), R30 (v5), L3 (E3, v6) and L4 (E4, v7) done: target/scan/dispatch, `$74` pages/families, budget, static action table, pair collision/extent/reach, damage/exchange, stamina/knockdown; crash-handler timing static |
-| Physics/collision/road marking | `race_physics`, `road_marking` | [x] | [~] | [~] | [~] | L6a camera/VScroll/HScroll done (E6, v10); U-0018 compaction closed (v13); L6b actor/object projection (v11); rearview and marking/table visuals remain |
-| Road render/shapes | `road_render`, `road_shapes` | [x] | [x] | [~] | [~] | L6b object/visible-list + projection (v11); L6c shape/control/interpolator/tile-writer pixel map + Data4 bits (v12/E8); remaining: shape-art catalogue and visual crop |
+| Race core/HUD/spawn | `race_core`, `race_hud*`, `race_spawn` | [x] | [x] | [~] | [~] | Accepted (`analysis/acceptance.md`): L1/L2 (E1/E2), R30 (v5), L5 (E5), L7 (E7, v9), U-0017; four populations, `Data5` split, reserved opponent, static respawn, extra slot; stamina regen/baseline; HUD cells/needle/odometer, standings/results/money and crash-script selection confirmed |
+| Actor AI/movement/combat | `race_ai`, `race_combat`, `race_anim_audio` | [x] | [x] | [~] | [~] | Accepted (`analysis/acceptance.md`): L2 (E2), R30 (v5), L3 (E3, v6), L4 (E4, v7); target/scan/dispatch, `$74` pages/families, budget, static action table, pair collision/extent/reach, damage/exchange, stamina/knockdown; crash-handler timing waived (R-06) |
+| Physics/collision/road marking | `race_physics`, `road_marking` | [x] | [x] | [~] | [~] | Accepted (`analysis/acceptance.md`): L6a camera/VScroll/HScroll (E6, v10); U-0018 compaction closed (v13); L6b actor/object projection (v11); rearview/marking visuals remain out of scope |
+| Road render/shapes | `road_render`, `road_shapes` | [x] | [x] | [~] | [~] | Accepted (`analysis/acceptance.md`): L6b object/visible-list + projection (v11); L6c shape/control/interpolator/tile-writer pixel map + Data4 bits (v12/E8); remaining: shape-art catalogue and visual crop (out of scope) |
 | Track/data formats | `track_data`, `race_track_data`, `race_*_tables`, `race_misc_data` | [x] | [~] | [~] | [~] | stream/channel/table field meanings |
 | Decompression | `uncompress` | [x] | [x] | [~] | [~] | remaining edge cases |
 | Audio (separate) | raw bridge, `z80_driver` | [~] | [~] | [ ] | [ ] | Z80 driver, sequencer, sound data |
@@ -59,12 +59,12 @@ Priority is analytical impact, not address order.
 
 - [x] Phase 0: coverage baseline and work queue.
 - [ ] Phase 1: runtime, IRQ, input, RAM ownership.
-- [~] Phase 2: race simulation semantics (targeting/speed/collision/impact/spawn-L5 done; movement residual).
-- [x] Phase 3: road/render and data formats (Data2..6 mapped; L6a camera/HInt, L6b object/projection/visible-list and L6c shape/pixel/Data4 map done; only visual catalogues remain).
+- [x] Phase 2: race simulation semantics accepted (`analysis/acceptance.md`); residual dynamic samples waived.
+- [x] Phase 3: road/render and data formats (Data2..6 mapped; L6a camera/HInt, L6b object/projection/visible-list and L6c shape/pixel/Data4 map done; only optional visual catalogues remain).
 - [~] Phase 4: screens and visual confirmation (flow mapped; non-demo/visual captures pending).
 - [ ] Phase 5: audio/Z80, separate.
 - [ ] Phase 6: asset tail catalogue.
-- [ ] Phase 7: consolidation and acceptance.
+- [x] Phase 7: race-subsystem consolidation and acceptance (`analysis/acceptance.md`); non-race phases remain open.
 
 ## Acceptance criteria
 
@@ -75,3 +75,4 @@ Priority is analytical impact, not address order.
 - Every screen has state machine, inputs, and dynamic evidence.
 - Audio has its own acceptance spec; it does not block non-audio completion.
 - `./build.sh` stays `Matched OK` after every batch.
+- Race-subsystem acceptance: `analysis/acceptance.md` (A1-A7 pass; residuals waived).

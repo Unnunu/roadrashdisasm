@@ -1,11 +1,12 @@
 # Program: complete race understanding
 
-Status: in progress. L1, L2, R30, L3, L4, L5, L7, L6a (camera/progress/VScroll/HScroll),
-L6b (object list/projection/visible list) and L6c (shape/pixel map, Data4 bits, E8) are
-complete, and the residual pass closed `U-0017` (stamina regen) and `U-0018` (VScroll
-compaction). The L6 world branch is closed; what remains is the acceptance/visual
-branch and the separate audio workstream. This file is the roadmap, not a build task;
-the queue below lists what remains.
+Status: complete for the race scope. L1, L2, R30, L3, L4, L5, L7, L6a
+(camera/progress/VScroll/HScroll), L6b (object list/projection/visible list) and L6c
+(shape/pixel map, Data4 bits, E8) are complete, and the residual pass closed `U-0017`
+(stamina regen) and `U-0018` (VScroll compaction). The L6 world branch is closed and
+`race_acceptance.md` accepted the subsystem (`docs/analysis/acceptance.md`, matrix v13).
+The visual catalogue, asset tail and audio workstream are separate follow-ups. This
+file is the roadmap, not a build task; the queue below is kept for orientation.
 
 ## Goal
 
@@ -320,12 +321,33 @@ bodies and tables, so those tasks are now contract/dynamic work, not disassembly
 | 13 | `race_L6_world_a.md` | L6 | done | camera/progress/VScroll/HScroll; matrix v10 + E6 |
 | 14 | `race_L6_world_b.md` | L6 | done | object-record assembly, four projection helpers, track stream, visible-list sort/draw (matrix v11) |
 | 15 | `race_L6_world_c.md` | L6 | done | shape header/control/offset lists + byte-exact tile-writer pixel map, Data4 side/pair/pass-count bits (matrix v12 + E8) |
-| 16 | `race_acceptance.md` | I | verify | acceptance criteria, `Matched OK` |
+| 15b | `race_residual_unknowns.md` | L1/L4/L6 | done | `U-0017` stamina regen + `U-0018` VScroll compaction closed; matrix v13 |
+| 16 | `race_acceptance.md` | I | done | acceptance audit (`docs/analysis/acceptance.md`), matrix v13, documented residuals, `Matched OK` |
 
 L1-L5/L7 and the L6a/L6b/L6c world branch are complete. Experiment Pack E7 was used
 by L7; L6a used E6 and L6c used E8; the residual pass closed `U-0017`/`U-0018`
-(`race_residual_unknowns.md`). Remaining: optional visual catalogues/crops, the
-asset-tail catalogue and the separate audio workstream.
+(`race_residual_unknowns.md`). `race_acceptance.md` completed the race-scope
+acceptance; A1-A7 pass and all residuals are waived in `docs/analysis/acceptance.md`.
+Remaining work is outside the race scope (visual catalogues, asset tail, audio,
+non-race screens, rename batch).
+
+### Acceptance scope
+
+The acceptance audit covers the race subsystem only (`src/race/*`, `src/data/race_*`).
+Exit criteria are the list in "Acceptance criteria" below plus a documented waiver for
+every residual. The following are explicitly **outside** the race acceptance and keep
+their own workstreams:
+
+- visual catalogues/crops: shape art, rearview/marking appearance, race-card layout;
+- asset-tail catalogue (`rom_assets` identification/bounds/consumers);
+- audio/Z80 driver, sequencer and sound data;
+- non-race screens (menus/shop/highscore/endlevel) line-by-line status.
+
+Known race-scope residuals must be recorded in `docs/analysis/acceptance.md` with an
+evidence tag and a "blocks acceptance?" verdict: `Race_TrackObjectTypeTable` byte `+1`,
+`unk_155D0` script labels, L2 TP2/TP3 and `$40`, L3 action3-cooldown/`$69` bit4,
+R30 crash timing (static), L5 reserved/extra visual roles and natural traffic respawn,
+L7 gear-curve/RPM scaling and odometer-font art.
 
 ## Experiment Pack format
 
