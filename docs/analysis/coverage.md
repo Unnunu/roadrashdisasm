@@ -26,7 +26,7 @@ Legend: `[x]` done, `[~]` partial, `[ ]` not started.
 | Logo/intro | `logoEA`, `intro` | [x] | [~] | [~] | [~] | exact title visuals/timing |
 | Menus/screens | `menu_*`, `message`, `shop`, `highscore`, `endlevel`, `race_results`, `rider_intro` | [x] | [~] | [~] | [~] | non-demo captures; shop layout user-described |
 | Race core/HUD/spawn | `race_core`, `race_hud*`, `race_spawn` | [x] | [~] | [~] | [~] | L1/L2 done (matrix v4, E1/E2, `U-0011` closed); R30 integration done (v5); HUD/spawn dynamics pending |
-| Actor AI/movement/combat | `race_ai`, `race_combat`, `race_anim_audio` | [x] | [~] | [~] | [~] | L2 static+dynamic (E2) and R30 integration done (matrix v5): crash/fall contracts, `$08/$0E/$10/$3C/$78` corrected, `U-0012`..`U-0016` closed; L3/L4 dynamics next |
+| Actor AI/movement/combat | `race_ai`, `race_combat`, `race_anim_audio` | [x] | [~] | [~] | [~] | L2 static+dynamic (E2), R30 integration (matrix v5) and L3 static contracts done: target/scan/dispatch, `$74` pages/families, static action table; E3 + L4 dynamics next |
 | Physics/collision/road marking | `race_physics`, `road_marking` | [x] | [~] | [~] | [~] | table offsets, visual confirmation |
 | Road render/shapes | `road_render`, `road_shapes` | [x] | [~] | [~] | [~] | shape row bytes, interpolation/projection |
 | Track/data formats | `track_data`, `race_track_data`, `race_*_tables`, `race_misc_data` | [x] | [~] | [~] | [~] | stream/channel/table field meanings |
@@ -44,7 +44,7 @@ Priority is analytical impact, not address order.
 |---|---|---|---|---|
 | 1 | `Race_UpdateActorPairCollision`, `sub_12070`, `sub_12414`, `sub_11CC8` | `$32/$4C/$4E/$56`, side-extent mapping | **done:** `$4C` upper / `$4E` lower by Y ordering (forced pair trace); `$32` offset; `$56` timer TODO | collision contract + field matrix |
 | 2 | `Race_UpdateActorSpeedState`, `Race_UpdateActorSpeedGear` | **done:** static L2 contract + E2 dynamic (`$18` word, `+E`/`+1A` thresholds, same-call oscillation, max-gear `-5`, off-road `$14>>2`) | `race_speed.md` | speed/gear contract |
-| 3 | `Race_FindTargetActor`, `Race_SaveActorShadow` | **done:** candidate buckets, ratio scan, shadow role; L1 matrix v2 closes the struct/list/shadow ownership (E1 integrated) | target contract documented | `race_ai.md`, `race_map.md` |
+| 3 | `Race_FindTargetActor`, `Race_UpdateActorActions`, `Race_DispatchActorAction` | **done static:** candidate bucket/scan, profile choice (`$74` pages/families), budget `ram_FF1A96/98`, dispatcher slots; residual dynamic checks are E3 | run E3 in `race_L3_ai_dynamic.md` | `race_ai.md`, `race_map.md` |
 | 4 | `Race_UpdateActorMovement/FallMovement`, `sub_115C6`, `sub_11A5E` | **done:** E1 closed `$36` accumulator, `$38/$3A` movement updates; R30 closed `$3C` (write-only step, not a timer) and `$0E/$10` (write-only advance/index) | fall/movement edge coverage | movement matrix v5 |
 | 5 | `Race_GetCurveSpeedLimit`, `Race_UpdateBikeCurve`, `Race_UpdateLeanCurve` | **done:** formulas + table decode + E2-2/E2-3 (`$42/$0C` sign, `$3E=(limit<<8)/(d0>>8)`; TP0 dynamic, TP2/TP3 static); R30 corrected `$78`: armed by the fall handlers, so `word_14742` is reachable | `race_speed.md` | speed/curve contract |
 | 6 | Road render helpers: `Race_ProjectObject`, `Race_ProjectActorObject`, `Road_DrawStrip`, `Road_WriteTileColumns` | exact row/tile mapping | **progress:** shape record layout + row start confirmed; SAT/VSRAM next | render/shape doc |

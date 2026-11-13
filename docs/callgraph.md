@@ -323,13 +323,13 @@ flowchart LR
 | `sub_12BD2` | `0x12BD2` | `Race_AdvanceActorProgress`, `Race_UpdateActorAI` | `Race_SaveActorShadow`, `sub_12CCE`, `sub_15538`, `sub_1555C` |
 | `sub_12C9A` | `0x12C9A` | `Race_UpdateStaticActors` | - |
 | `sub_12CCE` | `0x12CCE` | `sub_12BD2` | - |
-| `Race_UpdateActorActions` | `0x12EA2` | `Race_Update` | `Race_RecycleActor`, `Race_RecycleOpponent`, `Race_UpdateActorSpeedState` |
-| `Race_ActorStateCollision` | `0x12FE4` | - | `Race_UpdateActorSpeedCurve`, `Race_UpdateActorSpeedState` |
-| `Race_ActorFollowPath` | `0x13004` | - | `Race_UpdateActorSpeedCurve`, `Race_UpdateActorSpeedGear` |
+| `Race_UpdateActorActions` | `0x12EA2` | `Race_Update` | `Race_RecycleActor`, `Race_RecycleOpponent`, `Race_UpdateActorSpeedState`, `Race_ActorProfileTable` -> `Race_ActorActionTable` (indirect `jsr (a6)`) |
+| `Race_ActorStateCollision` | `0x12FE4` | `Race_ActorActionTable` (indirect profile slot) | `Race_UpdateActorSpeedCurve`, `Race_UpdateActorSpeedState` |
+| `Race_ActorFollowPath` | `0x13004` | `Race_ActorActionTable` (indirect profile slot) | `Race_UpdateActorSpeedCurve`, `Race_UpdateActorSpeedGear` |
 | `Race_ActorNormalUpdate` | `0x1300E` | `Race_ActorRecovery` | `Race_FindTargetActor`, `Race_GetCurveSpeedLimit`, `Race_UpdateActorRoadSteering`, `Race_UpdateActorSpeedCurve`, `Race_UpdateActorSpeedState`, `sub_13D44` |
-| `Race_ActorNormalVariant` | `0x1307C` | - | `Race_FindTargetActor`, `Race_UpdateActorRoadSteering`, `Race_UpdateActorSpeedCurve`, `Race_UpdateActorSpeedGear`, `sub_13D44` |
-| `Race_ActorRecovery` | `0x130D2` | - | `Race_ActorNormalUpdate` |
-| `Race_UpdateStaticActions` | `0x13106` | `Race_Update` | - |
+| `Race_ActorNormalVariant` | `0x1307C` | `Race_ActorProfileTable[0]+4` (indirect; profile-0 player always takes base -> table slot unreachable) | `Race_FindTargetActor`, `Race_UpdateActorRoadSteering`, `Race_UpdateActorSpeedCurve`, `Race_UpdateActorSpeedGear`, `sub_13D44` |
+| `Race_ActorRecovery` | `0x130D2` | `Race_ActorProfileTable[1]` (indirect) | `Race_ActorNormalUpdate` |
+| `Race_UpdateStaticActions` | `0x13106` | `Race_Update` | `Race_StaticActionTable` (indirect) |
 | `Race_UpdateActorSpeedGear` | `0x131BE` | `Race_ActorAttackIfClose`, `Race_ActorCollideSteer`, `Race_ActorCombatResponse`, `Race_ActorFollowPath`, `Race_ActorNormalVariant`, `Race_ActorProximityReaction`, `Race_ActorPursueAttack`, `Race_ActorSteerRoadCenter` | `Race_GetCurveSpeedLimit`, `Race_UpdateActorSpeedState` |
 | `Race_UpdateActorChase` | `0x13292` | `Race_ActorEvadePlayer` | `Race_GetCurveSpeedLimit`, `Race_UpdateActorSpeedState` |
 | `Race_ApplyActorSpeedCorrection` | `0x1333C` | `Race_ActorAttackIfClose`, `Race_ActorCollideSteer`, `Race_ActorCombatResponse`, `Race_ActorEvadePlayer`, `Race_ActorProximityReaction`, `Race_ActorPursueAttack` | `Race_ScaleActorSpeed` |
@@ -402,19 +402,19 @@ flowchart LR
 | `Race_UpdateNearestTarget` | `0x1611A` | `Race_Update` | `Race_TriggerArmedAttackSfx`, `Race_UpdatePlayerAttack`, `sub_14FB4` |
 | `Race_UpdatePlayerAttack` | `0x162B0` | `Race_UpdateNearestTarget` | - |
 | `sub_1634E` | `0x1634E` | - | `Race_UpdateActorSpeedState` |
-| `Race_DispatchActorAction` | `0x16458` | - | `Race_FindTargetActor`, `Race_UpdateAttackPhase`, `sub_13D44` |
+| `Race_DispatchActorAction` | `0x16458` | `Race_ActorProfileTable` slot+4 (indirect) | `Race_FindTargetActor`, `Race_UpdateAttackPhase`, `sub_13D44` |
 | `Race_TriggerArmedAttackSfx` | `0x16520` | `Race_UpdateAttackPhase`, `Race_UpdateNearestTarget` | - |
 | `Race_UpdateAttackPhase` | `0x16548` | `Race_DispatchActorAction` | `Race_TriggerArmedAttackSfx` |
-| `Race_ActorSteerRoadCenter` | `0x165D0` | - | `Race_UpdateActorRoadSteering`, `Race_UpdateActorSpeedGear` |
+| `Race_ActorSteerRoadCenter` | `0x165D0` | `Race_ActorActionTable` (indirect profile slot) | `Race_UpdateActorRoadSteering`, `Race_UpdateActorSpeedGear` |
 | `Race_ActorSteerThrottle` | `0x165E0` | `Race_ActorSteerCollide` | `Race_UpdateActorRoadSteering`, `Race_UpdateActorSpeedState` |
 | `Race_ActorCollideSteer` | `0x16612` | `Race_ActorAttackIfClose`, `Race_ActorRandomCombatChoice` | `Race_ApplyActorSpeedCorrection`, `Race_UpdateActorSpeedGear`, `Race_UpdateCollision` |
-| `Race_ActorSteerCollide` | `0x16624` | - | `Race_ActorSteerThrottle`, `Race_UpdateCollision` |
+| `Race_ActorSteerCollide` | `0x16624` | `Race_ActorActionTable` (indirect profile slot) | `Race_ActorSteerThrottle`, `Race_UpdateCollision` |
 | `Race_ActorRandomCombatChoice` | `0x1662C` | `Race_ActorProximityReaction` | `Race_ActorCollideSteer`, `Race_ActorPursueAttack`, `Rand_NextWord` |
-| `Race_ActorProximityReaction` | `0x16644` | - | `Race_ActorRandomCombatChoice`, `Race_ApplyActorSpeedCorrection`, `Race_UpdateActorSpeedGear` |
+| `Race_ActorProximityReaction` | `0x16644` | `Race_ActorActionTable` (indirect profile slot) | `Race_ActorRandomCombatChoice`, `Race_ApplyActorSpeedCorrection`, `Race_UpdateActorSpeedGear` |
 | `Race_ActorPursueAttack` | `0x1666A` | `Race_ActorRandomCombatChoice` | `Race_ApplyActorSpeedCorrection`, `Race_UpdateActorRoadSteering`, `Race_UpdateActorSpeedGear` |
-| `Race_ActorAttackIfClose` | `0x166B0` | - | `Race_ActorCollideSteer`, `Race_ApplyActorSpeedCorrection`, `Race_UpdateActorSpeedGear` |
-| `Race_ActorEvadePlayer` | `0x166DC` | - | `Race_ApplyActorSpeedCorrection`, `Race_UpdateActorChase` |
-| `Race_ActorCombatResponse` | `0x166F0` | - | `Race_ApplyActorSpeedCorrection`, `Race_FindTargetActor`, `Race_UpdateActorSpeedCurve`, `Race_UpdateActorSpeedGear`, `Race_UpdateCollision` |
+| `Race_ActorAttackIfClose` | `0x166B0` | `Race_ActorActionTable` (indirect profile slot) | `Race_ActorCollideSteer`, `Race_ApplyActorSpeedCorrection`, `Race_UpdateActorSpeedGear` |
+| `Race_ActorEvadePlayer` | `0x166DC` | `Race_ActorProfileTable[1]+$10` (indirect) | `Race_ApplyActorSpeedCorrection`, `Race_UpdateActorChase` |
+| `Race_ActorCombatResponse` | `0x166F0` | `Race_ActorActionTable` (indirect profile slot) | `Race_ApplyActorSpeedCorrection`, `Race_FindTargetActor`, `Race_UpdateActorSpeedCurve`, `Race_UpdateActorSpeedGear`, `Race_UpdateCollision` |
 | `Race_UpdateCollision` | `0x16732` | `Race_ActorCollideSteer`, `Race_ActorCombatResponse`, `Race_ActorSteerCollide` | - |
 | `UpdateAnimation` | `0x16860` | `RaceHud_DrawRPMArrow`, `RaceHud_DrawSpeedArrow` | - |
 | `UpdateAnimation2` | `0x16926` | `EndLevel_UpdateAnimation` | - |

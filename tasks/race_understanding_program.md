@@ -1,8 +1,9 @@
 # Program: complete race understanding
 
-Status: in progress. L1 and L2 (static + dynamic) and the R30 gap disassembly are
-complete. Next stage: fold R30 into the matrix (`race_R30_integration.md`), then L3.
-This file is the roadmap, not a build task; the queue below lists what remains.
+Status: in progress. L1 and L2 (static + dynamic), the R30 gap disassembly and the
+R30 integration are complete. L3 static contracts are complete (E3 pack written);
+next is the L3 dynamic pass (`race_L3_ai_dynamic.md`). This file is the roadmap, not
+a build task; the queue below lists what remains.
 
 ## Goal
 
@@ -83,6 +84,31 @@ crashed pre-run was not reused.
 Residual L2 `[static]` items to carry into R30/L3: TP2/TP3 selection and `$40`
 LeanCurve.
 
+## L3 static results (contracts, E3 pack)
+
+`race_L3_ai_contracts.md` completed as a docs-only pass; `race_map.md` has the L3
+addendum and Experiment Pack E3.
+
+- Frame order: `sub_1383E` clears candidate counts; `Race_UpdateActorAI` moves actors
+  and registers candidates; `Race_UpdateStaticActors` registers static actors;
+  `Race_UpdateActorActions`/`Race_UpdateStaticActions` dispatch afterwards.
+- Target pipeline: `SetupActorSprite`/`BuildTargetCandidates` ->
+  `AddTargetCandidate` -> `FindTargetActor`/`ScanTargetDistance` ->
+  `UpdateActorSpeedCurve` -> `SteerTowardTarget`/`UpdateActorRoadSteering`.
+  Buckets are Y bands (`unk_12D0A` = `-$A0..$A0` step `$40`), not actor types.
+- `$74` assignment: player 0; opponents from definition byte1 (1..18); static
+  respawn random nibble (0..15). Profiles 17/19 are never assigned. The five
+  behaviour families are decoded (`+8` FollowPath vs StateCollision, `+C`
+  Throttle vs RoadCenter, `+10` combat action).
+- `ram_FF1A96` = `[2,3,3,3,4]` per-level dispatch budget; `ram_FF1A98` counts the
+  actors that took the `+4` slot per frame.
+- `Race_StaticActionTable` = 16 `handler/speed/Y-offset` entries; `sub_138CE` uses
+  the pair at respawn, `Race_UpdateStaticActions` uses only the handler.
+- Dispatcher slot offsets corrected: `+0` action0, `+4` action1 (dispatch),
+  `+8` action2, `+C` action3, `+10` action4; `a4` at dispatcher entry is slot+4.
+- Next: run E3 (candidate registration, profile slot/budget, dispatcher branches,
+  per-level budget, static respawn values) and integrate into matrix v6.
+
 ## Out of scope
 
 - Audio/Z80 and the engine-audio mapping (separate workstream). Only the RAM fields
@@ -154,7 +180,7 @@ are not evidence until the base register is identified.
 | `tools/address_refs.py`, `tools/disasm.py`, `tools/roundtrip.py` | Static xrefs and validated disassembly | exists |
 | `tools/road_shapes.py` | Shape data split | exists; decoder extension in L6 |
 | `analysis/*.gdb` | Existing capture scripts | exists; reuse, do not duplicate blindly |
-| `docs/analysis/race_map.md` | Dataflow, timeline, field matrix, capture matrix, study order | exists (matrix v3) |
+| `docs/analysis/race_map.md` | Dataflow, timeline, field matrix, capture matrix, study order | exists (matrix v5 + L3 addendum) |
 
 ## Session organization
 
@@ -173,7 +199,7 @@ One session = one task file from `tasks/_template.md`.
 
 ## Session queue (orientation, not fixed)
 
-Rows 0-5 are complete and kept for orientation. R30 disassembled the L3/L4 handler
+Rows 0-7 are complete and kept for orientation. R30 disassembled the L3/L4 handler
 bodies and tables, so those tasks are now contract/dynamic work, not disassembly.
 
 | # | Task file | Layer | Work type | Deliverable |
@@ -185,8 +211,8 @@ bodies and tables, so those tasks are now contract/dynamic work, not disassembly
 | 4 | `race_L2_control_a.md` | L2 | done | speed/lean/curve static contract; matrix v3 + E2 |
 | 5 | `race_L2_control_b.md` | L2 | done | matrix v4; E2-1..E2-5 dynamic; `U-0011` closed |
 | 6 | `race_R30_integration.md` | L1/L4/L7 | done | matrix v5: `$3C` conflict resolved (not a timer), crash/fall contracts, handler tables, `unk_155D0` consumers; `U-0012`..`U-0016` closed |
-| 7 | `race_L3_ai_contracts.md` | L3 | static + E3 | loop/targets/dispatcher contract + `$74` matrix; R30 handlers are already documented (matrix v5) |
-| 8 | `race_L3_ai_dynamic.md` | L3 | integrate E3 | handler behavior, `$5A/$6C/$6D/$69` |
+| 7 | `race_L3_ai_contracts.md` | L3 | done | loop/targets/dispatcher contract + `$74` pages/families + E3 pack |
+| 8 | `race_L3_ai_dynamic.md` | L3 | run E3 | integrate E3 into matrix v6; handler behavior, `$5A/$6C/$6D/$69` |
 | 9 | `race_L4_impact_contracts.md` | L4 | static + E4 | pair collision/extents/reach + R30 crash paths (`sub_140EE`/`sub_141AE`/`sub_14404`) |
 | 10 | `race_L4_impact_dynamic.md` | L4 | integrate E4 | damage, `$5C`, fall/knockdown |
 | 11 | `race_L5_spawn.md` | L5 | static + E5 | lifecycle/static/police closed |

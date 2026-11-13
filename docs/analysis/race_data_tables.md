@@ -37,7 +37,7 @@ bridge.
 | `unk_257EE` | `$257EE` | `$14` | 10 words (engine timing). |
 | `unk_25802` | `$25802` | 8 | 2 longs copied to `ram_FFD330`. |
 | `unk_2580A` | `$2580A` | 8 | 2 longs copied to `ram_FFD338`. |
-| `unk_25812` | `$25812` | `$44` | 34 words used by `src/race/race_ai.asm`. |
+| `unk_25812` | `$25812` | `$44` | 34 words; `Race_SetupActorSprite` reads `[type]` into `d2` but never uses it (dead read). |
 
 `Race_InitPhysicsConstants` copies `unk_257D0` (9 words) and the two long pairs;
 `Race_UpdateAttackPhase` reads `unk_257E2/E8/EE`; `race_ai` uses `unk_25812`.
@@ -46,10 +46,10 @@ bridge.
 
 | Label | Address | Size | Layout |
 |---|---|---|---|
-| `unk_259B6` | `$259B6` | `$A` | 5 words (race_core). |
-| `Race_ActorProfileTable` | `$259C0` | `$50` | 40 words (race_ai). |
+| `unk_259B6` | `$259B6` | `$A` | 5 words: per-level dispatch budget `[2,3,3,3,4]` -> `ram_FF1A96`. |
+| `Race_ActorProfileTable` | `$259C0` | `$50` | 20 longs; `$74` -> 5-dword action group in `Race_ActorActionTable`. |
 | `unk_25A10` | `$25A10` | `$34` | 13 actor-record pointers; index = `RaceActor_Type($16)*4`. |
-| `Race_StaticActionTable` | `$25A44` | `$80` | 64 bytes/32 words (race_ai). |
+| `Race_StaticActionTable` | `$25A44` | `$80` | 16 entries x 8 bytes: handler, speed, Y-offset. |
 | `unk_25AC4` | `$25AC4` | `$8C` | 8 blocks x 16 bytes + 6 trailing words (see below). |
 | `unk_25B50` | `$25B50` | `$20` | 8 player-bike record pointers; index = `bikeId*4`. |
 | `unk_25B70` | `$25B70` | `$350` | 424 words (race_core). |
@@ -174,8 +174,8 @@ Evidence [static]: consumers are listed in the table; bytes match the ROM. The
 ## Open questions
 
 - Exact engine-timing semantics of `unk_257E2/E8/EE` (audio deferred).
-- Field meanings of `unk_25812`, `Race_ActorProfileTable`, `Race_StaticActionTable`,
-  `unk_25B70`.
+- Field meanings of `unk_25812` (dead read) and `unk_25B70` remain; the profile and
+  static action tables are decoded in `race_ai.md`.
 - Whether the missing `unk_25AC4` index add was an original bug or a deliberate fixed
   block (behavior is unambiguous; blocks 1..7 are dead).
 - Dynamic checks for the intro/results selection and engine audio.

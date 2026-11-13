@@ -1,7 +1,8 @@
 # Race map: timeline, dataflow, field ownership and captures
 
-- **Status:** v5 (v4 + R30 crash/fall contracts, handler tables and `U-0012`..`U-0016`
-  triage; field rows corrected for `$08/$0E/$10/$3C/$78`)
+- **Status:** v5 + L3 static addendum (v4 + R30 crash/fall contracts, handler tables
+  and `U-0012`..`U-0016` triage; field rows corrected for `$08/$0E/$10/$3C/$78`;
+  L3 adds the loop/target/dispatch contracts, `$74` assignment/families and E3)
 - **Sources:** `docs/analysis/race.md`, `race_actors.md`, `race_ai.md`, `race_movement.md`,
   `race_speed.md`, `race_impact.md`, `race_spawn.md`, `road_render.md`, `docs/ram-map.md`,
   `tasks/race_understanding_program.md`
@@ -164,14 +165,14 @@ Widths match the actual instruction sizes: `$04/$1E/$26` are longs, the
 | `$54` | word | `RaceActor_FallState` | `Race_ApplyFallKnockdown` | crash/fall path | `[static]` `$11` | player-specific delay? |
 | `$56` | word | `RaceActor_RespawnTimer` | `Race_CreateActors` (`$FFFF`), static updater | static update | `[static/dynamic]` | - |
 | `$58` | word | (unnamed) | `Race_UpdateAnimation` (race_anim_audio) | `Race_BuildActorObjectList` copies to actor object `+8` | `[static]` | animation frame token |
-| `$5A` | word | `RaceActor_AttackCooldown` | combat | dispatcher | `[static]` | - |
+| `$5A` | word | `RaceActor_AttackCooldown` | combat | `Race_DispatchActorAction` (close-action branch), pursue/attack handlers | `[static]` | - |
 | `$5C` | word | `RaceActor_TileBase` | `Race_CreateActors`, `Race_SetupActor`, knockdown budget | animation/impact | `[confirmed]` Player `$A00 -> $507` | dual tile-base/health role |
 | `$5E` | word | (unnamed) | `Race_CreateActors` | sprite setup | `[static]` graphics `+$A` | exact sprite field |
 | `$60` | word | (unnamed) | `Race_CreateActors` | sprite setup | `[static]` graphics `+$C` | exact sprite field |
 | `$62` | long | (unnamed) | movement/advance (`= Race_ram_ProgressSnapshotB`) | not documented | `[static]` | late-race progress snapshot |
 | `$64` | word | (unnamed) | - (VScroll/object writers only) | - | `[static]` not an actor field | unused for actors |
 | `$66` | word | `RaceActor_Rating` | `Race_CreateActors`, `Race_RecycleActor` | spawn/init speed | `[confirmed]` def byte5*100 | recycle distance reuse |
-| `$68` | byte | `RaceActor_ControlFlags` | `Race_GetInput`, AI, impact, spawn | AI/movement/impact | `[confirmed]` bit0 collision, bit1 accel (E2-4 B), bit2 brake (E2-4 A), bit3 off-road (E2-5 forced), bit4 fall/on-foot, bit5 curve, bit6 AI-active, bit7 finish | L2 bits closed; bit0/4 L4, bit6 L3, bit7 L1/L5 |
+| `$68` | byte | `RaceActor_ControlFlags` | `Race_GetInput`, AI, impact, spawn; bit6 set in `Race_UpdateActorAI`/`Race_UpdateActorActions`, cleared by recycle | AI/movement/impact | `[confirmed]` bit0 collision, bit1 accel (E2-4 B), bit2 brake (E2-4 A), bit3 off-road (E2-5 forced), bit4 fall/on-foot, bit5 curve, bit6 AI-active/action-eligible, bit7 finish | L2 bits closed; L3 bit6 semantics; bit0/4 L4, bit7 L1/L5 |
 | `$69` | byte | `RaceActor_StateFlags` | combat/AI | pair collision, dispatcher | `[confirmed]` bit2 steer/curve, bit3 direction; combat bits L4 | L2 owns bit2/3; bit0/1/4/5/6/7 L4 |
 | `$6A` | byte | `RaceActor_WeaponAnimFlags` | animation | animation | `[static]` | role |
 | `$6B` | byte | `RaceActor_AttackFlags` | `Race_CreateActors`, combat | combat | `[confirmed]` armed `$02` | - |
@@ -181,9 +182,9 @@ Widths match the actual instruction sizes: `$04/$1E/$26` are longs, the
 | `$6F` | byte | `RaceActor_AnimFrame` | impact/animation | animation | `[dynamic]` | frame mapping |
 | `$70` | byte | `RaceActor_AnimTimer` | animation | animation | `[static]`; zero active | cadence |
 | `$71` | byte | `RaceActor_Index` | `Race_CreateActors` | target tables/standings | `[confirmed]` 0..15, static `$10/$11`, extra `$12` | - |
-| `$72` | byte | `RaceActor_AnimIndex` | `Race_SetupActorSprite` | animation/candidate buckets | `[static/dynamic]` values 3/5 | - |
+| `$72` | byte | `RaceActor_AnimIndex` | `Race_SetupActorSprite` (clamped `$30` band), `Race_BuildTargetCandidates` (0/3 for statics) | animation/candidate buckets, target scan start | `[static/dynamic]` values 3/5 | - |
 | `$73` | byte | `RaceActor_Palette` | `Race_CreateActors` | sprite attributes | `[confirmed]` | - |
-| `$74` | byte | `RaceActor_ActionProfile` | `Race_CreateActors` | action/profile tables | `[confirmed]` profiles 0..19 | static profile assignment |
+| `$74` | byte | `RaceActor_ActionProfile` | `Race_CreateActors` (player 0 / def byte1 1..18), `sub_138CE` (static respawn nibble 0..15) | `Race_ActorProfileTable`/`Race_StaticActionTable` | `[static]` profiles 0..18 assigned; 17/19 unassigned; per-level pages in `race_ai.md` | - |
 | `$75` | byte | `RaceActor_GraphicsIndex` | `Race_CreateActors` | curve limit / sprite setup | `[confirmed]` | - |
 | `$76` | byte | (unnamed) | `Race_UpdateAnimation` (race_anim_audio) | `Race_BuildActorObjectList` (`btst #0`, `move.b`) | `[static]` | animation flag byte |
 | `$77` | byte | (unnamed) | `Race_CreateActors` (def byte4) | not documented | `[static]` | meaning (class/tier?) |
@@ -239,6 +240,68 @@ The side test is `lane*$20-$100` XOR the actor `PosY` sign (`$30` for `sub_13DE0
 | `U-0014` | confirmed | record/type-table decode above; side test = lane vs PosY sign |
 | `U-0015` | wontfix | `sub_14DEC` returns `d0=0` always (`$12(a1)` read twice, likely meant `a2`) and has no caller/pointer reference -> vestigial |
 | `U-0016` | wontfix | `unk_12168` has no reader/address reference -> dead data |
+
+## L3 static addendum (loop, targets, dispatch)
+
+Full per-function contracts are in `race_ai.md`; this is the matrix/queue view.
+No ROM bytes changed and no renames.
+
+Frame order relevant to L3:
+
+```
+sub_1383E                ; clear candidate counts
+Race_UpdateActorAI       ; move actors; SetupActorSprite adds candidates
+Race_UpdateStaticActors  ; move static actors; BuildTargetCandidates adds them
+sub_138CE                ; static respawn/profile assignment
+... collision helpers (L4) ...
+Race_UpdateActorActions  ; profile choice + action handler
+Race_UpdateStaticActions ; static action handler
+Race_UpdateNearestTarget
+```
+
+Target pipeline:
+
+| Step | Contract |
+|---|---|
+| Register | `Race_SetupActorSprite` / `Race_BuildTargetCandidates` -> `Race_AddTargetCandidate` (`ram_FF178A` counts, `ram_FF1792` six 16-byte lists) |
+| Find | `Race_FindTargetActor(d0)` -> `Race_ScanTargetDistance`: skip self, signed relative speed, candidate ahead, keep `min(dX/relSpeed)` in `ram_FF1B46` |
+| Choose | `Race_UpdateActorSpeedCurve`: scan outward from `AnimIndex`; special target `$71=$10/$11` starts at bucket 2/5; two nearest ratios, smaller wins |
+| Steer | `Race_SteerTowardTarget` / `Race_UpdateActorRoadSteering` -> `$46`, `$69` bit2 |
+
+`$74` assignment/families:
+
+| Source | Values |
+|---|---|
+| Player def byte1 | 0 |
+| Opponent def byte1 | 1..18 |
+| Static init | 0 |
+| `sub_138CE` respawn | `(rand & $F0)>>4` = 0..15 |
+
+- Profiles 17 and 19 are unassigned (definition pages stop at 18; static nibble at 15).
+- Profile 1 is the leader family (`Recovery`/`EvadePlayer`); profiles 2-5 and 12-15
+  are throttle families; 6-11 and 16-19 are road-center families. `+8` is
+  `FollowPath` for 1-11 and `StateCollision` for 12-19. `+10` selects the four combat
+  actions, or `RandomCombatChoice` (10) / `ProximityReaction` (11).
+- The per-level `name=profile` pages are listed in `race_ai.md`.
+- `Race_ActorNormalVariant` is the `+4` slot of profile 0; the player always takes
+  the base slot and static actors use the static table, so that table slot is
+  unreachable through `Race_UpdateActorActions`.
+
+Budget and static dispatch:
+
+- `ram_FF1A96 = unk_259B6[level-1] = [2,3,3,3,4]`; `ram_FF1A98` counts the
+  actors that took the `+4` dispatcher slot this frame (every `+4` path increments).
+- `Race_StaticActionTable`: 16 entries = `handler` (`Race_ClampActorY`) + speed +
+  Y-offset. `sub_138CE` uses speed/Y-offset at respawn; `Race_UpdateStaticActions`
+  uses only the handler.
+- Dispatcher slot offsets are `+0` action0, `+4` action1 (dispatch), `+8` action2,
+  `+C` action3, `+10` action4; `Race_DispatchActorAction` receives the action1
+  pointer in `a4` and picks `4/8/C(a4)`.
+
+Matrix rows touched by L3: `$5A` is read by `Race_DispatchActorAction` (cooldown
+branch); `$68` bit6 is set/cleared in `Race_UpdateActorAI`/`Race_UpdateActorActions`;
+`$74` is written only by `Race_CreateActors` (definition byte1 / 0) and `sub_138CE`
+(random nibble). Experiment Pack E3 below is the residual dynamic pass.
 
 ## Experiment Pack E1 (residual L1 fields)
 
@@ -441,6 +504,63 @@ Notes:
 - U-0011 normal mode: `DemoMode` was forced to 0 after `Race_ram_Started` and B was
   injected at `0xBE6C`; the spawn path `Race_SetupActor` became reachable.
 
+## Experiment Pack E3 (L3 residual dynamic checks)
+
+Run in `race_L3_ai_dynamic.md`; at most five checks, bare-hex PCs.
+
+```
+E3-1  candidate bucket registration
+Goal:        confirm bucket = clamp(($30>>6)+3,0,5) and the list append
+Scenario:    demo race, PlayerA + opponents, one full frame
+Breakpoint:  0x13812 (Race_AddTargetCandidate entry)
+Commands:    p/x $d0 ; p/x $a1+$30 ; p/x $a1+$71 ; p/x $ff178a ; p/x $ff1792
+Report:      bucket d0, actor $30/$71, counts before/after
+Decision:    if d0 matches the clamped AnimIndex and the actor $71 lands in
+             ram_FF1792[d0*16+count] -> confirmed; else candidate model is wrong
+
+E3-2  profile slot choice (action0 vs action1)
+Goal:        confirm base/+4 conditions and the ram_FF1A98 budget
+Scenario:    normal and forced: nearest actor, rating <= player Speed, budget full
+Breakpoint:  0x12FCE (+4 path) and 0x12FD8 (call site)
+Commands:    p/x $a1 ; p/x $a1+$71 ; p/x $a1+$74 ; p/x $a1+$66
+             p/x $ff1eaa+$12 ; p/x $ff1a96 ; p/x $ff1a98
+Report:      actor pointer/index/profile/rating, player Speed, budget/counter,
+             and whether the chosen a4 is slot+0 or slot+4
+Decision:    if +4 only for PlayerB/nearest/budget-and-rating and the counter
+             increments on every `+4` path (nearest/PlayerB too) and stays flat
+             on the base path -> confirmed
+
+E3-3  dispatcher action2/action3/action4
+Goal:        confirm the three branch PCs and their conditions
+Scenario:    force a non-player target; force NearestActor=a1 and $5A>0;
+             set $69 bit4
+Breakpoint:  0x164A2 (action2), 0x16510 (action3), 0x16518 (action4)
+Commands:    p/x $a1 ; p/x $a2 ; p/x $a1+$5A ; p/x $a1+$69
+             p/x $ff1908 ; p/x $ff1a68
+Report:      branch PC, target, cooldown, attack-active flag, distance/threshold
+Decision:    if non-player -> action2, close+cooldown(nearest) -> action3, and
+             PlayerB/attack-active/final -> action4 -> confirmed
+
+E3-4  per-level budget
+Goal:        confirm ram_FF1A96 = [2,3,3,3,4] and the per-frame +4 count
+Scenario:    one normal frame on each level (or set Menu_ram_PlayerLevel)
+Breakpoint:  0x12FD8
+Commands:    p/x $ff0522 ; p/x $ff1a96 ; p/x $ff1a98 ; p/x $a1+$71
+Report:      level, budget, counter, profile and actor per hit
+Decision:    if the budget matches the level table and no frame exceeds it ->
+             confirmed; profile 17/19 never observed -> dead entries
+
+E3-5  static respawn profile/speed/Y-offset
+Goal:        confirm sub_138CE indexes Race_StaticActionTable with $74
+Scenario:    force a static actor respawn timer to expire
+Breakpoint:  0x13972 (after profile/speed/Y writes) and 0x13982 (timer path)
+Commands:    p/x $a2 ; p/x $a2+$71 ; p/x $a2+$74 ; p/x $a2+$12
+             p/x $a2+$46 ; p/x $d0
+Report:      profile nibble, speed/Y-offset written, table index used
+Decision:    if $74 selects table[$74] and $12/$46 equal its speed/Y-offset ->
+             confirmed
+```
+
 ## Register-base and list warning
 
 Raw `NN(aN)` greps are not evidence until the base register is known:
@@ -487,6 +607,11 @@ already used for them. New checks follow the Experiment Pack format in
 | E2-4 input flags | `0xBE6C` injected pad, `0xC00A` sample | B/A -> `$68` bit1/bit2, Left/Right steering sign confirmed |
 | E2-5 off-road accel | `0x10E8C`/`0x10E9C`, forced bit3 | `$14 -= $14>>2` confirmed |
 | U-0011 spawn `d4` | `0x13746`, normal mode | 6 spawn (`ret=0x16E24`) calls, `d4=0`; closed |
+| E3-1 candidate bucket | `0x13812` | `d0` vs `clamp($30>>6+3)`; `$71` at `ram_FF1792[d0*16+count]` |
+| E3-2 profile slot | `0x12FCE`/`0x12FD8` | base vs `a4+4`; `ram_FF1A96/98` budget |
+| E3-3 dispatcher | `0x164A2`/`0x16510`/`0x16518` | action2/3/4 branch conditions |
+| E3-4 level budget | `0x12FD8` | `ram_FF1A96` per level, `+4` count |
+| E3-5 static respawn | `0x13972`/`0x13982` | `$74` -> `Race_StaticActionTable` speed/Y-offset |
 | Demo collision/crash | `0x127EA`/`0x14486`/`0x11B7A`/`0x14C3C`, full demo | 9 pair contacts (1 player), 0 crash/object, no player fall |
 | Static/extra actors | running dump: static `$16/$30/$46/$56/$74`; `$FF2FAA` `$71` | static layout anomaly vs extra slot activation |
 
@@ -533,4 +658,5 @@ integrates E1. The L2 static and dynamic passes (`tasks/race_L2_control_a.md`,
 `race_L2_control_b.md`) are complete: matrix v4 integrates E2 and closes `U-0011`.
 R30 integration (`tasks/race_R30_integration.md`) is complete: matrix v5 adds the
 crash/fall contracts and handler tables, corrects `$08/$0E/$10/$3C/$78`, and closes
-`U-0012`..`U-0016`. Next: L3/L4 (AI dispatch and impact/fall dynamics).
+`U-0012`..`U-0016`. L3 static contracts are now in the addendum above; next: E3
+(`race_L3_ai_dynamic.md`), then L4 impact/fall dynamics.
