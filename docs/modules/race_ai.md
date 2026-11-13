@@ -1,7 +1,7 @@
 # Module card: `src/race/race_ai.asm`
 
 - **ROM range:** `0x010E00`–`0x014055` (`src/race/race_anim_audio.asm` starts at `0x14056`)
-- **Status:** actor/AI/action dispatch, movement/speed helpers and collision fields analyzed; some behavior dynamic tests/TODO
+- **Status:** actor/AI/action dispatch, movement/speed/curve fields and the R30 gap set analyzed; crash/fall contracts integrated (matrix v5); L3/L4 dynamics TODO
 - **Related:** `docs/analysis/race.md`, `docs/analysis/race_spawn.md`,
   `docs/ram-map.md`, `docs/modules/race.md`
 
@@ -33,9 +33,13 @@ audio live in `src/race/race_anim_audio.asm`; PRNG/LFSR helpers are in
 - `Race_SetupActorSprite` `0x13746`: actor sprite/field setup.
 - `Race_UpdateBikeLean` `0x13EA0` / `Race_UpdateBikeCurve` `0x13EFA`: lean/curve.
 - `Race_GetCurveSpeedLimit` `0x13FE6`: curve speed limit (`Track_CurveBuffer`, `unk_14056`).
-- Gap set (R30): `sub_1131A` shadow-follow, `sub_11A5E` curve-position integration,
-  `sub_12B2A` adjusted attack reach, `sub_133F0` curve direction,
-  `sub_13704` distance ratio, `sub_13A5C` far respawn, `sub_13D44` track-object steering.
+- Gap set (R30): `sub_1131A` shadow-follow (no caller, dead twin of the on-foot path),
+  `sub_11A5E` curve-position integration (`$E/$10` write-only), `sub_12B2A` adjusted
+  attack reach, `sub_133F0` curve direction, `sub_13704` distance ratio, `sub_13A5C`
+  far respawn, `sub_13D44` track-object steering (record/type-table fields decoded).
+- R30 integration: `$78` is armed by `sub_14456`/`sub_1446E`, so `word_14742` is
+  reachable; `$3C` is a write-only curve-step snapshot, not a timer; `unk_12168` is
+  dead data.
 
 ## Coverage matrix
 
@@ -45,6 +49,6 @@ audio live in `src/race/race_anim_audio.asm`; PRNG/LFSR helpers are in
 | actor action dispatch | `0x12D0A`-`0x131BE` | [x] | [x] | [x] | [x] | [x] | [~] | static table + demo trace |
 | bike lean/curve | `0x13EA0`/`0x13EFA` | [x] | [~] | [x] | [x] | [~] | [~] | static + steering snapshots |
 | curve speed limit | `0x13FE6` | [x] | [~] | [x] | [x] | [~] | [ ] | static |
-| gap functions | `0x1131A`-`0x13DDF` | [~] | [~] | [x] | [x] | [~] | [ ] | disassembled (R30); contracts static |
+| gap functions | `0x1131A`-`0x13DDF` | [x] | [~] | [x] | [x] | [~] | [ ] | R30 integration: contracts/tables static; `U-0012`..`U-0016` closed |
 
 Detailed flow: `docs/analysis/race.md`; spawn: `docs/analysis/race_spawn.md`.

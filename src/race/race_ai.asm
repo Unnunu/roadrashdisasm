@@ -552,7 +552,9 @@ sub_112C8:
 ; In:  a1 - actor; Race_ActorShadowTable[$71]
 ; Out: STRUCT_OFFSET_8, STRUCT_OFFSET_22, X; StateFlags bit3
 ; Clobbers: d0-d3/a0
-; @UNKNOWN(U-0012): why the gap is biased by $20 and what STRUCT_OFFSET_8 drives.
+; $20 is the fixed shadow/actor stand-off (the same constant as Race_HandleInputOnFoot);
+; $8 is the signed Y velocity for this path and $22 is the FrameDelay-scaled delta
+; added to $00. There is no static caller (dead variant of the on-foot input path) [static].
 ; *************************************************
 
 sub_1131A:
@@ -1315,7 +1317,9 @@ Race_UpdateActorFallMovement:
 ; In:  a1 - actor; FrameDistance; Track_CurveBuffer
 ; Out: X, $1A/$1C, $E/$10, $36/$3A/$38/$3C/$2, ControlFlags bit0, $32
 ; Clobbers: d0-d7/a0-a6 (all saved)
-; @UNKNOWN(U-0013): meaning of $E/$10 and the exact curve-buffer wrap rule.
+; $E = whole-track X advance, $10 = final curve-buffer index (both write-only).
+; The 256-entry/2-byte buffer at $FFDC58 walks forward to $FFDE58 and wraps
+; backward at $FFDD56 (index 127) [static].
 ; *************************************************
 
 sub_11A5E:
@@ -1883,7 +1887,8 @@ sub_12070:
 
 
 ; 9 x dc.l actor handler pointers; index 2 -> sub_140EE, all others -> sub_1438E.
-; No static reader found in src/ (U-0016).
+; Unreferenced dead data: no static reader and no pointer/address reference in the
+; ROM (U-0016) [static].
 unk_12168:
                 dc.l    sub_1438E
                 dc.l    sub_1438E
@@ -4462,7 +4467,9 @@ sub_13CFE:
 ; in the object word +2, then sets ram_FF1B46 and calls Race_SteerTowardTarget
 ; with mode 2/4. Sets ram_FF18A4=1 on success.
 ; In:  a1 - actor; Out: ram_FF1B46, ram_FF18A4; Clobbers: d0-d2/a0-a2
-; @UNKNOWN(U-0014): record fields other than type and the +6 flag word.
+; Record layout: +0 long 16.16 X, +2 byte type, +3 byte lane (low nibble).
+; Type table: +0 render flags, +2 size (16.8), +4 handler index, +6 word != 0 ->
+; steerable. The side test is lane*$20-$100 compared against the PosY sign [static].
 ; *************************************************
 
 sub_13D44:
@@ -4657,8 +4664,9 @@ Race_UpdateBikeLean:
 ;   $78 == 0, bit5 clear: bit3 -> TrackParam2, else TrackParam0
 ; If d0 < limit: clear bit5, zero $3E/$40. Otherwise $3E = (limit<<8)/(d0>>8)
 ; and set bit5.
-; Note: $78 is zeroed at creation and only decremented here; nothing sets it
-; non-zero, so the word_14742 branch is unreachable [static].
+; Note: $78 is zeroed at creation and decremented here. R30 found two writers,
+; sub_14456 ($78) and sub_1446E ($1E), in the crash/fall handlers, so the
+; word_14742 branch is reachable when a fall timer has been armed [static].
 ; In:  a1 - actor; Race_ram_TrackParam0/2/3; word_14742
 ; Out: $3E/$40/$68 bit5
 ; Clobbers: d0-d2

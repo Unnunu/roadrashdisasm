@@ -1,6 +1,7 @@
 # Race map: timeline, dataflow, field ownership and captures
 
-- **Status:** v4 (L1 E1 + L2 static contract + L2 E2 dynamic results integrated)
+- **Status:** v5 (v4 + R30 crash/fall contracts, handler tables and `U-0012`..`U-0016`
+  triage; field rows corrected for `$08/$0E/$10/$3C/$78`)
 - **Sources:** `docs/analysis/race.md`, `race_actors.md`, `race_ai.md`, `race_movement.md`,
   `race_speed.md`, `race_impact.md`, `race_spawn.md`, `road_render.md`, `docs/ram-map.md`,
   `tasks/race_understanding_program.md`
@@ -77,8 +78,9 @@ New in v3:
   marker (L3), bit7 = finish/progress latch (L1/L5).
 - `$69` bit2 = steer/curve direction (set by road steering/`Race_SteerTowardTarget`),
   bit3 = direction sign; other bits are combat/fall (L4).
-- `$78` is zeroed at actor creation and only decremented by `Race_UpdateBikeCurve`;
-  no writer sets it non-zero, so the `word_14742` limit branch is dead `[static]`.
+- `$78` is zeroed at actor creation and decremented by `Race_UpdateBikeCurve`; R30
+  added its two writers (`sub_14456`=`$78`, `sub_1446E`=`$1E`), so the `word_14742`
+  limit branch is reachable during a fall `[static]` (v5 correction).
 - `Race_LoadBikeData` ignores its `bikeId*16` index and always copies
   `unk_25AC4[0]`; blocks 1..7 are dead data `[static]`.
 
@@ -123,11 +125,11 @@ Widths match the actual instruction sizes: `$04/$1E/$26` are longs, the
 | `$02` | word | `RaceActor_PosZ` | `Race_CreateActors` (0); `sub_115C6` (base Z) | `sub_115C6`; collision/crash projection; main HInt/endlevel | `[static]` | exact projection term in `$2A` |
 | `$04` | long | `RaceActor_X` | `Race_InitActorPositions`, movement/fall, spawn init | target selection, collision, camera | `[confirmed]` `$04=$1E+$26` | - |
 | `$06` | word | `RaceActor_XLow` | same as `$04` | same as `$04` | `[confirmed]` low word of `$04` | no independent field |
-| `$08` | word | (unnamed) | `Race_SetupActor` (curve sample); `Race_HandleInputOnFoot`/movement; crash/action handlers | `sub_12414` indexes `Road_ShapeTable`; pair collision | `[static]` | road-shape index (name candidate) |
+| `$08` | word | (unnamed) | riding: `Race_SetupActor`/`sub_113CA`/`sub_113A4`/movement curve sample; on-foot/shadow: `Race_HandleInputOnFoot`/`sub_1131A` (signed Y velocity) | `sub_113A4`/`sub_113CA`/`sub_115C6`/`Race_UpdateBikeCurve`; pair collision | `[static]` `U-0012`: dual-use scratch (curve sample vs Y velocity). `sub_12414`'s `8(a0)` is an **object** shape index, not this field | state-dependent meaning |
 | `$0A` | word | (unnamed) | `Race_SetupActor` (0); crash/action handlers | `sub_12414` (bit14 = flip) | `[static]` | full shape-flag bit map |
 | `$0C` | word | (unnamed) | `sub_113CA` (steering); `Race_SetupActor` (curve sample) | pair collision, crash impact, `sub_11CC8` -> `RaceBike_ram_CurrentSteering` | `[confirmed]` E2-2: `$0C = (FrameDistance>>8)*$42>>8`, sign follows steering | current steering/curve sample |
-| `$0E` | word | (unnamed) | `Race_UpdateActorFallMovement` | `sub_12414` (Y threshold) | `[static]` | fall-path Y threshold |
-| `$10` | word | (unnamed) | `Race_UpdateActorFallMovement` | `sub_12414` (Y offset) | `[static]` | fall-path Y offset |
+| `$0E` | word | (unnamed) | `Race_UpdateActorFallMovement`, `sub_11A5E` | - | `[static]` `U-0013`: write-only whole-track X advance. `sub_12414`'s `$E(a0)` is an **object** field | none |
+| `$10` | word | (unnamed) | `Race_UpdateActorFallMovement`, `sub_11A5E` | - | `[static]` `U-0013`: write-only final curve-buffer index. `sub_12414`'s `$10(a0)` is an **object** field | none |
 | `$12` | word | `RaceActor_Speed` | `Race_UpdateActorAI`, `Race_InitOpponent/TrafficActor`, impact | speed display, curve limit, AI | `[confirmed]` Player `$EE`, steering `$2D15` | - |
 | `$14` | word | `RaceActor_Acceleration` | `Race_UpdateActorSpeedState`, `sub_13BD8` | `Race_UpdateActorAI`, shadow update | `[confirmed]` `$22` low speed, `$0E` at `$2D15`; E2-5 `$14 -= $14>>2` off-road | closed (E2-5) |
 | `$16` | word | `RaceActor_Type` | `Race_CreateActors` | `Race_UpdateStaticActors`, speed state; indexes `unk_25A10` | `[confirmed]` 2/3/4; static anomaly | static `$16=0` after update |
@@ -135,7 +137,7 @@ Widths match the actual instruction sizes: `$04/$1E/$26` are longs, the
 | `$1A` | word | (unnamed) | movement/fall start (`= $30`); `Race_SetupActor`; `Race_UpdateActorAI` restore | pair collision, `Race_ClampActorPairY`, `sub_12070` | `[static/dynamic]` `$31` vs `$30=$35` | previous road-relative Y (name candidate) |
 | `$1C` | word | `RaceActor_PreviousCollisionOffset` | movement backup from `$32` | `Race_ApplyCollisionImpact` | `[static]` | - |
 | `$1E` | long | `RaceActor_PreviousX` | `Race_UpdateActorX/Movement/FallMovement`, spawn setup | target scans, impact | `[confirmed]` `$04-$1E=$26` | - |
-| `$22` | word | (unnamed) | road-band clamp overshoot; `Race_HandleInputOnFoot`; `sub_113A4`/`sub_113CA`; pair impact (adds `AttackOverlap`) | applied to `$00` by `sub_113A4`/`sub_113CA`; `Race_AdjustActorTrackPositions` | `[confirmed]` E1-2: `$22 == d0`, then `$00 += d0` at `0x113C4` | - |
+| `$22` | word | (unnamed) | road-band clamp overshoot; `Race_HandleInputOnFoot`/`sub_1131A`; `sub_113A4`/`sub_113CA`; pair impact (adds `AttackOverlap`) | applied to `$00` by `sub_113A4`/`sub_113CA`/`Race_HandleInputOnFoot`/`sub_1131A`; `Race_AdjustActorTrackPositions` | `[confirmed]` E1-2: `$22 == d0`, then `$00 += d0` at `0x113C4` | - |
 | `$24` | word | (unnamed) | `Race_CreateActors` (0) | - | `[static]` write-only | unused/reserved |
 | `$26` | long | `RaceActor_FrameDistance` | `Race_UpdateActorAI`, movement | movement, impact | `[confirmed]` `Speed*FrameDelay` | - |
 | `$2A` | word | (unnamed) | `sub_115C6` | `sub_115C6`, impact/crash projection | `[static]`; `$1C39`, `$223` | exact projection term |
@@ -147,7 +149,7 @@ Widths match the actual instruction sizes: `$04/$1E/$26` are longs, the
 | `$36` | word | `RaceActor_RoadYTarget` | movement (`+= curve_step`), fall (`-=`) | road-band clamp | `[confirmed]` E1-1/E1-4: accumulator; `$30 = $00-$36` | - |
 | `$38` | word | `RaceActor_CurveDelta` | movement | `sub_115C6` | `[static/dynamic]` `$22B` | - |
 | `$3A` | word | `RaceActor_CurveAccum` | movement | `sub_115C6` | `[static/dynamic]` `3` | - |
-| `$3C` | word | `RaceActor_CurveStep` | `sub_115C6`; reset in `sub_13A26` | - | `[confirmed]` E1-4: write-only copy of `sub_115C6` input `d1` | - |
+| `$3C` | word | `RaceActor_CurveStep` | `sub_115C6`, `sub_11A5E`; zeroed by `Race_SetupActor`/`sub_13A26`/`sub_13A5C` | - | `[confirmed]` E1-4: write-only curve-step snapshot. Not a timer (R30 "timer" label was a misread; the timers are `$78` fall/curve, `$70` animation, `$56` respawn) | none |
 | `$3E` | word | `RaceActor_Curve` | `Race_UpdateBikeCurve` (zero/`(limit<<8)/(d0>>8)`); read by `Race_UpdateLeanCurve` | `Race_UpdateActorSpeedState`, `Race_UpdateLeanCurve` | `[confirmed]` E2-3 forced limit: `$3E = (limit<<8)/(d0>>8)`, bit5 set | - |
 | `$40` | word | `RaceActor_LeanCurve` | `Race_UpdateBikeCurve` (zero), `Race_UpdateLeanCurve` | lean/curve math | `[static]` | `$40` not sampled in E2-2/E2-3 |
 | `$42` | word | `RaceActor_Lean` | `Race_UpdateBikeLean` | `sub_113CA` -> `$0C` | `[confirmed]` E2-2: sign follows steering; formula `race_speed.md` | - |
@@ -185,10 +187,58 @@ Widths match the actual instruction sizes: `$04/$1E/$26` are longs, the
 | `$75` | byte | `RaceActor_GraphicsIndex` | `Race_CreateActors` | curve limit / sprite setup | `[confirmed]` | - |
 | `$76` | byte | (unnamed) | `Race_UpdateAnimation` (race_anim_audio) | `Race_BuildActorObjectList` (`btst #0`, `move.b`) | `[static]` | animation flag byte |
 | `$77` | byte | (unnamed) | `Race_CreateActors` (def byte4) | not documented | `[static]` | meaning (class/tier?) |
-| `$78` | byte | (unnamed) | `Race_CreateActors` (0); `Race_UpdateBikeCurve` (decrement only) | `Race_UpdateBikeCurve` | `[static]` never set non-zero; `word_14742` branch dead | rename candidate (`RaceActor_CurveTimer`) |
+| `$78` | byte | (unnamed) | `Race_CreateActors` (0); `sub_14456` (`$78`); `sub_1446E` (`$1E`); `Race_UpdateBikeCurve` (decrement) | `Race_UpdateBikeCurve` (timer + limit select) | `[static]` R30 corrects v3: the fall handlers arm it, so the `word_14742` limit branch **is reachable** | rename candidate (`RaceActor_CurveTimer`) |
 | `$7A` | word | (unnamed) | - (VScroll writer only) | - | `[static]` not an actor field | unused for actors |
 | `$7C` | word | (unnamed) | - (rearview/VScroll buffer) | `Race_DrawRearviewMirror` (not an actor) | `[static]` not an actor field | unused for actors |
 | `$7E` | word | (unnamed) | - (VScroll writer only) | - | `[static]` not an actor field | unused for actors |
+
+## R30 integration (crash/fall contracts, handler tables, U triage)
+
+Integrates the R30 gap disassembly (`race_ai.asm 0x1131A-0x13DDF`,
+`race_anim_audio.asm 0x140BC-0x14486`). All contracts below are `[static]`; the L4 task
+still owns dynamic confirmation of branch timing and damage.
+
+### Crash/fall handler contracts
+
+| Routine | Inputs / gates | Side effects |
+|---|---|---|
+| `sub_140EE` on-road crash | `a1` actor, `a0` track object; Speed `$FA0` gate | Speed < `$FA0`: `sub_142FE` + `$68` bit4. Else: `sub_140BC` (X from object), `sub_1438E` (speed-loss latch), SFX by `abs($34)` (`>=3` `sub_15538`; Speed < `$1770` `sub_15580`; else `sub_1555C`), `$6E=0`, `$6F=$FF`. If `ram_FF1768==0`: `sub_142D8`, `Race_SaveActorShadow`, `sub_1436E($C000)`; PlayerA -> `ram_FF1AD6=9`, `BikeDamage += scaled(Speed)/2`; else PlayerA -> `ram_FF1AD6=$F`. Sets `$68` bit4 |
+| `sub_141AE` high-speed/off-road crash | `$69` bit3 or Speed < `$FA0` gate | Gate: `sub_142FE` only (no `$68` bit4). Else: `ram_FF18A6=Speed`, `Speed=min(Speed/4,$2710)`, X shifted `$6000` relative to object `$E`, `sub_1438E`, sets `$68` bit4 + `$69` bit3; SFX by `abs($34)`, else FallState `9` when `ram_FF18A6 >= $1F40`, else `5`; `$6E=0`, `$6F=$FF`; same shadow path; PlayerA `BikeDamage += scaled(Speed)` (no `/2`) |
+| `sub_142B0` / `sub_142BE` / `sub_142CC` | wrappers around `sub_140EE` | `ram_FF1AD6=$F` / `$17` / set `$6B` bit1 first |
+| `sub_142FE` road-Y clamp | `a1` actor; `ram_FF1B14`; `$69` bit1 | `PosY=$1A=ram_FF1B14 +/- (extent+4)`; delta added to `$00`; `FrameDistance==0` -> X/PrevX `-$4000` |
+| `sub_1436E` shadow speed scale | `a1`, `d0` 16.16 | shadow(`$71`).Speed = Speed*`d0`>>16; `$C000` = 75% in both crash paths |
+| `sub_14404` collision-impact fallback | `a1`; `ram_FF1768`; `$6E` | `sub_1438E`; no active crash -> `$6E=$FF` + clear `$68` bit4; else unless `$6E==3`: FallState 0, `$6E=0`, `$6F=$FF`, `ram_FF1AD6=$F`, and if Speed==0 `sub_140BC`; `$6E==3` -> clear `$68` bit4 |
+| `sub_14456` / `sub_1446E` fall timers | `$6E < 3` | set `$68` bit5 and `$78=$78` / `$78=$1E` (arms the `word_14742` curve limit) |
+| `sub_140BC` / `sub_142D8` / `sub_1438E` | helpers | X from object `$E`; weapon-anim speed flag; impact speed-loss latch |
+
+Consequence for v3: `$78` is **not** dead. Its two writers are the fall timers above;
+`Race_UpdateBikeCurve` decrements it and selects `word_14742` while it is non-zero.
+
+### Handler tables and consumers
+
+| Table | Content | Consumers |
+|---|---|---|
+| `unk_14744` | 8 action handlers: `sub_140EE`, `sub_14404`, `sub_141AE`, `sub_14456`, `sub_1446E`, `sub_142CC`, `sub_142B0`, `sub_142BE` | `sub_12070` (type-table `+4` index) and `sub_11CC8` (via `unk_147FC`) |
+| `unk_147FC` | 128-byte handler index (0..7); `sub_12070` clamps `ram_FF1B0E-$186` to 0..127 | `sub_11CC8` dispatcher |
+| `unk_12168` | 9 pointers: index 2 `sub_140EE`, others `sub_1438E` | none: dead data (no reader/address reference) |
+| `unk_155D0` | 18 FallState (`0..$11`) -> animation-sequence pointers | `sub_15014`, `sub_151F0` |
+| `Race_TrackObjectTypeTable` | 19 x 8 bytes: `+0` render flags, `+2` size 16.8, `+4` handler index, `+6` word (`+7` steerable) | `sub_12070`, `sub_13D44`, `sub_13DE0`, `race_ai_road.asm:1767` |
+
+### Track-object records
+
+A track-object record (4 bytes, the record cursor list) is `+0` long 16.16 X, `+2`
+type byte (index into `Race_TrackObjectTypeTable`), `+3` lane byte (low nibble used).
+The side test is `lane*$20-$100` XOR the actor `PosY` sign (`$30` for `sub_13DE0`).
+
+### U-0012..U-0016 verdicts
+
+| ID | Verdict | Evidence |
+|---|---|---|
+| `U-0012` | confirmed | `$8` signed Y velocity, `$22` = velocity*FrameDelay applied to `$00`, `$20` fixed shadow stand-off (same in `Race_HandleInputOnFoot`); `sub_1131A` has no caller |
+| `U-0013` | confirmed | `$E` whole-track advance, `$10` final curve index; 256-entry buffer `$FFDC58-$FFDE57`; forward wrap `$FFDE58`, backward wrap `$FFDD56` (index 127) |
+| `U-0014` | confirmed | record/type-table decode above; side test = lane vs PosY sign |
+| `U-0015` | wontfix | `sub_14DEC` returns `d0=0` always (`$12(a1)` read twice, likely meant `a2`) and has no caller/pointer reference -> vestigial |
+| `U-0016` | wontfix | `unk_12168` has no reader/address reference -> dead data |
 
 ## Experiment Pack E1 (residual L1 fields)
 
@@ -302,7 +352,8 @@ GetCurveSpeedLimit:   ((bit3?TP2:TP0)<<3) /
 Static quirks (documented, no unresolved behavior):
 
 - `$18` is a word; the old trace misread the low byte. Demo gear reached 5.
-- `$78` is never set non-zero -> `word_14742` limit is unreachable.
+- `$78` is armed by `sub_14456`/`sub_1446E` (`$78`/`$1E`) -> `word_14742` is
+  reachable during a fall (v5 correction; the v3 "unreachable" claim was wrong).
 - `Race_LoadBikeData` ignores `bikeId*16` and always loads `unk_25AC4[0]`.
 - `TrackParam1` is loaded but never read.
 - Steering asymmetry at zero: Left adds `ReturnToStraightPower`, Right does not
@@ -478,7 +529,8 @@ Observed on the checked-in dumps:
 | L7 | HUD, animation data, standings/results/money/highscore | last |
 
 The L1 actor-core dynamic pass is complete (`tasks/race_L1_actor_core_b.md`): matrix v2
-integrates E1. The L2 static pass (`tasks/race_L2_control_a.md`) and the L2 dynamic pass
-(`tasks/race_L2_control_b.md`) are complete: matrix v4 integrates E2 and closes
-`U-0011`. Next: run `tasks/race_R30_integration.md` (matrix v5, crash/fall contracts,
-R30 handler tables, `U-0012`..`U-0016` triage), then L3/L4.
+integrates E1. The L2 static and dynamic passes (`tasks/race_L2_control_a.md`,
+`race_L2_control_b.md`) are complete: matrix v4 integrates E2 and closes `U-0011`.
+R30 integration (`tasks/race_R30_integration.md`) is complete: matrix v5 adds the
+crash/fall contracts and handler tables, corrects `$08/$0E/$10/$3C/$78`, and closes
+`U-0012`..`U-0016`. Next: L3/L4 (AI dispatch and impact/fall dynamics).

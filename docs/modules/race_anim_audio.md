@@ -1,7 +1,7 @@
 # Module card: `src/race/race_anim_audio.asm`
 
 - **ROM range:** `0x014056`–`0x016119` (`src/race/race_combat.asm` starts at `0x1611A`)
-- **Status:** analyzed (audio helpers/player animation); PRNG in `rand.asm`; combat moved to `race_combat`
+- **Status:** analyzed (audio helpers/player animation); crash/fall handler contracts and tables integrated (R30, matrix v5); PRNG in `rand.asm`; combat moved to `race_combat`
 - **Related:** `docs/analysis/race.md`, `docs/analysis/rider_sprites.md`,
   `docs/analysis/race_physics.md`, `docs/analysis/combat.md`,
   `docs/analysis/rand.md`, `docs/ram-map.md`, `docs/modules/race.md`,
@@ -29,7 +29,8 @@ nearest-target selection and collision state now live in
 - PRNG/LFSR helpers: see `src/race/rand.asm` and `docs/modules/rand.md`.
 - Crash/action handlers (R30): `sub_140BC`, `sub_140EE`, `sub_141AE`,
   `sub_142B0`/`sub_142BE`/`sub_142CC`, `sub_142FE`, `sub_1436E`,
-  `sub_14404`/`sub_14456`/`sub_1446E`; `sub_14DEC`; `sub_15580`.
+  `sub_14404`/`sub_14456`/`sub_1446E`; `sub_15580`; `sub_14DEC` is vestigial
+  (no caller, `d0` always 0, `U-0015` closed).
 - Tables: `unk_14744`/`unk_147FC` action handlers, `Race_TrackObjectTypeTable`,
   `unk_155A4`/`unk_155AC`/`unk_155D0`, `unk_15618`/`unk_1561C`/`unk_15624`.
 - Impact/damage helpers `Race_ScaleImpactDamage`/`Race_ApplyCollisionImpact`/`Race_ExchangeCollisionSpeed` remain here; attack
@@ -42,7 +43,7 @@ nearest-target selection and collision state now live in
 | animations | `0x1406A`+ | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | TODO |
 | random | `0x15FA8`+ | [x] | [x] | [x] | - | [x] | [ ] | moved to `rand.asm` |
 | player animation | `0x160E2` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
-| impact/action handlers | `0x140BC`-`0x14486` | [~] | [~] | [x] | [x] | [~] | [ ] | disassembled (R30) |
+| impact/action handlers | `0x140BC`-`0x14486` | [x] | [~] | [x] | [x] | [~] | [ ] | R30 integration: contracts + handler tables static; dynamic timing is L4 |
 | impact/damage helpers | `0x1434A`+ | [~] | [~] | [~] | [x] | [~] | [ ] | partial |
 
 Detailed flow: `docs/analysis/race.md`; animation: `docs/analysis/rider_sprites.md`;

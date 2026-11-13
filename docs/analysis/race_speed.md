@@ -161,8 +161,9 @@ if d0 < limit: clear $68 bit5, $3E = $40 = 0
 else:          $3E = (limit<<8) / (d0>>8), set $68 bit5
 ```
 
-`$78` is zeroed at actor creation and only decremented by this routine; no writer
-sets it non-zero, so the `word_14742` branch is unreachable in this ROM `[static]`.
+`$78` is zeroed at actor creation and decremented here. R30 found its writers in the
+fall handlers (`sub_14456` sets `$78`, `sub_1446E` sets `$1E`), so the `word_14742`
+branch is reachable during a fall `[static]`.
 
 E2-3 sampled the on-road path: `d0 = $5EC..$C2F` against TP0 `$E646`, so the routine
 always took the `CLR` branch. Forcing `d1=$100` at `0x13FB0` reached the limit store and

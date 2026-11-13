@@ -24,18 +24,22 @@ an analysis document).
 | `U-0010` | `src/screens/shop.asm:897` | `Shop_DrawBikes` palette copy | why destination palette entry 4 is taken from the next palette's w0 (`$16(a0)` with `a0 = base+10`) while source w13 is never copied | resolved: all eight bike palettes (and actor palette 0) have w0 `$0222`, so destination entry 4 is a fixed transparent/background colour | none | confirmed | `[static]` |
 | `U-0011` | `src/race/race_ai.asm:4249` | `Race_SetupActorSprite` input `d4` | `d4` is used as a Y span (`Y±d4`) for extra target-candidate buckets but is never set inside this routine or by `Race_SetupActor`; where its value comes from on each path is not proven | resolved: no writer in either path; the ambient value is 0 on the AI and spawn paths, so the extra candidate buckets are not widened in normal play | none | confirmed | `[static]` no `d4` writer in `Race_SetupActorSprite`/`Race_SetupActor`/spawn init; `[dynamic]` E1 demo AI path 4169 calls `d4=0`; E2 normal mode 6 spawn calls (`ret=0x16E24`) `d4=0` (`analysis/notes/L2b_spawn_trace.txt`) |
 
-| `U-0012` | `src/race/race_ai.asm:558` | `sub_1131A` shadow-follow | why the shadow/actor PosY gap is biased by `$20`, and what `STRUCT_OFFSET_8`/`STRUCT_OFFSET_22` drive | signed Y velocity and a per-frame movement/curve term; likely shadow/road alignment | trace `$8/$22` readers; force shadow PosY and observe | open | `[static]` |
-| `U-0013` | `src/race/race_ai.asm:1321` | `sub_11A5E` `$E/$10` | meaning of `$E/$10` and the exact `Track_CurveBuffer` wrap rule | `$E` = integer track units advanced, `$10` = next curve-buffer index | trace `$E/$10` writers/readers; confirm wrap at buffer ends | open | `[static]` |
-| `U-0014` | `src/race/race_ai.asm:4468` | `Race_TrackObjectTypeTable` | record fields beyond the type byte and the `+6` word; why the side test uses `$2` bits | 19 x 8-byte records; `+6` is an active/flag word; `$2` is type/side | inspect track-object writers and the other consumers (`race_ai.asm:2063`, `race_ai_road.asm:1767`) | open | `[static]` |
-| `U-0015` | `src/race/race_anim_audio.asm:1224` | `sub_14DEC` | why `d0` is always 0 (both signed Speed terms read `$12(a1)`) and who calls it | vestigial/buggy speed-delta helper; no static caller | search remaining data blobs / breakpoint on entry | open | `[static]` |
-| `U-0016` | `src/race/race_ai.asm:1887` | `unk_12168` | consumer and dispatch semantics of the 9-pointer table (index 2 is `sub_140EE`) | actor impact/update handler table, likely indexed by actor type/state | find dynamic callsite or table cross-reference | open | `[static]` |
+| `U-0012` | `src/race/race_ai.asm:558` | `sub_1131A` shadow-follow | why the shadow/actor PosY gap is biased by `$20`, and what `STRUCT_OFFSET_8`/`STRUCT_OFFSET_22` drive | resolved: `$8` is the signed per-frame Y velocity for the on-foot/shadow-follow path, `$22 = velocity*FrameDelay` is added to `$00`, and `$20` is the fixed shadow/actor stand-off (same constant in `Race_HandleInputOnFoot`). `sub_1131A` itself has no static caller (dead twin of the on-foot path) | none | confirmed | `[static]`: live twin `race_ai.asm:304-399`, callgraph callers `-` |
+| `U-0013` | `src/race/race_ai.asm:1321` | `sub_11A5E` `$E/$10` | meaning of `$E/$10` and the exact `Track_CurveBuffer` wrap rule | resolved: `$E` = whole-track X advance, `$10` = final curve-buffer index (both write-only). The buffer is 256 x 2 bytes at `$FFDC58-$FFDE57`; forward walks wrap at `$FFDE58`, backward walks wrap at `$FFDD56` (index 127) | none | confirmed | `[static]`: `race_spawn.asm` decode chunks, all `a4` bounds tests |
+| `U-0014` | `src/race/race_ai.asm:4468` | `Race_TrackObjectTypeTable` | record fields beyond the type byte and the `+6` word; why the side test uses `$2` bits | resolved: track-object record = `+0` long 16.16 X, `+2` type byte, `+3` lane byte (low nibble). Type table = `+0` render flags, `+2` size 16.8, `+4` action-handler index, `+6` word (`+7` steerable flag). Side test = `lane*$20-$100` XOR `PosY` sign | none | confirmed | `[static]`: `sub_12070`, `sub_13D44`, `sub_13DE0`, `race_ai_road.asm:1767` |
+| `U-0015` | `src/race/race_anim_audio.asm:1224` | `sub_14DEC` | why `d0` is always 0 (both signed Speed terms read `$12(a1)`) and who calls it | resolved: vestigial helper. Both Speed terms read `$12(a1)` (the second was likely meant to be `$12(a2)`), so `d0` is always 0; neither a call nor any pointer/address reference exists in the ROM | none | wontfix | `[static]`: full `src/` and `build/roadrash.lst` reference scan |
+| `U-0016` | `src/race/race_ai.asm:1887` | `unk_12168` | consumer and dispatch semantics of the 9-pointer table (index 2 is `sub_140EE`) | resolved: dead data. No static reader and no pointer/address reference in the ROM; the live dispatch tables are `unk_147FC` -> `unk_14744` | none | wontfix | `[static]`: full `src/` and `build/roadrash.lst` reference scan |
 
 L2 static pass added **no new U rows**. The open-looking items are statically
 resolved quirks, not semantic gaps: `$18` is a word (the old trace read its low
-byte), `$78` is never set non-zero so `word_14742` is unreachable,
-`Race_LoadBikeData` ignores its `bikeId*16` index and always copies
+byte), `Race_LoadBikeData` ignores its `bikeId*16` index and always copies
 `unk_25AC4[0]`, and `TrackParam1` is loaded but never read. See
 `docs/analysis/race_speed.md` and `docs/analysis/race_data_tables.md`.
 
-L2 dynamic pass (E2) closed `U-0011` and added no new rows. Remaining `U-0012`..
-`U-0016` are R30 questions scheduled for `tasks/race_R30_integration.md`.
+R30 integration corrected the earlier `$78` claim: `sub_14456`/`sub_1446E` arm it
+(`$78`/`$1E`) when `$6E < 3`, so the `word_14742` limit branch in
+`Race_UpdateBikeCurve` is reachable during a fall/crash.
+
+L2 dynamic pass (E2) closed `U-0011` and added no new rows. R30 integration closed
+`U-0012`..`U-0016` statically; no L3/L4 experiment is required for them. Dynamic
+confirmation of the crash/fall branch timing remains part of L4.

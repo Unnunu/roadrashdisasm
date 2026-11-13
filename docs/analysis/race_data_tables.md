@@ -143,7 +143,8 @@ Roles:
 - Param3 = off-road limit while `$68` bit5 (curve already active) is set.
 
 `word_14742` (`$4CC2`) is the `$78`-timer fallback limit in
-`Race_UpdateBikeCurve`; because `$78` is never set non-zero it is unreachable.
+`Race_UpdateBikeCurve`; the R30 fall handlers arm `$78` (`sub_14456`/`sub_1446E`), so
+the branch is reachable during a fall.
 `unk_14056` (race_anim_audio) is a 10-word curve scale table indexed by
 `RaceActor_GraphicsIndex` (`$75`): `$0138,$0130,$0128,$0120,$0110,$0160,$0150,
 $0140,$0130,$0120`.
@@ -152,16 +153,16 @@ $0140,$0130,$0120`.
 
 | Label | Address | Size | Layout / consumer |
 |---|---|---|---|
-| `unk_12168` | `$12168` | `$24` | 9 `dc.l`: 8x `sub_1438E`, index 2 `sub_140EE`; no static reader (`U-0016`). |
+| `unk_12168` | `$12168` | `$24` | 9 `dc.l`: 8x `sub_1438E`, index 2 `sub_140EE`; unreferenced dead data, no reader/address reference (`U-0016` closed). |
 | `unk_12B7C` | `$12B7C` | `$50` | 80 extent bytes; indexed by side/position in `Race_GetActorCollisionExtent`. |
 | `unk_12BCC` | `$12BCC` | 6 | Close-attack reach bytes; `sub_12B2A` (`abs(d2)<8`, `abs(d1)>>4<2`). |
 | `unk_13A1A` | `$13A1A` | `$C` | 6 per-level words; multiplier in the dead `$139AC` respawn block. |
 | `unk_14744` | `$14744` | `$20` | 8 `dc.l` action handlers, indexed by `unk_147FC`; dispatched by `sub_12070`. |
-| `Race_TrackObjectTypeTable` | `$14764` | `$98` | 19 x 8-byte track-object records; `sub_13D44` indexes by byte +2 and tests word +6 (`U-0014`). |
+| `Race_TrackObjectTypeTable` | `$14764` | `$98` | 19 x 8-byte records: `+0` render flags, `+1` unused, `+2` size 16.8, `+4` action-handler index, `+6` word (`+7` steerable). `sub_13D44`/`sub_13DE0`/`sub_12070`/`race_ai_road` (`U-0014` closed). |
 | `unk_147FC` | `$147FC` | `$80` | 128 handler-index bytes; `sub_12070` clamps to 0..127. |
 | `unk_155A4` | `$155A4` | 8 | 1 pointer (`unk_155AC`) + `$FFFFFFFF`; loaded into `a0` but unread by `sub_15478`. |
 | `unk_155AC` | `$155AC` | `$24` | 3-byte header + 8 x 4-byte records (stride 4 from +3) + `$FF`; `sub_154D2`. |
-| `unk_155D0` | `$155D0` | `$48` | 18 `dc.l` FallState -> animation-sequence pointers (`sub_151F0`). |
+| `unk_155D0` | `$155D0` | `$48` | 18 `dc.l` FallState -> animation-sequence pointers (`sub_15014`, `sub_151F0`). |
 | `unk_15618` | `$15618` | 4 | Random FallState table (`sub_15538`, `rand & 3`). |
 | `unk_1561C` | `$1561C` | 8 | Random FallState table (`sub_15580`, `rand & 7`). |
 | `unk_15624` | `$15624` | 8 | Random FallState table (`sub_1555C`, `rand & 7`). |
@@ -178,9 +179,9 @@ Evidence [static]: consumers are listed in the table; bytes match the ROM. The
 - Whether the missing `unk_25AC4` index add was an original bug or a deliberate fixed
   block (behavior is unambiguous; blocks 1..7 are dead).
 - Dynamic checks for the intro/results selection and engine audio.
-- `unk_12168` consumer/dispatch (`U-0016`) and `Race_TrackObjectTypeTable` fields
-  beyond the type byte/`+6` word (`U-0014`).
 - The unlabeled `unk_155D0` animation scripts and the unread `unk_155A4` pointer.
+- `Race_TrackObjectTypeTable` byte `+1` (values 0/1/2) is not read by any consumer;
+  its role, if any, is unresolved. `unk_12168` is confirmed dead (`U-0016`).
 
 ## Rename proposals
 

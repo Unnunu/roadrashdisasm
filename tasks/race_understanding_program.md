@@ -38,9 +38,10 @@ disassembly pass is planned for these ranges.
 - Tables formalized: `unk_12168`, `unk_12B7C`/`unk_12BCC`, `unk_13A1A`, `unk_1471A`,
   `unk_14744`/`unk_147FC`, `Race_TrackObjectTypeTable`, `unk_155A4`, `unk_155AC`,
   `unk_155D0`, `unk_15618/1C/24`.
-- Static roles are inferred but not dynamically confirmed: `U-0012` (shadow bias),
-  `U-0013` (`$E/$10` curve wrap), `U-0014` (track-object record fields), `U-0015`
-  (`sub_14DEC` `d0=0`, no caller), `U-0016` (`unk_12168` consumer).
+- R30 integration (`race_R30_integration.md`) resolved these statically: `U-0012`
+  (shadow stand-off / `$8/$22` roles), `U-0013` (`$E/$10` + curve-buffer wrap),
+  `U-0014` (track-object record/type-table fields), `U-0015` (`sub_14DEC` vestigial),
+  `U-0016` (`unk_12168` dead data). See matrix v5 in `race_map.md`.
 - Docs: `docs/analysis/race_ai.md`, `race_anim_audio.md`, `race_data_tables.md`,
   `identifiers.md` (R30 rows), `unknowns.md`, `coverage.md`, module cards, `callgraph.md`.
 
@@ -183,11 +184,11 @@ bodies and tables, so those tasks are now contract/dynamic work, not disassembly
 | 3 | `race_L1_actor_core_b.md` | L1 | done | field matrix v2; E1 integrated |
 | 4 | `race_L2_control_a.md` | L2 | done | speed/lean/curve static contract; matrix v3 + E2 |
 | 5 | `race_L2_control_b.md` | L2 | done | matrix v4; E2-1..E2-5 dynamic; `U-0011` closed |
-| 6 | `race_R30_integration.md` | L1/L4/L7 | static + doc | next: matrix v4/v5, `$3C` timer conflict, crash/fall branches, handler tables, `unk_155D0`; triage `U-0012`..`U-0016` |
-| 7 | `race_L3_ai_contracts.md` | L3 | static + E3 | loop/targets/dispatcher contract + `$74` matrix; R30 gap handlers and `unk_12168` |
-| 8 | `race_L3_ai_dynamic.md` | L3 | integrate E3 | handler behavior, `$5A/$6C/$6D/$69`; close `U-0012`/`U-0013`/`U-0016` |
+| 6 | `race_R30_integration.md` | L1/L4/L7 | done | matrix v5: `$3C` conflict resolved (not a timer), crash/fall contracts, handler tables, `unk_155D0` consumers; `U-0012`..`U-0016` closed |
+| 7 | `race_L3_ai_contracts.md` | L3 | static + E3 | loop/targets/dispatcher contract + `$74` matrix; R30 handlers are already documented (matrix v5) |
+| 8 | `race_L3_ai_dynamic.md` | L3 | integrate E3 | handler behavior, `$5A/$6C/$6D/$69` |
 | 9 | `race_L4_impact_contracts.md` | L4 | static + E4 | pair collision/extents/reach + R30 crash paths (`sub_140EE`/`sub_141AE`/`sub_14404`) |
-| 10 | `race_L4_impact_dynamic.md` | L4 | integrate E4 | damage, `$5C`, fall/knockdown; close `U-0014`/`U-0015` |
+| 10 | `race_L4_impact_dynamic.md` | L4 | integrate E4 | damage, `$5C`, fall/knockdown |
 | 11 | `race_L5_spawn.md` | L5 | static + E5 | lifecycle/static/police closed |
 | 12 | `race_L7_results_hud.md` | L7 | static + doc | results/standings/HUD; animation-script consumers `unk_15CE0`/`unk_15CFC` |
 | 13 | `race_L6_world_a.md` | L6 | static + E6 | camera/progress/VScroll/HScroll |
@@ -226,6 +227,6 @@ behavior from an inconclusive run.
   documented and dynamically corroborated where possible.
 - L6 has a documented row/tile/shape map; L7 has results and animation data.
 - Every R30 function has an L0-L2 contract and its actor/RAM fields are in the
-  ownership matrix; `U-0012`..`U-0016` are closed or explicitly deferred with evidence.
+  ownership matrix; `U-0012`..`U-0016` are closed (matrix v5).
 - `./build.sh` -> `Matched OK`; `assets.py check` -> all slices OK; `git diff --check`
   clean.

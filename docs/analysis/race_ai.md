@@ -37,20 +37,21 @@ Roles below are inferred statically; names stay `sub_XXXX` until dynamic confirm
 
 | Function | Address | Role | Evidence |
 |---|---|---|---|
-| `sub_1131A` | `0x1131A` | Shadow-follow: shadow PosY gap -> signed Y velocity; X via `Race_UpdateActorX`/fall helper. | `[static]`, `U-0012` |
-| `sub_11A5E` | `0x11A5E` | Integrates X along `Track_CurveBuffer`, updates road Y/curve offsets and `$2`. | `[static]`, `U-0013` |
+| `sub_1131A` | `0x1131A` | Shadow-follow: shadow PosY gap -> signed Y velocity; X via `Race_UpdateActorX`/fall helper. No static caller (dead twin of `Race_HandleInputOnFoot`). | `[static]` `U-0012` closed |
+| `sub_11A5E` | `0x11A5E` | Integrates X along `Track_CurveBuffer`, updates road Y/curve offsets and `$2`; `$E/$10` are write-only. | `[static]` `U-0013` closed |
 | `sub_12B2A` | `0x12B2A` | Close-attack reach from `unk_12BCC`; else `Race_GetAttackerReach`. | `[static]` |
 | `sub_133F0` | `0x133F0` | Target-PosY delta -> signed `$46`; sets `$69` bit2. | `[static]` |
 | `sub_135E8` | `0x135E8` | Clears `$68` bit1, sets bit2 (accelerate). | `[static]` |
 | `sub_13704` | `0x13704` | `ram_FF1B46 = abs(ram_FF1EAE-X) / adjusted Speed`. | `[static]` |
 | `sub_13A5C` | `0x13A5C` | Far respawn: `X=PlayerProgress-$1F8000`, clears/updates fall flags. | `[static]` |
-| `sub_13D44` | `0x13D44` | Scans track-object records; type-table filter -> `Race_SteerTowardTarget`. | `[static]`, `U-0014` |
+| `sub_13D44` | `0x13D44` | Scans track-object records; type-table filter -> `Race_SteerTowardTarget`. Record/type-table fields decoded. | `[static]` `U-0014` closed |
 
 Dead blocks kept byte-exact: `$11F54` (`bra.w .loc_1202E` inside `sub_11CC8`) and
 `$139AC-$13A17` (inside `sub_138CE`; updates a respawn timer and calls `sub_13A5C`).
 
-Tables: `unk_12168` (9 handler pointers, `U-0016`), `unk_12B7C` (80-byte extent
-buckets) + `unk_12BCC` (6 close-attack reaches), `unk_13A1A` (6 per-level words).
+Tables: `unk_12168` (9 handler pointers, unreferenced dead data `U-0016` closed),
+`unk_12B7C` (80-byte extent buckets) + `unk_12BCC` (6 close-attack reaches),
+`unk_13A1A` (6 per-level words).
 See `race_data_tables.md`.
 
 ## Flow
@@ -94,8 +95,9 @@ state, and updates `$22`/`$00` from the curve term. `sub_113A4` is the AI varian
 - if `d0 < limit`, clear bit5 and zero `$3E/$40`; otherwise
   `$3E = (limit<<8)/(d0>>8)` and set bit5.
 
-`$78` is zeroed at actor creation and only decremented here; nothing sets it
-non-zero, so the `word_14742` branch is unreachable `[static]`.
+`$78` is zeroed at actor creation and decremented here; the R30 fall handlers
+`sub_14456`/`sub_1446E` set it to `$78`/`$1E`, so the `word_14742` branch is
+reachable during a fall `[static]`.
 
 `Race_UpdateLeanCurve` (`0x1406A`, race_anim_audio) runs from
 `sub_113A4`/`sub_113CA` only while `$68` bit5 is set and writes
@@ -247,7 +249,7 @@ previous X, `$22`, `$26` frame distance = `Speed * FrameDelay`, `$30`/`$36/$38`
 Y/road, `$3E/$40/$42` lean, `$46` curve direction, `$56` static respawn timer,
 `$68` flags (bit1 accel, bit2 brake, bit3 off-road, bit5 curve, bit6 active),
 `$69` flags (bit2 steer, bit3 direction), `$6E`,
-`$71` index, `$73`, `$75`, `$78` (curve timer, never set non-zero). Data: `Race_ActorShadowTable`/`unk_25A10` actor data,
+`$71` index, `$73`, `$75`, `$78` (curve timer armed by `sub_14456`/`sub_1446E`). Data: `Race_ActorShadowTable`/`unk_25A10` actor data,
 `unk_10E3E`, `unk_12168`, `unk_12B7C`/`unk_12BCC`, `unk_12D0A`, `unk_13A1A`, `Track_CurveBuffer`,
 `Race_ram_TrackParam0`/`Race_ram_TrackParam2`/`Race_ram_TrackParam3`, `word_14742`, `Race_ram_PlayerProgress`/`Race_ram_BestProgress`/`Race_ram_ProgressSnapshotB`, `Race_ram_FrameDelay`/
 `CurrentButtons`, `Race_StaticActorList`, `$FF2FAA`, `unk_14056` (race_anim_audio);
@@ -261,7 +263,7 @@ combat handlers are in `race_combat.asm`.
 - Static/police actor role and the `$FF2FAA` actor; static layout changes after
   `Race_UpdateStaticActors`.
 - AI tables: `unk_12B7C`/`unk_12BCC` and `unk_13A1A` roles are described in
-  `race_data_tables.md`; `unk_10E3E`, `unk_12168` (`U-0016`) and the on-foot
+  `race_data_tables.md`; `unk_10E3E`, `unk_12168` (dead data, `U-0016` closed) and the on-foot
   vector table (`unk_7DCA8`) still need consumers.
 - Exact actor-action handler semantics (`0x12FE4`..`0x131BE`); dispatcher action2/3/4
   paths are now dynamically confirmed.

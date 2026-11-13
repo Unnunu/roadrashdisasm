@@ -24,7 +24,7 @@
 | `sub_142B0`/`sub_142BE`/`sub_142CC` | `0x142B0`+ | Crash wrappers (`ram_FF1AD6=$F/$17`, `$6B` bit1). |
 | `sub_142FE`/`sub_1436E` | `0x142FE`/`0x1436E` | Road-Y clamp / shadow-speed scale. |
 | `sub_14404`/`sub_14456`/`sub_1446E` | `0x14404`+ | Collision-impact fallback and FallState timers. |
-| `sub_14DEC` | `0x14DEC` | Frame-distance delta helper (`d0` always 0, `U-0015`). |
+| `sub_14DEC` | `0x14DEC` | Frame-distance delta helper (`d0` always 0, no caller; `U-0015` closed). |
 | `sub_15580` | `0x15580` | Random FallState from `unk_1561C`. |
 | `sub_141...`..`sub_155...` | `0x1406A`+ | Remaining animation helpers/scripts (TODO). |
 | `Race_ScaleImpactDamage`/`Race_ApplyCollisionImpact`/`Race_ExchangeCollisionSpeed` | `0x1434A`+ | Impact/damage helpers shared with combat. |
@@ -46,7 +46,7 @@ Combat/target/collision functions (`Race_UpdateNearestTarget`, `Race_UpdatePlaye
 | `sub_1436E` | `0x1436E` | Scales actor-shadow Speed by `d0` (16.16; `$C000` in the crash paths). | `[static]` |
 | `sub_14404` | `0x14404` | Collision impact: `sub_1438E`, AnimState fallback, `ram_FF1AD6=$F`, optional `sub_140BC`. | `[static]` |
 | `sub_14456` / `sub_1446E` | `0x14456`+ | `$68` bit5 + AnimTimer `$78`/`$1E` when `$6E < 3`. | `[static]` |
-| `sub_14DEC` | `0x14DEC` | Returns `d0=0` and `d1=(FrameDistance(a1)-FrameDistance(a2))/FrameDelay`. | `[static]`, `U-0015` |
+| `sub_14DEC` | `0x14DEC` | Returns `d0=0` (both Speed terms read `$12(a1)`) and `d1=(FrameDistance(a1)-FrameDistance(a2))/FrameDelay`; no caller/pointer reference (vestigial). | `[static]` `U-0015` closed |
 | `sub_15580` | `0x15580` | FallState = `unk_1561C[Rand_NextWord & 7]`. | `[static]` |
 
 `unk_14744` holds the 8 action handlers dispatched via `unk_147FC`; `$15458-$15467`
@@ -72,10 +72,12 @@ unreferenced helpers.
 ## Data / RAM
 
 - `unk_14056` (10-word curve scale; `Race_GetCurveSpeedLimit`), `unk_1471A` (5x4
-  track params; `Race_LoadTrackParams`), `word_14742` (unreachable curve timer limit).
+  track params; `Race_LoadTrackParams`), `word_14742` (curve limit used while the
+  `$78` fall timer is armed by `sub_14456`/`sub_1446E`).
 - `unk_14744` (8 `dc.l` action handlers) + `unk_147FC` (128-byte handler index table)
-  are consumed by `sub_12070`; `Race_TrackObjectTypeTable` is 19 x 8-byte records used
-  by `sub_13D44` (index byte +2, filter word +6, `U-0014`).
+  are consumed by `sub_12070`/`sub_11CC8`; `Race_TrackObjectTypeTable` is 19 x 8-byte
+  records (`+0` flags, `+2` size, `+4` handler index, `+6` steerable word) used by
+  `sub_13D44`/`sub_13DE0`/`sub_12070` (`U-0014` closed).
 - `unk_155A4` is a one-pointer + `$FFFFFFFF` list loaded but not read by `sub_15478`.
   `unk_155AC` is a 3-byte header + 8x4-byte records + `$FF` sentinel consumed by
   `sub_154D2`. `unk_155D0` is 18 FallState -> animation-sequence pointers.
@@ -89,8 +91,8 @@ unreferenced helpers.
 
 - Remaining animation scripts targeted by `unk_155D0` and the `unk_155AC` sequencer
   fields.
-- Dynamic confirmation of the crash-handler branches and damage timing; `sub_14DEC`
-  has no static caller (`U-0015`).
+- Dynamic confirmation of the crash-handler branches and damage timing (L4);
+  `sub_14DEC` is vestigial with no static caller (`U-0015` closed).
 - `unk_155A4`/`unk_15CE0`/`unk_15CFC` consumers and `unk_147FC` value distribution.
 - Next: `src/race/race_hud.asm`/`src/race/road_marking.asm`/`src/race/animation.asm` cards/internals.
 

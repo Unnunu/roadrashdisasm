@@ -719,8 +719,8 @@ unk_14744:
                 dc.l    sub_142B0
                 dc.l    sub_142BE
 
-; 19 records x 8 bytes. sub_13D44 indexes by the object type byte ($2)*8 and
-; tests the word at +6; other field roles are not established (U-0014).
+; 19 records x 8 bytes: +0 render flags, +1 unused, +2 size 16.8, +4 action-handler
+; index, +6 word (+7 = steerable flag). sub_13D44/sub_13DE0/sub_12070 consume it.
 Race_TrackObjectTypeTable:
                 dc.b    0, 0, $01, 0, 0, $03, 0, 0
                 dc.b    0, $01, $01, 0, 0, $04, 0, 0
@@ -1218,7 +1218,8 @@ Race_AdjustActorTrackPositions:
 ; Returns d0=0 (both signed Speed terms read $12(a1), so their difference is
 ; always zero) and d1=(FrameDistance(a1)-FrameDistance(a2))/FrameDelay.
 ; In:  a1/a2 - actors; Out: d0=0, d1; Clobbers: d0-d2
-; @UNKNOWN(U-0015): the d0=0 result looks like a bug/vestige; no caller found yet.
+; d0 is always 0 (both terms read $12(a1); the second was likely meant to be a2)
+; and there is no caller/pointer reference in the ROM, so this is vestigial [static].
 ; *************************************************
 
 sub_14DEC:
