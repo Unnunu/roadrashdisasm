@@ -79,6 +79,15 @@ the lower side. `Race_ClampActorPairY` and `sub_12414` use the same mapping.
 `[dynamic]` Forced Y test: lower actor a1 (`$1A=$80`) / higher a2 (`$1A=$60`) calls
 `Race_GetCollisionExtent` with side 0 for a1 and side 1 for a2.
 
+## L2 link: `$0C` curve step and `$08` side step
+
+`Race_UpdateBikeLean` writes `$42`; `sub_113CA` converts it to the curve step
+`$0C = (FrameDistance>>8) * $42 >> 8` and (on a normal animation state) copies
+that value to `$08`. Forward/fall movement then consumes `$08`/`$0C` as the side
+step and `$3E`/`$40` as the curve/lean magnitudes. `sub_113A4` is the AI variant:
+it uses the existing `$08` directly (`$22 = (FrameDistance>>8)*$08>>8`,
+`$00 += $22`). The lean/curve formula details are in `race_speed.md`.
+
 ## Open points
 
 - `$32`: `RaceActor_CollisionOffset`, copied to `$1C`; zero outside collisions. It is

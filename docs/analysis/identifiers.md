@@ -455,3 +455,28 @@ uses. It exists so later analysis can decide whether a rename is worth doing.
 | `Race_ram_ActiveActorCount` | RAM | `ram_const.asm` (`$FF1A06`) | race_spawn/ai: active count including PlayerA (8 at init) | good | `[static]` | keep | - | high | - |
 | `Race_ram_OpponentFreeList` | RAM | `ram_const.asm` (`$FF1982`) | race_spawn: 7-entry free opponent list (count at +0) | good | `[static]` | keep | - | high | - |
 | `Race_ram_TrafficFreeList` | RAM | `ram_const.asm` (`$FF19C4`) | race_spawn: traffic free list; empty at init | good | `[static]` | keep | - | high | - |
+| `Race_GetInput` | routine | `race_core.asm:1724 ($BE56)` | race_core: SACBRLDU pad -> steering, `$68` bit1/bit2, Start debounce | good | `[static]` | keep | - | high | - |
+| `Race_GetInputDemo` | routine | `race_core.asm:1702 ($BE2C)` | race_core: any pad byte ends the demo; no control writes | good | `[static]` | keep | - | high | - |
+| `Race_LoadTrackParams` | routine | `race_core.asm:1279 ($B840)` | race_core: `unk_1471A[track]` -> TrackParam0..3 | good | `[static]` | keep | - | high | - |
+| `Race_LoadBikeData` | routine | `race_core.asm:1300 ($B86A)` | race_core: 19-word bike record + always `unk_25AC4[0]` (index computed but unused) | good | `[static]` | keep | - | high | - |
+| `Race_UpdateActorSpeedState` | routine | `race_ai.asm:4739 ($13A92)` | race_ai: `$68` flags -> `$14`; gear via `+E/+1A/+2` | good | `[static]` | keep | - | high | - |
+| `Race_UpdateActorSpeedGear` | routine | `race_ai.asm:3630 ($131EE)` | race_ai: relative speed/distance + curve limit -> `$68` bit1/bit2 | good | `[static]` | keep | - | high | - |
+| `Race_UpdateActorSpeedCurve` | routine | `race_ai.asm:3900 ($13422)` | race_ai: target-bucket scan -> `Race_SteerTowardTarget`, `$68` bit1/bit2 | good | `[static]` | keep | - | high | - |
+| `Race_UpdateActorRoadSteering` | routine | `race_ai.asm:4401 ($1384C)` | race_ai: road-center steer -> `$46`, `$69` bit2 | good | `[static]` | keep | - | high | - |
+| `Race_SteerTowardTarget` | routine | `race_ai.asm:4441 ($13892)` | race_ai: bucket offset/speed -> `$46`, `$69` bit2 | good | `[static]` | keep | - | high | - |
+| `Race_UpdateBikeLean` | routine | `race_ai.asm:5225 ($13EA0)` | race_ai: `$42 = sign(steer)*abs(steer)*FF1AAA / ((FF1AA6>>3)*(Speed*FF1AB4>>8))` | good | `[static]` | keep | - | high | - |
+| `Race_UpdateBikeCurve` | routine | `race_ai.asm:5270 ($13EFA)` | race_ai: `$3E/$40/$68` bit5 from `$08`, Speed, TrackParam0/2/3; `$78`/`word_14742` dead | good | `[static]` | keep | - | high | - |
+| `Race_GetCurveSpeedLimit` | routine | `race_ai.asm:5370 ($13FE6)` | race_ai: `(TP<<3)/(curve*scale>>8)`; TP2 off-road | good | `[static]` | keep | - | high | - |
+| `Race_UpdateLeanCurve` | routine | `race_anim_audio.asm:39 ($1406A)` | race_anim_audio: `ram_FF3042=(d0*$3E)>>16`, `$40` from `$3E` | good | `[static]` | keep | - | high | - |
+| `unk_25A10` | data | `race_actor_extra_tables.asm:57 ($25A10)` | race_ai: 13 actor-record pointers indexed by `$16` | placeholder | `[static]` | rename-later | `Race_ActorBikeRecordTable` | high | - |
+| `ActorBikeRecord_*` | data | `race_actor_extra_tables.asm:131+ ($25B80+)` | race_ai/core: 19-word gear record (max/accel/upshift/downshift) | good | `[static]` | keep | - | high | - |
+| `unk_25AC4` | data | `race_actor_extra_tables.asm:106 ($25AC4)` | race_core: steering/engine block; always block 0 | placeholder | `[static]` | rename-later | `Race_BikeSteeringTable` | high | - |
+| `unk_25B50` | data | `race_actor_extra_tables.asm:117 ($25B50)` | race_core: 8 bikeId -> even record pointers | placeholder | `[static]` | rename-later | `Race_PlayerBikeRecordTable` | high | - |
+| `unk_1471A` | data | `race_anim_audio.asm:1188 ($1471A)` | race_core: 5 track x 4 words -> TrackParam0..3 | placeholder | `[static]` | rename-later | `Race_TrackCurveParams` | high | - |
+| `word_14742` | data | `race_anim_audio.asm:1228 ($14742)` | race_ai: `$78`-timer curve limit; branch unreachable | placeholder | `[static]` | rename-later | `Race_CurveTimerLimit` | high | - |
+| `unk_14056` | data | `race_anim_audio.asm:7 ($14056)` | race_ai: 10-word curve scale indexed by `$75` | placeholder | `[static]` | rename-later | `Race_CurveScaleTable` | high | - |
+| `ram_FF1AA6` | RAM | `ram_const.asm:264 ($FF1AA6)` | race_ai: lean steering divisor (`>>3`) | placeholder | `[static]` | rename-later | `RaceBike_ram_LeanSteeringDivisor` | high | - |
+| `ram_FF1AAA` | RAM | `ram_const.asm:265 ($FF1AAA)` | race_ai: lean multiplier (usually `$8000`) | placeholder | `[static]` | rename-later | `RaceBike_ram_LeanMultiplier` | high | - |
+| `ram_FF1AB2` | RAM | `ram_const.asm:269 ($FF1AB2)` | race_ai: curve speed scale | placeholder | `[static]` | rename-later | `RaceBike_ram_CurveSpeedScale` | high | - |
+| `ram_FF1AB4` | RAM | `ram_const.asm:270 ($FF1AB4)` | race_ai: lean speed scale | placeholder | `[static]` | rename-later | `RaceBike_ram_LeanSpeedScale` | high | - |
+| `$78` (`STRUCT_OFFSET_78`) | field | `ram_const.asm:428 ($78)` | race_ai: bike-curve timer; zeroed at creation, only decremented | placeholder | `[static]` | rename-later | `RaceActor_CurveTimer` | medium | - |

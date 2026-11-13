@@ -3627,6 +3627,16 @@ loc_131B8:
 
 
 
+; *************************************************
+; Function Race_UpdateActorSpeedGear
+; AI speed/gear decision. Compares the actor with PlayerA (relative speed and X
+; distance) and the curve limit, then sets $68 bit1 (accelerate) or bit2 (brake)
+; and runs Race_UpdateActorSpeedState. Per-Type gear data comes from unk_25A10.
+; In:  a1 - actor; RacePlayerA; unk_25A10
+; Out: $68 bit1/bit2; $14/$18 via Race_UpdateActorSpeedState
+; Clobbers: d0/d5/d6/d7/a2/a3/a4
+; *************************************************
+
 Race_UpdateActorSpeedGear:
                 lea     (RacePlayerA).l,a2
                 move.w  $12(a1),d6
@@ -3896,6 +3906,17 @@ Race_ApplyActorSpeedCorrection:
 
 
 
+
+; *************************************************
+; Function Race_UpdateActorSpeedCurve
+; Picks the nearest target bucket (Race_FindTargetActor, scanned forward/backward
+; around ram_FF1B46 and stored in ram_FF1892/ram_FF189C), steers toward it with
+; Race_SteerTowardTarget and sets $68 bit1 (accelerate). If both candidates fail
+; it sets $68 bit2 (brake). It does NOT call Race_UpdateActorRoadSteering.
+; In:  a1 - actor; d0 - starting bucket; ram_FF1B46 distance ratio
+; Out: $46, $69 bit2, $68 bit1/bit2
+; Clobbers: d0/d1/a2/a6
+; *************************************************
 
 Race_UpdateActorSpeedCurve:
                 move.w  (ram_FF1B46).l,(ram_FF1896).l
@@ -4398,6 +4419,16 @@ sub_1383E:
 
 
 
+; *************************************************
+; Function Race_UpdateActorRoadSteering
+; Steers toward the road center for the bucket in d0 when no target actor exists.
+; $46 = (roadY_offset - actorY) / (Speed * |offset| * $280 >> 16), then >>8;
+; sets $69 bit2.
+; In:  a1 - actor; d0 - bucket
+; Out: $46, $69 bit2
+; Clobbers: d0-d2/a6
+; *************************************************
+
 Race_UpdateActorRoadSteering:
                 asl.w   #1,d0
                 lea     (unk_12D0A).l,a6
@@ -4733,7 +4764,20 @@ sub_13A26:
 
 ; *************************************************
 ; Function Race_UpdateActorSpeedState
-; a1 - actor
+; Chooses the per-frame acceleration ($14) from the $68 flags and the per-Type
+; gear record (unk_25A10):
+;   bit7 -> $FFEC (finish deceleration)
+;   on-foot -> sub_13BBC
+;   bit0 -> $FFFB (collision latch)
+;   bit1 -> gear up/down using +E upshift and +1A downshift thresholds, with
+;           +2[gear] as the acceleration; max gear is word0
+;   bit2 -> subtract $40 (brake)
+;   bit1 clear -> subtract 5
+;   bit5 -> subtract Curve*$60>>16
+;   bit3 -> reduce a positive result by Speed>>8, or run the downshift test
+; In:  a1 - actor
+; Out: $14; may change $18 (gear)
+; Clobbers: d0-d3
 ; *************************************************
 
 Race_UpdateActorSpeedState:
@@ -5212,13 +5256,13 @@ sub_13E94:
 
 ; *************************************************
 ; Function Race_UpdateBikeLean
-; a1 - actor
-; *************************************************
- ; *************************************************
-; Function Race_UpdateBikeLean
-; Computes the bike lean ($42) from Speed/Steering physics values.
-; In:  a1 - actor; RaceBike_ram_CurrentSteering; ram_FF1AA6/AAA/B4
-; Out: actor $42
+; Computes the signed lean $42:
+;   $42 = sign(Steering) * |Steering| * ram_FF1AAA
+;         / ((ram_FF1AA6>>3) * (Speed*ram_FF1AB4>>8))
+; and zero when Speed or the steering quotient is zero.
+; In:  a1 - actor ($6E must be negative, i.e. normal bike);
+;      RaceBike_ram_CurrentSteering; ram_FF1AA6/AAA/B4
+; Out: $42
 ; Clobbers: d0-d3
 ; *************************************************
 
@@ -5261,9 +5305,19 @@ Race_UpdateBikeLean:
 
  ; *************************************************
 ; Function Race_UpdateBikeCurve
-; Derives the bike curve/lean flags and $3E/$40 from speed/curve values.
-; In:  a1 - actor; Race_ram_TrackParam0/3032/3034/word_14742
-; Out: actor $3E/$40/$68 bits
+; Derives $3E/$40 and $68 bit5 from Speed, the side step $08 and a curve limit:
+;   d0 = |$08|; for demo/non-player d0 = |$08|*$200>>8
+;   d1 = Speed * ram_FF1AB2 >> 8; d0 = d0 * d1 >> 3
+; Limit selection:
+;   $78 timer != 0                  -> word_14742 ($4CC2)
+;   $78 == 0, bit5 set: bit3 -> TrackParam3, else TrackParam0
+;   $78 == 0, bit5 clear: bit3 -> TrackParam2, else TrackParam0
+; If d0 < limit: clear bit5, zero $3E/$40. Otherwise $3E = (limit<<8)/(d0>>8)
+; and set bit5.
+; Note: $78 is zeroed at creation and only decremented here; nothing sets it
+; non-zero, so the word_14742 branch is unreachable [static].
+; In:  a1 - actor; Race_ram_TrackParam0/2/3; word_14742
+; Out: $3E/$40/$68 bit5
 ; Clobbers: d0-d2
 ; *************************************************
 
@@ -5361,8 +5415,12 @@ Race_UpdateBikeCurve:
 
  ; *************************************************
 ; Function Race_GetCurveSpeedLimit
-; Returns the curve speed limit from Track_CurveBuffer and the actor graphics data.
-; In:  a1 - actor; Track_CurveBuffer; unk_14056
+; limit = (base<<3) / ((|signed low byte of the word at
+;          Track_CurveBuffer[((X>>16)+6)&$FF]| * unk_14056[GraphicsIndex]) >> 8)
+; base = TrackParam2 when $68 bit3 (off-road), else TrackParam0.
+; Zero curve, division overflow, or a negative quotient returns $7FFF (no limit).
+; In:  a1 - actor ($04 X high word, $68 bit3, $75 GraphicsIndex);
+;      Track_CurveBuffer; unk_14056
 ; Out: d0 - speed limit ($7FFF = none)
 ; Clobbers: d0-d2/a0/a2
 ; *************************************************

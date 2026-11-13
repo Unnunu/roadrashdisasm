@@ -25,8 +25,8 @@ Legend: `[x]` done, `[~]` partial, `[ ]` not started.
 | Boot/runtime/IRQ/input | `main`, `top_level`, `fade` | [x] | [~] | [~] | [~] | HInt/input helper semantics, state transitions |
 | Logo/intro | `logoEA`, `intro` | [x] | [~] | [~] | [~] | exact title visuals/timing |
 | Menus/screens | `menu_*`, `message`, `shop`, `highscore`, `endlevel`, `race_results`, `rider_intro` | [x] | [~] | [~] | [~] | non-demo captures; shop layout user-described |
-| Race core/HUD/spawn | `race_core`, `race_hud*`, `race_spawn` | [x] | [~] | [~] | [~] | L1 actor core done (matrix v2, E1 integrated); demo collision/crash survey done; HUD/spawn dynamics pending |
-| Actor AI/movement/combat | `race_ai`, `race_combat`, `race_anim_audio` | [x] | [~] | [~] | [~] | AI/collision fields, helper contracts |
+| Race core/HUD/spawn | `race_core`, `race_hud*`, `race_spawn` | [x] | [~] | [~] | [~] | L1 actor core done (matrix v2, E1); L2 static control done (matrix v3); HUD/spawn dynamics pending |
+| Actor AI/movement/combat | `race_ai`, `race_combat`, `race_anim_audio` | [x] | [~] | [~] | [~] | L2 input/lean/curve/speed static contract done; E2 dynamic checks pending |
 | Physics/collision/road marking | `race_physics`, `road_marking` | [x] | [~] | [~] | [~] | table offsets, visual confirmation |
 | Road render/shapes | `road_render`, `road_shapes` | [x] | [~] | [~] | [~] | shape row bytes, interpolation/projection |
 | Track/data formats | `track_data`, `race_track_data`, `race_*_tables`, `race_misc_data` | [x] | [~] | [~] | [~] | stream/channel/table field meanings |
@@ -43,10 +43,10 @@ Priority is analytical impact, not address order.
 | # | Target | Unknown / why | Next experiment | Artifact |
 |---|---|---|---|---|
 | 1 | `Race_UpdateActorPairCollision`, `sub_12070`, `sub_12414`, `sub_11CC8` | `$32/$4C/$4E/$56`, side-extent mapping | **done:** `$4C` upper / `$4E` lower by Y ordering (forced pair trace); `$32` offset; `$56` timer TODO | collision contract + field matrix |
-| 2 | `Race_UpdateActorSpeedState`, `Race_UpdateActorSpeedGear` | gear/speed/curve branch semantics | **done:** demo trace + `race_speed.md`; gear=0 remains TODO | speed/gear contract |
+| 2 | `Race_UpdateActorSpeedState`, `Race_UpdateActorSpeedGear` | gear/speed/curve branch semantics | **done:** static L2 contract (`race_speed.md`); gear word = 5 in the dump (old byte read was an artifact); E2 in `race_L2_control_b.md` | speed/gear contract |
 | 3 | `Race_FindTargetActor`, `Race_SaveActorShadow` | **done:** candidate buckets, ratio scan, shadow role; L1 matrix v2 closes the struct/list/shadow ownership (E1 integrated) | target contract documented | `race_ai.md`, `race_map.md` |
 | 4 | `Race_UpdateActorMovement/FallMovement`, `sub_115C6` | **done:** E1 closed `$36` accumulator, `$38/$3A` movement updates, `$3C` write-only step | fall/movement edge coverage | movement matrix update |
-| 5 | `Race_GetCurveSpeedLimit`, `Race_UpdateBikeCurve`, `Race_UpdateLeanCurve` | **done:** curve/lean/gear contract; gear=0 edge TODO | high-speed steering trace | `race_speed.md` |
+| 5 | `Race_GetCurveSpeedLimit`, `Race_UpdateBikeCurve`, `Race_UpdateLeanCurve` | **done:** formulas + table decode (`race_speed.md`, `race_data_tables.md`); dead `$78`/`word_14742` branch noted | E2-2/E2-3 forced-steer trace | `race_speed.md` |
 | 6 | Road render helpers: `Race_ProjectObject`, `Race_ProjectActorObject`, `Road_DrawStrip`, `Road_WriteTileColumns` | exact row/tile mapping | **progress:** shape record layout + row start confirmed; SAT/VSRAM next | render/shape doc |
 | 7 | `Race_ApplyCollisionImpact`, `Race_ApplyCrashImpact`, impact chain | `$2A/$2C/$2E/$54/$5C` and damage timing | **progress:** contract + demo call hit; return-state trace next | `race_impact.md` |
 | 8 | Track/shape data formats | **done:** Data2/3 decoder, Data4/5/6 formats; remaining Data4 side bits | compare staged/service consumers | format spec |

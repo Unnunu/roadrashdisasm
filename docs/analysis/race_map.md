@@ -1,6 +1,6 @@
 # Race map: timeline, dataflow, field ownership and captures
 
-- **Status:** v2 (L1 static pass + Experiment Pack E1 dynamic checks integrated)
+- **Status:** v3 (L1 E1 integrated + L2 static control contract; E2 pack ready)
 - **Sources:** `docs/analysis/race.md`, `race_actors.md`, `race_ai.md`, `race_movement.md`,
   `race_speed.md`, `race_impact.md`, `race_spawn.md`, `road_render.md`, `docs/ram-map.md`,
   `tasks/race_understanding_program.md`
@@ -45,7 +45,26 @@ Pad (Race_GetInput)
   -> nearest opponent/place -> results/standings/money
 ```
 
-## Actor field ownership matrix v2
+## Actor field ownership matrix v3
+
+v3 adds the L2 control rows (`$12/$14/$16/$18/$3E/$40/$42/$46/$68/$69/$78`) and the
+static contract in `race_speed.md`; E2 will confirm the residual dynamic points.
+New in v3:
+
+- `$18` Gear is a **word**. The earlier trace printed only its low byte, so it looked
+  like `0`; the checked-in dump has `Gear = 5`. The demo bike record
+  (`ActorBikeRecord_2`) has upshift thresholds `$125C..$2EE0`, all crossed.
+- `$42` Lean feeds `sub_113CA` (`$0C = (FrameDistance>>8)*$42>>8`); `$3E`/`$40` come
+  from `Race_UpdateBikeCurve` / `Race_UpdateLeanCurve`.
+- `$68` bit1 = accelerate (B/AI), bit2 = brake (A/AI), bit3 = off-road, bit5 = curve
+  active. bit0 = collision latch (L4), bit4 = fall/on-foot (L4), bit6 = AI-active
+  marker (L3), bit7 = finish/progress latch (L1/L5).
+- `$69` bit2 = steer/curve direction (set by road steering/`Race_SteerTowardTarget`),
+  bit3 = direction sign; other bits are combat/fall (L4).
+- `$78` is zeroed at actor creation and only decremented by `Race_UpdateBikeCurve`;
+  no writer sets it non-zero, so the `word_14742` limit branch is dead `[static]`.
+- `Race_LoadBikeData` ignores its `bikeId*16` index and always copies
+  `unk_25AC4[0]`; blocks 1..7 are dead data `[static]`.
 
 v2 integrates the Experiment Pack E1 dynamic checks (`analysis/capture_L1b_*`) into the
 v1 static close. New in v2:
@@ -95,8 +114,8 @@ Widths match the actual instruction sizes: `$04/$1E/$26` are longs, the
 | `$10` | word | (unnamed) | `Race_UpdateActorFallMovement` | `sub_12414` (Y offset) | `[static]` | fall-path Y offset |
 | `$12` | word | `RaceActor_Speed` | `Race_UpdateActorAI`, `Race_InitOpponent/TrafficActor`, impact | speed display, curve limit, AI | `[confirmed]` Player `$EE`, steering `$2D15` | - |
 | `$14` | word | `RaceActor_Acceleration` | `Race_UpdateActorSpeedState`, `sub_13BD8` | `Race_UpdateActorAI`, shadow update | `[confirmed]` `$22` low speed, `$0E` at `$2D15` | gear-table branch coverage |
-| `$16` | word | `RaceActor_Type` | `Race_CreateActors` | `Race_UpdateStaticActors`, speed state | `[confirmed]` 2/3/4; static anomaly | static `$16=0` after update |
-| `$18` | word | `RaceActor_Gear` | `Race_UpdateActorSpeedState` | `Race_UpdateActorSpeedState` | `[static]`; demo kept `0` | upshift condition |
+| `$16` | word | `RaceActor_Type` | `Race_CreateActors` | `Race_UpdateStaticActors`, speed state; indexes `unk_25A10` | `[confirmed]` 2/3/4; static anomaly | static `$16=0` after update |
+| `$18` | word | `RaceActor_Gear` | `Race_UpdateActorSpeedState` | `Race_UpdateActorSpeedState` | `[confirmed]` word; demo dump `Gear=5` (old trace read the low byte) | - |
 | `$1A` | word | (unnamed) | movement/fall start (`= $30`); `Race_SetupActor`; `Race_UpdateActorAI` restore | pair collision, `Race_ClampActorPairY`, `sub_12070` | `[static/dynamic]` `$31` vs `$30=$35` | previous road-relative Y (name candidate) |
 | `$1C` | word | `RaceActor_PreviousCollisionOffset` | movement backup from `$32` | `Race_ApplyCollisionImpact` | `[static]` | - |
 | `$1E` | long | `RaceActor_PreviousX` | `Race_UpdateActorX/Movement/FallMovement`, spawn setup | target scans, impact | `[confirmed]` `$04-$1E=$26` | - |
@@ -113,11 +132,11 @@ Widths match the actual instruction sizes: `$04/$1E/$26` are longs, the
 | `$38` | word | `RaceActor_CurveDelta` | movement | `sub_115C6` | `[static/dynamic]` `$22B` | - |
 | `$3A` | word | `RaceActor_CurveAccum` | movement | `sub_115C6` | `[static/dynamic]` `3` | - |
 | `$3C` | word | `RaceActor_CurveStep` | `sub_115C6`; reset in `sub_13A26` | - | `[confirmed]` E1-4: write-only copy of `sub_115C6` input `d1` | - |
-| `$3E` | word | `RaceActor_Curve` | `Race_UpdateBikeCurve` | `Race_UpdateActorSpeedState` | `[static]` | limit branch coverage |
-| `$40` | word | `RaceActor_LeanCurve` | `Race_UpdateBikeCurve` | lean/curve math | `[static]` | - |
-| `$42` | word | `RaceActor_Lean` | `Race_UpdateBikeLean` | not documented | `[confirmed]` `±$49` | readers |
+| `$3E` | word | `RaceActor_Curve` | `Race_UpdateBikeCurve` (zero/`(limit<<8)/(d0>>8)`); read by `Race_UpdateLeanCurve` | `Race_UpdateActorSpeedState`, `Race_UpdateLeanCurve` | `[static]` formula in `race_speed.md` | E2-3 dynamic check |
+| `$40` | word | `RaceActor_LeanCurve` | `Race_UpdateBikeCurve` (zero), `Race_UpdateLeanCurve` | lean/curve math | `[static]` | E2-2/E2-3 |
+| `$42` | word | `RaceActor_Lean` | `Race_UpdateBikeLean` | `sub_113CA` -> `$0C` | `[confirmed]` `±$49`; formula `race_speed.md` | E2-2 sign check |
 | `$44` | word | (unnamed) | `sub_12BD2`, `sub_12C9A` | - | `[static]` write-only | unused/reserved |
-| `$46` | word | `RaceActor_CurveDirection` | `Race_SteerTowardTarget`, `Race_ClampActorY` | speed correction/road steering | `[dynamic]` `-$03` | sign convention |
+| `$46` | word | `RaceActor_CurveDirection` | `Race_SteerTowardTarget`, `Race_UpdateActorRoadSteering`, `Race_ClampActorY` | movement/steer handlers | `[dynamic]` `-$03`; L2 formula in `race_speed.md` | reader mapping (L3) |
 | `$48` | word | (unnamed) | - (VScroll `$48(a0)` only) | - | `[static]` not an actor field | unused for actors |
 | `$4A` | word | `RaceActor_CollisionExtent` | collision path | `Race_UpdateCollision` | `[dynamic]` `$0D`/`$0E` | - |
 | `$4C` | word | `RaceActor_CollisionExtentUpper` | `Race_GetCollisionExtent` | pair separation | `[static/dynamic]` | - |
@@ -134,8 +153,8 @@ Widths match the actual instruction sizes: `$04/$1E/$26` are longs, the
 | `$62` | long | (unnamed) | movement/advance (`= Race_ram_ProgressSnapshotB`) | not documented | `[static]` | late-race progress snapshot |
 | `$64` | word | (unnamed) | - (VScroll/object writers only) | - | `[static]` not an actor field | unused for actors |
 | `$66` | word | `RaceActor_Rating` | `Race_CreateActors`, `Race_RecycleActor` | spawn/init speed | `[confirmed]` def byte5*100 | recycle distance reuse |
-| `$68` | byte | `RaceActor_ControlFlags` | `Race_GetInput`, AI, impact, spawn | AI/movement/impact | `[confirmed]` bit6 active | bit0/4/5/7 split |
-| `$69` | byte | `RaceActor_StateFlags` | combat/AI | pair collision, dispatcher | `[confirmed]` attack bits; `$04` steering | bit0/1/7 split |
+| `$68` | byte | `RaceActor_ControlFlags` | `Race_GetInput`, AI, impact, spawn | AI/movement/impact | `[confirmed]` bit0 collision, bit1 accel, bit2 brake, bit3 off-road, bit4 fall/on-foot, bit5 curve, bit6 AI-active, bit7 finish | L2 owns bit1/2/3/5; bit0/4 L4, bit6 L3, bit7 L1/L5 |
+| `$69` | byte | `RaceActor_StateFlags` | combat/AI | pair collision, dispatcher | `[confirmed]` bit2 steer/curve, bit3 direction; combat bits L4 | L2 owns bit2/3; bit0/1/4/5/6/7 L4 |
 | `$6A` | byte | `RaceActor_WeaponAnimFlags` | animation | animation | `[static]` | role |
 | `$6B` | byte | `RaceActor_AttackFlags` | `Race_CreateActors`, combat | combat | `[confirmed]` armed `$02` | - |
 | `$6C` | byte | `RaceActor_AttackPhase` | combat | dispatcher/combat | `[confirmed]` | - |
@@ -150,7 +169,7 @@ Widths match the actual instruction sizes: `$04/$1E/$26` are longs, the
 | `$75` | byte | `RaceActor_GraphicsIndex` | `Race_CreateActors` | curve limit / sprite setup | `[confirmed]` | - |
 | `$76` | byte | (unnamed) | `Race_UpdateAnimation` (race_anim_audio) | `Race_BuildActorObjectList` (`btst #0`, `move.b`) | `[static]` | animation flag byte |
 | `$77` | byte | (unnamed) | `Race_CreateActors` (def byte4) | not documented | `[static]` | meaning (class/tier?) |
-| `$78` | byte | (unnamed) | `Race_ApplyCrashImpact` (`$1E` hold); `Race_UpdateBikeCurve` | bike-curve timer use | `[static]` | timer vs state flag |
+| `$78` | byte | (unnamed) | `Race_CreateActors` (0); `Race_UpdateBikeCurve` (decrement only) | `Race_UpdateBikeCurve` | `[static]` never set non-zero; `word_14742` branch dead | rename candidate (`RaceActor_CurveTimer`) |
 | `$7A` | word | (unnamed) | - (VScroll writer only) | - | `[static]` not an actor field | unused for actors |
 | `$7C` | word | (unnamed) | - (rearview/VScroll buffer) | `Race_DrawRearviewMirror` (not an actor) | `[static]` not an actor field | unused for actors |
 | `$7E` | word | (unnamed) | - (VScroll writer only) | - | `[static]` not an actor field | unused for actors |
@@ -230,6 +249,100 @@ A full 60 s demo (`capture_L1b_demo_survey.gdb`) counted the contact/crash entry
 Natural demo collisions therefore exist but are rare and never produce a player crash;
 crash/fall experiments need a non-demo run.
 
+## L2 static control contract (summary)
+
+Full formulas: `race_speed.md`; table layouts: `race_data_tables.md`.
+
+```
+Pad (SACBRLDU)
+  B bit4 -> $68 bit1 (accelerate)      A bit6 -> $68 bit2 (brake)
+  Left bit2 / Right bit3 -> RaceBike_ram_CurrentSteering
+       (Left subtracts, Right adds, +ReturnToStraightPower on reversal,
+        clamp +-MaxSteering; Left has priority)
+  neither -> steering decays by ReturnToStraightPower
+
+$12 Speed, $14 Acceleration, $18 Gear (word)
+  AI pre-step: if $68 bit3 off-road, $14 -= $14/4;
+               Speed += $14*FrameDelay (clamp 0);
+               $26 = Speed*FrameDelay
+  SpeedState: bit1 -> gear via +E upshift / +1A downshift / +2 accel;
+              max gear word0 -> $14 = -5;
+              bit2 -$40, bit1-clear -5, bit5 -Curve*$60>>16,
+              bit3 positive result -= Speed>>8
+
+Race_UpdateBikeLean:  $42 = sign(steer)*|steer|*FF1AAA /
+                            ((FF1AA6>>3)*(Speed*FF1AB4>>8))
+sub_113CA:            $0C = (FrameDistance>>8)*$42>>8 ; $08 = $0C
+Race_UpdateBikeCurve: d0 = |$08| (*$200>>8 for demo/non-player)
+                      d0 = (d0*(Speed*FF1AB2>>8))>>3
+                      limit = $78 ? word_14742 : TrackParam(0/2/3)
+                      $3E = (limit<<8)/(d0>>8), $68 bit5
+Race_UpdateLeanCurve: ram_FF3042 = (d0*$3E)>>16
+                      $40 = (d0*((($10000/$3E)-1))*$140)>>8
+GetCurveSpeedLimit:   ((bit3?TP2:TP0)<<3) /
+                      ((|curve[((X>>16)+6)&$FF]| * unk_14056[$75])>>8)
+```
+
+Static quirks (documented, no unresolved behavior):
+
+- `$18` is a word; the old trace misread the low byte. Demo gear reached 5.
+- `$78` is never set non-zero -> `word_14742` limit is unreachable.
+- `Race_LoadBikeData` ignores `bikeId*16` and always loads `unk_25AC4[0]`.
+- `TrackParam1` is loaded but never read.
+- Steering asymmetry at zero: Left adds `ReturnToStraightPower`, Right does not
+  (first step `$48` vs `$30` with the loaded block 0).
+
+## Experiment Pack E2 (L2 residual dynamic checks)
+
+Run in `race_L2_control_b.md`. At most five checks; bare-hex PCs.
+
+```
+E2-1  word-width gear + upshift
+Goal:        confirm $18 is a word and +E[gear] is the upshift threshold
+Scenario:    demo race until Speed > $28A0 (or force Speed)
+Breakpoint:  0x13AFE (read $E(a0,gear*2)) and 0x13B12 (store Gear)
+Commands:    p/x $ff1eaa+$18 (word!) ; p/x $d1 ; p/x $ff1eaa+$12
+Report:      gear word, d3 threshold, speed across the upshift
+Decision:    if gear increments when Speed >= +E[gear] -> table layout confirmed;
+             also confirm the max-gear -5 acceleration
+             (a byte read here is the old artifact, not evidence)
+
+E2-2  lean sign and $0C derivation
+Goal:        confirm $42 sign and $0C = (FrameDistance>>8)*$42>>8
+Scenario:    force RaceBike_ram_CurrentSteering = +$600 then -$600
+Breakpoint:  0x13EA0 (entry) and 0x113CA
+Commands:    p/x $ff38b0 ; p/x $ff1eaa+$42 ; p/x $ff1eaa+$0C
+Report:      steering, $42, $0C for both signs
+Decision:    if $42/$0C flip sign with steering -> confirmed
+
+E2-3  curve-limit branch and selection
+Goal:        confirm the limit source and (limit<<8)/(d0>>8)
+Scenario:    normal + off-road frames; force $78 non-zero if reachable
+Breakpoint:  0x13FC0 / 0x13FCE
+Commands:    p/x $ff1eaa+$08 ; p/x $ff1eaa+$12 ; p/x $ff1eaa+$68
+             p/x $ff302e ; p/x $ff3032 ; p/x $ff3034 ; p/x $14742
+Report:      computed d0, selected limit, stored $3E/bit5
+Decision:    if on-road uses TP0, off-road TP2, bit5+off-road TP3 ->
+             confirmed; $78 lockout is a static no-writer exception
+
+E2-4  input bit -> control flag mapping
+Goal:        confirm B->$68 bit1, A->$68 bit2, Left/Right steering sign
+Scenario:    inject pad frames (capture_natural_attack.gdb pattern) or play
+Breakpoint:  0xBE56 after GetInputPlayerA, or read at 0x10E66
+Commands:    p/x $ff1eaa+$68 ; p/x $ff38b0 ; p/x $ff1eaa+$12
+Report:      $68 low bits and steering per held button
+Decision:    if B sets bit1, A sets bit2, Left subtracts/Right adds -> confirmed
+
+E2-5  off-road acceleration reduction
+Goal:        confirm $14 -= $14/4 and the Speed>>8/downshift rule
+Scenario:    enter off-road (Y clamp sets $68 bit3) or force bit3
+Breakpoint:  0x10E8C / 0x10E9A and 0x13B6C
+Commands:    p/x $ff1eaa+$14 (before/after) ; p/x $ff1eaa+$12
+             p/x $ff1eaa+$68 ; p/x $ff1eaa+$18
+Report:      acceleration before/after the 3/4 reduction; gear on downshift test
+Decision:    if $14_after == $14_before - $14_before/4 -> confirmed
+```
+
 ## Register-base and list warning
 
 Raw `NN(aN)` greps are not evidence until the base register is known:
@@ -270,6 +383,11 @@ already used for them. New checks follow the Experiment Pack format in
 | E1-2 Y correction | `0x113C4`, demo PlayerA | `$22 = d0`, then `$00 += d0` |
 | E1-3 shape variant | `0x101E6`/`0x1022C`/`0x10254`, demo | signed `$34` -> shape index + H-flip |
 | E1-5 ambient `d4` | `0x13746`, full demo | 4169 AI-path calls, `d4=0`; no spawn |
+| E2-1 gear word/upshift | `0x13AFE`/`0x13B12`, demo or forced Speed | `$18` word and `+E` upshift |
+| E2-2 lean sign/`$0C` | `0x13EA0`/`0x113CA`, forced steering `±$600` | `$42`/`$0C` sign |
+| E2-3 curve limit | `0x13FC0`/`0x13FCE`, on/off-road + `$78` | TP0/2/3 selection and `(limit<<8)/(d0>>8)` |
+| E2-4 input flags | `0xBE56`, injected pad frames | B/A -> `$68` bit1/bit2, steering sign |
+| E2-5 off-road accel | `0x10E8C`/`0x10E9A`/`0x13B6C`, forced bit3 | `$14 -= $14/4`, downshift rule |
 | Demo collision/crash | `0x127EA`/`0x14486`/`0x11B7A`/`0x14C3C`, full demo | 9 pair contacts (1 player), 0 crash/object, no player fall |
 | Static/extra actors | running dump: static `$16/$30/$46/$56/$74`; `$FF2FAA` `$71` | static layout anomaly vs extra slot activation |
 
@@ -312,6 +430,7 @@ Observed on the checked-in dumps:
 | L7 | HUD, animation data, standings/results/money/highscore | last |
 
 The L1 actor-core dynamic pass is complete (`tasks/race_L1_actor_core_b.md`): matrix v2
-integrates E1. The next task is `tasks/race_L2_control_a.md` (input -> speed/gear/lean/
-curve), per `tasks/race_understanding_program.md`. `U-0011` remains open only for the
-spawn path, which needs a normal-mode/traffic run.
+integrates E1. The L2 static pass (`tasks/race_L2_control_a.md`) is complete: matrix v3
+adds the input -> steering -> lean/curve -> speed/gear contract, the table decode and
+Experiment Pack E2. Next: run E2 in `tasks/race_L2_control_b.md`. `U-0011` remains open
+only for the spawn path, which needs a normal-mode/traffic run.

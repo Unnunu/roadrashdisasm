@@ -23,3 +23,10 @@ an analysis document).
 | `U-0009` | `src/screens/highscore.asm:219` | `FontHighScoreDigits` (`$A2E68` -> VRAM `$1000`, tile base `$80`) | where, if anywhere, the 10-glyph digit font (`0`-`9`) is displayed; `HighScore_Init` loads it, but no `WriteNametableToBuffer` call in this screen uses base `$80` | resolved: vestigial/unused. Every draw on this screen uses `$400/$480/$500/$580` (`WriteNametable`) or `$40`/`$0` (`WriteNametableToBuffer`); no `$80` tile base exists | none | wontfix | `[static]` |
 | `U-0010` | `src/screens/shop.asm:897` | `Shop_DrawBikes` palette copy | why destination palette entry 4 is taken from the next palette's w0 (`$16(a0)` with `a0 = base+10`) while source w13 is never copied | resolved: all eight bike palettes (and actor palette 0) have w0 `$0222`, so destination entry 4 is a fixed transparent/background colour | none | confirmed | `[static]` |
 | `U-0011` | `src/race/race_ai.asm:4249` | `Race_SetupActorSprite` input `d4` | `d4` is used as a Y span (`Y±d4`) for extra target-candidate buckets but is never set inside this routine or by `Race_SetupActor`; where its value comes from on each path is not proven | ambient register: the AI path restores `d4` around movement, so it is whatever `Race_Update` left; at spawn it is uninitialized leftover. Only the extra candidate buckets change, not the base `AnimIndex` | E1 done: `d4=0` on every AI-path call in a full demo (4169 calls, `ret=0x10FE8`); no spawn path was reached. Next: a normal-mode traffic/recycle capture to observe spawn | open (spawn only) | `[static]/[dynamic]` |
+
+L2 static pass added **no new U rows**. The open-looking items are statically
+resolved quirks, not semantic gaps: `$18` is a word (the old trace read its low
+byte), `$78` is never set non-zero so `word_14742` is unreachable,
+`Race_LoadBikeData` ignores its `bikeId*16` index and always copies
+`unk_25AC4[0]`, and `TrackParam1` is loaded but never read. See
+`docs/analysis/race_speed.md` and `docs/analysis/race_data_tables.md`.

@@ -40,30 +40,53 @@ walked from `Race_StaticActorList` by `Race_UpdateStaticActors`
 (`unk_25A10`, `sub_113A4`/`Race_UpdateActorMovement`/`Race_UpdateActorFallMovement`, `Race_BuildTargetCandidates`/`sub_12C9A`/
 `sub_13DE0`).
 
-## Bike lean / curve
+## Bike lean / curve (L2 contract)
 
-`Race_UpdateBikeLean` (`0x13EA0`) computes the signed `$42` lean:
+Canonical formulas and the table decode are in `race_speed.md` and
+`race_data_tables.md`; this section records the code-level chain.
 
-- returns immediately unless `$6E` is negative (`$FF` on a normal bike);
-- `d2 = Speed * ram_FF1AB4 >> 8`; `d1 = ram_FF1AA6 >> 3`;
-- `d0 = |RaceBike_ram_CurrentSteering|`; divide by `d1`; if non-zero,
-  `d0 = (d0 / d2) * ram_FF1AAA` with the sign of steering;
-- `$42 = d0`, otherwise `$42 = 0`.
+`Race_UpdateBikeLean` (`0x13EA0`, player only, normal `$6E`):
+
+```
+$42 = sign(steering) * |steering| * ram_FF1AAA
+      / ((ram_FF1AA6>>3) * (Speed * ram_FF1AB4 >> 8))
+```
+
+zero when `Speed == 0` or the steering quotient is zero.
+
+`sub_113CA` (`0x113CA`, player/normal path) turns `$42` into the curve step
+`$0C = (FrameDistance>>8) * $42 >> 8`, copies it to `$08` on a normal animation
+state, and updates `$22`/`$00` from the curve term. `sub_113A4` is the AI variant
+(`$22 = (FrameDistance>>8) * $08 >> 8`, `$00 += $22`).
 
 `Race_UpdateBikeCurve` (`0x13EFA`) derives `$3E/$40` and `$68` bit5:
 
 - returns if `$68` bit0 is set;
 - `d1 = Speed * ram_FF1AB2 >> 8`; `d0 = |8(a1)|`;
 - for demo/non-player, `d0 = d0*$200 >>8`; then `d0 = d1*d0 >>3`;
-- select a curve limit from `$78` timer or track params (`$68` bits5/3):
-  `word_14742`, `Race_ram_TrackParam0/2/3`;
-- if `d0 >= limit`, `$3E = (limit<<8)/d0`, set `$68` bit5; else clear bit5 and
-  zero `$3E/$40`.
+- limit select: `$78 != 0` -> `word_14742`; `$78 == 0` and `$68` bit5 set ->
+  `TrackParam3` (bit3) or `TrackParam0`; `$78 == 0` and bit5 clear ->
+  `TrackParam2` (bit3) or `TrackParam0`;
+- if `d0 < limit`, clear bit5 and zero `$3E/$40`; otherwise
+  `$3E = (limit<<8)/(d0>>8)` and set bit5.
 
-`Race_GetCurveSpeedLimit` (`0x13FE6`) picks `TrackParam2` when `$68` bit3 is set,
-otherwise `TrackParam0`, shifts left 3, indexes `Track_CurveBuffer` from the actor
-X low byte (`(byte+6)&$FF`, word entries), takes abs, scales by
-`unk_14056[$75] >>8`, then divides; zero/overflow returns `$7FFF` (no limit).
+`$78` is zeroed at actor creation and only decremented here; nothing sets it
+non-zero, so the `word_14742` branch is unreachable `[static]`.
+
+`Race_UpdateLeanCurve` (`0x1406A`, race_anim_audio) runs from
+`sub_113A4`/`sub_113CA` only while `$68` bit5 is set and writes
+`ram_FF3042 = (d0*$3E)>>16` and
+`$40 = (d0*((($10000/$3E)-1))*$140)>>8` (sign-preserving).
+
+`Race_GetCurveSpeedLimit` (`0x13FE6`):
+
+```
+limit = (($68 bit3 ? TrackParam2 : TrackParam0)<<3)
+        / ((|signed low byte of Track_CurveBuffer[((X>>16)+6)&$FF]|
+            * unk_14056[$75])>>8)
+```
+
+zero/overflow returns `$7FFF` (no limit).
 
 `[dynamic]` Forced steering (`RaceBike_ram_CurrentSteering=±$600`) gave
 `RaceActor_Lean=$FFB7`/`$0049` (signed); `$3E/$40` stayed zero in that snapshot,
@@ -94,8 +117,9 @@ actor's Y heading/sign and speed:
 `Race_UpdateActorSpeedCurve` scans buckets forward/backward from the current target
 index, keeping the two nearest candidates in `ram_FF1892/ram_FF189C`, then selects the
 smaller distance/speed ratio. On success it calls `Race_SteerTowardTarget` and sets
-`ControlFlags` bit1 (accelerate); on failure it sets bit2 (brake) and calls
-`Race_UpdateActorRoadSteering`.
+`ControlFlags` bit1 (accelerate); if both candidates fail it sets bit2 (brake). It
+does **not** call `Race_UpdateActorRoadSteering` (that is the no-target path in
+`Race_ActorNormalUpdate` / `Race_UpdateActorSpeedGear`).
 
 `Race_SteerTowardTarget` uses the `unk_12D0A` Y-offset table for the selected bucket,
 subtracts the actor Y, scales by speed and the selected distance ratio, and writes
@@ -189,11 +213,13 @@ Action 4 (`a4+$10`, used by `Race_DispatchActorAction`'s final fallback) by prof
 ## RAM / fields
 
 Actor fields used here: `$12` Speed, `$14` acceleration (`Speed += $14 * FrameDelay`
-after the speed/on-foot gates), `$16` type, `$1C` previous collision offset, `$1E`
+after the speed/on-foot gates), `$16` type (indexes `unk_25A10`), `$18` Gear (word;
+demo reached 5), `$1C` previous collision offset, `$1E`
 previous X, `$22`, `$26` frame distance = `Speed * FrameDelay`, `$30`/`$36/$38`
-Y/road, `$3E/$40/$42` lean, `$56` static respawn timer,
-`$68` flags (bit6 active/update marker confirmed in the demo), `$69` flags, `$6E`,
-`$71` index, `$73`, `$75`, `$78`. Data: `Race_ActorShadowTable`/`unk_25A10` actor data,
+Y/road, `$3E/$40/$42` lean, `$46` curve direction, `$56` static respawn timer,
+`$68` flags (bit1 accel, bit2 brake, bit3 off-road, bit5 curve, bit6 active),
+`$69` flags (bit2 steer, bit3 direction), `$6E`,
+`$71` index, `$73`, `$75`, `$78` (curve timer, never set non-zero). Data: `Race_ActorShadowTable`/`unk_25A10` actor data,
 `unk_10E3E`, `unk_12B7C`, `unk_12D0A`, `unk_13A1A`, `Track_CurveBuffer`,
 `Race_ram_TrackParam0`/`Race_ram_TrackParam2`/`Race_ram_TrackParam3`, `word_14742`, `Race_ram_PlayerProgress`/`Race_ram_BestProgress`/`Race_ram_ProgressSnapshotB`, `Race_ram_FrameDelay`/
 `CurrentButtons`, `Race_StaticActorList`, `$FF2FAA`, `unk_14056` (race_anim_audio);
@@ -202,11 +228,12 @@ combat handlers are in `race_combat.asm`.
 
 ## Open questions
 
-- Remaining field semantics `$22/$36/$38/$3E/$40/$42` and the collision helpers;
-  `$14` acceleration and `$26` frame distance are confirmed.
+- L2 closed the input/lean/curve/speed contracts statically (`race_speed.md`);
+  Experiment Pack E2 in `race_map.md` covers the residual dynamic checks.
 - Static/police actor role and the `$FF2FAA` actor; static layout changes after
   `Race_UpdateStaticActors`.
-- AI tables (`unk_10E3E`/`unk_12B7C`/`unk_13A1A`) and the on-foot rules.
+- AI tables (`unk_10E3E`/`unk_12B7C`/`unk_13A1A`) and the remaining on-foot
+  vector table (`unk_7DCA8`) semantics.
 - Exact actor-action handler semantics (`0x12FE4`..`0x131BE`); dispatcher action2/3/4
   paths are now dynamically confirmed.
 - Next: `src/race/race_combat.asm` (attack/action semantics) and

@@ -1270,9 +1270,14 @@ Race_InitPhysicsConstants:
 
 ; *************************************************
 ; Function Race_LoadTrackParams
-; Loads per-track parameters from unk_1471A into Race_ram_TrackParam0..3034.
+; Loads the current track's 4-word record from unk_1471A.
 ; In:  Menu_ram_CurrentTrackId
-; Out: Race_ram_TrackParam0/3030/3032/3034
+; Out: Race_ram_TrackParam0/1/2/3 ($FF302E/30/32/34)
+;   TrackParam0 = on-road base curve-speed limit (Race_UpdateBikeCurve,
+;                 Race_GetCurveSpeedLimit)
+;   TrackParam1 = loaded but never read in src/ (unused)
+;   TrackParam2 = off-road curve-speed limit
+;   TrackParam3 = off-road limit while a curve is already active ($68 bit5)
 ; Clobbers: d0/a0
 ; *************************************************
 
@@ -1291,9 +1296,14 @@ Race_LoadTrackParams:
 
 ; *************************************************
 ; Function Race_LoadBikeData
-; Loads the selected bike's parameter block and steering/engine values.
+; Loads the selected player bike record (19 words) and the steering/engine block.
 ; In:  Menu_ram_Player, Menu_ram_BikeIdPlayerA/B
 ; Out: RaceBike_ram_Parameters (0x13 words); ram_FF1AA6/AAA; RaceBike_ram_*; ram_FF1AB2/B4
+; Notes:
+;   unk_25B50 maps bikeId -> an even ActorBikeRecord_2..16.
+;   The second asl.w #2 (bikeId*16) is computed but never applied to a0, so the
+;   routine always copies the FIRST unk_25AC4 record; per-bike records 1..7 are
+;   unreachable [static].
 ; Clobbers: d0/d1/a0/a1
 ; *************************************************
 
@@ -1313,8 +1323,8 @@ Race_LoadBikeData:
                 move.w  (a0)+,(a1)+
                 dbf     d1,.loc_B896
 
-                asl.w   #2,d0
-                lea     (unk_25AC4).l,a0
+                asl.w   #2,d0 ; bikeId*16 computed but a0 is not indexed:
+                lea     (unk_25AC4).l,a0 ; always unk_25AC4[0] [static]
                 move.w  (a0)+,(ram_FF1AA6).l
                 move.w  (a0)+,(ram_FF1AAA).l
                 move.w  (a0)+,(RaceBike_ram_ReturnToStraightPower).l
@@ -1715,7 +1725,15 @@ Race_GetInputDemo:
 
 ; *************************************************
 ; Function Race_GetInput
-; Reads the active pad; updates steering, B/A input bits, pause/start and debounce.
+; Reads the active pad and maps SACBRLDU:
+;   bit0 Up, bit1 Down, bit2 Left, bit3 Right,
+;   bit4 B, bit5 C, bit6 A, bit7 Start.
+; Left subtracts from CurrentSteering, Right adds; reversing direction adds the
+; return-to-straight power, otherwise it decays toward zero. At steering == 0 Left
+; still adds that power while Right does not (bmi/bpl gate asymmetry). Left is
+; tested before Right, so Left+Right applies Left. B sets $68 bit1 (accelerate), A sets
+; $68 bit2 (brake); C only suppresses Start handling. Start toggles Race_ram_State
+; behind the ram_FF368E debounce latch.
 ; In:  Race_ram_ActiveController, RaceBike_ram_*; player struct $68
 ; Out: Race_ram_CurrentButtons; RaceBike_ram_CurrentSteering; player $68 bits
 ; Clobbers: d0/d1
