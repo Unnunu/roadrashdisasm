@@ -83,7 +83,9 @@ runtime into a rectangular grid of VDP sprites (max 4x4 cells each).
      cursor reaches `$150`, set both end flags, clear the previous link and return.
    - On the non-mirrored pass advance X by `8*(C+1)` after each column.
 5. After each row: `Y += 8*(R+1)`; reload the column count; on the first row derive
-   `ram_FFDE68 = (tiles_used_in_first_row - 4) << 5` (road-tile-array row stride).
+   `ram_FFDE68 = (tiles_used_in_first_row - 4) << 5`. In the tile writer this is the
+   extra advance after the 32-row/128-byte partial step (the band stride is
+   `columns*128`), not a per-row stride.
 6. After the last row: clear the last link, `SpriteIndex = last_link - 1`,
    `Animation_ram_TileIndex = tile cursor`; return.
 
@@ -128,9 +130,9 @@ values are fully explained (no unverified per-record meanings remain).
 | `$FFD34A` | `Animation_ram_BaseTile` | Base tile added to every entry. |
 | `$FFDE5E` | `ram_FFDE5E` | Object palette/priority/base bits ORed into the tile word. |
 | `$FFDE62` | `ram_FFDE62` | Chain-end/overflow flag (`$FFFF`). |
-| `$FFDE66` | `ram_FFDE66` | Road-writer within-row stride (single-row case). |
-| `$FFDE68` | `ram_FFDE68` | Road-writer row stride (`$8000` sentinel, then computed). |
-| `$FFDE6A` | `ram_FFDE6A` | Road-writer within-row stride (`$7C` default). |
+| `$FFDE66` | `ram_FFDE66` | Remainder-band tile-column gap (stride-4; `$5C` -> `$60`). |
+| `$FFDE68` | `ram_FFDE68` | 32-row band advance (`$8000` sentinel, then computed; `$200`). |
+| `$FFDE6A` | `ram_FFDE6A` | Full-band tile-column gap (stride-4; `$7C` -> `$80`). |
 | `$FFDE6E` | `ram_FFDE6E` | Base X (SAT = value + `$80`). |
 | `$FFDE70` | `ram_FFDE70` | Base Y (SAT = value + `$80`). |
 | `$FF0906` | `ram_FF0906` | Horizontal remainder code `C` as a byte offset (`C*8`). |

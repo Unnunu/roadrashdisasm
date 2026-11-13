@@ -1,9 +1,10 @@
 # Program: complete race understanding
 
-Status: in progress. L1, L2, R30, L3, L4, L5, L7, L6a (camera/progress/VScroll/HScroll)
-and L6b (object list/projection/visible list) are complete. Next is the L6 world-c
-branch (`race_L6_world_c.md`: shape/pixel map, Data4/5, E8). This file is the roadmap,
-not a build task; the queue below lists what remains.
+Status: in progress. L1, L2, R30, L3, L4, L5, L7, L6a (camera/progress/VScroll/HScroll),
+L6b (object list/projection/visible list) and L6c (shape/pixel map, Data4 bits, E8) are
+complete. The L6 world branch is closed; what remains is the acceptance/visual branch
+and the separate audio workstream. This file is the roadmap, not a build task; the
+queue below lists what remains.
 
 ## Goal
 
@@ -186,6 +187,24 @@ matrix v8 in `race_map.md`.
   reached the full results pipeline (place `$0F`, points 1, money 100->101,
   career 0->1, outcome `$0F`).
 
+## L6c world results (E8, completed)
+
+`race_L6_world_c.md` completed; matrix v12 in `race_map.md`, contracts in
+`road_render.md`, `road_shapes.md` and `race_track_data.md`.
+
+- Shape header: normal `P+0/P+1` controls, `P+2/P+3` fill, `P+4+` rows; special
+  `P+2/P+3` controls, `P+4/P+5` fill, `P+6+` rows.
+- Interpolators emit per-byte/per-row source advances; the writer maps row/column/
+  plane to `base + 4*r + c*(gap+4)`, with `$DE6A/$DE66` full/tail column gaps and
+  `$DE68` the 32-row band advance. Shape `$56` replay matches all 1080 golden bytes.
+- Data4 `+0`: shape selector (pair `$1BB..$1E9`, `+$2F` remap, `$205` skip), run count,
+  bit14 facing, bit15 side parity, bit7 side seed; `+$02`: spacing, pass count, lane/scale.
+- `U-0019` closed: `Flags` low 5 = row, bits 10-8 (high byte) = SAT copy-pass count.
+- E8: offset lists match, pass count confirmed (`$FFD430` pass=1 -> 6 entries once),
+  sorted keys in `ram_FF1C50`, draw order in `ram_FF1D50`.
+- Remaining: optional shape-art catalogue/crop and visual checks; `U-0017`/`U-0018`
+  stay open.
+
 ## Out of scope
 
 - Audio/Z80 and the engine-audio mapping (separate workstream). Only the RAM fields
@@ -296,11 +315,12 @@ bodies and tables, so those tasks are now contract/dynamic work, not disassembly
 | 12 | `race_L7_results_hud.md` | L7 | done | HUD/needle/odometer contract, results/standings/money pipeline, `unk_15CE0`/`unk_15CFC` scripts; matrix v9 + E7 |
 | 13 | `race_L6_world_a.md` | L6 | done | camera/progress/VScroll/HScroll; matrix v10 + E6 |
 | 14 | `race_L6_world_b.md` | L6 | done | object-record assembly, four projection helpers, track stream, visible-list sort/draw (matrix v11) |
-| 15 | `race_L6_world_c.md` | L6 | next | shape/pixel map, Data4/5 |
+| 15 | `race_L6_world_c.md` | L6 | done | shape header/control/offset lists + byte-exact tile-writer pixel map, Data4 side/pair/pass-count bits (matrix v12 + E8) |
 | 16 | `race_acceptance.md` | I | verify | acceptance criteria, `Matched OK` |
 
-L1-L5/L7, L6a and L6b are complete; L6c is the remaining world branch. Experiment
-Pack E7 is used by L7; L6a used E6 and L6c uses E8.
+L1-L5/L7 and the L6a/L6b/L6c world branch are complete. Experiment Pack E7 was used
+by L7; L6a used E6 and L6c used E8. Remaining: optional visual catalogues/crops,
+`U-0017`/`U-0018`, the asset-tail catalogue and the separate audio workstream.
 
 ## Experiment Pack format
 

@@ -1,7 +1,8 @@
 # Analysis: `src/data/road_shapes.asm` (road/object shape table + data)
 
 - **ROM range:** `0x03BF1A`–`0x07DCA7`
-- **Status:** table/count/data layout analyzed; shape header/control/fill model confirmed; row-byte semantics partly TODO
+- **Status:** analyzed. Table/count/data layout, shape header/control/fill model and
+  the source-byte -> 4bpp sprite-tile mapping are confirmed (L6c/E8)
 - **Source:** `src/data/road_shapes.asm` (table/count from source, data `binclude` from `baserom.md`)
 - **Related:** `docs/analysis/road_render.md`, `docs/analysis/race_track_data.md`,
   `docs/modules/road_shapes.md`, `docs/ram-map.md`
@@ -39,7 +40,7 @@ pointers = symmetric/mirrored shapes). The ordered first pointers are
 | `$1C4` | `$078CD4` | `09 46 13 2A` | `$2A13` |
 | `$15E` | `$069924` | `0A 47 1A 47` | `$471A` |
 
-Confirmed record layout (static + dynamic; exact row pixel mapping still TODO):
+Confirmed record layout (static + dynamic + byte-exact writer replay):
 
 | Pointer | Non-special path | Special/two-part path (`$B` bit7) |
 |---|---|---|
@@ -63,9 +64,35 @@ Confirmed record layout (static + dynamic; exact row pixel mapping still TODO):
 `ram_FF0D2A=$059952`/`$059CEE` (shape pointer + 6; special/mirror offset), strip counts
 `ram_FF132E=4`/`3`, `ram_FF1330=$35`. Row bytes at `$059952`:
 `00 00 00 00 00 00 00 00 33 33 00 00 ...`; at `$059CEE`:
-`00 00 00 00 00 00 00 00 33 33 30 00 ... 32`. Tile data is therefore a byte
-sequence consumed with the interpolated per-strip offsets; exact tile/row mapping
-is still TODO.
+`00 00 00 00 00 00 00 00 33 33 30 00 ... 32`.
+
+### Row data and pixel map (L6c)
+
+The row data is a stream of **4bpp bitplane bytes**, consumed through the two
+interpolator lists:
+
+- `ram_FF0D2E` (left list): one 16-bit source advance after every output byte.
+  Normally 1, so four consecutive source bytes form the four bitplanes of one
+  8-pixel scanline; 0 repeats a byte and >1 skips bytes.
+- `ram_FF102E` (right list): one 16-bit source advance after every source row.
+  The next row starts at `previous start + sum(left) + right`. For shape `$56`
+  at scale `$10000` that is `16 + 1 = 17` bytes; the trailing zero offsets in the
+  left list repeat the last new byte for the short fifth column. At smaller scales
+  the advances are larger and the rows are sampled sparsely.
+
+`Road_WriteTileColumns` transposes the stream into column-major 4-tile strips:
+for row `r` and column `c` it writes the 4 plane bytes to
+`base + 4*r + c*(gap+4)` (modulo the 32-row band wrap). Full-band `gap` is
+`ram_FFDE6A=$7C` (stride `$80` = 4 tiles), the remainder band uses
+`ram_FFDE66=$5C` (stride `$60` = 3 tiles), and `ram_FFDE68` advances the band
+base after 32 rows.
+
+Byte-exact check: shape `$56` (`base=$FF511C`, `src=$059952`, scale `$10000`,
+`132E=4`, `1330=$35`) yields 1080 writer bytes, all identical to the golden
+`analysis/golden/shape_writer_after.bin`, and the written range is
+`$FF511C..$FF5573`. Shape `$56` therefore renders as 5 columns x 54 rows
+(40 x 54 px; 4-tile band + 22-row remainder). The fill word `$2036` selects
+palette 1 and tile base `$36` for the SAT entries.
 
 `[dynamic]` For `$56`, `Road_ScaleShape` sees `P=$05994C` and reads
 `10/37/20`; `Road_DrawStrip` then receives `a0=$05994E` (P+2), whose first word is
@@ -89,8 +116,12 @@ per-row strip data copied/interpolated into `ram_FF0D2E`/`ram_FF102E`.
 bytes `10 37 20 36 00...`; `Road_ScaleShape` reads `10/37/20`, then the special path
 passes `a0=$05994E` (P+2): left control `$20`, right control `$36`, fill word
 `$2036` at P+4/P+5, and row data starts at `$059952` (P+6). This confirms the
-special-path table above; exact tile/row pixel mapping is still TODO from
-`Road_WriteTileColumns`.
+special-path table above.
+
+`[confirmed]` E8-A captured the live offset lists for shapes `$56`, `$57` and
+`$1C3`; they match the static list generators exactly, including the fractional
+scale case (`$1C3`, scale `$145D0`, controls `$1e/$1c`). The writer replay then
+reproduces every written byte of shape `$56` (see the row-data section above).
 
 ## Shape ID lookup / split
 
@@ -122,9 +153,10 @@ row/tile rendering; use them only to identify shapes. The sample page is
 
 ## Open questions
 
-- Exact row/tile byte mapping and the `Road_WriteTileColumns` 4-byte strip layout.
-- Which table entries are road pieces vs object/background shapes.
-- Why some pointers repeat (mirroring/aliasing) and how flags select them.
+- Which table entries are object sprites vs. static scenery/background pieces; the
+  renderer/staging path is identical, so this needs a visual catalogue, not code.
+- Why some pointers repeat (mirroring/aliasing) and how the flags select them; the
+  table has 366 unique pointers for 500 nonzero IDs.
 - `unk_7DCA8`, `RaceHud_NeedleScript` (HUD needle script), `Shop_BikePalettes` and the remaining
   bytes before `src/core/top_level.asm` (`0x7DCA8-$7E6A1`) are now in `src/data/race_misc_data.asm`.
 

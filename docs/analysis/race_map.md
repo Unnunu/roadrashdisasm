@@ -1,7 +1,7 @@
 # Race map: timeline, dataflow, field ownership and captures
 
-- **Status:** matrix v11 (v10 + L6b object-record assembly, projection helpers,
-  track-object stream and visible-list sort/draw contract; static only)
+- **Status:** matrix v12 (v11 + L6c shape/control/interpolator/tile-writer map,
+  Data4 side/second-shape/pass-count bits and E8)
 - **Sources:** `docs/analysis/race.md`, `race_actors.md`, `race_ai.md`, `race_movement.md`,
   `race_speed.md`, `race_impact.md`, `race_spawn.md`, `road_render.md`, `docs/ram-map.md`,
   `tasks/race_understanding_program.md`
@@ -798,8 +798,9 @@ E6 results (captures `analysis/capture_L6a*.gdb`, traces `analysis/notes/L6a*`):
 | E6-3 VScroll | `capture_L6a.gdb`, `capture_L6a_hint.gdb` | blocks `$10/$20/$50/$60/$70/$80` at lines `$03/$07/$25/$33/$47/$9C`; `$30/$40` compacted |
 | E6-4 HScroll | `capture_L6a.gdb` | plane A top `$30EA>>16=$0027`, plane B top `$30EE>>16=$0013`; road line `$80=$017CFFAB` |
 
-Residual: `U-0018` (exact VScroll compaction arithmetic); rearview and engine-audio
-mapping stay `[static]`/TODO.
+Residual: `U-0018` (exact VScroll compaction arithmetic) and `U-0017` (opponent
+stamina regen); rearview, marking visuals and the final shape-art crop stay
+`[static]`/optional-visual.
 
 ## L6b object/projection/visible-list addendum (matrix v11)
 
@@ -823,8 +824,9 @@ matrix delta.
   `d0/d1/d2/d3`), `Race_ProjectActorObject` (near actor, `$A00000/$C00000` by
   `$71`), `Race_ProjectActorSprite` (far behind), `Race_ProjectTrackObject`
   (`ram_FF3236/FF31D2/D77C` row tables, lane offset from the type nibble).
-- `Flags` low 5 bits carry the projected row `r`; `Road_DrawObject` reads
-  `Flags & 7` as the sprite-chain pass count -> `U-0019`.
+- `Flags` low 5 bits carry the projected row `r`; `Road_DrawObject` reads the
+  **high byte** `(Flags >> 8) & 7` as the sprite-chain pass count. `U-0019` is
+  closed by E8 (row and pass count are different bit fields).
 - Track stream: cursor `Race_ram_TrackObjectCursor` / accumulated
   `Race_ram_TrackObjectDistance`; word0 = `[rowCount][shape base]`, word2 =
   `[step-1][flags:3][lane]`; shape `$186` = extra-actor marker (`ram_FF1B30/$1B2E`),
@@ -834,6 +836,42 @@ matrix delta.
   `Road_DrawObjects` draws in that order. Producers store `objectX - progress`
   (near actor / track / staged) while the far-actor sprite path stores
   `progress - actorX`; the mixed-sign visual result is left to E8.
+
+## L6c shape/pixel/Data4 addendum (matrix v12)
+
+L6c closes the world branch: the shape header / control-byte / offset-list /
+tile-writer pixel map and the Data4 side/second-shape/pass-count bits. Full
+contract is in `docs/analysis/road_render.md`, `road_shapes.md` and
+`race_track_data.md`.
+
+- Shape header (`P` = shape pointer; special/two-part when `RoadObject_Flags` bit15
+  is set): normal `P+0/P+1` controls, `P+2/P+3` fill word, `P+4+` row data;
+  special `P+0/P+1/P+2` projection/width, `P+2/P+3` controls, `P+4/P+5` fill word,
+  `P+6+` row data. The fill word is ORed into the SAT tile word (`$2036` -> palette
+  1, tile base `$36` for shape `$56`).
+- Interpolators: left emits one source advance per output byte (`ram_FF0D2E`;
+  1 = four contiguous bitplane bytes, 0 = duplicate, >1 = skip) and returns
+  `ram_FF132E = columns-1`; right emits one advance per source row
+  (`ram_FF102E`) and returns `ram_FF1330 = rows-1`. `ram_FF1332` is the
+  half-width seed used by the right list; `ram_FF135E` is the clip budget.
+- Writer: per row `r`, column `c`, plane `k` -> `base + 4*r + c*(gap+4) + k`.
+  The 4 bytes are the 4bpp bitplanes of one 8-pixel scanline, so the destination
+  is column-major. Full band gap `ram_FFDE6A=$7C` (stride `$80`, 4 tiles); every
+  32 rows add `ram_FFDE68` and switch to `ram_FFDE66` (stride `$60`, 3 tiles) for
+  the remainder band. `Road_ClearEdgeTiles` zeroes the unused edge bytes.
+- Byte proof: shape `$56` (`base=$FF511C`, `src=$059952`, scale `$10000`,
+  `132E=4`, `1330=$35`, `DE66/68/6A=$5C/$200/$7C`) replays 1080/1080 bytes
+  identical to `analysis/golden/shape_writer_after.bin`.
+- Data4 `+$00`: bits 0-6 shape selector (pair `$1BB..$1E9`, `+$2F` remap,
+  `$205` skip), bits 8-12 run count-1, bit14 -> `Flags` bit15 facing, bit15 enables
+  side parity, bit7 side seed. Data4 `+$02`: bits 12-15 spacing-1, bits 8-10
+  SAT copy-pass count -> `Flags` bits 10-8, low byte -> record `+$10` (lane/scale).
+- `Flags` ownership for track objects: low 5 = row, bit7 = second shape, bits 8-10
+  = copy passes, bit12 = priority, bit14 = side, bit15 = facing.
+- E8 (`analysis/capture_L8_a/b/c.gdb`, traces `analysis/notes/L8*`): live offset
+  lists match the generators (`$56` scale `$10000`; `$1C3` scale `$145D0`);
+  `$FFD430` (`flags=$1184`, pass=1) copied 6 entries once; `ram_FF1C50` is the
+  ascending sorted key list and `ram_FF1D50` the draw order.
 
 ## Tooling and validation
 
@@ -892,4 +930,7 @@ scripts. L6a (`tasks/race_L6_world_a.md`) is complete (v10/E6): camera/progress,
 VScroll raster chain and HScroll plane A/B bands. L6b
 (`tasks/race_L6_world_b.md`) is complete (v11): object-record assembly, the four
 projection helpers, the track-object stream and the visible-list sort/draw contract.
-Next is the L6 world-c branch (`race_L6_world_c.md`: shape row/pixel map, Data4/5).
+L6c (`tasks/race_L6_world_c.md`) is complete (v12/E8): shape header/control/list
+generation, the byte-exact tile-writer pixel map and the Data4 flag/pair/pass-count
+bits. The L6 branch is closed; remaining world items are optional visual checks
+(shape-art crop, marking/rearview appearance) and the static `U-0017`/`U-0018`.

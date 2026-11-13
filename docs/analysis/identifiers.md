@@ -204,9 +204,9 @@ uses. It exists so later analysis can decide whether a rename is worth doing.
 | `Animation_ram_BaseTile` | RAM | `ram_const.asm:603` (`$FFD34A`) | animation/rider_sprites: base tile added to entries | good | `[static]` | keep | - | high | - |
 | `ram_FFDE5E` | RAM | `ram_const.asm:641` (`$FFDE5E`) | road_render/rider_sprites: object palette/priority/base bits | placeholder | `[static]` | rename-later | `Road_ram_SpriteTileBits` | medium | - |
 | `ram_FFDE62` | RAM | `ram_const.asm:643` (`$FFDE62`) | road_render/rider_sprites: chain-end/overflow flag | placeholder | `[static]` | rename-later | `Road_ram_ChainEnd` | medium | - |
-| `ram_FFDE66` | RAM | `ram_const.asm:645` (`$FFDE66`) | road_render/rider_sprites: road-writer within-row stride | placeholder | `[static]` | rename-later | `Road_ram_TileRowStrideAlt` | medium | - |
-| `ram_FFDE68` | RAM | `ram_const.asm:646` (`$FFDE68`) | road_render/rider_sprites: road-writer row stride | placeholder | `[static]` | rename-later | `Road_ram_TileRowStride` | medium | - |
-| `ram_FFDE6A` | RAM | `ram_const.asm:647` (`$FFDE6A`) | road_render/rider_sprites: road-writer within-row stride | placeholder | `[static]` | rename-later | `Road_ram_TileColStride` | medium | - |
+| `ram_FFDE66` | RAM | `ram_const.asm:645` (`$FFDE66`) | road_render/rider_sprites: remainder-band tile-column gap (stride-4; `$5C` -> `$60`) | placeholder | `[static]`/E8-A | rename-later | `SpriteStrip_ram_TailColumnGap` | high | - |
+| `ram_FFDE68` | RAM | `ram_const.asm:646` (`$FFDE68`) | road_render/rider_sprites: 32-row band advance after the partial +128 | placeholder | `[static]`/E8-A | rename-later | `SpriteStrip_ram_BandAdvance` | high | - |
+| `ram_FFDE6A` | RAM | `ram_const.asm:647` (`$FFDE6A`) | road_render/rider_sprites: full-band tile-column gap (stride-4; `$7C` -> `$80`) | placeholder | `[static]`/E8-A | rename-later | `SpriteStrip_ram_ColumnGap` | high | - |
 | `ram_FFDE6E` | RAM | `ram_const.asm:649` (`$FFDE6E`) | road_render/rider_sprites: object base X | placeholder | `[static]` | rename-later | `Road_ram_ObjectX` | medium | - |
 | `ram_FFDE70` | RAM | `ram_const.asm:650` (`$FFDE70`) | road_render/rider_sprites: object base Y | placeholder | `[static]` | rename-later | `Road_ram_ObjectY` | medium | - |
 | `ram_FF0906` | RAM | `ram_const.asm:74` (`$FF0906`) | rider_sprites: horizontal remainder code C as byte offset | placeholder | `[static]` | rename-later | `Rider_ram_ColCode` | medium | - |
@@ -656,7 +656,7 @@ Names stay `sub_XXXX`/`unk_XXXX`; proposals are not applied.
 | `ram_FF3274` | RAM | `ram_const.asm:517` | `ram_FF3236[31]`; horizon line used by the VScroll | narrow | `[confirmed]` E6 | retain alias | - | high | - |
 | `Race_ram_HIntVScroll` | RAM | `ram_const.asm:186 ($FF14DC)` | HInt HScroll base accumulator (`+$10000`/frame) | good | `[static]/[dynamic]` E6 | keep | - | high | - |
 | `ram_FF310A`/`31D2`/`3236`/`329A`/`3362`/`D77C` | RAM | `ram_const.asm:513-521` | race: 32-strip profile values/indexes/depth | placeholder | `[static]/[dynamic]` E6 | rename-later | `Race_ram_Profile*` | medium | - |
-| `Race_ProjectObject` | routine | `race_ai_road.asm:1932 ($FD96)` | race: generic 16.16 object -> `Road_ObjectArray` projection | good | `[static]` L6b | keep | - | high | `U-0019` (flags row) |
+| `Race_ProjectObject` | routine | `race_ai_road.asm:1932 ($FD96)` | race: generic 16.16 object -> `Road_ObjectArray` projection | good | `[static]` L6b | keep | - | high | `U-0019` resolved |
 | `Race_ProjectActorObject` | routine | `race_ai_road.asm:2082 ($1082A)` | race: near-actor projection (fractional X interpolation) | good | `[static]` L6b | keep | - | high | - |
 | `Race_ProjectActorSprite` | routine | `race_physics.asm:209 ($DAE2)` | race: far-behind actor sprite projection | good | `[static]` L6b | keep | - | high | - |
 | `Race_ProjectTrackObject` | routine | `race_ai_road.asm:3861 ($10C4E)` | race: track-stream record -> row tables/lane offset | good | `[static]` L6b | keep | - | high | - |
@@ -674,3 +674,30 @@ Names stay `sub_XXXX`/`unk_XXXX`; proposals are not applied.
 | `ram_FF1ACC` / `ram_FF1AC8` / `ram_FF1ACE` | RAM | `ram_const.asm:276-277` | race: player-finish selector / speed tier / finish toggle | placeholder | `[static]` L6b | rename-later | `Race_ram_*Shape*` | medium | - |
 | `ram_FF1AD9` / `ram_FF1ADC` | RAM | `ram_const.asm:308-309` | race: lean-shape (mod 4) / fall-shape (mod 8) phase counters | placeholder | `[static]` L6b | rename-later | `Race_ram_LeanPhase`/`FallPhase` | medium | - |
 | `ram_FFD338` / `ram_FFD33E` | RAM | `ram_const.asm:595-597` | race: 4-entry / 3-entry shape-bucket threshold tables | narrow | `[static]` L6b | rename-later | `Race_ram_ShapeThresholds*` | medium | - |
+| `Road_DrawStrip` | routine | `road_render.asm:16` (`$8FB4`) | road_render: shape controls -> offset lists -> tile columns + SAT chain | narrow (draws object sprite tiles, not the road surface) | `[static]` L6c | rename-later | `SpriteStrip_Draw` | medium | - |
+| `Road_InterpolateLeftEdge` | routine | `road_render.asm:122` (`$9142`) | road_render: per-output-byte source advance list (`ram_FF0D2E`) | good | `[static]`/`[dynamic]` E8-A | keep | - | high | - |
+| `Road_InterpolateRightEdge` | routine | `road_render.asm:204` (`$91F0`) | road_render: per-row source advance list (`ram_FF102E`) | good | `[static]`/`[dynamic]` E8-A | keep | - | high | - |
+| `Road_InterpolateRightEdgeAlt` | routine | `road_render.asm:262` (`$9272`) | road_render: unused fixed-scale variant | misleading (no caller) | `[static]` | rename-later | `Road_InterpolateRightEdgeUnused` | medium | - |
+| `Road_WriteTileColumns` | routine | `road_render.asm:320` (`$9306`) | road_render: source bitplane stream -> column-major 4bpp sprite tile array | narrow (writes sprite tiles) | `[static]`/`[confirmed]` golden replay | rename-later | `SpriteStrip_WriteTiles` | high | - |
+| `Road_ClearEdgeTiles` | routine | `road_render.asm:409` (`$93D2`) | road_render: zero the unused edge strip bytes | good | `[static]`/E8 | keep | - | high | - |
+| `Road_DrawObjects` | routine | `road_render.asm:457` (`$942A`) | road_render: walk `Road_VisibleObjectList`, draw each record | good | `[static]`/`[dynamic]` E8-C | keep | - | high | - |
+| `Road_DrawObject` | routine | `road_render.asm:494` (`$9484`) | road_render: project shape(s), draw strip, copy SAT chain | good | `[static]`/`[confirmed]` E8-B | keep | - | high | - |
+| `Road_ScaleShape` | routine | `road_render.asm:693` (`$978C`) | road_render: scale `P+0/P+1` (mirror uses `P+2-P+0`) | good | `[static]`/E8-A | keep | - | high | - |
+| `Road_ProjectShapeSpecial` | routine | `road_render.asm:727` (`$97BC`) | road_render: special/two-part edge projection | good | `[static]` | keep | - | high | - |
+| `Road_ProjectShape` | routine | `road_render.asm:787` (`$9836`) | road_render: non-special edge projection + clip | good | `[static]` | keep | - | high | - |
+| `Race_BuildTrackObjects` | routine | `race_ai_road.asm:3588` (`$109B6`) | race_ai_road: Data4 run -> `Road_ObjectArray` + keys | good | `[static]`/`[dynamic]` E8 | keep | - | high | - |
+| `Race_ProjectTrackObject` | routine | `race_ai_road.asm:3824` (`$10C4E`) | race_ai_road: track object -> scale/Y/limit/x/lane row | good | `[static]`/E8 | keep | - | high | - |
+| `Road_ShapeTable` | data | `road_shapes.asm` (`$3BF1A`) | road_shapes: 564 shape-data pointers | good | `[static]` | keep | - | high | - |
+| `word_3C7EA` | data | `road_shapes.asm` (`$3C7EA`) | road_shapes: shape count `$234` | narrow | `[static]` | rename-later | `Road_ShapeCount` | high | - |
+| `Road_ShapeData` | data | `road_shapes.asm` (`$3C7EC`) | road_shapes: per-shape header/control/bitplane row data | good | `[static]`/`[confirmed]` golden replay | keep | - | high | - |
+| `ram_FF0D2A` | RAM | `ram_const.asm:94` (`$FF0D2A`) | road_render: current shape row-data pointer | placeholder | `[static]`/E8-A | rename-later | `SpriteStrip_ram_SourcePtr` | high | - |
+| `ram_FF0D2E` | RAM | `ram_const.asm:95` (`$FF0D2E`) | road_render: left/inter-byte source advance list | placeholder | `[static]`/`[dynamic]` E8-A | rename-later | `SpriteStrip_ram_PlaneOffsets` | high | - |
+| `ram_FF102E` | RAM | `ram_const.asm:96` (`$FF102E`) | road_render: right/per-row source advance list | placeholder | `[static]`/`[dynamic]` E8-A | rename-later | `SpriteStrip_ram_RowOffsets` | high | - |
+| `ram_FF132E` | RAM | `ram_const.asm:99` (`$FF132E`) | road_render: emitted tile columns minus 1 | placeholder | `[static]`/E8-A | rename-later | `SpriteStrip_ram_ColumnCount` | high | - |
+| `ram_FF1330` | RAM | `ram_const.asm:100` (`$FF1330`) | road_render: source rows minus 1 | placeholder | `[static]`/E8-A | rename-later | `SpriteStrip_ram_RowCount` | high | - |
+| `ram_FF1332` | RAM | `ram_const.asm:101` (`$FF1332`) | road_render: left half-width seed for the right list | placeholder | `[static]`/E8-A | rename-later | `SpriteStrip_ram_HalfWidth` | high | - |
+| `ram_FF133C` | RAM | `ram_const.asm:103` (`$FF133C`) | road_render: strip mirror selector (cleared by `Road_DrawObject`) | placeholder | `[static]` | rename-later | `SpriteStrip_ram_Mirror` | medium | - |
+| `ram_FF133E` | RAM | `ram_const.asm:104` (`$FF133E`) | road_render: SAT priority from `Flags & $3000` | placeholder | `[static]`/E8-B | rename-later | `SpriteStrip_ram_Priority` | medium | - |
+| `ram_FF135E` | RAM | `ram_const.asm:113` (`$FF135E`) | road_render: horizontal clip budget (0 = none) | placeholder | `[static]`/E8-A | rename-later | `SpriteStrip_ram_Clip` | high | - |
+| `ram_FF136A` | RAM | `ram_const.asm:119` (`$FF136A`) | road_render: horizon/limit row | placeholder | `[static]`/E8 | rename-later | `SpriteStrip_ram_Horizon` | medium | - |
+| `ram_FFDE5E` | RAM | `ram_const.asm:641` (`$FFDE5E`) | road_render: shape fill/tile word ORed into SAT entries | placeholder | `[static]`/E8 | rename-later | `SpriteStrip_ram_FillWord` | high | - |

@@ -473,8 +473,8 @@ Script: `{tilemap, frame_count, frame_ptrs[]}`; frame: `count`, then
 |---|---|---|---|
 | `$FF1D50` | `Road_VisibleObjectList` | - | Visible-object index list (`$FFFF`-terminated). |
 | `$FFD37C` | `Road_ObjectArray` | 0x14/entry | Object array: x,y,scale,horizon,shape,flags,x offset,second shape. |
-| `$FF0D26`/`$FF0D2A`/`$FF0D2E`/`$FF102E` | road buffers | - | Tile cursor, strip data, left/right strip offsets. |
-| `$FF132E`/`$FF1330`/`$FF1332`/`$FF1336` | road strip state | 2 each | Strip counts/height/x offset. |
+| `$FF0D26`/`$FF0D2A`/`$FF0D2E`/`$FF102E` | road buffers | - | Tile cursor (tile*32), shape row-data pointer, left per-byte / right per-row source-advance lists. |
+| `$FF132E`/`$FF1330`/`$FF1332`/`$FF1336` | road strip state | 2 each | Emitted columns-1, source rows-1, left half-width seed, raw left-entry count. |
 | `$FF133A`/`$FF133C`/`$FF133E` | object flags | 2 each | Mirror/facing, strip mirror, priority bits. |
 | `$FF1340`/`$FF1342`/`$FF1344` | projection | 2 each | Acceleration, base x/y. |
 | `$FF1348`/`$FF134C` | shape pointers | 4 each | Current/second shape data. |
@@ -581,11 +581,11 @@ Rider/bike sprite builder (`src/screens/rider_sprites.asm`):
 | `$FFDE64` | `Animation_ram_SpriteIndex` | 2 | Sprite chain index / next link. |
 | `$FFDE60` | `Animation_ram_TileIndex` | 2 | Tile cursor. |
 | `$FFD34A` | `Animation_ram_BaseTile` | 2 | Base tile added to entries. |
-| `$FFDE5E` | `ram_FFDE5E` | 2 | Base priority/tile bits. |
-| `$FFDE62` | `ram_FFDE62` | 2 | Chain-end flag (`$FFFF`). |
-| `$FFDE66` | `ram_FFDE66` | 2 | Current entry X base. |
-| `$FFDE68` | `ram_FFDE68` | 2 | Y offset/limit (`$8000` sentinel first). |
-| `$FFDE6A` | `ram_FFDE6A` | 2 | Base link/limit (`$7C`). |
+| `$FFDE5E` | `ram_FFDE5E` | 2 | Shape fill/tile word, ORed into each SAT tile word (`$2036` = palette 1, tile base `$36`). |
+| `$FFDE62` | `ram_FFDE62` | 2 | Chain-end/overflow flag (`$FFFF`). |
+| `$FFDE66` | `ram_FFDE66` | 2 | Remainder-band tile-column gap (stride-4; `$5C` -> 3-tile stride `$60`). |
+| `$FFDE68` | `ram_FFDE68` | 2 | 32-row band advance after the partial `+128` (`$200`); `$8000` = not computed yet. |
+| `$FFDE6A` | `ram_FFDE6A` | 2 | Full-band tile-column gap (stride-4; `$7C` -> 4-tile stride `$80`). |
 | `$FFDE6E` | `ram_FFDE6E` | 2 | Base X (`+$80`). |
 | `$FFDE70` | `ram_FFDE70` | 2 | Base Y (`+$80`). |
 | `$FF0906` | `ram_FF0906` | 2 | Strip X base. |

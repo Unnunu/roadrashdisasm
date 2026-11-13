@@ -231,7 +231,8 @@ records (which do not increment `ram_FFDE72`).
   the X fractional word (`ram_FF310A` rows are `+0/+2/+4/+6` and the `+2/+6` and
   `+0/+4` pairs are the depth/X edges).
 - `Race_ProjectObject` updates the record only; the caller appends the distance key.
-  The low-5-bit `Flags`/row and `Flags & 7` draw-pass overload is `U-0019`.
+  The low 5 `Flags` bits are the profile row; the separate `Flags` bits 10-8 are the
+  SAT copy-pass count (`U-0019` resolved by E8).
 
 `Race_ProjectActorObject` (`0x1082A`): nearest-actor variant.
 
@@ -311,9 +312,11 @@ scene with objects in front of and behind the player.
 
 `Road_DrawObject` (in `road_render.asm`) renders one 0x14-byte record:
 
-- Flags bit15 is the horizontal-mirror/facing bit (same as byte `$B` bit7); bits
-  `$3000` become the priority/`$133E` value; `Flags & 7` is the sprite-chain pass
-  count; X offset is applied to the copied SAT entry.
+- Flags bit15 is the horizontal-mirror/facing bit (same as byte `$B` bit7); bit14 is
+  the track-object side/lane direction; bits `$3000` become the priority/`$133E`
+  value; `(Flags >> 8) & 7` is the sprite-chain copy-pass count (read through the
+  high byte); the low 5 bits are the projected row; X offset is applied to the
+  copied SAT entry.
 - Shape `+8` selects a `Road_ShapeTable` entry; a non-zero second shape `+$12`
   (or the mirror path) runs `Road_ScaleShape` + `Road_ProjectShapeSpecial`, else
   `Road_ProjectShape`; `Road_DrawStrip` writes the tile columns and builds the
@@ -356,13 +359,12 @@ by `Road_DrawObjects`/`Road_DrawStrip`.
 
 ## Open questions
 
-- The `Flags` low-bit overload (projected row vs. `Road_DrawObject` pass count,
-  `Flags & 7`) is `U-0019`; E8 should confirm the draw semantics.
 - The exact visual back-to-front result of the mixed-sign distance keys (see the
-  visible-list section); E8.
+  visible-list section); E8-C confirmed the sort order but not the on-screen depth.
+- Shape-art catalogue/crop and the marking/rearview visuals remain optional checks.
 - Engine-audio mapping of `Race_ram_NearestBehindSpeed`/`Race_ram_NearestAheadSpeed`
   is in `race_physics.md`.
-- Data4/5 shape row/pixel map is L6c.
+- Data4/5 shape row/pixel map is L6c (closed in matrix v12/E8).
 
 ## Rename proposals
 

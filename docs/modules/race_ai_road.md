@@ -17,7 +17,8 @@ L6b object contract: the frame assembles `Road_ObjectArray` (0x14-byte records) 
 `Race_BuildTrackObjects` and `Race_AddStagedObjects`, then sorts the distance keys
 into `Road_VisibleObjectList` for `Road_DrawObjects`. The four projection helpers
 (`Race_ProjectObject`/`ActorObject`/`ActorSprite`/`TrackObject`) are documented in
-`docs/analysis/race_ai_road.md`; `U-0019` tracks the `Flags` low-bit overload.
+`docs/analysis/race_ai_road.md`; `U-0019` is closed (low 5 bits = row, bits 10-8
+= SAT copy-pass count).
 R5 renamed the track-object cursor fields and road-object record offsets; see `docs/analysis/race_ai_road.md`.
 
 
@@ -59,6 +60,6 @@ standings/results helpers and the speed display: `PiecewiseLinearInterpolation`,
 | track-object stream | `0xFC0E`/`0x109B6` | [x] | [x] | [x] | [x] | [x] | [~] | static contract (L6b) |
 | object-list/render helpers | `0xF40C`+ | [x] | [x] | [x] | [x] | [x] | [~] | static contract (L6b) |
 | object shape selectors | `0x100D0`+ | [x] | [x] | [x] | [x] | [x] | [ ] | static (L6b) |
-| road/profile/objects | `0xF40C`+ | [x] | [x] | [x] | [x] | [x] | [~] | L6b static; pixel map -> L6c |
+| road/profile/objects | `0xF40C`+ | [x] | [x] | [x] | [x] | [x] | [x] | L6b + L6c (pixel map in `road_render.md`) |
 
 Detailed flow: `docs/analysis/race.md`; spawn: `docs/analysis/race_spawn.md`.

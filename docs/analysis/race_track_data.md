@@ -1,7 +1,9 @@
 # Analysis: `src/data/race_track_data.asm` (per-track records + streams)
 
 - **ROM range:** `0x025EC0`–`0x03BF19` (`Road_ShapeTable`/shape data follows in `src/data/road_shapes.asm`)
-- **Status:** records/level tables, Data2/3 decoder, Data4 object runs, Data5 spawn records and Data6 bundle header analyzed; exact Data4 side/second-shape bits partly TODO
+- **Status:** records/level tables, Data2/3 decoder, Data4 object runs (side,
+  second-shape and pass-count bits), Data5 spawn records and Data6 bundle header
+  analyzed
 - **Source:** `src/data/race_track_data.asm` (record/level tables from source, streams
   `binclude` from `baserom.md`)
 - **Related:** `docs/analysis/track_data.md`, `docs/analysis/race.md`,
@@ -66,17 +68,43 @@ Level words:
 |---|---|---|
 | `+$00` bits 0-6 | object/shape selector; mapped to `shape = value + $186` | `[static]` `10AA6` |
 | `+$00` bits 8-12 | run count minus 1 (0..31) | `[static]` `10A1A`, `10A5E` |
-| `+$00` bits 14-15 | side/mirror flags; bit7 also feeds the side flag | `[static]` `10A78`; exact pairing TODO |
-| `+$02` high nibble | spacing divisor minus 1 (`d2 = nibble + 1`) | `[static]` `10A1A` |
-| `+$02` bits 8-10 | flags ORed into `RoadObject_Flags` | `[static]` `10AFC-10B48` |
-| `+$02` low byte | object parameter stored at record `+$10` | `[static]` `10B48` |
-| `+$02` remaining bits | second-shape/parameter source | TODO |
+| `+$00` bit7 | side/lane seed (XORed with the run-cell parity into `Flags` bit14 when bit15 is set) | `[static]` `10A8C-10AA4`; E8 |
+| `+$00` bit14 | facing/mirror -> `RoadObject_Flags` bit15 | `[static]` `10A96-10AA4`; E8 |
+| `+$00` bit15 | enable the alternating-side correction on `Flags` bit14 | `[static]` `10A88-10A92` |
+| `+$02` bits 12-15 | spacing divisor minus 1 (`d2 = nibble + 1`) | `[static]` `10A1A` |
+| `+$02` bits 8-10 | SAT copy-pass count -> `RoadObject_Flags` bits 10-8 | `[static]` `10AFC`; `[confirmed]` E8-B |
+| `+$02` low byte | object parameter stored at record `+$10`; low nibble = lane, high nibble = scale | `[static]` `10B48`; `Race_ProjectTrackObject` |
+| `+$02` bit11 | unused | `[static]` |
 
-The shape selector `$7F` maps to `$205`, which the builder treats as a special
-control/skip entry. Other mapped shapes are written to `RoadObject_Shape` (`+8`).
-Track 0 starts `007F A000, 8039 01AC, 81FA 0015, 81FC 0016, ...`; the stream ends with
-`$FFFF` (the following word is also `$FFFF` padding), then the six-byte Data6 header
-starts at `Data6-6`.
+Shape selector mapping (bits 0-6):
+
+| Selector | Result |
+|---|---|
+| `$00..$7E` | `Shape = $186 + selector` |
+| `$7F` (`shape $205`) | special control/skip entry (extra-actor/gap marker, no object) |
+| `$35..$64` (`shape $1BB..$1E9`) | two-part pair: `Shape = $1BB + 2k`, `Shape2 = Shape + 1`, `k = (shape-$1BB)/2` |
+| `$64+` (`shape >= $1EA`) | `Shape += $2F` remap |
+
+Other mapped shapes are written to `RoadObject_Shape` (`+8`); the pair path also
+sets `Shape2` (`+$12`) and `Flags` bit7 (special/two-part path).
+Track 0 starts `007F A000, 8039 01AC, 81FA 0015, 81FC 0016, ...`; entry 1
+(`$8039`) selects the `$1C3/$1C4` pair observed live. The stream ends with
+`$FFFF` (the following word is also `$FFFF` padding), then the six-byte Data6
+header starts at `Data6-6`.
+
+### `Road_Object_Flags` bit ownership (track objects)
+
+| Bits | Meaning | Source / evidence |
+|---|---|---|
+| 0-4 | projected profile row `r` (`(progress-cell)>>16 & $1F`) | `move.w d0,$A(a0)`; `Race_ProjectTrackObject` reads `$A & $1F`; E8-B row matches |
+| 5-6 | unused by this producer | `[static]` |
+| 7 | second shape present (special/two-part path) | `bset #7,$B(a0)` at `10B2C` |
+| 8-10 | SAT copy-pass count | Data4 `+$02` bits 8-10; read by `Road_DrawObject` via the high byte (`Flags>>8 & 7`); E8-B |
+| 11 | clear | `[static]` |
+| 12 | priority (always set) | `ori.w #$1000`; `Road_DrawObject` maps `$3000` to `ram_FF133E` |
+| 13 | clear | `[static]` |
+| 14 | side/lane direction (left/right of the road centre) | Data4 bit7 XOR run parity; toggled per object in the run; `Race_ProjectTrackObject` adds/subtracts the lane offset |
+| 15 | facing/mirror (horizontal flip) | Data4 bit14; `Road_ScaleShape`/`RiderSprites_Build` mirror pass |
 
 ## Data5 spawn records
 
@@ -132,11 +160,11 @@ them as stacked far/near background strips; `race_image_0` is the cloud parallax
 
 ## Open questions
 
-- Data4 side/mirror bit pairing, the `+$02` remaining bits and second-shape
-  generation.
 - Data5 other flag bits (the normal/special consumer split is now resolved).
 - Meaning of the level word and the `*$10/$210` scaling.
 - Dynamic verification of Data6 decompression offsets and palette rows.
+- Whether the two-part pair path (`$1BB..$1E9`) and the `+$2F` remap are the only
+  Data4 shape encodings; both are statically decoded and the pair is observed live.
 
 ## Rename proposals
 

@@ -27,8 +27,8 @@ Legend: `[x]` done, `[~]` partial, `[ ]` not started.
 | Menus/screens | `menu_*`, `message`, `shop`, `highscore`, `endlevel`, `race_results`, `rider_intro` | [x] | [~] | [~] | [~] | non-demo captures; shop layout user-described |
 | Race core/HUD/spawn | `race_core`, `race_hud*`, `race_spawn` | [x] | [~] | [~] | [~] | L1/L2 (E1/E2), R30 (v5), L5 (E5) and L7 (E7, v9) done: four populations, `Data5` split, reserved opponent, static respawn, extra slot; HUD cells/needle/odometer, standings/results/money pipeline and crash-script selection confirmed |
 | Actor AI/movement/combat | `race_ai`, `race_combat`, `race_anim_audio` | [x] | [~] | [~] | [~] | L2 (E2), R30 (v5), L3 (E3, v6) and L4 (E4, v7) done: target/scan/dispatch, `$74` pages/families, budget, static action table, pair collision/extent/reach, damage/exchange, stamina/knockdown; crash-handler timing static |
-| Physics/collision/road marking | `race_physics`, `road_marking` | [x] | [~] | [~] | [~] | L6a camera/VScroll/HScroll done (E6, v10); L6b actor/object projection static (v11); rearview and marking/table visuals remain |
-| Road render/shapes | `road_render`, `road_shapes` | [x] | [~] | [~] | [~] | L6b object/visible-list + projection contract (v11); shape row bytes/pixel map -> L6c |
+| Physics/collision/road marking | `race_physics`, `road_marking` | [x] | [~] | [~] | [~] | L6a camera/VScroll/HScroll done (E6, v10); L6b actor/object projection (v11); rearview and marking/table visuals remain |
+| Road render/shapes | `road_render`, `road_shapes` | [x] | [x] | [~] | [~] | L6b object/visible-list + projection (v11); L6c shape/control/interpolator/tile-writer pixel map + Data4 bits (v12/E8); remaining: shape-art catalogue and visual crop |
 | Track/data formats | `track_data`, `race_track_data`, `race_*_tables`, `race_misc_data` | [x] | [~] | [~] | [~] | stream/channel/table field meanings |
 | Decompression | `uncompress` | [x] | [x] | [~] | [~] | remaining edge cases |
 | Audio (separate) | raw bridge, `z80_driver` | [~] | [~] | [ ] | [ ] | Z80 driver, sequencer, sound data |
@@ -48,9 +48,9 @@ Priority is analytical impact, not address order.
 | 4 | `Race_UpdateActorMovement/FallMovement`, `sub_115C6`, `sub_11A5E` | **done:** E1 closed `$36` accumulator, `$38/$3A` movement updates; R30 closed `$3C` (write-only step, not a timer) and `$0E/$10` (write-only advance/index) | fall/movement edge coverage | movement matrix v5 |
 | 5 | `Race_GetCurveSpeedLimit`, `Race_UpdateBikeCurve`, `Race_UpdateLeanCurve` | **done:** formulas + table decode + E2-2/E2-3 (`$42/$0C` sign, `$3E=(limit<<8)/(d0>>8)`; TP0 dynamic, TP2/TP3 static); R30 corrected `$78`: armed by the fall handlers, so `word_14742` is reachable | `race_speed.md` | speed/curve contract |
 | 6 | `Race_UpdateCamera`/`IntegrateTrackCurve`/`BuildVScrollInfo`/`BuildHScrollTable` | L6a camera/progress and HInt tables | **done:** E6 (v10) camera branches, progress aliases, VScroll chain/compaction, HScroll bands | `race_physics.md`, `race_ai_road.md` |
-| 6b | Road render helpers: `Race_ProjectObject`, `Race_ProjectActorObject`, `Road_DrawStrip`, `Road_WriteTileColumns` | exact row/tile mapping | **done static (L6b):** object-record producers, four projection helpers, track stream, visible-list sort/draw; **next** L6c shape row/pixel map + E8 | `race_ai_road.md`, `race_map.md` (v11) |
+| 6b | Road render helpers: `Race_ProjectObject`, `Race_ProjectActorObject`, `Road_DrawStrip`, `Road_WriteTileColumns` | exact row/tile mapping | **done (L6b+L6c):** object producers/projection/visible list (v11); shape control -> offset lists -> byte-exact column-major tile map and Data4 flags (v12/E8) | `race_ai_road.md`, `road_render.md`, `race_map.md` (v12) |
 | 7 | `Race_ApplyCollisionImpact`, `Race_ApplyCrashImpact`, `sub_140EE`/`sub_141AE`/`sub_14404`, `unk_14744`/`unk_147FC` | `$2A/$2C/$2E/$54/$5C`, damage timing, action-handler table | **done static+dynamic (L4/E4):** both `Race_ApplyCollisionImpact` branches, damage/exchange, `$5C` stamina and knockdown confirmed; R30 crash handlers static-only (demo never crashes) | `race_impact.md`, `race_map.md` |
-| 8 | Track/shape data formats | **done:** Data2/3 decoder, Data4/5/6 formats, Data5 normal/special consumer split; remaining Data4 side bits | compare staged/service consumers | format spec |
+| 8 | Track/shape data formats | **done:** Data2/3 decoder, Data4/5/6 formats, Data5 normal/special consumer split, Data4 side/second-shape/pass-count bits | compare staged/service consumers | format spec |
 | 9 | Screens flow | non-demo inputs/visuals | **progress:** demo flow + menu entry; `screens_flow.md`; input injection next | screen state machines |
 | 10 | Asset tail | labels/bounds/consumers | inventory length/pointers/visuals | asset catalogue |
 | 11 | Audio (separate) | Z80 driver/sequencer/SFX | mailbox + music trace | audio spec |
@@ -60,7 +60,7 @@ Priority is analytical impact, not address order.
 - [x] Phase 0: coverage baseline and work queue.
 - [ ] Phase 1: runtime, IRQ, input, RAM ownership.
 - [~] Phase 2: race simulation semantics (targeting/speed/collision/impact/spawn-L5 done; movement residual).
-- [~] Phase 3: road/render and data formats (Data4/5/6 mapped; L6a camera/HInt done; L6b object/projection/visible-list static; shape row/pixel map -> L6c).
+- [x] Phase 3: road/render and data formats (Data2..6 mapped; L6a camera/HInt, L6b object/projection/visible-list and L6c shape/pixel/Data4 map done; only visual catalogues remain).
 - [~] Phase 4: screens and visual confirmation (flow mapped; non-demo/visual captures pending).
 - [ ] Phase 5: audio/Z80, separate.
 - [ ] Phase 6: asset tail catalogue.

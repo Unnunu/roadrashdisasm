@@ -35,7 +35,8 @@ horizontally mirrored copy.
    tile step, X step); add `Animation_ram_BaseTile`/`ram_FFDE5E` and the priority/H-flip
    bits, write the entry, advance the tile cursor.
 4. If the tile cursor reaches `$150`, flag the chain end and clear the previous link.
-5. After the first row, derive the road-tile-array row stride `ram_FFDE68`.
+5. After the first row, derive `ram_FFDE68`, the extra advance between 32-row tile
+   bands (the column stride is `ram_FFDE6A`/`ram_FFDE66` + 4).
 6. Clear the last link, store `Animation_ram_SpriteIndex`/`TileIndex`.
 
 ## RAM / ROM & structures
@@ -75,8 +76,8 @@ Detailed listing and the grid model: `docs/analysis/rider_sprites.md`.
 
 ## Hacks / bugs / quirks
 
-- The `$8000` sentinel in `ram_FFDE68` marks "row stride not computed"; it is replaced
-  after the first row.
+- The `$8000` sentinel in `ram_FFDE68` marks "band advance not computed"; it is
+  replaced after the first row. It is not a per-row stride (see L6c).
 - Entries with `Y >= $118` do not get the priority bit `$8000`.
 - The mirror pass (`Road_ram_MirrorFlag`, from `RoadObject_Flags` bit15) sets the H-flip bit
   `$800` and walks X left. `U-0007` resolved: this is the facing/mirror bit, not a shadow.

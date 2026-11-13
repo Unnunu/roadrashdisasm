@@ -41,12 +41,19 @@ next rendering model.
 - actual written destination range;
 - runtime dump availability for future comparisons.
 
-## What is not verified
+## What is now verified (L6c)
 
-The current `preview_p4_line3.png` / `preview_p6_line3.png` are only candidate
-4bpp decodes. They do not yet use the writer destination tile bytes, strip
-offsets, destination strides, or SAT palette line, so their width/height and
-black padding are not trustworthy.
+The writer model was replayed against this golden dump: the left/right offset
+lists, the `$DE6A/$DE68/$DE66` strides, the 32-row band wrap and the
+`base + 4*r + c*(gap+4)` destination formula reproduce **all 1080 written bytes**
+of the captured call with 0 mismatches. Shape `$56` writes `$FF511C..$FF5573`
+as 5 columns x 54 rows; the 4 bytes per column/row are the 4bpp bitplanes of one
+8-pixel scanline. See `docs/analysis/road_render.md` for the full contract and
+E8-A for the live list/stride capture.
+
+The `preview_p4_line3.png` / `preview_p6_line3.png` raw-source decodes are still
+superseded by the writer-derived tile/SAT previews below. Only the composed,
+cropped SAT image should be treated as final shape art.
 
 ## Runtime destination preview
 
@@ -69,7 +76,6 @@ final crop/width/height still needs confirmation against the object's SAT chain.
 
 ## Next experiment
 
-Use `shape_writer_after.bin`, the writer's offset arrays and the actual palette
-line to derive the final width/height/row layout, then crop
-`preview_runtime.png` to the true shape. Only that output should be treated as
-final shape art.
+Optional visual check: compose the writer output with the live SAT chain and crop
+`preview_runtime.png` to the true sprite. The layout (5 columns x 54 rows for
+shape `$56`) is now known; only the final art/crop remains.

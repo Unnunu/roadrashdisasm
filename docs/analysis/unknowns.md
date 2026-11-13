@@ -31,7 +31,7 @@ an analysis document).
 | `U-0016` | `src/race/race_ai.asm:1887` | `unk_12168` | consumer and dispatch semantics of the 9-pointer table (index 2 is `sub_140EE`) | resolved: dead data. No static reader and no pointer/address reference in the ROM; the live dispatch tables are `unk_147FC` -> `unk_14744` | none | wontfix | `[static]`: full `src/` and `build/roadrash.lst` reference scan |
 | `U-0017` | `src/race/race_ai.asm:3017` | `Race_UpdateActorActions` stamina regen | why opponent stamina `$5C` regrows toward `ram_FF18A8=$500` but snaps to the graphics entry `+$E` once `$5C+FrameDelay >= $500`, instead of capping at a fixed max | best guess: `ram_FF18A8` is a shared regen threshold and graphics `+$E` is the per-bike stamina value; the player uses `ram_FF18AA=$A00` directly | sample an opponent's `$5C` over 600 frames and dump `Race_ActorGraphicsTable` `+$E` for the same actors | open | `[static]` `race_ai.asm:3017-3024`, `race_core.asm:1256-1258`; `[confirmed]` E4-B covers the consumption side only |
 | `U-0018` | `src/race/race_physics.asm:1013` | `Race_BuildVScrollInfo` compaction pass | per-case arithmetic of the `+E`-driven block copy/merge and the recomputed `$8Axx` line-gap commands | thresholds are `+E<0` skip, `+E<=8` merge; the surviving bands are then clamped and the commands derived from HV differences | instrument `+E` and the HV targets for a curve with many bands; enumerate all branches | open | `[static]` pass at `.loc_E2AE..E3B0`; `[dynamic]` E6 runtime chain `$10->$20->$50->$60->$70->$80->$90` (`analysis/notes/L6a_hint_trace.txt`) |
-| `U-0019` | `src/race/race_ai_road.asm:1932` | `Race_ProjectObject` return `d3` / `RoadObject_Flags` low bits | why the projected profile row (`(X-progress)>>16 & $1F`, ORed into `Flags` low 5 bits) is also consumed by `Road_DrawObject` as the sprite-chain pass count (`Flags & 7`) | the low bits are a shared row/pass index: the row selects the 8-row tile block and the low 3 bits bound the chain passes; the near-actor and track paths also write a row offset into `Flags` (`move.w d0,$A(a0)`) | E8: force two objects with different rows, count the SAT passes and compare with `Flags & 7` | open | `[static]` `Race_ProjectObject`/`Race_BuildActorObjectList`/`Race_BuildTrackObjects` writes; `road_render.asm:629` consumer |
+| `U-0019` | `src/race/race_ai_road.asm:1932` | `Race_ProjectObject` return `d3` / `RoadObject_Flags` bits | whether the projected profile row and the sprite-chain pass count share the same `Flags` bits | resolved: they are different fields. Low 5 bits = row; the high byte `(Flags>>8) & 7` (bits 10-8) = SAT copy-pass count. Data4 `+$02` bits 8-10 feed the pass count; the row comes from the projection. `Road_DrawObject` reads `move.b Flags(a0)` (high byte), not the low bits | none | confirmed | `[static]` `road_render.asm:96F4-96F8`, `race_ai_road.asm:10AFC`; `[confirmed]` E8-B: `$FFD430` `flags=$1184` pass=1 row=4, 6 entries copied once; pass=0 objects skip the loop (`analysis/notes/L8b_trace.txt`) |
 
 L2 static pass added **no new U rows**. The open-looking items are statically
 resolved quirks, not semantic gaps: `$18` is a word (the old trace read its low
@@ -56,3 +56,11 @@ opponent stamina regen cap. The R30 crash handlers (`sub_140EE`/`sub_141AE`) rem
 L6a added `U-0018` for the VScroll compaction arithmetic; the block layout, chain and
 observed runtime bands are confirmed, but the exact `+E` merge/gap cases are not yet
 enumerated.
+
+L6c (E8) closed `U-0019`: `RoadObject_Flags` bits 10-8 are the SAT copy-pass count
+(read through the high byte), while the low 5 bits are the projected row. The
+Data4 `+$02` bits 8-10 source and the Data4 side/second-shape bits are decoded in
+`docs/analysis/race_track_data.md`; the writer pixel map is in
+`docs/analysis/road_render.md`. Remaining world unknowns are optional visual
+checks; `U-0017` (opponent stamina regen cap) and `U-0018` (VScroll compaction
+arithmetic) stay open.

@@ -1,16 +1,17 @@
 # Module card: `src/race/road_render.asm`
 
 - **ROM range:** `0x008FB4`–`0x0098C1` (`src/race/race_hud_debug.asm` starts at `0x98C2`)
-- **Status:** partially analyzed (object list/records, call graph and dynamic samples
-  confirmed; shape/projection math TODO)
+- **Status:** analyzed (object list/records, shape header/control/interpolator/tile-writer
+  pixel map and Data4 flag path confirmed; L6c/E8)
 - **Related:** `docs/architecture.md`, `docs/reverse-engineering.md`,
   `docs/hardware.md`, `docs/ram-map.md`, `docs/analysis/road_render.md`
 
 ## Role / purpose
 
-Race road/object renderer. `src/race/race.asm` calls `Road_DrawObjects` after the HUD updates; it walks
-the visible-object list and renders each object's road strip/tile and rider/vehicle
-sprite chain, using `RiderSprites_Build` for the sprite chain.
+Race object sprite-tile renderer. `src/race/race.asm` calls `Road_DrawObjects` after
+the HUD updates; it walks the visible-object list and renders each object's 4bpp
+sprite tiles and SAT chain (`RiderSprites_Build`). The `Road_*` names are historical:
+the written tiles are object sprites, not the road surface.
 
 ## Entry points & API
 
@@ -32,14 +33,18 @@ sprite chain, using `RiderSprites_Build` for the sprite chain.
 `Road_DrawObject`: unmarshal the record, compute the shape(s) (`Road_ShapeTable`), project/clip,
 call `Road_DrawStrip` (`Road_InterpolateLeftEdge/91F0` strips, `Road_WriteTileColumns/93D2` tiles, `RiderSprites_Build` sprites),
 copy the chain into the SAT with the x offset/clipping, then the second shape.
-`Road_DrawStrip`: build the road strip/tile for d0/d1 and the object's sprite chain.
+`Road_DrawStrip`: build the two source-advance lists, write the object's sprite tiles
+and build its SAT chain. The writer is column-major: per row/column it writes the four
+4bpp bitplanes; `ram_FFDE6A` is the full-band gap, `ram_FFDE66` the remainder-band gap
+and `ram_FFDE68` the 32-row band advance.
 
 ## RAM / ROM & structures
 
 - Visible list `Road_VisibleObjectList` (`$FF1D50`); object array `Road_ObjectArray` (`$FFD37C`),
   0x14-byte records: x, y, scale, horizon, shape, flags, x offset, second shape.
-- Record flags: bit15 mirror/facing (= bit7 of `$B`, selects the special mirrored path), bits 12-13 priority, low
-  3 bits sprite rows.
+- Record flags: bit15 mirror/facing (= bit7 of `$B`, selects the special mirrored path),
+  bit14 side/lane (track objects), bits 10-8 SAT copy-pass count (read via the high
+  byte), bits 12-13 priority, low 5 bits projected profile row.
 - Road: `ram_FF0D26/0D28/0D2A/0D2E/102E`, `ram_FF132E/1330/1332/1336`,
   `ram_FF136A` (horizon), `ram_FF1366` (chain end).
 - Projection: `Road_ram_MirrorFlag/133C/133E/1340/1342/1344/1348/134C/1350/1354/1356/1358/135A/135C/135E/1360/1362/1364`.
@@ -55,11 +60,11 @@ copy the chain into the SAT with the x offset/clipping, then the second shape.
 | Function | Address | Contract | Algorithm | Data | Hardware | Why | Dynamic | Status |
 |----------|---------|----------|-----------|------|----------|-----|---------|--------|
 | `Road_DrawObjects` | `0x942A` | [x] | [x] | [x] | [x] | [x] | [x] | analyzed |
-| `Road_DrawObject` | `0x9484` | [x] | [~] | [x] | [x] | [x] | [x] | partial |
-| `Road_DrawStrip` | `0x8FB4` | [x] | [~] | [x] | [x] | [x] | [x] | partial |
-| `Road_InterpolateLeftEdge`/`Road_InterpolateRightEdge` | `0x9142`/`0x91F0` | [x] | [~] | [x] | [x] | [x] | - | partial |
-| `Road_WriteTileColumns`/`Road_ClearEdgeTiles` | `0x9306`/`0x93D2` | [x] | [~] | [x] | [x] | [x] | - | partial |
-| `Road_ScaleShape`/`Road_ProjectShapeSpecial`/`Road_ProjectShape` | - | [x] | [~] | [x] | - | [x] | - | partial |
+| `Road_DrawObject` | `0x9484` | [x] | [x] | [x] | [x] | [x] | [x] | analyzed |
+| `Road_DrawStrip` | `0x8FB4` | [x] | [x] | [x] | [x] | [x] | [x] | analyzed |
+| `Road_InterpolateLeftEdge`/`Road_InterpolateRightEdge` | `0x9142`/`0x91F0` | [x] | [x] | [x] | [x] | [x] | [x] | analyzed |
+| `Road_WriteTileColumns`/`Road_ClearEdgeTiles` | `0x9306`/`0x93D2` | [x] | [x] | [x] | [x] | [x] | [x] | analyzed |
+| `Road_ScaleShape`/`Road_ProjectShapeSpecial`/`Road_ProjectShape` | - | [x] | [x] | [x] | - | [x] | [x] | analyzed |
 
 Detailed listing and dynamic samples: `docs/analysis/road_render.md`.
 
@@ -88,7 +93,8 @@ Detailed listing and dynamic samples: `docs/analysis/road_render.md`.
 - `[hypothesis]` The 16 demo objects are the player, opponents and road props; test:
   map object records to src/race/race.asm roles.
 - `[hypothesis]` `Road_InterpolateRightEdgeAlt` is an unused early version of `Road_InterpolateRightEdge`.
-- TODO: exact shape-byte format and projection constants (`$C0/$200`).
+- Resolved: exact shape-byte format, offset-list generation, writer strides and the
+  Data4 side/second-shape/pass-count bits (L6c/E8).
 
 ## Experiments performed
 
