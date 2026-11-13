@@ -163,24 +163,22 @@ formulas: plane A top = `$30EA>>16 = $0027`, plane B top = `$30EE>>16 = $0013`;
 line `$18` is in the second plane-B band (`3H/4+$30F6 -> $006D`); line `$80` is a
 road row written by `Road_FillProfileTables` (`fg=$017C`, `bg=$FFAB`).
 
-## `Race_ProjectActorSprite` (`0xDAE2`)
+## `Race_ProjectActorSprite` (`0xDAE2`, L6b contract)
 
-Builds a `Road_ObjectArray` record for one actor at the current
-`ram_FFDE72` index:
+Builds a `Road_ObjectArray` record for an actor that is far behind the player
+(`rel.high < -$10`) at the current `ram_FFDE72` index. With `v = progress - actor.X`:
 
-- relative X = `(actor.X - Race_ram_PlayerProgress)` (negated and stored in the
-  distance list);
-- Y uses `RacePlayerA.PosY ± $10`, `$28` steps and the actor `$30`;
-- screen Y/X are scaled by `$E0`/`$100`-style factors, then clipped;
-- scale = `min($3FFF, $100000 / (relativeX + $80))`, tripled for the record;
-- flags = `(actor.$73 & 3) ror 4 + $4100`;
-- actor index `1` -> shape `$159`; `$10..$12` -> `$15A/$15C` special shapes;
-  other actors -> `Race_GetActorShapeVariant` + `$154`;
-- visible objects (`x >= -$20`, right edge `< $160`) increment
-  `ram_FFDE72` and the object pointer.
-
-The record layout and clipping are confirmed by the dynamic `Road_DrawObjects`
-snapshot.
+- key `v` is appended to `ram_FF1B50`;
+- `base = $B00 + ((v>>10) * -$1B) / $10`; `Y1 = actor.$30 -
+  ((PosY-$10)/$28)*$28`, `Y2 = actor.$30 - ((PosY+$10)/$28)*$28`;
+  `t1 = (base*Y1)/$E0 >> 6`, `t2 = (base*Y2)/$E0 >> 6`;
+- record `+0 = t1 + $20`, `+$C = t1 - t2`, `+2 = $D8 - (v>>12)/$10`;
+- scale `+4 = 3 * min($3FFF, $100000/((v>>12)+$80))`; limit `+6 = $E0`;
+- flags `+$A = $4100 | (palette & 3)<<4` (H-flip from actor `$C` bit15);
+- shape: actor `$71 == 1` -> `$159`; `$71 in $10..$12` -> `$15A`/`$15A+2`
+  (bit3 of `StateFlags`); otherwise `Race_GetActorShapeVariant` + `$154`;
+- the record is kept (`ram_FFDE72++`, `a0 += $14`) only when `+0 >= -$20` and
+  `+0 - +$C < $160`; an accepted X then gets `-$200`.
 
 ## `Race_UpdateNearestOpponent` (`0xE5EE`)
 
@@ -220,7 +218,6 @@ snapshot.
   per-case merge/gap selection is not fully enumerated).
 - Engine-audio mapping of `Race_ram_NearestBehindSpeed`/`Race_ram_NearestAheadSpeed`
   into the audio routine.
-- `Race_ProjectActorSprite` field semantics and the road-marking data layout.
 - Rearview mirror pixel/row mapping (visual confirmation).
 
 ## Rename proposals (apply only on request)

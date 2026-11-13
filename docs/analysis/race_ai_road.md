@@ -3,12 +3,13 @@
 - **Module:** road profile/height/curve, HScroll/marking tables, object/visible lists,
   sprite-tile staging, race standings/results, speed display
 - **ROM range:** `0x00EB34`–`0x010DFF`
-- **Status:** analyzed (roles/flow); some render/object internals and data layouts TODO
+- **Status:** analyzed (L6a profile + L6b object/projection/visible-list contracts)
 - **Source:** `src/race/race_ai_road.asm`
 - **Related:** `docs/analysis/race.md`, `docs/analysis/race_physics.md`,
   `docs/analysis/race_spawn.md`, `docs/modules/race_ai_road.md`, `docs/ram-map.md`
 
 ## Functions
+
 Applied in R4: `Race_BuildActorObjectList`, `Race_AddSpecialObject`,
 `Race_AddTrackStartObject`, `Race_AddStagedObjects`,
 `Race_BuildTrackObjects`, `Race_ProjectTrackObject`,
@@ -43,9 +44,9 @@ Applied in R5: `RoadObject_X/Y/Scale/Limit/Shape/Flags/XOffset/Shape2/Size`;
 | `Race_ComputeStandings` | `0xEFA4` | Race standings/results (top-level after the race). |
 | `Race_ScaleResultValue` | `0xF0E4` | Result/progress scaling with `RaceTrack_Data1`. |
 | `Race_UpdateSpeedDisplay`/`Race_FormatDecimal` | `0xF108`/`0xF11C` | Speed/decimal HUD. |
-| `Race_BuildActorObjectList`/`Race_AddSpecialObject`/`Race_AddTrackStartObject`/`Race_AddStagedObjects` | `0xF40C`+ | Road/object render helpers (TODO). |
+| `Race_BuildActorObjectList`/`Race_Add*Object` | `0xF40C`+ | Object-record producers (L6b contract below). |
 | `Race_WriteSpriteTiles` | `0x10972` | Sprite-tile staging to VRAM. |
-| `Race_BuildTrackObjects`/`Race_ProjectTrackObject` | `0x109B6`/`0x10C4E` | Object/sprite tile copies (TODO). |
+| `Race_BuildTrackObjects`/`Race_ProjectTrackObject` | `0x109B6`/`0x10C4E` | Track-object stream -> object records (L6b). |
 | `Road_BuildVisibleList` | `0x10D46` | Visible object list (`ram_FF1B50`/`1C50`/`1D50`). |
 | `sub_10DBE`/`sub_10DDA` | `0x10DBE`/`0x10DDA` | Actor/visible-list helpers. |
 
@@ -70,6 +71,37 @@ Applied in R5: `RoadObject_X/Y/Scale/Limit/Shape/Flags/XOffset/Shape2/Size`;
 - `Road_BuildVisibleList` builds the visible object list from the sorted
   `ram_FF1B50`/`ram_FF1C50` lists into `ram_FF1D50`; `Race_WriteSpriteTiles` stages the
   sprite tiles for `Race_GameTick`.
+
+## Frame object-assembly order (L6b)
+
+`Race_Update` render-prep phase (`race_core.asm`):
+
+```
+ram_FFDE72 = 0
+Race_AddSpecialObject        ; cop / special timer object
+Race_AddTrackStartObject     ; start/finish gate when in range
+Race_BuildActorObjectList    ; active + static + extra actor(s)
+ram_FF1B48 = ram_FFDE72      ; actor-object count
+Race_BuildTrackObjects       ; ROM track-object stream
+ram_FF1B4A = ram_FFDE72 - ram_FF1B48   ; track-object count
+Race_AddStagedObjects        ; staged RAM traffic list
+ram_FF1B50[count] = $FFFFFFFF          ; terminate distance list
+Road_BuildVisibleList        ; sort into ram_FF1C50 + index list $FF1D50
+...
+Road_DrawObjects             ; draw in visible-list order
+```
+
+`Road_ObjectArray` is `$FFD37C..$FFD77B`, 0x14-byte records, at most 51
+(`$400/$14`); `ram_FFDE72` is the live count and the record word at index `count`
+is the `$FFFF` terminator. The parallel distance list `ram_FF1B50` holds one 32-bit
+key per record and is sorted into `ram_FF1C50`; `Road_VisibleObjectList`
+(`$FF1D50`) holds the sorted record indices as words.
+
+`Road_ObjectArray` fields (`RoadObject_*`): `+0` screen X, `+2` screen Y,
+`+4` scale, `+6` limit/depth, `+8` shape, `+$A` flags, `+$C` X offset,
+`+$E` reserved (projected row byte for track objects), `+$10` reserved,
+`+$12` second shape. The distance key (`ram_FF1B50`) is stored separately, not in
+the record.
 
 ## `Race_ComputeStandings` (`0xEFA4`, L7 contract)
 
@@ -123,98 +155,172 @@ For each row:
 
 After the road rows, the top `alpha` sky rows get zero scroll/X/width entries.
 
-## `Road_BuildVisibleList` (`0x10D46`)
+## Object-record producers (L6b)
 
-`Road_BuildVisibleList` is an insertion sort of dword keys from the source list
-`a0` into the destination list `a1`, while it maintains a parallel word index list
-`a2`:
+All producers write the current `Road_ObjectArray` record at `ram_FFDE72` and append
+one 32-bit key to `ram_FF1B50`, except the marker/gap paths and the dropped/clipped
+records (which do not increment `ram_FFDE72`).
 
-- copies the first key; `a2[0]=0`;
-- for each next key, scans the already-written destination backwards comparing
-  `cmp.l (a3)+,d4` (BCC loop / BMI insertion), shifts entries and their indices,
-  then writes the key/index pair;
-- writes the `$FFFFFFFF` terminator and its index into both lists.
+- `Race_AddSpecialObject` (`0xFD96`): when `Race_CopIndex != 0` uses shape `$170`
+  (cop); otherwise it requires the negative `ram_FF3698` flag, resets `ram_FF369A`
+  and returns. The appended record is fixed: X `$FEA0`, Y `$41`, scale `$4000`,
+  limit `$E0`, key `0`, flags cleared; `ram_FF369A` is incremented.
+- `Race_AddTrackStartObject` (`0xFB1E`): the start/finish gate. Before progress `$C`
+  it uses X `$C0000`; otherwise `RaceTrack_Data1<<16`, and only when the gate is
+  ahead by `< $1F0000`. Shape comes from `sub_15478`; the record is projected by
+  `Race_ProjectObject(d0=gateX, d1=$180, d2=0)`; the mirror bit (`$B` bit7) is set.
+- `Race_BuildActorObjectList` (`0xF40C`): walks three populations in order:
+  `ram_FF1A08` (PlayerA + opponents), `Race_StaticActorList` (static pair, only
+  actors whose `RespawnTimer == $FFFF`), then the single extra actor `$FF2FAA`
+  (via `unk_258A6`; requires `ProgressSnapshotB >= $708` and `$68` bit6). It advances
+  `ram_FF1AD9` (mod 4, lean shape) and `ram_FF1ADC` (mod 8, fall shape) once per
+  frame, and clears `ram_FF3040` (population phase 0/1/2).
+  - `ram_FF1B16` is the per-actor "custom animation" flag; bit4 of `ControlFlags`
+    with a non-negative `AnimState` runs `sub_15014` to fetch the current tile.
+  - Relative X `rel = actorX - PlayerProgress` (high word in `d0`): `rel < -$10` ->
+    `Race_ProjectActorSprite` (far behind); `rel > $1E` -> skip; otherwise the
+    near-actor record is built:
+    `row = rel.high & $1F` stored in `Flags` low bits, `Y` from
+    `ram_FF1E60 - actor.$30` divided by `(rel>>8)+$100`, plus `actor+8` and the lean
+    curve (bit5), bucketed through `ram_FFD338` (4 entries) or `unk_25802` (3
+    entries) into signed `actor.$34`; the shape is selected by
+    `Race_SelectExtraActorShape` / `Race_SelectOpponentShape` /
+    `Race_SelectPlayerFinishShape` / `Race_SelectActorObjectShape` (idle, speed,
+    weapon, state variants); the key is `rel` (32-bit) and the record is projected
+    by `Race_ProjectActorObject`. The palette is ORed into `Flags` bits 4-7.
+  - The main record is kept only when its screen X is in `[-$23C, 0)`; otherwise the
+    count is not advanced. If that actor is the player in a fall
+    (`AnimState == 2 && ImpactScale >= 8`) a fall object is added; then an impact
+    object (ControlFlags bit0) or lean object (bit5); a weapon object when
+    `WeaponAnimFlags` bit7 and frame 0. `ram_FF1B16` actors also emit a shadow via
+    `Race_ActorShadowTable[$71]`: shadow shape `$58`, projected object (or sprite
+    when far behind), shadow bits from `$76` (`$A` bit7, bit3).
+- Shape selectors: `Race_SelectActorObjectShape` handles idle/speed/weapon/state
+  pages; `Race_SelectActorSpeedShape` (`$50..$55`), `Race_SelectActorIdleShape`
+  (`$56..$58`), `Race_SelectOpponentShape` (`$7F..$86`), `Race_SelectPlayerFinishShape`
+  (`$59..$5F`, second shape from `unk_102DE = 3,19,35`), `Race_SelectExtraActorShape`
+  (extra actor), `Race_GetActorShapeVariant` (2-threshold bucket). Leaning/mirroring
+  flips `$A` bit15 when `$34` is negative. `ram_FFD338 = 0x001F0044/0x009301BB`
+  (4 entries) and `ram_FFD33E = 0x0004000D/0x00200224` (3 entries) are the
+  speed/lean threshold tables copied in `Race_Init`.
+- `Race_BuildTrackObjects` (`0x109B6`): the normal-play track-object stream (see
+  below) writes records directly and uses `Race_ProjectTrackObject`.
+- `Race_AddStagedObjects` (`0xFC0E`): consumes the staged 4-byte RAM list
+  (`ram_FFD7D4`) that the spawn layer fills; shape = byte2 + `$173`, render flags
+  from `Race_TrackObjectTypeTable[byte2]`, key = position - progress, type size
+  from table `+2` (scale), lane offset from the low nibble (`(nibble<<5)-$100`),
+  and `Race_ProjectObject` for the screen fields. Only entries within `$1E0000` ahead
+  are emitted; the cursor is rewound while the previous high word is at/after the
+  progress. `Race_ram_TrackObjectCount` counts the emitted staged objects.
 
-Inputs are `ram_FF1B50`/`ram_FF1C50` from the object/sprite helpers; the sorted
-keys + indices feed `ram_FF1D50` (`Road_VisibleObjectList`) for
-`Road_DrawObjects`. The exact ascending/descending convention and key units are
-still TODO.
+### Projection helpers (L6b)
 
-## Object-list/render helpers
+`Race_ProjectObject` (`0xFD96`, shared by the staged/start/extra helpers):
 
-- `Race_BuildActorObjectList` (`0xF40C`) is the actor/static/extra object-list builder. It advances
-  `ram_FF1AD9` (mod 4) and `ram_FF1ADC` (mod 8), walks `ram_FF1A08`,
-  `Race_StaticActorList`, then `$FF2FAA`; projects each actor with
-  `Race_ProjectActorSprite` or computes a projected X/Y from player progress; calls
-  `sub_15014`/`Race_SelectOpponentShape`/`Race_SelectActorObjectShape`/`Race_SelectPlayerFinishShape`/`Race_SelectExtraActorShape`/`Race_ProjectActorObject`; appends
-  records to `Road_ObjectArray` and distances to `ram_FF1B50`.
-- `Race_AddSpecialObject` (`0xFD96`) appends a special/cop/start object with fixed
-  `$FEA0/$41/$4000` fields when `Race_CopIndex` or `ram_FF3698` requests it.
-- `Race_AddTrackStartObject` (`0xFB1E`) appends the track-start object selected from
-  `RaceTrack_Data1`/player progress, sets its record/flags, and projects it through
-  `Race_ProjectObject`.
-- `Race_AddStagedObjects` (`0xFC0E`) walks the track object stream cursor `Race_ram_TrackObjectRecordCursor`, appends
-  visible objects with `Race_ProjectObject`, and stores the per-shape depth data from
-  `ram_FFD77C`.
-- `Race_BuildTrackObjects` (`0x109B6`) advances/rewinds the track-object stream cursor
-  `Race_ram_TrackObjectCursor`/`Race_ram_TrackObjectDistance` against player progress; `Race_ProjectTrackObject` consumes the
-  resulting object/shape data into the object records.
+- `d0` = 16.16 object X, `d1` = Y offset, `d2` = extra Y offset, `a0` = record.
+- If X is behind the player, leaves the record untouched and returns 0.
+- Row `r = (X.high - PlayerProgress.high) & $1F`; `dist = (X-progress)>>8`.
+- `scale = $A00000 / (dist + $200)`; writes `+4`.
+- `Y = $4C + (profileWord(r, dist+$100)) / (dist+$100)` with the `+2` term folded in,
+  clamped to `>= 1`; writes `+2`.
+- `X = $4C ± (profileWordX(r, dist+$100)) / (dist+$100)`, then `-$160`; writes `+0`
+  (min 1 on the negative branch).
+- `limit = ram_FFD77C[2r]` -> `+6`.
+- returns `d0 = scale`, `d1 = X`, `d2 = Y`, `d3 = r`; callers OR `d3` into
+  `Flags` low bits. `prof` = the 4-word `ram_FF310A` strip record interpolated by
+  the X fractional word (`ram_FF310A` rows are `+0/+2/+4/+6` and the `+2/+6` and
+  `+0/+4` pairs are the depth/X edges).
+- `Race_ProjectObject` updates the record only; the caller appends the distance key.
+  The low-5-bit `Flags`/row and `Flags & 7` draw-pass overload is `U-0019`.
 
-### Track-stream dynamic snapshot
+`Race_ProjectActorObject` (`0x1082A`): nearest-actor variant.
 
-At `Race_BuildTrackObjects` (`0x109C4`):
+- `d4 = actor X fraction` (word at `+6`), `r = Flags & $1F`;
+  `dist = (actorX-progress)>>8`.
+- `scale = ($A00000 if $71 < $10 else $C00000) / (dist+$200)` -> `+4`.
+- `Y = $4C + (profileEdge(r) - CollisionOffset) / (dist+$100)` -> `+2`.
+- `limit = ram_FFD77C[2r]` -> `+6`; `X = (profileX(r) + actor.$30)/(dist+$100) -
+  $160` -> `+0`; writes no flags. `d4` is the interpolation weight between the two
+  profile rows.
 
-- `PlayerProgress=$00078000`, `Race_ram_TrackObjectCursor=$00027984`, `Race_ram_TrackObjectDistance=0`;
-- ROM cursor bytes start `00 7F A0 00 80 39 01 AC 81 FA 00 15 ...`.
+`Race_ProjectActorSprite` (`0xDAE2`, `race_physics.asm`): far-behind actor
+projection. It appends the key `progress - actorX`, computes screen Y from the
+player `PosY ± $10`, `$28` steps and actor `$30`, screen X from
+`$D8 - (rel>>12)/16`, scale `min($3FFF, $100000/((rel>>12)+$80))*3`, writes shape
+`$154+variant`/`$159`/`$15A..$15C`, flags `$4100 | (palette<<4)` and accepts X in
+`[-$20, $160)`.
 
-At `Race_AddStagedObjects` (`0xFC5A`):
+`Race_ProjectTrackObject` (`0x10C4E`): track-stream variant.
 
-- `Race_ram_TrackObjectRecordCursor=$00FFD7D4`, `ram_FFDE72=22`;
-- RAM-staged entries start `00 A7 02 18`, `01 A5 01 18`, `02 BC 05 0F`,
-  `02 BE 02 0E`.
+- Inputs from `Race_BuildTrackObjects` (record already holds shape/second shape and
+  type word `d6`).
+- `r = Flags & $1F`; `+$E = (r<<8) - ((progress & $FF00)>>8)`.
+- `scale = ((typeSize<<3)+$200)>>2 / ((r<<8) - progressByte + $100)` -> `+4`.
+- lane offset from the type low nibble: `±(lane<<6)` on the `ram_FF310A` edge,
+  converted by the same divide -> `+$C`; the sign follows `Flags` bit14.
+- `+6 = ram_FFD77C[r*2]`, `+2 (Y) = ram_FF3236[r*2]`, `+0 (X) =
+  -ram_FF31D2[r*2] ± X offset`; drops the record (`a0 -= $14`) when the X edge is
+  out of the `$23C` window or the divide overflows.
 
-This confirms that `Race_BuildTrackObjects` walks the ROM/pointer stream
-(`Race_ram_TrackObjectCursor`), while `Race_AddStagedObjects` consumes the RAM-staged 4-byte records
-at `Race_ram_TrackObjectRecordCursor`. In each staged word, the high word is the position key, `byte2`
-is the shape/type selector, and `byte3` is the length/row selector (working model).
+### Track-object stream format (L6b)
 
-### `Race_BuildTrackObjects` field model
+`Race_BuildTrackObjects` reads 4-byte entries from the ROM stream at
+`Race_ram_TrackObjectCursor` (`RaceTrack_Data4` terminator):
 
-`Race_BuildTrackObjects` reads a 4-byte entry and builds `Road_ObjectArray`
-records directly:
+- word0 high byte = row count `(word0>>8)&$1F` (0..31), low 7 bits = shape base
+  `(word0 & $7F) + $186`;
+- word2 high nibble = per-row step minus 1 (`((word2>>4)&$F)+1`); bits 8-10
+  (`$700`) = object flags; low byte = lane/type data;
+- `word0` bit14 = alternate/second-part selector, bit15 = mirror;
+- shape remap: `$205` = gap/skip; `< $1BB` = as-is; `$1BB..$1E9` -> emits the pair
+  `(base, base+1)` (second shape at `+$12`, `$B` bit7 set); `>= $1EA` -> `+$2F`;
+- shape `$186` is the extra-actor marker: stores `ram_FF1B30 = d0` (row slot) and
+  `ram_FF1B2E = remaining rows+1`, emits no object;
+- `Race_ram_TrackObjectDistance` accumulates `rowStep * (step)` per entry; the
+  cursor rewinds while the previous entry's high word is at/after the player
+  progress and advances when the entry passes; entries beyond `$20` rows stop the
+  current entry and move to the next.
 
-- word0 low 7 bits + `$186` selects the shape (with a range remap);
-- word0 bits 7/8 contribute flags; high byte `(word0 >> 8) & $1F` is the row count;
-- word2 high nibble `(word2 >> 4) & $F` is the length/step (+1); bits `$700`
-  are object flags; low byte is object data;
-- bit15/bit14 of word0 select mirror/alternate-object bits;
-- the routine writes `$A` flags, second shape, shape IDs, and updates
-  `Race_ram_TrackObjectCursor/Distance` and `ram_FFDE72`.
+The record flags for a track object are `word2 & $700` | `$1000` | the low row
+offset; `+$10 = word2 & $FF`; `+8/+$12` = shape pair; `+$E` and the projections come
+from `Race_ProjectTrackObject`. Staged objects (`Race_AddStagedObjects`) use the
+other 4-byte format already documented for the spawn layer: word0 = position key,
+byte2 = type index, byte3 = lane/length.
 
-This is distinct from the RAM-staged list consumed by `Race_AddStagedObjects`
-(4-byte entries: high word position, byte2 type, byte3 length).
+## `Road_BuildVisibleList` (`0x10D46`, L6b)
 
-### Track-object stream format (static hypothesis)
+`Road_BuildVisibleList` is an insertion sort of the 32-bit distance keys from
+`ram_FF1B50` (source `a0`) into `ram_FF1C50` (destination `a1`), maintaining the
+parallel word index list in `Road_VisibleObjectList` (`$FF1D50`, `a2`):
 
-`Race_AddStagedObjects` reads 4-byte entries from the `Race_ram_TrackObjectRecordCursor` cursor (track stream in
-`RaceTrack_Data4`-adjacent data):
+- copies the first key; `index[0]=0`;
+- for each next key, scans the already-written destination forward comparing
+  `cmp.l (a3)+,d4`; `BMI` (new key < existing, signed long) inserts before that
+  position, shifting both keys and indices; otherwise appends;
+- writes the `$FFFFFFFF` terminator and its `$FFFF` index into both lists.
 
-- word at `+0`: position/progress key; compared with `Race_ram_PlayerProgress`;
-- byte at `+2`: low nibble selects an object/shape entry; high nibble is a length
-  multiplier used by the cursor/stream advance;
-- `Race_ProjectObject` projects the object into the current `Road_ObjectArray` record; the
-  shape index is `byte2_low + $173`, the per-shape depth comes from
-  `ram_FFD77C`, and the type data comes from the 8-byte `Race_TrackObjectTypeTable` records;
-- record flags carry the mirror/facing, priority and two-part bits already documented
-  for `Road_DrawObject`.
+The sort is **ascending signed long** distance, so the smallest key is drawn first.
+`Road_DrawObjects` walks `ram_FF1D50` and calls `Road_DrawObject` for each record in
+that order (back-to-front depth order). The sign convention of the stored keys
+differs by producer: the near-actor and track/staged paths store
+`objectX - progress`, while `Race_ProjectActorSprite` stores `progress - actorX`;
+both end up in one sort, so E8 should confirm the visual back-to-front result on a
+scene with objects in front of and behind the player.
 
-`Race_BuildTrackObjects` maintains the same stream cursor during normal play: it rewinds when
-past entries are behind the player, advances when the next entry is visible, and
-keeps `Race_ram_TrackObjectDistance` as the accumulated stream distance. The exact nibble units and
-the `RaceTrack_Data4` terminator role are still TODO.
+## `Road_DrawObject` consumer (L6b)
 
-These helpers are called from `Race_Update` around the road-profile/visible-list
-stage (`Race_AddSpecialObject`, `Race_AddTrackStartObject`, `Race_BuildActorObjectList`, `Race_BuildTrackObjects`, `Race_AddStagedObjects`).
+`Road_DrawObject` (in `road_render.asm`) renders one 0x14-byte record:
+
+- Flags bit15 is the horizontal-mirror/facing bit (same as byte `$B` bit7); bits
+  `$3000` become the priority/`$133E` value; `Flags & 7` is the sprite-chain pass
+  count; X offset is applied to the copied SAT entry.
+- Shape `+8` selects a `Road_ShapeTable` entry; a non-zero second shape `+$12`
+  (or the mirror path) runs `Road_ScaleShape` + `Road_ProjectShapeSpecial`, else
+  `Road_ProjectShape`; `Road_DrawStrip` writes the tile columns and builds the
+  sprite chain via `RiderSprites_Build`; the chain is copied to the SAT with X
+  offset and the `$FFC0`/`$FE20` clip window.
+- The 0x14-byte record layout and the SAT/tile writes are confirmed by the dynamic
+  `Road_DrawObjects` snapshot.
 
 ### Dynamic object-list snapshot
 
@@ -235,18 +341,28 @@ by `Road_DrawObjects`/`Road_DrawStrip`.
 - `Road_ram_XLeftArray`/`XRightArray`/`MarkingXArray`;
   `RoadMarking_ram_XArray`/`WidthArray`; `Race_ram_CurrentHScrollTable`/`Alpha`.
 - `ram_FF310A`/`ram_FF31D2`/`ram_FF329A`/`ram_FF3236`/`ram_FF3362`/`ram_FF3A9C`/`ram_FFD77C`; `Race_ram_PlayerProgress`/`ram_FF1E6A`/`ram_FF1E6C`.
+- `Road_ObjectArray` (`$FFD37C`, 0x14-byte records, max 51); `ram_FFDE72` count.
+- `ram_FF1B48` actor-object count, `ram_FF1B4A` track-object count,
+  `Race_ram_TrackObjectCount` staged-object count.
 - `ram_FF1B50`/`1C50`/`1D50` visible lists; `Race_ram_CurrentHudBuffer`.
+- `ram_FFD338`/`ram_FFD33E` shape threshold tables; `ram_FF1ACC` player-finish
+  selector; `ram_FF1AC8` speed tier; `ram_FF1ACE` finish toggle; `ram_FF1AD9`
+  lean-shape phase; `ram_FF1ADC` fall-shape phase; `ram_FF1B16` custom-animation
+  flag; `ram_FF1B2E`/`ram_FF1B30` shape-`$186` marker run/slot.
 - Sprite staging: `Race_ram_NextSpriteTileArray`, `Race_ram_SpriteDestination`,
   `Race_ram_CurrentSpriteTileArray`.
-- ROM data: `unk_EB34` road edges, `Interp_dDivisorMap`, `Race_BuildActorObjectList` data, `unk_FA80`,
-  `word_107EA`/`word_10802`.
+- ROM data: `unk_EB34` road edges, `Interp_dDivisorMap`, `unk_102DE`, `unk_10E3E`,
+  `unk_FA80`, `unk_25802`/`unk_2580A` threshold tables, `Race_ActorShadowTable`.
 
 ## Open questions
 
-- Exact object/road-render helpers `Race_BuildActorObjectList`..`Race_AddStagedObjects`, `Race_BuildTrackObjects`/`Race_ProjectTrackObject`.
-- The visible-list sort/list layout and the `Ram_FF1D50` ordering.
-- The standings/results data (`Race_ComputeStandings`/`Race_ScaleResultValue`).
-- Track/curve tables in the gap (can be dumped into the build if needed).
+- The `Flags` low-bit overload (projected row vs. `Road_DrawObject` pass count,
+  `Flags & 7`) is `U-0019`; E8 should confirm the draw semantics.
+- The exact visual back-to-front result of the mixed-sign distance keys (see the
+  visible-list section); E8.
+- Engine-audio mapping of `Race_ram_NearestBehindSpeed`/`Race_ram_NearestAheadSpeed`
+  is in `race_physics.md`.
+- Data4/5 shape row/pixel map is L6c.
 
 ## Rename proposals
 

@@ -656,3 +656,21 @@ Names stay `sub_XXXX`/`unk_XXXX`; proposals are not applied.
 | `ram_FF3274` | RAM | `ram_const.asm:517` | `ram_FF3236[31]`; horizon line used by the VScroll | narrow | `[confirmed]` E6 | retain alias | - | high | - |
 | `Race_ram_HIntVScroll` | RAM | `ram_const.asm:186 ($FF14DC)` | HInt HScroll base accumulator (`+$10000`/frame) | good | `[static]/[dynamic]` E6 | keep | - | high | - |
 | `ram_FF310A`/`31D2`/`3236`/`329A`/`3362`/`D77C` | RAM | `ram_const.asm:513-521` | race: 32-strip profile values/indexes/depth | placeholder | `[static]/[dynamic]` E6 | rename-later | `Race_ram_Profile*` | medium | - |
+| `Race_ProjectObject` | routine | `race_ai_road.asm:1932 ($FD96)` | race: generic 16.16 object -> `Road_ObjectArray` projection | good | `[static]` L6b | keep | - | high | `U-0019` (flags row) |
+| `Race_ProjectActorObject` | routine | `race_ai_road.asm:2082 ($1082A)` | race: near-actor projection (fractional X interpolation) | good | `[static]` L6b | keep | - | high | - |
+| `Race_ProjectActorSprite` | routine | `race_physics.asm:209 ($DAE2)` | race: far-behind actor sprite projection | good | `[static]` L6b | keep | - | high | - |
+| `Race_ProjectTrackObject` | routine | `race_ai_road.asm:3861 ($10C4E)` | race: track-stream record -> row tables/lane offset | good | `[static]` L6b | keep | - | high | - |
+| `Race_BuildActorObjectList` | routine | `race_ai_road.asm:1091 ($F40C)` | race: active/static/extra actor object records | good | `[static]` L1/L5/L6b | keep | - | high | - |
+| `Race_BuildTrackObjects` | routine | `race_ai_road.asm:3568 ($109B6)` | race: ROM track-object stream -> records | good | `[static]` L6b | keep | - | high | - |
+| `Road_BuildVisibleList` | routine | `race_ai_road.asm:3927 ($10D46)` | race: insertion sort of distance keys -> draw order | good | `[static]` L6b | keep | - | high | mixed-sign keys (E8) |
+| `Road_ObjectArray` | data | `ram_const.asm:624 ($FFD37C)` | race: 0x14-byte object records, max 51, `$FFFF` terminated | good | `[static]` L6b | keep | - | high | - |
+| `ram_FFDE72` | RAM | `ram_const.asm:650 ($FFDE72)` | race: live `Road_ObjectArray` record count | narrow | `[static]` L6b | rename-later | `Road_ram_ObjectCount` | high | - |
+| `ram_FF1B48` | RAM | `ram_const.asm:333 ($FF1B48)` | race: actor-object count (snapshot after the actor builder) | placeholder | `[static]` L6b | rename-later | `Road_ram_ActorObjectCount` | medium | - |
+| `ram_FF1B4A` | RAM | `ram_const.asm:334 ($FF1B4A)` | race: track-object count (`count - FF1B48`) | placeholder | `[static]` L6b | rename-later | `Road_ram_TrackObjectDelta` | medium | - |
+| `ram_FF1B50` / `ram_FF1C50` / `ram_FF1D50` | RAM | `ram_const.asm:337-339` | race: unsorted keys / sorted keys / visible index list | narrow | `[static]` L6b | rename-later | `Road_ram_ObjectKeys*`/visible | high | - |
+| `ram_FF1B16` | RAM | `ram_const.asm:311 ($FF1B16)` | race: per-actor custom-animation flag in the object builder | placeholder | `[static]` L6b | rename-later | `Race_ram_CustomAnimFlag` | medium | - |
+| `ram_FF1B2E` | RAM | `ram_const.asm:321 ($FF1B2E)` | race: shape-`$186` marker run length | placeholder | `[static]` L5/L6b | rename-later | `Race_ram_MarkerRunLength` | medium | - |
+| `ram_FF1B30` | RAM | `ram_const.asm:322 ($FF1B30)` | race: shape-`$186` marker row slot; extra-actor gate | placeholder | `[static]/[dynamic]` E5 | rename-later | `Race_ram_MarkerSlot` | high | - |
+| `ram_FF1ACC` / `ram_FF1AC8` / `ram_FF1ACE` | RAM | `ram_const.asm:276-277` | race: player-finish selector / speed tier / finish toggle | placeholder | `[static]` L6b | rename-later | `Race_ram_*Shape*` | medium | - |
+| `ram_FF1AD9` / `ram_FF1ADC` | RAM | `ram_const.asm:308-309` | race: lean-shape (mod 4) / fall-shape (mod 8) phase counters | placeholder | `[static]` L6b | rename-later | `Race_ram_LeanPhase`/`FallPhase` | medium | - |
+| `ram_FFD338` / `ram_FFD33E` | RAM | `ram_const.asm:595-597` | race: 4-entry / 3-entry shape-bucket threshold tables | narrow | `[static]` L6b | rename-later | `Race_ram_ShapeThresholds*` | medium | - |

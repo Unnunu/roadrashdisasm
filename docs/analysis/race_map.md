@@ -1,8 +1,7 @@
 # Race map: timeline, dataflow, field ownership and captures
 
-- **Status:** matrix v10 (v9 + L6a camera/progress and VScroll/HScroll contracts with
-  E6 dynamic results: camera branch/progress aliases, VScroll raster chain and
-  compaction, HScroll plane A/B bands)
+- **Status:** matrix v11 (v10 + L6b object-record assembly, projection helpers,
+  track-object stream and visible-list sort/draw contract; static only)
 - **Sources:** `docs/analysis/race.md`, `race_actors.md`, `race_ai.md`, `race_movement.md`,
   `race_speed.md`, `race_impact.md`, `race_spawn.md`, `road_render.md`, `docs/ram-map.md`,
   `tasks/race_understanding_program.md`
@@ -802,6 +801,40 @@ E6 results (captures `analysis/capture_L6a*.gdb`, traces `analysis/notes/L6a*`):
 Residual: `U-0018` (exact VScroll compaction arithmetic); rearview and engine-audio
 mapping stay `[static]`/TODO.
 
+## L6b object/projection/visible-list addendum (matrix v11)
+
+L6b covers the per-frame object-record assembly, the four projection helpers and the
+visible-list sort. Full contract is in `docs/analysis/race_ai_road.md`; this is the
+matrix delta.
+
+- Assembly order: `ram_FFDE72 = 0` -> `Race_AddSpecialObject` ->
+  `Race_AddTrackStartObject` -> `Race_BuildActorObjectList` (`ram_FF1B48` =
+  actor count) -> `Race_BuildTrackObjects` (`ram_FF1B4A` = track count) ->
+  `Race_AddStagedObjects` -> `$FFFFFFFF` distance terminator ->
+  `Road_BuildVisibleList` -> `Road_DrawObjects`.
+- `Road_ObjectArray` = `$FFD37C..$FFD77B`, 0x14-byte records, max 51; fields
+  `+0 X, +2 Y, +4 scale, +6 limit, +8 shape, +$A flags, +$C X offset,
+  +$E row/reserved, +$10 reserved, +$12 shape2`; `ram_FFDE72` count.
+- Producers and extras: special (fixed `$FEA0/$41/$4000/$E0`), track-start gate,
+  near/far actor objects, fall/impact/lean/weapon/shadow extras, track stream, and
+  the staged RAM traffic list.
+- Projection helpers: `Race_ProjectObject` (`+4 = $A00000/(d+$200)`,
+  `+2/+0` from the `ram_FF310A` 4-word row, `+6 = ram_FFD77C[2r]`, returns
+  `d0/d1/d2/d3`), `Race_ProjectActorObject` (near actor, `$A00000/$C00000` by
+  `$71`), `Race_ProjectActorSprite` (far behind), `Race_ProjectTrackObject`
+  (`ram_FF3236/FF31D2/D77C` row tables, lane offset from the type nibble).
+- `Flags` low 5 bits carry the projected row `r`; `Road_DrawObject` reads
+  `Flags & 7` as the sprite-chain pass count -> `U-0019`.
+- Track stream: cursor `Race_ram_TrackObjectCursor` / accumulated
+  `Race_ram_TrackObjectDistance`; word0 = `[rowCount][shape base]`, word2 =
+  `[step-1][flags:3][lane]`; shape `$186` = extra-actor marker (`ram_FF1B30/$1B2E`),
+  `$205` = gap, `$1BB..$1E9` = `(shape, shape+1)` pair, `$1EA+` remaps `+$2F`.
+- Visible list: signed ascending long insertion sort of `ram_FF1B50` into
+  `ram_FF1C50`, parallel word index list in `Road_VisibleObjectList` (`$FF1D50`);
+  `Road_DrawObjects` draws in that order. Producers store `objectX - progress`
+  (near actor / track / staged) while the far-actor sprite path stores
+  `progress - actorX`; the mixed-sign visual result is left to E8.
+
 ## Tooling and validation
 
 Both tools decode the same layout from `src/core/ram_const.asm` through
@@ -856,5 +889,7 @@ normal/special split, reserved opponent, static respawn cycle and extra slot. L7
 (`tasks/race_L7_results_hud.md`) is complete (v9/E7): HUD/needle/odometer contracts,
 the full results/standings/money pipeline and the `unk_15CE0`/`unk_15CFC` crash
 scripts. L6a (`tasks/race_L6_world_a.md`) is complete (v10/E6): camera/progress,
-VScroll raster chain and HScroll plane A/B bands. Next is the L6 world-b branch
-(`race_L6_world_b.md`: object list/projection/visible list).
+VScroll raster chain and HScroll plane A/B bands. L6b
+(`tasks/race_L6_world_b.md`) is complete (v11): object-record assembly, the four
+projection helpers, the track-object stream and the visible-list sort/draw contract.
+Next is the L6 world-c branch (`race_L6_world_c.md`: shape row/pixel map, Data4/5).
