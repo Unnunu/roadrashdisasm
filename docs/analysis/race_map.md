@@ -1,6 +1,6 @@
 # Race map: timeline, dataflow, field ownership and captures
 
-- **Status:** v3 (L1 E1 integrated + L2 static control contract; E2 pack ready)
+- **Status:** v4 (L1 E1 + L2 static contract + L2 E2 dynamic results integrated)
 - **Sources:** `docs/analysis/race.md`, `race_actors.md`, `race_ai.md`, `race_movement.md`,
   `race_speed.md`, `race_impact.md`, `race_spawn.md`, `road_render.md`, `docs/ram-map.md`,
   `tasks/race_understanding_program.md`
@@ -45,10 +45,26 @@ Pad (Race_GetInput)
   -> nearest opponent/place -> results/standings/money
 ```
 
-## Actor field ownership matrix v3
+## Actor field ownership matrix v4
+
+v4 integrates the L2 dynamic checks (Experiment Pack E2) into v3. The new dynamic
+evidence closes the residual L2 questions:
+
+- `$18` is a word; E2-1 observed the 0->1->2->3 ladder, the `+E` upshift thresholds,
+  the `+1A` downshift thresholds, the same-call up/down oscillation, and the max-gear
+  `$14 = $FFFB` branch.
+- `$42` and `$0C` keep the steering sign; `$0C = (FrameDistance>>8)*$42>>8` was checked
+  for `±$600` forced steering.
+- `$3E` is `(limit<<8)/(d0>>8)`; E2-3 confirmed it with a forced limit and observed
+  the `$68` bit5 set. TP0 is the sampled on-road limit; TP2/TP3 selection remains
+  `[static]` (bit tests at `0x13F96`/`0x13F78`).
+- `$68` bit1 (B) and bit2 (A) were confirmed by pad injection; bit3 was forced for the
+  E2-5 `$14 -= $14>>2` check.
+- `U-0011` spawn `d4` is closed: normal mode reached `Race_SetupActor` six times over
+  60 s, all with `d4 = 0`.
 
 v3 adds the L2 control rows (`$12/$14/$16/$18/$3E/$40/$42/$46/$68/$69/$78`) and the
-static contract in `race_speed.md`; E2 will confirm the residual dynamic points.
+static contract in `race_speed.md`; E2 confirmed the residual dynamic points.
 New in v3:
 
 - `$18` Gear is a **word**. The earlier trace printed only its low byte, so it looked
@@ -109,13 +125,13 @@ Widths match the actual instruction sizes: `$04/$1E/$26` are longs, the
 | `$06` | word | `RaceActor_XLow` | same as `$04` | same as `$04` | `[confirmed]` low word of `$04` | no independent field |
 | `$08` | word | (unnamed) | `Race_SetupActor` (curve sample); `Race_HandleInputOnFoot`/movement; crash/action handlers | `sub_12414` indexes `Road_ShapeTable`; pair collision | `[static]` | road-shape index (name candidate) |
 | `$0A` | word | (unnamed) | `Race_SetupActor` (0); crash/action handlers | `sub_12414` (bit14 = flip) | `[static]` | full shape-flag bit map |
-| `$0C` | word | (unnamed) | `sub_113CA` (steering); `Race_SetupActor` (curve sample) | pair collision, crash impact, `sub_11CC8` -> `RaceBike_ram_CurrentSteering` | `[static]` | current steering/curve sample |
+| `$0C` | word | (unnamed) | `sub_113CA` (steering); `Race_SetupActor` (curve sample) | pair collision, crash impact, `sub_11CC8` -> `RaceBike_ram_CurrentSteering` | `[confirmed]` E2-2: `$0C = (FrameDistance>>8)*$42>>8`, sign follows steering | current steering/curve sample |
 | `$0E` | word | (unnamed) | `Race_UpdateActorFallMovement` | `sub_12414` (Y threshold) | `[static]` | fall-path Y threshold |
 | `$10` | word | (unnamed) | `Race_UpdateActorFallMovement` | `sub_12414` (Y offset) | `[static]` | fall-path Y offset |
 | `$12` | word | `RaceActor_Speed` | `Race_UpdateActorAI`, `Race_InitOpponent/TrafficActor`, impact | speed display, curve limit, AI | `[confirmed]` Player `$EE`, steering `$2D15` | - |
-| `$14` | word | `RaceActor_Acceleration` | `Race_UpdateActorSpeedState`, `sub_13BD8` | `Race_UpdateActorAI`, shadow update | `[confirmed]` `$22` low speed, `$0E` at `$2D15` | gear-table branch coverage |
+| `$14` | word | `RaceActor_Acceleration` | `Race_UpdateActorSpeedState`, `sub_13BD8` | `Race_UpdateActorAI`, shadow update | `[confirmed]` `$22` low speed, `$0E` at `$2D15`; E2-5 `$14 -= $14>>2` off-road | closed (E2-5) |
 | `$16` | word | `RaceActor_Type` | `Race_CreateActors` | `Race_UpdateStaticActors`, speed state; indexes `unk_25A10` | `[confirmed]` 2/3/4; static anomaly | static `$16=0` after update |
-| `$18` | word | `RaceActor_Gear` | `Race_UpdateActorSpeedState` | `Race_UpdateActorSpeedState` | `[confirmed]` word; demo dump `Gear=5` (old trace read the low byte) | - |
+| `$18` | word | `RaceActor_Gear` | `Race_UpdateActorSpeedState` | `Race_UpdateActorSpeedState` | `[confirmed]` word; demo dump `Gear=5`; E2-1 ladder, `+E`/`+1A` thresholds, same-call oscillation, max-gear `$FFFB` | - |
 | `$1A` | word | (unnamed) | movement/fall start (`= $30`); `Race_SetupActor`; `Race_UpdateActorAI` restore | pair collision, `Race_ClampActorPairY`, `sub_12070` | `[static/dynamic]` `$31` vs `$30=$35` | previous road-relative Y (name candidate) |
 | `$1C` | word | `RaceActor_PreviousCollisionOffset` | movement backup from `$32` | `Race_ApplyCollisionImpact` | `[static]` | - |
 | `$1E` | long | `RaceActor_PreviousX` | `Race_UpdateActorX/Movement/FallMovement`, spawn setup | target scans, impact | `[confirmed]` `$04-$1E=$26` | - |
@@ -132,9 +148,9 @@ Widths match the actual instruction sizes: `$04/$1E/$26` are longs, the
 | `$38` | word | `RaceActor_CurveDelta` | movement | `sub_115C6` | `[static/dynamic]` `$22B` | - |
 | `$3A` | word | `RaceActor_CurveAccum` | movement | `sub_115C6` | `[static/dynamic]` `3` | - |
 | `$3C` | word | `RaceActor_CurveStep` | `sub_115C6`; reset in `sub_13A26` | - | `[confirmed]` E1-4: write-only copy of `sub_115C6` input `d1` | - |
-| `$3E` | word | `RaceActor_Curve` | `Race_UpdateBikeCurve` (zero/`(limit<<8)/(d0>>8)`); read by `Race_UpdateLeanCurve` | `Race_UpdateActorSpeedState`, `Race_UpdateLeanCurve` | `[static]` formula in `race_speed.md` | E2-3 dynamic check |
-| `$40` | word | `RaceActor_LeanCurve` | `Race_UpdateBikeCurve` (zero), `Race_UpdateLeanCurve` | lean/curve math | `[static]` | E2-2/E2-3 |
-| `$42` | word | `RaceActor_Lean` | `Race_UpdateBikeLean` | `sub_113CA` -> `$0C` | `[confirmed]` `±$49`; formula `race_speed.md` | E2-2 sign check |
+| `$3E` | word | `RaceActor_Curve` | `Race_UpdateBikeCurve` (zero/`(limit<<8)/(d0>>8)`); read by `Race_UpdateLeanCurve` | `Race_UpdateActorSpeedState`, `Race_UpdateLeanCurve` | `[confirmed]` E2-3 forced limit: `$3E = (limit<<8)/(d0>>8)`, bit5 set | - |
+| `$40` | word | `RaceActor_LeanCurve` | `Race_UpdateBikeCurve` (zero), `Race_UpdateLeanCurve` | lean/curve math | `[static]` | `$40` not sampled in E2-2/E2-3 |
+| `$42` | word | `RaceActor_Lean` | `Race_UpdateBikeLean` | `sub_113CA` -> `$0C` | `[confirmed]` E2-2: sign follows steering; formula `race_speed.md` | - |
 | `$44` | word | (unnamed) | `sub_12BD2`, `sub_12C9A` | - | `[static]` write-only | unused/reserved |
 | `$46` | word | `RaceActor_CurveDirection` | `Race_SteerTowardTarget`, `Race_UpdateActorRoadSteering`, `Race_ClampActorY` | movement/steer handlers | `[dynamic]` `-$03`; L2 formula in `race_speed.md` | reader mapping (L3) |
 | `$48` | word | (unnamed) | - (VScroll `$48(a0)` only) | - | `[static]` not an actor field | unused for actors |
@@ -153,7 +169,7 @@ Widths match the actual instruction sizes: `$04/$1E/$26` are longs, the
 | `$62` | long | (unnamed) | movement/advance (`= Race_ram_ProgressSnapshotB`) | not documented | `[static]` | late-race progress snapshot |
 | `$64` | word | (unnamed) | - (VScroll/object writers only) | - | `[static]` not an actor field | unused for actors |
 | `$66` | word | `RaceActor_Rating` | `Race_CreateActors`, `Race_RecycleActor` | spawn/init speed | `[confirmed]` def byte5*100 | recycle distance reuse |
-| `$68` | byte | `RaceActor_ControlFlags` | `Race_GetInput`, AI, impact, spawn | AI/movement/impact | `[confirmed]` bit0 collision, bit1 accel, bit2 brake, bit3 off-road, bit4 fall/on-foot, bit5 curve, bit6 AI-active, bit7 finish | L2 owns bit1/2/3/5; bit0/4 L4, bit6 L3, bit7 L1/L5 |
+| `$68` | byte | `RaceActor_ControlFlags` | `Race_GetInput`, AI, impact, spawn | AI/movement/impact | `[confirmed]` bit0 collision, bit1 accel (E2-4 B), bit2 brake (E2-4 A), bit3 off-road (E2-5 forced), bit4 fall/on-foot, bit5 curve, bit6 AI-active, bit7 finish | L2 bits closed; bit0/4 L4, bit6 L3, bit7 L1/L5 |
 | `$69` | byte | `RaceActor_StateFlags` | combat/AI | pair collision, dispatcher | `[confirmed]` bit2 steer/curve, bit3 direction; combat bits L4 | L2 owns bit2/3; bit0/1/4/5/6/7 L4 |
 | `$6A` | byte | `RaceActor_WeaponAnimFlags` | animation | animation | `[static]` | role |
 | `$6B` | byte | `RaceActor_AttackFlags` | `Race_CreateActors`, combat | combat | `[confirmed]` armed `$02` | - |
@@ -343,6 +359,37 @@ Report:      acceleration before/after the 3/4 reduction; gear on downshift test
 Decision:    if $14_after == $14_before - $14_before/4 -> confirmed
 ```
 
+## Experiment E2 results (dynamic)
+
+Runs: `analysis/capture_L2b_e2a.gdb`, `capture_L2b_e2a2.gdb`,
+`capture_L2b_e2b.gdb`, `capture_L2b_e2b2.gdb`, `capture_L2b_spawn.gdb`; traces in
+`analysis/notes/L2b_*`. Samples are PlayerA unless noted; forced values are recorded.
+
+| Check | Breakpoint / window | Observed | Decision |
+|---|---|---|---|
+| E2-1 word gear/upshift | `0x13B12`, demo PlayerA | word gear 0->1->2->3; upshift `+E[0]=$125C`, `+E[1]=$1838`; downshift `+1A[1]=$1518`, `+1A[2]=$1BBC` | confirmed |
+| E2-1 same-call oscillation | `0x13B12`/`0x13B24`, demo | at Speed `$1882`: 1->2 (`$1838`) then 2->1 (`$1BBC`) inside the same SpeedState call | confirmed (real hysteresis inversion) |
+| E2-1 max gear | `0x13B68`/`0x13BB6`, forced Speed `$2F00` | gear 5 == max 5 -> `$14 = $FFFB` (-5) | confirmed |
+| E2-2 lean/`$0C` | `0x13EA0` forced `±$600`, `0x113D8` | `+$600` -> `$42=+$DFB`, `$0C=+$B5`; `-$600` -> `$42=-$293`, `$0C=-$5B`; formula matches | confirmed |
+| E2-3 curve limit | `0x13FB0`/`0x13FC0`/`0x13FCE` | on-road `d0=$5EC..$C2F` < TP0 `$E646` -> CLR; forced `d1=$100` -> `$3E = $10000/(d0>>8)` (`$2AAA`,`$3333`,`$4000`) and bit5 set | confirmed |
+| E2-3 TP2/TP3 | `0x13F96`/`0x13F78` | TP2/TP3 selected by `$68` bit3/bit5; only TP0 sampled | static |
+| E2-4 input flags | `0xBE6C` injection, `0xC00A` sample | Left `$04` -> steering `$FA00` (-`$600`); Right `$08` -> `+$390`; B `$10` -> `$68` bit1, Speed `$61C`; A `$40` -> `$68` bit2, Speed 0; release clears | confirmed |
+| E2-5 off-road accel | `0x10E8C` forced bit3, `0x10E9C` | acc `$22` -> `$1A` (34 - (34>>2) = 26), bit3 set | confirmed |
+| U-0011 spawn `d4` | `0x13746`, normal mode | 2175 calls; 6 from `ret=0x16E24`; `d4=0` on all; 0 non-zero `d4` | confirmed (spawn `d4=0`) |
+
+Notes:
+
+- The partial pre-run (`analysis/notes/L2b_demo_trace.txt`) froze before frame 300. Only
+  its E2-1 word/pointer observations were reused; all results above come from fresh
+  split runs with PlayerA-only breakpoints.
+- The E2-1 oscillation follows from using `+E[old]` for the upshift and `+1A[new]` for
+  the downshift in the same call. It holds the demo player at low gear until Speed
+  exceeds the next downshift threshold.
+- E2-3 forced `d1=$100` at `0x13FB0` only to reach the limit branch; the formula check
+  does not depend on the forced value.
+- U-0011 normal mode: `DemoMode` was forced to 0 after `Race_ram_Started` and B was
+  injected at `0xBE6C`; the spawn path `Race_SetupActor` became reachable.
+
 ## Register-base and list warning
 
 Raw `NN(aN)` greps are not evidence until the base register is known:
@@ -383,11 +430,12 @@ already used for them. New checks follow the Experiment Pack format in
 | E1-2 Y correction | `0x113C4`, demo PlayerA | `$22 = d0`, then `$00 += d0` |
 | E1-3 shape variant | `0x101E6`/`0x1022C`/`0x10254`, demo | signed `$34` -> shape index + H-flip |
 | E1-5 ambient `d4` | `0x13746`, full demo | 4169 AI-path calls, `d4=0`; no spawn |
-| E2-1 gear word/upshift | `0x13AFE`/`0x13B12`, demo or forced Speed | `$18` word and `+E` upshift |
-| E2-2 lean sign/`$0C` | `0x13EA0`/`0x113CA`, forced steering `±$600` | `$42`/`$0C` sign |
-| E2-3 curve limit | `0x13FC0`/`0x13FCE`, on/off-road + `$78` | TP0/2/3 selection and `(limit<<8)/(d0>>8)` |
-| E2-4 input flags | `0xBE56`, injected pad frames | B/A -> `$68` bit1/bit2, steering sign |
-| E2-5 off-road accel | `0x10E8C`/`0x10E9A`/`0x13B6C`, forced bit3 | `$14 -= $14/4`, downshift rule |
+| E2-1 gear word/upshift | `0x13B12`/`0x13B24`/`0x13B68`, demo + forced Speed | `$18` word; `+E`/`+1A`; same-call oscillation; max-gear `-5` confirmed |
+| E2-2 lean sign/`$0C` | `0x13EA0`/`0x113D8`, forced steering `±$600` | `$42`/`$0C` sign and `(FrameDistance>>8)*$42>>8` confirmed |
+| E2-3 curve limit | `0x13FB0`/`0x13FC0`/`0x13FCE`, forced `d1` | TP0 dynamic; formula and bit5 confirmed; TP2/TP3 static |
+| E2-4 input flags | `0xBE6C` injected pad, `0xC00A` sample | B/A -> `$68` bit1/bit2, Left/Right steering sign confirmed |
+| E2-5 off-road accel | `0x10E8C`/`0x10E9C`, forced bit3 | `$14 -= $14>>2` confirmed |
+| U-0011 spawn `d4` | `0x13746`, normal mode | 6 spawn (`ret=0x16E24`) calls, `d4=0`; closed |
 | Demo collision/crash | `0x127EA`/`0x14486`/`0x11B7A`/`0x14C3C`, full demo | 9 pair contacts (1 player), 0 crash/object, no player fall |
 | Static/extra actors | running dump: static `$16/$30/$46/$56/$74`; `$FF2FAA` `$71` | static layout anomaly vs extra slot activation |
 
@@ -430,7 +478,7 @@ Observed on the checked-in dumps:
 | L7 | HUD, animation data, standings/results/money/highscore | last |
 
 The L1 actor-core dynamic pass is complete (`tasks/race_L1_actor_core_b.md`): matrix v2
-integrates E1. The L2 static pass (`tasks/race_L2_control_a.md`) is complete: matrix v3
-adds the input -> steering -> lean/curve -> speed/gear contract, the table decode and
-Experiment Pack E2. Next: run E2 in `tasks/race_L2_control_b.md`. `U-0011` remains open
-only for the spawn path, which needs a normal-mode/traffic run.
+integrates E1. The L2 static pass (`tasks/race_L2_control_a.md`) and the L2 dynamic pass
+(`tasks/race_L2_control_b.md`) are complete: matrix v4 integrates E2 and closes
+`U-0011`. Next: run `tasks/race_R30_integration.md` (matrix v5, crash/fall contracts,
+R30 handler tables, `U-0012`..`U-0016` triage), then L3/L4.

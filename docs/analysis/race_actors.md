@@ -358,8 +358,9 @@ This pass verified the L1 hubs and produced field matrix v1 in `docs/analysis/ra
   but table entries 2 and 9 are swapped (`idx2 -> $FF2B2A`, `idx9 -> $FF27AA`). This is
   byte-exact ROM data, not a disassembly typo.
 - **`Race_SetupActorSprite` consumes ambient `d4`** as the additional `Y±d4` candidate
-  span; neither the routine nor `Race_SetupActor` initializes it (`U-0011`). Only the
-  extra candidate buckets are affected, not the base `AnimIndex`.
+  span; neither the routine nor `Race_SetupActor` initializes it (`U-0011`, now closed:
+  `d4=0` on all observed AI and spawn calls). Only the extra candidate buckets are
+  affected, not the base `AnimIndex`.
 - Experiment Pack E1 (five checks) is in `race_map.md`; results are in the dynamic
   pass below.
 
@@ -379,9 +380,10 @@ E1 was executed with `analysis/capture_L1b_*` on the demo race (60 s headless ru
 - **`$36-$3C` (confirmed roles).** `$36` is the road-target accumulator used by
   `$30 = $00-$36`; `$38/$3A` change inside movement; `$3C` is a write-only copy of
   `sub_115C6`'s input `d1` (also reset in `sub_13A26`).
-- **`d4` (`U-0011`, AI path closed).** A full demo produced 4169
+- **`d4` (`U-0011`, closed).** A full demo produced 4169
   `Race_SetupActorSprite` calls, all from the AI path (`ret=0x10FE8`) with `d4=0`.
-  No spawn-path call (`ret=0x16E24`) occurred, so the spawn value stays open.
+  The L2 E2 normal-mode run reached the spawn path six times (`ret=0x16E24`) and all
+  had `d4=0`; the extra candidate span is therefore not widened in normal play.
 - **Demo collision survey.** 9 pair Y-overlap contacts (one with `RacePlayerA`), 0
   object/static impacts, 0 crash-entry hits, and no player fall. `Race_ApplyCrashImpact`
   is gated on `DemoMode == 0`, so crash/fall experiments need a non-demo run.

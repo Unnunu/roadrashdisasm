@@ -7,8 +7,8 @@ Scope: `Race_GetInput`, `Race_GetInputDemo`, `Race_UpdateActorAI` pre-step,
 `Race_UpdateLeanCurve`, `Race_GetCurveSpeedLimit`, `Race_LoadTrackParams`,
 `Race_LoadBikeData`.
 
-Status: L2 static pass complete; residual dynamic checks are Experiment Pack E2
-(`race_map.md`, run in `race_L2_control_b.md`). No renames applied.
+Status: L2 static and dynamic passes complete (Experiment Pack E2); matrix v4 in
+`race_map.md`. No renames applied.
 
 ## Input path (`Race_GetInput`, `0xBE56`)
 
@@ -32,6 +32,11 @@ bit5 C, bit6 A, bit7 Start.
 
 `Race_GetInputDemo` (`0xBE2C`) only ends the demo when either pad returns a
 non-zero byte; it writes no steering/control fields.
+
+E2-4 confirmed the mapping dynamically with pad injection at `0xBE6C` (sampled at
+`0xC00A`): Left `$04` -> steering `$FA00` (`-$600` after repeated frames), Right `$08`
+-> `+$390`, B `$10` -> `$68` bit1 with Speed `$61C`, A `$40` -> `$68` bit2 with
+Speed 0, release clears both bits. See `analysis/notes/L2b_e2b2_trace.txt`.
 
 ## On-foot branches (gated by `$68` bit4 and `$6E == 3`)
 
@@ -88,6 +93,14 @@ Gear logic (record layout is in `race_data_tables.md`):
 - `$14 = record +2[gear]` (per-gear acceleration) before the bit2/bit5/bit3
   adjustments.
 
+E2-1 confirmed the word width and threshold layout dynamically. It also exposed a real
+same-call oscillation: the upshift test uses `+E[old]`, then the downshift test uses
+`+1A[new]` in the same call. When `+E[old] <= Speed < +1A[new]` the routine increments
+and immediately decrements the gear (observed at Speed `$1882`: 1->2 with `$1838`, then
+2->1 with `$1BBC`). The demo player therefore stays at low gear until Speed exceeds the
+next downshift threshold. At max gear (gear == record word0) the upshift branch jumps to
+`$FFFB`; forced Speed `$2F00` produced gear 5 == max 5 and `$14 = $FFFB` (-5).
+
 `Race_UpdateActorSpeedGear` (`0x131EE`) is the AI decision that sets bit1/bit2
 before calling the state machine: it compares `Speed` and X against `RacePlayerA`,
 uses `Rating` and the curve limit, and uses the same `unk_25A10` record for
@@ -120,6 +133,11 @@ $42 = sign(steering) * |steering| * ram_FF1AAA
 
 Zero when `Speed == 0` or the steering quotient is zero.
 
+E2-2 forced `RaceBike_ram_CurrentSteering` to `+$600` and `-$600` at `0x13EA0` and
+sampled the `$0C` store at `0x113D8`: `+$600` gave `$42=+$DFB`, `$0C=+$B5`;
+`-$600` gave `$42=-$293`, `$0C=-$5B`. The sign follows steering and
+`$0C = (FrameDistance>>8)*$42>>8` matched every sample.
+
 `sub_113CA` (`0x113CA`, player/normal path) then:
 
 ```
@@ -146,6 +164,12 @@ else:          $3E = (limit<<8) / (d0>>8), set $68 bit5
 `$78` is zeroed at actor creation and only decremented by this routine; no writer
 sets it non-zero, so the `word_14742` branch is unreachable in this ROM `[static]`.
 
+E2-3 sampled the on-road path: `d0 = $5EC..$C2F` against TP0 `$E646`, so the routine
+always took the `CLR` branch. Forcing `d1=$100` at `0x13FB0` reached the limit store and
+confirmed `$3E = (limit<<8)/(d0>>8)` (`$2AAA`, `$3333`, `$4000` for successive samples)
+plus `$68` bit5. TP2/TP3 selection remains `[static]`: the bit3/bit5 tests at
+`0x13F96`/`0x13F78` choose `TrackParam2`/`TrackParam3`.
+
 `Race_UpdateLeanCurve` (`0x1406A`, race_anim_audio) is called from
 `sub_113A4`/`sub_113CA` only while `$68` bit5 is set:
 
@@ -168,9 +192,13 @@ Zero curve, DIVU overflow, or a negative quotient returns `$7FFF` (no limit).
 ## Demo trace correction (gear)
 
 The old trace printed `gear` as the **low byte** of the word at `$18`, which is
-always `0` for gear values 0..5. The checked-in dump shows `RaceActor_Gear = 5`
-at frame 120. So the earlier "demo stayed in gear 0" question is a read-width
-artifact, not behavior.
+always `0` for gear values 0..5. The `actor_speed_gear_ram.bin` and
+`actor_offroad_left_ram.bin` dumps show `RaceActor_Gear = 5` at Speed `$2F1F`/`$2CEE`.
+So the earlier "demo stayed in gear 0" question was a read-width artifact.
+
+E2-1 re-ran the demo with a word read: at low speed the gear oscillates 1<->2 in the
+same call (see the gear-logic paragraph above), but it climbs once Speed passes each
+downshift threshold; the max-gear `-5` branch then matches the `$FFFB` in the dump.
 
 For the demo bike (id 0 -> `unk_25B50[0]` -> `ActorBikeRecord_2`):
 
@@ -193,7 +221,8 @@ E2-1 only needs to re-read `$18` as a word to confirm this.
 
 ## Open points
 
-- E2-1..E2-5 in `race_map.md` verify the word-width gear read, lean signs, curve
-  limit selection, input flags and off-road acceleration on hardware.
+- E2 is closed: E2-1..E2-5 are `[confirmed]` except TP2/TP3 selection, which remains
+  `[static]` (only TP0 was sampled). `U-0011` is closed with spawn `d4=0`.
+- `$40` (LeanCurve) was not sampled in E2-2/E2-3; its formula remains `[static]`.
 - `$2C/$2E` curve/scale accumulators are L1/L4 scope.
 - Exact reader of `$46` outside L2 is L3 movement/steer handler scope.

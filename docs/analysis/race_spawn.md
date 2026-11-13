@@ -150,8 +150,8 @@ treats record byte 2 as an object type and the low nibble as lane offset. See
   `((X & $FF) * 2 + $C) & $1FF` into `$08` and `$0C`; clears `ControlFlags` bits 4/0;
   sets `$5C = ram_FF18A8`, `AnimState = $FF`; zeroes
   `$00/$02/$0A/$2C/$32/$36/$38/$3A/$3C`; makes `$30` positive and copies it to
-  `$1A` and `$00`; then calls `Race_SetupActorSprite` (which consumes ambient `d4`,
-  `U-0011`).
+  `$1A` and `$00`; then calls `Race_SetupActorSprite` (which consumes ambient `d4`;
+  E2 saw `d4=0` on every spawn call, closing `U-0011`).
 - **Recycle:** `Race_RecycleActor` stores `X / Race_ram_ActorDistanceScale` (long high
   word) into `$66` for reuse as a distance; `Race_RecycleOpponent` only moves the
   pointer between lists.

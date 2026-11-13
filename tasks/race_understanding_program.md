@@ -1,8 +1,8 @@
 # Program: complete race understanding
 
-Status: in progress. L1 (static + dynamic), L2 static, and the R30 gap disassembly are
-complete. This file is the roadmap, not a build task; the queue below lists what
-remains.
+Status: in progress. L1 and L2 (static + dynamic) and the R30 gap disassembly are
+complete. Next stage: fold R30 into the matrix (`race_R30_integration.md`), then L3.
+This file is the roadmap, not a build task; the queue below lists what remains.
 
 ## Goal
 
@@ -46,6 +46,41 @@ disassembly pass is planned for these ranges.
 
 R30 does not replace the L3/L4/L7 contracts: it provides the disassembled bodies and
 table layouts those layers still have to explain and corroborate.
+
+## L2_b pre-run (partial, not a result)
+
+`analysis/notes/L2b_demo_trace.txt` holds a partial E2 run from
+`analysis/capture_L2b_demo.gdb`. It is `[dynamic]` partial evidence only:
+
+- E2-1: word `$18` and the upshift sequence observed (1->2->3, thresholds `$1838`,
+  `$1BBC`); the max-gear `$FFFB` branch and the downshift cutoff were not sampled. One
+  actor toggled gear each frame at a speed between the two thresholds; the fresh run
+  later confirmed this is real same-call hysteresis.
+- E2-3: only the `CLR` branch was reached; the limit store at `0x13FC0` never ran.
+- E2-5: `$68` bit3 was never set, so `$14 -= $14/4` was not exercised.
+- E2-2 and E2-4 were not scripted.
+- The run froze before frame 300 (`unmapped read from 825BB6`).
+
+`race_L2_control_b.md` was revised accordingly: three short runs, forced branch checks
+(bit3, forced curve limit, forced steering), pad injection, and a normal-mode spawn run
+for `U-0011`.
+
+## L2 dynamic results (E2, completed)
+
+`race_L2_control_b.md` completed with fresh split runs; matrix v4 in `race_map.md`. The
+crashed pre-run was not reused.
+
+- E2-1 `[confirmed]`: word `$18`; `+E`/`+1A` thresholds; same-call 1->2->1 oscillation
+  when Speed lies between the upshift and downshift thresholds; max gear -> `$14=$FFFB`.
+- E2-2 `[confirmed]`: lean sign follows steering; `$0C=(FrameDistance>>8)*$42>>8`.
+- E2-3 `[confirmed]`: on-road TP0 sampled; forced limit reaches
+  `$3E=(limit<<8)/(d0>>8)` and sets `$68` bit5. TP2/TP3 selection stays `[static]`.
+- E2-4 `[confirmed]`: Left/Right steering sign; B -> `$68` bit1, A -> bit2.
+- E2-5 `[confirmed]`: off-road `$14 -= $14>>2`.
+- `U-0011` closed: normal mode reached the spawn path; `d4=0` on all calls.
+
+Residual L2 `[static]` items to carry into R30/L3: TP2/TP3 selection and `$40`
+LeanCurve.
 
 ## Out of scope
 
@@ -137,7 +172,7 @@ One session = one task file from `tasks/_template.md`.
 
 ## Session queue (orientation, not fixed)
 
-Rows 0-4 are complete and kept for orientation. R30 disassembled the L3/L4 handler
+Rows 0-5 are complete and kept for orientation. R30 disassembled the L3/L4 handler
 bodies and tables, so those tasks are now contract/dynamic work, not disassembly.
 
 | # | Task file | Layer | Work type | Deliverable |
@@ -147,8 +182,8 @@ bodies and tables, so those tasks are now contract/dynamic work, not disassembly
 | 2 | `race_L1_actor_core_a.md` | L1 | done | field matrix v1 + Experiment Pack E1 |
 | 3 | `race_L1_actor_core_b.md` | L1 | done | field matrix v2; E1 integrated |
 | 4 | `race_L2_control_a.md` | L2 | done | speed/lean/curve static contract; matrix v3 + E2 |
-| 5 | `race_L2_control_b.md` | L2 | integrate E2 | matrix v4; close `U-0011` via normal-mode spawn path |
-| 6 | `race_R30_integration.md` | L1/L4/L7 | static + doc | fold R30 into matrix v4: `$3C/$66/$6A/$6B` timers, crash/fall branches, handler tables, `unk_155D0` |
+| 5 | `race_L2_control_b.md` | L2 | done | matrix v4; E2-1..E2-5 dynamic; `U-0011` closed |
+| 6 | `race_R30_integration.md` | L1/L4/L7 | static + doc | next: matrix v4/v5, `$3C` timer conflict, crash/fall branches, handler tables, `unk_155D0`; triage `U-0012`..`U-0016` |
 | 7 | `race_L3_ai_contracts.md` | L3 | static + E3 | loop/targets/dispatcher contract + `$74` matrix; R30 gap handlers and `unk_12168` |
 | 8 | `race_L3_ai_dynamic.md` | L3 | integrate E3 | handler behavior, `$5A/$6C/$6D/$69`; close `U-0012`/`U-0013`/`U-0016` |
 | 9 | `race_L4_impact_contracts.md` | L4 | static + E4 | pair collision/extents/reach + R30 crash paths (`sub_140EE`/`sub_141AE`/`sub_14404`) |

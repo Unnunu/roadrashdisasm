@@ -53,6 +53,12 @@ After movement:
 - `$30` is set from the clamped target, so it is the **road Y output**, not the
   source accumulator.
 
+E2-5 forced `ControlFlags` bit3 on PlayerA at `0x10E8C` and sampled the pre-step at
+`0x10E9C`: acceleration `$22` became `$1A` (34 - (34>>2) = 26), confirming the
+`$14 -= $14/4` arithmetic shift on the off-road branch. E2-4 confirmed the steering
+sign and B/A flag mapping that feed the same block. See
+`analysis/notes/L2b_e2a_trace.txt`, `L2b_e2b2_trace.txt`.
+
 The same logic appears in `Race_UpdateActorShadow` for the zero-speed case.
 
 ## Fall/backward movement

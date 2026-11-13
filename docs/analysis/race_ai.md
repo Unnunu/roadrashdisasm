@@ -112,9 +112,13 @@ limit = (($68 bit3 ? TrackParam2 : TrackParam0)<<3)
 
 zero/overflow returns `$7FFF` (no limit).
 
-`[dynamic]` Forced steering (`RaceBike_ram_CurrentSteering=±$600`) gave
-`RaceActor_Lean=$FFB7`/`$0049` (signed); `$3E/$40` stayed zero in that snapshot,
-so the curve-limit branch was not entered at that speed/curve.
+`[dynamic]` L1 forced steering (`RaceBike_ram_CurrentSteering=±$600`) gave
+`RaceActor_Lean=$FFB7`/`$0049` (signed); `$3E/$40` stayed zero in that snapshot
+because the curve limit was not reached. E2-2 forced `±$600` again and confirmed the
+sign and `$0C=(FrameDistance>>8)*$42>>8` at the `0x113D8` store. E2-3 forced the limit
+branch and confirmed `$3E=(limit<<8)/(d0>>8)` and `$68` bit5; the natural on-road run
+selected `TrackParam0`. See `analysis/notes/L2b_e2a_trace.txt`,
+`L2b_e2b_trace.txt`.
 
 ## Target candidate selection
 

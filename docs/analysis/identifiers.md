@@ -441,7 +441,7 @@ uses. It exists so later analysis can decide whether a rename is worth doing.
 | `Race_ApplyActorRating` | routine | `race_spawn.asm:346 ($16C4E)` | race_spawn: opponent id -> definition byte5*100 -> $66 (dead `a0` load) | good | `[static]` | keep | - | high | - |
 | `Race_UpdateActorShadow` | routine | `race_ai.asm:1145 ($1180C)` | race_ai: advance the shadow copy (accel/speed/movement), clamp shadow X to ±$A0000 | good | `[static]` | keep | - | high | - |
 | `Race_SaveActorShadow` | routine | `race_ai.asm:1251 ($11906)` | race_ai: copy $80 bytes to the shadow, `$2C>>=1`, ram_FF176A=1 | good | `[static]` | keep | - | high | - |
-| `Race_SetupActorSprite` | routine | `race_ai.asm:4259 ($13746)` | race_ai: AnimIndex from Y, register up to 3 target-candidate buckets; uses ambient d4 (E1: `d4=0` on the AI path; spawn path open) | good | `[static]/[dynamic]` | keep | - | high | `U-0011` |
+| `Race_SetupActorSprite` | routine | `race_ai.asm:4259 ($13746)` | race_ai: AnimIndex from Y, register up to 3 target-candidate buckets; ambient d4 is 0 on the AI path (E1) and on the spawn path (E2, `U-0011` closed) | good | `[static]/[dynamic]` | keep | - | high | `U-0011` |
 | `Race_GetActorDistance` | routine | `race_spawn.asm:262 ($16BC8)` | race_spawn: Rating($66) * ActorDistanceScale >> 16 | good | `[static]` | keep | - | high | - |
 | `Race_ActorList` | data | `race_actor_tables.asm:10 ($25856)` | race_core: PlayerA, ram_FF1F2A, Struct_2..15, sentinel | good | `[static]` | keep | - | high | - |
 | `Race_ActorListMid` | data | `race_actor_tables.asm:13 ($2585E)` | race_core: free-opponent sub-list Struct_2..15 + sentinel | good | `[static]` | keep | - | high | - |
@@ -455,17 +455,17 @@ uses. It exists so later analysis can decide whether a rename is worth doing.
 | `Race_ram_ActiveActorCount` | RAM | `ram_const.asm` (`$FF1A06`) | race_spawn/ai: active count including PlayerA (8 at init) | good | `[static]` | keep | - | high | - |
 | `Race_ram_OpponentFreeList` | RAM | `ram_const.asm` (`$FF1982`) | race_spawn: 7-entry free opponent list (count at +0) | good | `[static]` | keep | - | high | - |
 | `Race_ram_TrafficFreeList` | RAM | `ram_const.asm` (`$FF19C4`) | race_spawn: traffic free list; empty at init | good | `[static]` | keep | - | high | - |
-| `Race_GetInput` | routine | `race_core.asm:1724 ($BE56)` | race_core: SACBRLDU pad -> steering, `$68` bit1/bit2, Start debounce | good | `[static]` | keep | - | high | - |
+| `Race_GetInput` | routine | `race_core.asm:1724 ($BE56)` | race_core: SACBRLDU pad -> steering, `$68` bit1/bit2, Start debounce; E2-4 confirmed flags and steering sign | good | `[static]/[dynamic]` | keep | - | high | - |
 | `Race_GetInputDemo` | routine | `race_core.asm:1702 ($BE2C)` | race_core: any pad byte ends the demo; no control writes | good | `[static]` | keep | - | high | - |
 | `Race_LoadTrackParams` | routine | `race_core.asm:1279 ($B840)` | race_core: `unk_1471A[track]` -> TrackParam0..3 | good | `[static]` | keep | - | high | - |
 | `Race_LoadBikeData` | routine | `race_core.asm:1300 ($B86A)` | race_core: 19-word bike record + always `unk_25AC4[0]` (index computed but unused) | good | `[static]` | keep | - | high | - |
-| `Race_UpdateActorSpeedState` | routine | `race_ai.asm:4739 ($13A92)` | race_ai: `$68` flags -> `$14`; gear via `+E/+1A/+2` | good | `[static]` | keep | - | high | - |
+| `Race_UpdateActorSpeedState` | routine | `race_ai.asm:4739 ($13A92)` | race_ai: `$68` flags -> `$14`; gear via `+E/+1A/+2`; E2-1 confirmed word gear, same-call up/down oscillation, max-gear `-5` | good | `[static]/[dynamic]` | keep | - | high | - |
 | `Race_UpdateActorSpeedGear` | routine | `race_ai.asm:3630 ($131EE)` | race_ai: relative speed/distance + curve limit -> `$68` bit1/bit2 | good | `[static]` | keep | - | high | - |
 | `Race_UpdateActorSpeedCurve` | routine | `race_ai.asm:3900 ($13422)` | race_ai: target-bucket scan -> `Race_SteerTowardTarget`, `$68` bit1/bit2 | good | `[static]` | keep | - | high | - |
 | `Race_UpdateActorRoadSteering` | routine | `race_ai.asm:4401 ($1384C)` | race_ai: road-center steer -> `$46`, `$69` bit2 | good | `[static]` | keep | - | high | - |
 | `Race_SteerTowardTarget` | routine | `race_ai.asm:4441 ($13892)` | race_ai: bucket offset/speed -> `$46`, `$69` bit2 | good | `[static]` | keep | - | high | - |
-| `Race_UpdateBikeLean` | routine | `race_ai.asm:5225 ($13EA0)` | race_ai: `$42 = sign(steer)*abs(steer)*FF1AAA / ((FF1AA6>>3)*(Speed*FF1AB4>>8))` | good | `[static]` | keep | - | high | - |
-| `Race_UpdateBikeCurve` | routine | `race_ai.asm:5270 ($13EFA)` | race_ai: `$3E/$40/$68` bit5 from `$08`, Speed, TrackParam0/2/3; `$78`/`word_14742` dead | good | `[static]` | keep | - | high | - |
+| `Race_UpdateBikeLean` | routine | `race_ai.asm:5225 ($13EA0)` | race_ai: `$42 = sign(steer)*abs(steer)*FF1AAA / ((FF1AA6>>3)*(Speed*FF1AB4>>8))`; E2-2 confirmed the sign | good | `[static]/[dynamic]` | keep | - | high | - |
+| `Race_UpdateBikeCurve` | routine | `race_ai.asm:5270 ($13EFA)` | race_ai: `$3E/$40/$68` bit5 from `$08`, Speed, TrackParam0/2/3; `$78`/`word_14742` dead; E2-3 confirmed `$3E` and bit5 | good | `[static]/[dynamic]` | keep | - | high | - |
 | `Race_GetCurveSpeedLimit` | routine | `race_ai.asm:5370 ($13FE6)` | race_ai: `(TP<<3)/(curve*scale>>8)`; TP2 off-road | good | `[static]` | keep | - | high | - |
 | `Race_UpdateLeanCurve` | routine | `race_anim_audio.asm:39 ($1406A)` | race_anim_audio: `ram_FF3042=(d0*$3E)>>16`, `$40` from `$3E` | good | `[static]` | keep | - | high | - |
 | `unk_25A10` | data | `race_actor_extra_tables.asm:57 ($25A10)` | race_ai: 13 actor-record pointers indexed by `$16` | placeholder | `[static]` | rename-later | `Race_ActorBikeRecordTable` | high | - |
