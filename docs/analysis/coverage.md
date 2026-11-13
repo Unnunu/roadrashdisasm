@@ -26,7 +26,7 @@ Legend: `[x]` done, `[~]` partial, `[ ]` not started.
 | Logo/intro | `logoEA`, `intro` | [x] | [~] | [~] | [~] | exact title visuals/timing |
 | Menus/screens | `menu_*`, `message`, `shop`, `highscore`, `endlevel`, `race_results`, `rider_intro` | [x] | [~] | [~] | [~] | non-demo captures; shop layout user-described |
 | Race core/HUD/spawn | `race_core`, `race_hud*`, `race_spawn` | [x] | [~] | [~] | [~] | L1 actor core done (matrix v2, E1); L2 static control done (matrix v3); HUD/spawn dynamics pending |
-| Actor AI/movement/combat | `race_ai`, `race_combat`, `race_anim_audio` | [x] | [~] | [~] | [~] | L2 input/lean/curve/speed static contract done; E2 dynamic checks pending |
+| Actor AI/movement/combat | `race_ai`, `race_combat`, `race_anim_audio` | [x] | [~] | [~] | [~] | L2 input/lean/curve/speed static contract done; R30 gap set (`0x1131A`-`0x14486`) disassembled; E2 dynamic checks + `U-0012`..`U-0016` pending |
 | Physics/collision/road marking | `race_physics`, `road_marking` | [x] | [~] | [~] | [~] | table offsets, visual confirmation |
 | Road render/shapes | `road_render`, `road_shapes` | [x] | [~] | [~] | [~] | shape row bytes, interpolation/projection |
 | Track/data formats | `track_data`, `race_track_data`, `race_*_tables`, `race_misc_data` | [x] | [~] | [~] | [~] | stream/channel/table field meanings |
@@ -48,7 +48,7 @@ Priority is analytical impact, not address order.
 | 4 | `Race_UpdateActorMovement/FallMovement`, `sub_115C6` | **done:** E1 closed `$36` accumulator, `$38/$3A` movement updates, `$3C` write-only step | fall/movement edge coverage | movement matrix update |
 | 5 | `Race_GetCurveSpeedLimit`, `Race_UpdateBikeCurve`, `Race_UpdateLeanCurve` | **done:** formulas + table decode (`race_speed.md`, `race_data_tables.md`); dead `$78`/`word_14742` branch noted | E2-2/E2-3 forced-steer trace | `race_speed.md` |
 | 6 | Road render helpers: `Race_ProjectObject`, `Race_ProjectActorObject`, `Road_DrawStrip`, `Road_WriteTileColumns` | exact row/tile mapping | **progress:** shape record layout + row start confirmed; SAT/VSRAM next | render/shape doc |
-| 7 | `Race_ApplyCollisionImpact`, `Race_ApplyCrashImpact`, impact chain | `$2A/$2C/$2E/$54/$5C` and damage timing | **progress:** contract + demo call hit; return-state trace next | `race_impact.md` |
+| 7 | `Race_ApplyCollisionImpact`, `Race_ApplyCrashImpact`, `sub_140EE`/`sub_141AE`/`sub_14404`, `unk_14744`/`unk_147FC` | `$2A/$2C/$2E/$54/$5C`, damage timing, action-handler table | **progress:** impact/action handlers + tables decoded (R30); dynamic branch trace next | `race_impact.md`, `race_anim_audio.md` |
 | 8 | Track/shape data formats | **done:** Data2/3 decoder, Data4/5/6 formats; remaining Data4 side bits | compare staged/service consumers | format spec |
 | 9 | Screens flow | non-demo inputs/visuals | **progress:** demo flow + menu entry; `screens_flow.md`; input injection next | screen state machines |
 | 10 | Asset tail | labels/bounds/consumers | inventory length/pointers/visuals | asset catalogue |

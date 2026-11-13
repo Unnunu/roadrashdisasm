@@ -27,6 +27,11 @@ nearest-target selection and collision state now live in
 - `Race_UpdateLeanCurve` `0x1406A`: lean/curve `$3E/$40`.
 - `Race_UpdatePlayerAnimation` `0x160E2`: player tile base `$5C`.
 - PRNG/LFSR helpers: see `src/race/rand.asm` and `docs/modules/rand.md`.
+- Crash/action handlers (R30): `sub_140BC`, `sub_140EE`, `sub_141AE`,
+  `sub_142B0`/`sub_142BE`/`sub_142CC`, `sub_142FE`, `sub_1436E`,
+  `sub_14404`/`sub_14456`/`sub_1446E`; `sub_14DEC`; `sub_15580`.
+- Tables: `unk_14744`/`unk_147FC` action handlers, `Race_TrackObjectTypeTable`,
+  `unk_155A4`/`unk_155AC`/`unk_155D0`, `unk_15618`/`unk_1561C`/`unk_15624`.
 - Impact/damage helpers `Race_ScaleImpactDamage`/`Race_ApplyCollisionImpact`/`Race_ExchangeCollisionSpeed` remain here; attack
   state and action dispatch are in `race_combat`.
 
@@ -37,6 +42,7 @@ nearest-target selection and collision state now live in
 | animations | `0x1406A`+ | [ ] | [ ] | [ ] | [ ] | [ ] | [ ] | TODO |
 | random | `0x15FA8`+ | [x] | [x] | [x] | - | [x] | [ ] | moved to `rand.asm` |
 | player animation | `0x160E2` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
+| impact/action handlers | `0x140BC`-`0x14486` | [~] | [~] | [x] | [x] | [~] | [ ] | disassembled (R30) |
 | impact/damage helpers | `0x1434A`+ | [~] | [~] | [~] | [x] | [~] | [ ] | partial |
 
 Detailed flow: `docs/analysis/race.md`; animation: `docs/analysis/rider_sprites.md`;

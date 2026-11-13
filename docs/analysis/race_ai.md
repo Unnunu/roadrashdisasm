@@ -3,7 +3,8 @@
 - **Module:** on-foot player/AI input, actor AI loop, static actor AI, bike lean/curve,
   curve speed limit, actor sprite setup, movement/collision helpers
 - **ROM range:** `0x010E00`–`0x014055`
-- **Status:** analyzed (roles/flow, target buckets/scan, movement/speed; impact handoff documented)
+- **Status:** analyzed (roles/flow, target buckets/scan, movement/speed; impact handoff
+  documented; gap functions `0x1131A`-`0x13DDF` disassembled in R30)
 - **Source:** `src/race/race_ai.asm`
 - **Related:** `docs/analysis/combat.md` (fist/AI attack state), `docs/analysis/race.md`, `docs/analysis/race_ai_road.md`,
   `docs/analysis/race_physics.md`, `docs/modules/race_ai.md`, `docs/ram-map.md`
@@ -28,6 +29,29 @@
 | `Race_UpdateBikeLean` | `0x13EA0` | Steering/lean from Speed/Steering. |
 | `Race_UpdateBikeCurve` | `0x13EFA` | Bike curve/lean `$3E/$40` from speed/steering. |
 | `Race_GetCurveSpeedLimit` | `0x13FE6` | Curve speed limit from `Track_CurveBuffer`/`unk_14056`. |
+
+## Gap functions (`0x1131A`-`0x13DDF`, R30)
+
+The remaining `dc.b` blobs in this range are now instructions/labels (byte-exact).
+Roles below are inferred statically; names stay `sub_XXXX` until dynamic confirmation.
+
+| Function | Address | Role | Evidence |
+|---|---|---|---|
+| `sub_1131A` | `0x1131A` | Shadow-follow: shadow PosY gap -> signed Y velocity; X via `Race_UpdateActorX`/fall helper. | `[static]`, `U-0012` |
+| `sub_11A5E` | `0x11A5E` | Integrates X along `Track_CurveBuffer`, updates road Y/curve offsets and `$2`. | `[static]`, `U-0013` |
+| `sub_12B2A` | `0x12B2A` | Close-attack reach from `unk_12BCC`; else `Race_GetAttackerReach`. | `[static]` |
+| `sub_133F0` | `0x133F0` | Target-PosY delta -> signed `$46`; sets `$69` bit2. | `[static]` |
+| `sub_135E8` | `0x135E8` | Clears `$68` bit1, sets bit2 (accelerate). | `[static]` |
+| `sub_13704` | `0x13704` | `ram_FF1B46 = abs(ram_FF1EAE-X) / adjusted Speed`. | `[static]` |
+| `sub_13A5C` | `0x13A5C` | Far respawn: `X=PlayerProgress-$1F8000`, clears/updates fall flags. | `[static]` |
+| `sub_13D44` | `0x13D44` | Scans track-object records; type-table filter -> `Race_SteerTowardTarget`. | `[static]`, `U-0014` |
+
+Dead blocks kept byte-exact: `$11F54` (`bra.w .loc_1202E` inside `sub_11CC8`) and
+`$139AC-$13A17` (inside `sub_138CE`; updates a respawn timer and calls `sub_13A5C`).
+
+Tables: `unk_12168` (9 handler pointers, `U-0016`), `unk_12B7C` (80-byte extent
+buckets) + `unk_12BCC` (6 close-attack reaches), `unk_13A1A` (6 per-level words).
+See `race_data_tables.md`.
 
 ## Flow
 
@@ -220,7 +244,7 @@ Y/road, `$3E/$40/$42` lean, `$46` curve direction, `$56` static respawn timer,
 `$68` flags (bit1 accel, bit2 brake, bit3 off-road, bit5 curve, bit6 active),
 `$69` flags (bit2 steer, bit3 direction), `$6E`,
 `$71` index, `$73`, `$75`, `$78` (curve timer, never set non-zero). Data: `Race_ActorShadowTable`/`unk_25A10` actor data,
-`unk_10E3E`, `unk_12B7C`, `unk_12D0A`, `unk_13A1A`, `Track_CurveBuffer`,
+`unk_10E3E`, `unk_12168`, `unk_12B7C`/`unk_12BCC`, `unk_12D0A`, `unk_13A1A`, `Track_CurveBuffer`,
 `Race_ram_TrackParam0`/`Race_ram_TrackParam2`/`Race_ram_TrackParam3`, `word_14742`, `Race_ram_PlayerProgress`/`Race_ram_BestProgress`/`Race_ram_ProgressSnapshotB`, `Race_ram_FrameDelay`/
 `CurrentButtons`, `Race_StaticActorList`, `$FF2FAA`, `unk_14056` (race_anim_audio);
 `RacePlayerB` is an address bound, not a live concurrent actor in sequential 2P.
@@ -232,14 +256,25 @@ combat handlers are in `race_combat.asm`.
   Experiment Pack E2 in `race_map.md` covers the residual dynamic checks.
 - Static/police actor role and the `$FF2FAA` actor; static layout changes after
   `Race_UpdateStaticActors`.
-- AI tables (`unk_10E3E`/`unk_12B7C`/`unk_13A1A`) and the remaining on-foot
-  vector table (`unk_7DCA8`) semantics.
+- AI tables: `unk_12B7C`/`unk_12BCC` and `unk_13A1A` roles are described in
+  `race_data_tables.md`; `unk_10E3E`, `unk_12168` (`U-0016`) and the on-foot
+  vector table (`unk_7DCA8`) still need consumers.
 - Exact actor-action handler semantics (`0x12FE4`..`0x131BE`); dispatcher action2/3/4
   paths are now dynamically confirmed.
 - Next: `src/race/race_combat.asm` (attack/action semantics) and
   `src/race/race_anim_audio.asm` (animations/random/audio).
 
 ## Rename proposals
+
+Proposed only; no rename applied. See `identifiers.md` (R30 rows).
+`sub_1131A` -> `Race_UpdateActorShadowFollow`; `sub_11A5E` ->
+`Race_UpdateActorCurvePosition`; `sub_12B2A` -> `Race_GetAttackerReachAdjusted`;
+`sub_133F0` -> `Race_SetActorCurveDirection`; `sub_135E8` ->
+`Race_SetActorAccelerateFlag`; `sub_13704` -> `Race_UpdateActorDistanceRatio`;
+`sub_13A5C` -> `Race_ResetActorFarBehind`; `sub_13D44` ->
+`Race_UpdateTrackObjectSteering`; `unk_12168` -> `Race_ActorImpactHandlerTable`;
+`unk_12B7C` -> `Race_CollisionExtentTable`; `unk_12BCC` ->
+`Race_CloseAttackReachTable`; `unk_13A1A` -> `Race_LevelRespawnScale`.
 
 ## Natasha encounter counter (U-0004)
 

@@ -543,144 +543,62 @@ sub_112C8:
 ; End of function sub_112C8
 
 
-                dc.b $48 ; H
-                dc.b $E7
-                dc.b $F0
-                dc.b $80
-                dc.b $10
-                dc.b $29 ; )
-                dc.b   0
-                dc.b $71 ; q
-                dc.b $48 ; H
-                dc.b $80
-                dc.b $E5
-                dc.b $40 ; @
-                dc.b $41 ; A
-                dc.b $F9
-                dc.b   0
-                dc.b   2
-                dc.b $58 ; X
-                dc.b $AE
-                dc.b $20
-                dc.b $70 ; p
-                dc.b   0
-                dc.b   0
-                dc.b $30 ; 0
-                dc.b $28 ; (
-                dc.b   0
-                dc.b $30 ; 0
-                dc.b $90
-                dc.b $69 ; i
-                dc.b   0
-                dc.b $30 ; 0
-                dc.b   4
-                dc.b $40 ; @
-                dc.b   0
-                dc.b $20
-                dc.b $48 ; H
-                dc.b $C0
-                dc.b $67 ; g
-                dc.b   0
-                dc.b   0
-                dc.b $36 ; 6
-                dc.b $36 ; 6
-                dc.b $29 ; )
-                dc.b   0
-                dc.b $12
-                dc.b $67 ; g
-                dc.b   0
-                dc.b   0
-                dc.b $56 ; V
-                dc.b $24 ; $
-                dc.b $29 ; )
-                dc.b   0
-                dc.b   4
-                dc.b $94
-                dc.b $A8
-                dc.b   0
-                dc.b   4
-                dc.b   6
-                dc.b $82
-                dc.b   0
-                dc.b   0
-                dc.b $20
-                dc.b   0
-                dc.b $6A ; j
-                dc.b   0
-                dc.b   0
-                dc.b  $E
-                dc.b $44 ; D
-                dc.b $82
-                dc.b   8
-                dc.b $A9
-                dc.b   0
-                dc.b   3
-                dc.b   0
-                dc.b $69 ; i
-                dc.b $60 ; `
-                dc.b   0
-                dc.b   0
-                dc.b   8
-                dc.b   8
-                dc.b $E9
-                dc.b   0
-                dc.b   3
-                dc.b   0
-                dc.b $69 ; i
-                dc.b $84
-                dc.b $C3
-                dc.b $67 ; g
-                dc.b   0
-                dc.b   0
-                dc.b   8
-                dc.b $81
-                dc.b $C2
-                dc.b $33 ; 3
-                dc.b $40 ; @
-                dc.b   0
-                dc.b   8
-                dc.b $C1
-                dc.b $F9
-                dc.b   0
-                dc.b $FF
-                dc.b $30 ; 0
-                dc.b $4A ; J
-                dc.b $33 ; 3
-                dc.b $40 ; @
-                dc.b   0
-                dc.b $22 ; "
-                dc.b $D1
-                dc.b $69 ; i
-                dc.b   0
-                dc.b   0
-                dc.b   8
-                dc.b $29 ; )
-                dc.b   0
-                dc.b   3
-                dc.b   0
-                dc.b $69 ; i
-                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
-                dc.b   0
-                dc.b   0
-                dc.b  $A
-                dc.b $61 ; a
-                dc.b   0
-                dc.b   0
-                dc.b $B4
-                dc.b $60 ; `
-                dc.b   0
-                dc.b   0
-                dc.b   6
-                dc.b $61 ; a
-                dc.b   0
-                dc.b   5
-                dc.b $A4
-                dc.b $4C ; L
-                dc.b $DF
-                dc.b   1
-                dc.b  $F
-                dc.b $4E ; N
-                dc.b $75 ; u
+; *************************************************
+; Function sub_1131A (proposed: Race_UpdateActorShadowFollow)
+; Compares the actor with its Race_ActorShadowTable entry: the vertical gap
+; (shadow PosY - actor PosY - $20) becomes a signed Y velocity, scaled by the
+; actor Speed and FrameDelay. Updates X via Race_UpdateActorX or the fall
+; movement helper depending on StateFlags bit3.
+; In:  a1 - actor; Race_ActorShadowTable[$71]
+; Out: STRUCT_OFFSET_8, STRUCT_OFFSET_22, X; StateFlags bit3
+; Clobbers: d0-d3/a0
+; @UNKNOWN(U-0012): why the gap is biased by $20 and what STRUCT_OFFSET_8 drives.
+; *************************************************
+
+sub_1131A:
+                movem.l d0-d3/a0,-(sp)
+                move.b RaceActor_Index(a1),d0
+                ext.w d0
+                asl.w #$2,d0
+                lea (Race_ActorShadowTable).l,a0
+                movea.l (a0,d0.w),a0
+                move.w RaceActor_PosY(a0),d0
+                sub.w RaceActor_PosY(a1),d0
+                subi.w #$20,d0
+                ext.l d0
+                beq.w .loc_11376
+                move.w RaceActor_Speed(a1),d3
+                beq.w .loc_1139E
+                move.l RaceActor_X(a1),d2
+                sub.l RaceActor_X(a0),d2
+                addi.l #$2000,d2
+                bpl.w .loc_11368
+                neg.l d2
+                bclr.b #$3,RaceActor_StateFlags(a1)
+                bra.w .loc_1136E
+.loc_11368:
+                bset.b #$3,RaceActor_StateFlags(a1)
+.loc_1136E:
+                divu.w d3,d2
+                beq.w .loc_1137A
+                divs.w d2,d0
+.loc_11376:
+                move.w d0,STRUCT_OFFSET_8(a1)
+.loc_1137A:
+                muls.w (Race_ram_FrameDelay).l,d0
+                move.w d0,STRUCT_OFFSET_22(a1)
+                add.w d0,0.w(a1)
+                btst.b #$3,RaceActor_StateFlags(a1)
+                bne.w .loc_1139A
+                bsr.w Race_UpdateActorX
+                bra.w .loc_1139E
+.loc_1139A:
+                bsr.w Race_UpdateActorFallMovement
+.loc_1139E:
+                movem.l (sp)+,d0-d3/a0
+                rts
+; End of function sub_1131A
+
 
 
 
@@ -1388,290 +1306,117 @@ Race_UpdateActorFallMovement:
 ; End of function Race_UpdateActorFallMovement
 
 
-                dc.b $48 ; H
-                dc.b $E7
-                dc.b $FF
-                dc.b $FE
-                dc.b $33 ; 3
-                dc.b $69 ; i
-                dc.b   0
-                dc.b $30 ; 0
-                dc.b   0
-                dc.b $1A
-                dc.b $33 ; 3
-                dc.b $69 ; i
-                dc.b   0
-                dc.b $32 ; 2
-                dc.b   0
-                dc.b $1C
-                dc.b $28 ; (
-                dc.b $29 ; )
-                dc.b   0
-                dc.b $26 ; &
-                dc.b $20
-                dc.b $29 ; )
-                dc.b   0
-                dc.b   4
-                dc.b $23 ; #
-                dc.b $40 ; @
-                dc.b   0
-                dc.b $1E
-                dc.b $22 ; "
-                dc.b   0
-                dc.b $90
-                dc.b $84
-                dc.b $23 ; #
-                dc.b $40 ; @
-                dc.b   0
-                dc.b   4
-                dc.b $38 ; 8
-                dc.b   0
-                dc.b $48 ; H
-                dc.b $C4
-                dc.b $48 ; H
-                dc.b $40 ; @
-                dc.b $48 ; H
-                dc.b $41 ; A
-                dc.b $34 ; 4
-                dc.b   1
-                dc.b $92
-                dc.b $40 ; @
-                dc.b $30 ; 0
-                dc.b   1
-                dc.b $E0
-                dc.b $4C ; L
-                dc.b $3C ; <
-                dc.b $44 ; D
-                dc.b $33 ; 3
-                dc.b $FC
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b $FF
-                dc.b $1E
-                dc.b $92
-                dc.b $3C ; <
-                dc.b $3C ; <
-                dc.b   0
-                dc.b   0
-                dc.b $3E ; >
-                dc.b $3C ; <
-                dc.b   0
-                dc.b   0
-                dc.b $49 ; I
-                dc.b $F9
-                dc.b   0
-                dc.b $FF
-                dc.b $DC
-                dc.b $58 ; X
-                dc.b $36 ; 6
-                dc.b   2
-                dc.b $96
-                dc.b $79 ; y
-                dc.b   0
-                dc.b $FF
-                dc.b $1E
-                dc.b $68 ; h
-                dc.b $6A ; j
-                dc.b   0
-                dc.b   0
-                dc.b   4
-                dc.b $44 ; D
-                dc.b $43 ; C
-                dc.b $B6
-                dc.b $7C ; |
-                dc.b   0
-                dc.b $40 ; @
-                dc.b $6A ; j
-                dc.b   0
-                dc.b   0
-                dc.b $B6
-                dc.b   2
-                dc.b $42 ; B
-                dc.b   0
-                dc.b $FF
-                dc.b $E3
-                dc.b $42 ; B
-                dc.b $D8
-                dc.b $C2
-                dc.b $B4
-                dc.b $79 ; y
-                dc.b   0
-                dc.b $FF
-                dc.b $1A
-                dc.b $4C ; L
-                dc.b $6B ; k
-                dc.b   0
-                dc.b   0
-                dc.b  $C
-                dc.b $48 ; H
-                dc.b $C2
-                dc.b $84
-                dc.b $F9
-                dc.b   0
-                dc.b $FF
-                dc.b $1A
-                dc.b $4C ; L
-                dc.b $48 ; H
-                dc.b $42 ; B
-                dc.b $4A ; J
-                dc.b $40 ; @
-                dc.b $6F ; o
-                dc.b   0
-                dc.b   0
-                dc.b $36 ; 6
-                dc.b $16
-                dc.b $14
-                dc.b $48 ; H
-                dc.b $83
-                dc.b $DC
-                dc.b $43 ; C
-                dc.b $1A
-                dc.b $2C ; ,
-                dc.b   0
-                dc.b   1
-                dc.b $55 ; U
-                dc.b $4C ; L
-                dc.b $B9
-                dc.b $FC
-                dc.b   0
-                dc.b $FF
-                dc.b $DC
-                dc.b $58 ; X
-                dc.b $6A ; j
-                dc.b   0
-                dc.b   0
-                dc.b   8
-                dc.b $28 ; (
-                dc.b $7C ; |
-                dc.b   0
-                dc.b $FF
-                dc.b $DD
-                dc.b $56 ; V
-                dc.b $48 ; H
-                dc.b $85
-                dc.b $DE
-                dc.b $45 ; E
-                dc.b   6
-                dc.b $44 ; D
-                dc.b   1
-                dc.b   0
-                dc.b $53 ; S
-                dc.b $40 ; @
-                dc.b $53 ; S
-                dc.b $42 ; B
-                dc.b $6A ; j
-                dc.b   0
-                dc.b   0
-                dc.b   8
-                dc.b $34 ; 4
-                dc.b $39 ; 9
-                dc.b   0
-                dc.b $FF
-                dc.b $1A
-                dc.b $4C ; L
-                dc.b $60 ; `
-                dc.b $B2
-                dc.b $33 ; 3
-                dc.b $41 ; A
-                dc.b   0
-                dc.b  $E
-                dc.b $33 ; 3
-                dc.b $42 ; B
-                dc.b   0
-                dc.b $10
-                dc.b $9D
-                dc.b $69 ; i
-                dc.b   0
-                dc.b $36 ; 6
-                dc.b $9F
-                dc.b $69 ; i
-                dc.b   0
-                dc.b $3A ; :
-                dc.b $30 ; 0
-                dc.b $29 ; )
-                dc.b   0
-                dc.b   6
-                dc.b $12
-                dc.b $14
-                dc.b $48 ; H
-                dc.b $81
-                dc.b $6A ; j
-                dc.b   0
-                dc.b   0
-                dc.b  $C
-                dc.b $44 ; D
-                dc.b $41 ; A
-                dc.b $C2
-                dc.b $C0
-                dc.b $44 ; D
-                dc.b $81
-                dc.b $60 ; `
-                dc.b   0
-                dc.b   0
-                dc.b   4
-                dc.b $C2
-                dc.b $C0
-                dc.b $48 ; H
-                dc.b $41 ; A
-                dc.b $33 ; 3
-                dc.b $41 ; A
-                dc.b   0
-                dc.b $38 ; 8
-                dc.b $12
-                dc.b $2C ; ,
-                dc.b   0
-                dc.b   1
-                dc.b $48 ; H
-                dc.b $81
-                dc.b $6A ; j
-                dc.b   0
-                dc.b   0
-                dc.b  $C
-                dc.b $44 ; D
-                dc.b $41 ; A
-                dc.b $C2
-                dc.b $C0
-                dc.b $44 ; D
-                dc.b $81
-                dc.b $60 ; `
-                dc.b   0
-                dc.b   0
-                dc.b   4
-                dc.b $C2
-                dc.b $C0
-                dc.b $48 ; H
-                dc.b $41 ; A
-                dc.b $33 ; 3
-                dc.b $41 ; A
-                dc.b   0
-                dc.b $3C ; <
-                dc.b $D2
-                dc.b $69 ; i
-                dc.b   0
-                dc.b $3A ; :
-                dc.b $33 ; 3
-                dc.b $41 ; A
-                dc.b   0
-                dc.b   2
-                dc.b   8
-                dc.b $A9
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b $68 ; h
-                dc.b $33 ; 3
-                dc.b $7C ; |
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b $32 ; 2
-                dc.b $4C ; L
-                dc.b $DF
-                dc.b $7F ; 
-                dc.b $FF
-                dc.b $4E ; N
-                dc.b $75 ; u
+; *************************************************
+; Function sub_11A5E (proposed: Race_UpdateActorCurvePosition)
+; Integrates actor X by FrameDistance and walks Track_CurveBuffer over the
+; travelled distance, accumulating road Y ($36/$3A) and deriving the curve
+; step ($38/$3C), the X offset ($2) and the next curve-buffer index ($E/$10).
+; Clears ControlFlags bit0 and zeroes CollisionOffset.
+; In:  a1 - actor; FrameDistance; Track_CurveBuffer
+; Out: X, $1A/$1C, $E/$10, $36/$3A/$38/$3C/$2, ControlFlags bit0, $32
+; Clobbers: d0-d7/a0-a6 (all saved)
+; @UNKNOWN(U-0013): meaning of $E/$10 and the exact curve-buffer wrap rule.
+; *************************************************
+
+sub_11A5E:
+                movem.l d0-d7/a0-a6,-(sp)
+                move.w RaceActor_PosY(a1),$1A(a1)
+                move.w RaceActor_CollisionOffset(a1),RaceActor_PreviousCollisionOffset(a1)
+                move.l RaceActor_FrameDistance(a1),d4
+                move.l RaceActor_X(a1),d0
+                move.l d0,RaceActor_PreviousX(a1)
+                move.l d0,d1
+                sub.l d4,d0
+                move.l d0,RaceActor_X(a1)
+                move.w d0,d4
+                ext.l d4
+                swap d0
+                swap d1
+                move.w d1,d2
+                sub.w d0,d1
+                move.w d1,d0
+                lsr.w #$8,d4
+                movea.w d4,a6
+                move.w #$0,(ram_FF1E92).l
+                move.w #$0,d6
+                move.w #$0,d7
+                lea (Track_CurveBuffer).l,a4
+                move.w d2,d3
+                sub.w (Race_ram_PlayerProgress).l,d3
+                bpl.w .loc_11AB8
+                neg.w d3
+.loc_11AB8:
+                cmp.w #$40,d3
+                bpl.w .loc_11B74
+                andi.w #$FF,d2
+                asl.w #$1,d2
+                adda.w d2,a4
+.loc_11AC8:
+                cmp.w (RaceTrack_Data1).l,d2
+                bmi.w .loc_11ADC
+                ext.l d2
+                divu.w (RaceTrack_Data1).l,d2
+                swap d2
+.loc_11ADC:
+                tst.w d0
+                ble.w .loc_11B16
+                move.b (a4),d3
+                ext.w d3
+                add.w d3,d6
+                move.b $1(a4),d5
+                subq.w #$2,a4
+                cmpa.l #$FFDC58,a4
+                bpl.w .loc_11AFE
+                movea.l #$FFDD56,a4
+.loc_11AFE:
+                ext.w d5
+                add.w d5,d7
+                addi.w #$100,d4
+                subq.w #$1,d0
+                subq.w #$1,d2
+                bpl.w .loc_11B14
+                move.w (RaceTrack_Data1).l,d2
+.loc_11B14:
+                bra.s .loc_11AC8
+.loc_11B16:
+                move.w d1,$E(a1)
+                move.w d2,$10(a1)
+                sub.w d6,RaceActor_RoadYTarget(a1)
+                sub.w d7,RaceActor_CurveAccum(a1)
+                move.w RaceActor_XLow(a1),d0
+                move.b (a4),d1
+                ext.w d1
+                bpl.w .loc_11B3C
+                neg.w d1
+                mulu.w d0,d1
+                neg.l d1
+                bra.w .loc_11B3E
+.loc_11B3C:
+                mulu.w d0,d1
+.loc_11B3E:
+                swap d1
+                move.w d1,RaceActor_CurveDelta(a1)
+                move.b $1(a4),d1
+                ext.w d1
+                bpl.w .loc_11B58
+                neg.w d1
+                mulu.w d0,d1
+                neg.l d1
+                bra.w .loc_11B5A
+.loc_11B58:
+                mulu.w d0,d1
+.loc_11B5A:
+                swap d1
+                move.w d1,RaceActor_CurveStep(a1)
+                add.w RaceActor_CurveAccum(a1),d1
+                move.w d1,RaceActor_PosZ(a1)
+                bclr.b #$0,RaceActor_ControlFlags(a1)
+                move.w #$0,RaceActor_CollisionOffset(a1)
+.loc_11B74:
+                movem.l (sp)+,d0-d7/a0-a6
+                rts
+; End of function sub_11A5E
+
 
 
 
@@ -1957,10 +1702,10 @@ sub_11CC8:
                 bsr.w   Race_SaveActorShadow
                 bra.w   .loc_1202E
 
-                dc.b $60
-                dc.b   0
-                dc.b   0
-                dc.b $D8
+; Dead code inside sub_11CC8: a direct bra.w to .loc_1202E.
+; No branch targets $11F54 (static); kept byte-exact.
+                bra.w .loc_1202E
+
 
 
 .loc_11F58:
@@ -2137,42 +1882,19 @@ sub_12070:
 ; End of function sub_12070
 
 
-                dc.b   0
-                dc.b   1
-                dc.b $43 ; C
-                dc.b $8E
-                dc.b   0
-                dc.b   1
-                dc.b $43 ; C
-                dc.b $8E
-                dc.b   0
-                dc.b   1
-                dc.b $40 ; @
-                dc.b $EE
-                dc.b   0
-                dc.b   1
-                dc.b $43 ; C
-                dc.b $8E
-                dc.b   0
-                dc.b   1
-                dc.b $43 ; C
-                dc.b $8E
-                dc.b   0
-                dc.b   1
-                dc.b $43 ; C
-                dc.b $8E
-                dc.b   0
-                dc.b   1
-                dc.b $43 ; C
-                dc.b $8E
-                dc.b   0
-                dc.b   1
-                dc.b $43 ; C
-                dc.b $8E
-                dc.b   0
-                dc.b   1
-                dc.b $43 ; C
-                dc.b $8E
+; 9 x dc.l actor handler pointers; index 2 -> sub_140EE, all others -> sub_1438E.
+; No static reader found in src/ (U-0016).
+unk_12168:
+                dc.l    sub_1438E
+                dc.l    sub_1438E
+                dc.l    sub_140EE
+                dc.l    sub_1438E
+                dc.l    sub_1438E
+                dc.l    sub_1438E
+                dc.l    sub_1438E
+                dc.l    sub_1438E
+                dc.l    sub_1438E
+
 
 
 
@@ -3043,174 +2765,65 @@ Race_GetDefenderReach:
 ; End of function Race_GetDefenderReach
 
 
-                dc.b $48 ; H
-                dc.b $E7
-                dc.b $70 ; p
-                dc.b   0
-                dc.b $38 ; 8
-                dc.b   2
-                dc.b $6A ; j
-                dc.b   0
-                dc.b   0
-                dc.b   4
-                dc.b $44 ; D
-                dc.b $44 ; D
-                dc.b $E6
-                dc.b $4C ; L
-                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
-                dc.b   0
-                dc.b   0
-                dc.b $3A ; :
-                dc.b $38 ; 8
-                dc.b   1
-                dc.b $4A ; J
-                dc.b $44 ; D
-                dc.b $6A ; j
-                dc.b   0
-                dc.b   0
-                dc.b   6
-                dc.b $44 ; D
-                dc.b $44 ; D
-                dc.b $44 ; D
-                dc.b $43 ; C
-                dc.b $E8
-                dc.b $4C ; L
-                dc.b $B8
-                dc.b $7C ; |
-                dc.b   0
-                dc.b   2
-                dc.b $6A ; j
-                dc.b   0
-                dc.b   0
-                dc.b $24 ; $
-                dc.b $E3
-                dc.b $44 ; D
-                dc.b $D8
-                dc.b $43 ; C
-                dc.b $4D ; M
-                dc.b $F9
-                dc.b   0
-                dc.b   1
-                dc.b $2B ; +
-                dc.b $CC
-                dc.b $10
-                dc.b $36 ; 6
-                dc.b $40 ; @
-                dc.b   0
-                dc.b $67 ; g
-                dc.b   0
-                dc.b   0
-                dc.b $12
-                dc.b $33 ; 3
-                dc.b $FC
-                dc.b   0
-                dc.b   1
-                dc.b   0
-                dc.b $FF
-                dc.b $17
-                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
-                dc.b $48 ; H
-                dc.b $80
-                dc.b $4C ; L
-                dc.b $DF
-                dc.b   0
-                dc.b  $E
-                dc.b $4E ; N
-                dc.b $75 ; u
-                dc.b $4C ; L
-                dc.b $DF
-                dc.b   0
-                dc.b  $E
-                dc.b $61 ; a
-                dc.b $92
-                dc.b $4E ; N
-                dc.b $75 ; u
-unk_12B7C:      dc.b $10
-                dc.b $19
-                dc.b  $C
-                dc.b $13
-                dc.b  $D
-                dc.b  $D
-                dc.b $13
-                dc.b  $C
-                dc.b $19
-                dc.b $10
-                dc.b  $E
-                dc.b $16
-                dc.b  $C
-                dc.b  $F
-                dc.b  $D
-                dc.b  $D
-                dc.b  $E
-                dc.b $14
-                dc.b $13
-                dc.b $18
-                dc.b $15
-                dc.b  $F
-                dc.b  $A
-                dc.b  $C
-                dc.b  $D
-                dc.b  $D
-                dc.b  $F
-                dc.b $10
-                dc.b $18
-                dc.b $13
-                dc.b $12
-                dc.b $13
-                dc.b  $D
-                dc.b $12
-                dc.b  $D
-                dc.b  $D
-                dc.b  $D
-                dc.b $10
-                dc.b $11
-                dc.b $12
-                dc.b   0
-                dc.b   0
-                dc.b $1E
-                dc.b   0
-                dc.b $1E
-                dc.b $1E
-                dc.b   0
-                dc.b $1E
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b $1E
-                dc.b   0
-                dc.b $1E
-                dc.b $1E
-                dc.b   0
-                dc.b $1E
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b $1E
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b $1A
-                dc.b $1A
-                dc.b $1A
-                dc.b $1A
-                dc.b   0
-                dc.b $1A
+; *************************************************
+; Function sub_12B2A (proposed: Race_GetAttackerReachAdjusted)
+; For a close, near-vertical attack (|d2| < 8 and |d1|>>4 < 2) returns a byte
+; from unk_12BCC and sets ram_FF1766=1; otherwise tail-calls Race_GetAttackerReach.
+; In:  d1/d2 - relative position; d3 - side/type argument
+; Out: d0 - reach (signed byte or Race_GetAttackerReach result)
+; Preserves d1-d3.
+; *************************************************
+
+sub_12B2A:
+                movem.l d1-d3,-(sp)
+                move.w d2,d4
+                bpl.w .loc_12B36
+                neg.w d4
+.loc_12B36:
+                lsr.w #$3,d4
+                bne.w .loc_12B74
+                move.w d1,d4
+                tst.w d4
+                bpl.w .loc_12B48
+                neg.w d4
+                neg.w d3
+.loc_12B48:
+                lsr.w #$4,d4
+                cmp.w #$2,d4
+                bpl.w .loc_12B74
+                asl.w #$1,d4
+                add.w d3,d4
+                lea (unk_12BCC).l,a6
+                move.b (a6,d4.w),d0
+                beq.w .loc_12B74
+                move.w #$1,(ram_FF1766).l
+                ext.w d0
+                movem.l (sp)+,d1-d3
+                rts
+.loc_12B74:
+                movem.l (sp)+,d1-d3
+                bsr.s Race_GetAttackerReach
+                rts
+; End of function sub_12B2A
+
+; Collision-extent byte table used by Race_GetActorCollisionExtent. The first
+; 80 bytes are side/position buckets; the last 6 bytes form the close-attack
+; reach sub-table (unk_12BCC) used by sub_12B2A.
+unk_12B7C:
+                dc.b    $10, $19, $0C, $13, $0D, $0D, $13, $0C
+                dc.b    $19, $10, $0E, $16, $0C, $0F, $0D, $0D
+                dc.b    $0E, $14, $13, $18, $15, $0F, $0A, $0C
+                dc.b    $0D, $0D, $0F, $10, $18, $13, $12, $13
+                dc.b    $0D, $12, $0D, $0D, $0D, $10, $11, $12
+                dc.b    0, 0, $1E, 0, $1E, $1E, 0, $1E
+                dc.b    0, 0, 0, 0, $1E, 0, $1E, $1E
+                dc.b    0, $1E, 0, 0, 0, 0, 0, 0
+                dc.b    0, $1E, 0, 0, 0, 0, 0, 0
+                dc.b    0, 0, 0, 0, 0, 0, 0, 0
+
+unk_12BCC:
+                dc.b    $1A, $1A, $1A, $1A, 0, $1A
+
 
 
 
@@ -3853,56 +3466,36 @@ Race_ApplyActorSpeedCorrection:
 ; End of function Race_ApplyActorSpeedCorrection
 
 
-                dc.b $90
-                dc.b $69 ; i
-                dc.b   0
-                dc.b $30 ; 0
-                dc.b $48 ; H
-                dc.b $C0
-                dc.b $67 ; g
-                dc.b   0
-                dc.b   0
-                dc.b $1E
-                dc.b $48 ; H
-                dc.b $40 ; @
-                dc.b $32 ; 2
-                dc.b $29 ; )
-                dc.b   0
-                dc.b $12
-                dc.b $E0
-                dc.b $49 ; I
-                dc.b $67 ; g
-                dc.b   0
-                dc.b   0
-                dc.b $1C
-                dc.b $34 ; 4
-                dc.b $39 ; 9
-                dc.b   0
-                dc.b $FF
-                dc.b $1B
-                dc.b $46 ; F
-                dc.b $67 ; g
-                dc.b   0
-                dc.b   0
-                dc.b   4
-                dc.b $C2
-                dc.b $C2
-                dc.b $81
-                dc.b $C1
-                dc.b $E0
-                dc.b $40 ; @
-                dc.b $33 ; 3
-                dc.b $40 ; @
-                dc.b   0
-                dc.b $46 ; F
-                dc.b   8
-                dc.b $E9
-                dc.b   0
-                dc.b   2
-                dc.b   0
-                dc.b $69 ; i
-                dc.b $4E ; N
-                dc.b $75 ; u
+; *************************************************
+; Function sub_133F0 (proposed: Race_SetActorCurveDirection)
+; Converts a target-PosY delta (d0) into a signed CurveDirection ($46), scaled
+; by Speed and ram_FF1B46, and sets StateFlags bit2.
+; In:  a1 - actor; d0 - target PosY
+; Out: $46, StateFlags bit2
+; Clobbers: d0-d2
+; *************************************************
+
+sub_133F0:
+                sub.w RaceActor_PosY(a1),d0
+                ext.l d0
+                beq.w .loc_13416
+                swap d0
+                move.w RaceActor_Speed(a1),d1
+                lsr.w #$8,d1
+                beq.w .loc_13420
+                move.w (ram_FF1B46).l,d2
+                beq.w .loc_13412
+                mulu.w d2,d1
+.loc_13412:
+                divs.w d1,d0
+                asr.w #$8,d0
+.loc_13416:
+                move.w d0,RaceActor_CurveDirection(a1)
+                bset.b #$2,RaceActor_StateFlags(a1)
+.loc_13420:
+                rts
+; End of function sub_133F0
+
 
 
 
@@ -4055,20 +3648,18 @@ Race_UpdateActorSpeedCurve:
 ; End of function Race_UpdateActorSpeedCurve
 
 
-                dc.b   8
-                dc.b $A9
-                dc.b   0
-                dc.b   1
-                dc.b   0
-                dc.b $68 ; h
-                dc.b   8
-                dc.b $E9
-                dc.b   0
-                dc.b   2
-                dc.b   0
-                dc.b $68 ; h
-                dc.b $4E ; N
-                dc.b $75 ; u
+; *************************************************
+; Function sub_135E8 (proposed: Race_SetActorAccelerateFlag)
+; Clears ControlFlags bit1 and sets bit2 (accelerate state).
+; In:  a1 - actor; Out: ControlFlags bits 1/2
+; *************************************************
+
+sub_135E8:
+                bclr.b #$1,RaceActor_ControlFlags(a1)
+                bset.b #$2,RaceActor_ControlFlags(a1)
+                rts
+; End of function sub_135E8
+
 
 
 
@@ -4193,72 +3784,37 @@ Race_ScaleActorSpeed:
 ; End of function Race_ScaleActorSpeed
 
 
-                dc.b $38 ; 8
-                dc.b $39 ; 9
-                dc.b   0
-                dc.b $FF
-                dc.b $1E
-                dc.b $BC
-                dc.b $34 ; 4
-                dc.b $29 ; )
-                dc.b   0
-                dc.b $12
-                dc.b   8
-                dc.b $29 ; )
-                dc.b   0
-                dc.b   3
-                dc.b   0
-                dc.b $69 ; i
-                dc.b $67 ; g
-                dc.b   0
-                dc.b   0
-                dc.b   4
-                dc.b $44 ; D
-                dc.b $44 ; D
-                dc.b $94
-                dc.b $44 ; D
-                dc.b $6E ; n
-                dc.b   0
-                dc.b   0
-                dc.b  $A
-                dc.b $36 ; 6
-                dc.b $3C ; <
-                dc.b   0
-                dc.b   0
-                dc.b $60 ; `
-                dc.b   0
-                dc.b   0
-                dc.b $18
-                dc.b $26 ; &
-                dc.b $39 ; 9
-                dc.b   0
-                dc.b $FF
-                dc.b $1E
-                dc.b $AE
-                dc.b $96
-                dc.b $A9
-                dc.b   0
-                dc.b   4
-                dc.b $6A ; j
-                dc.b   0
-                dc.b   0
-                dc.b   4
-                dc.b $44 ; D
-                dc.b $83
-                dc.b $86
-                dc.b $C2
-                dc.b $60 ; `
-                dc.b   0
-                dc.b   0
-                dc.b   2
-                dc.b $33 ; 3
-                dc.b $C3
-                dc.b   0
-                dc.b $FF
-                dc.b $1B
-                dc.b $46 ; F
-                dc.b $4E ; N
-                dc.b $75 ; u
+; *************************************************
+; Function sub_13704 (proposed: Race_UpdateActorDistanceRatio)
+; Computes ram_FF1B46 = |ram_FF1EAE - actor X| / (Speed -/+ ram_FF1EBC),
+; or 0 when the adjusted speed is not positive.
+; In:  a1 - actor; Out: ram_FF1B46; Clobbers: d2-d4
+; *************************************************
+
+sub_13704:
+                move.w ($FF1EBC).l,d4
+                move.w RaceActor_Speed(a1),d2
+                btst.b #$3,RaceActor_StateFlags(a1)
+                beq.w .loc_1371A
+                neg.w d4
+.loc_1371A:
+                sub.w d4,d2
+                bgt.w .loc_13728
+                move.w #$0,d3
+                bra.w .loc_1373E
+.loc_13728:
+                move.l ($FF1EAE).l,d3
+                sub.l RaceActor_X(a1),d3
+                bpl.w .loc_13738
+                neg.l d3
+.loc_13738:
+                divu.w d2,d3
+                bra.w .loc_1373E
+.loc_1373E:
+                move.w d3,(ram_FF1B46).l
+                rts
+; End of function sub_13704
+
 
 
 
@@ -4560,114 +4116,36 @@ sub_138CE:
                 bsr.w   sub_13A26
                 bra.w   .loc_138E4
 
-                dc.b $48 ; H
-                dc.b $40 ; @
-                dc.b $44 ; D
-                dc.b $40 ; @
-                dc.b $B0
-                dc.b $7C ; |
-                dc.b   0
-                dc.b $21 ; !
-                dc.b $6B ; k
-                dc.b   0
-                dc.b $FF
-                dc.b $2E ; .
-                dc.b  $C
-                dc.b $6A ; j
-                dc.b $FF
-                dc.b $FF
-                dc.b   0
-                dc.b $56 ; V
-                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
-                dc.b   0
-                dc.b   0
-                dc.b $2E ; .
-                dc.b   8
-                dc.b $AA
-                dc.b   0
-                dc.b   4
-                dc.b   0
-                dc.b $68 ; h
-                dc.b $61 ; a
-                dc.b   0
-                dc.b $26 ; &
-                dc.b $6A ; j
-                dc.b   2
-                dc.b $40 ; @
-                dc.b  $F
-                dc.b $FF
-                dc.b $49 ; I
-                dc.b $F9
-                dc.b   0
-                dc.b   1
-                dc.b $3A ; :
-                dc.b $1A
-                dc.b $32 ; 2
-                dc.b $39 ; 9
-                dc.b   0
-                dc.b $FF
-                dc.b   5
-                dc.b  $A
-                dc.b $E3
-                dc.b $41 ; A
-                dc.b $32 ; 2
-                dc.b $34 ; 4
-                dc.b $10
-                dc.b   0
-                dc.b $C0
-                dc.b $C1
-                dc.b $48 ; H
-                dc.b $40 ; @
-                dc.b $35 ; 5
-                dc.b $40 ; @
-                dc.b   0
-                dc.b $56 ; V
-                dc.b $60 ; `
-                dc.b   0
-                dc.b $FE
-                dc.b $F8
-                dc.b  $C
-                dc.b $B9
-                dc.b   0
-                dc.b   0
-                dc.b   7
-                dc.b   8
-                dc.b   0
-                dc.b $FF
-                dc.b $1E
-                dc.b $9A
-                dc.b $65 ; e
-                dc.b   0
-                dc.b $FE
-                dc.b $EA
-                dc.b $34 ; 4
-                dc.b $39 ; 9
-                dc.b   0
-                dc.b $FF
-                dc.b $30 ; 0
-                dc.b $4A ; J
-                dc.b $95
-                dc.b $6A ; j
-                dc.b   0
-                dc.b $56 ; V
-                dc.b $6E ; n
-                dc.b   0
-                dc.b $FE
-                dc.b $DC
-                dc.b $35 ; 5
-                dc.b $7C ; |
-                dc.b $FF
-                dc.b $FF
-                dc.b   0
-                dc.b $56 ; V
-                dc.b $61 ; a
-                dc.b   0
-                dc.b   0
-                dc.b $4A ; J
-                dc.b $60 ; `
-                dc.b   0
-                dc.b $FE
-                dc.b $CE
+; Dead code inside sub_138CE: no branch targets $139AC and the preceding
+; instruction does not fall through (static). It updates a respawn timer and
+; calls sub_13A5C; kept byte-exact.
+                swap d0
+                neg.w d0
+                cmp.w #$21,d0
+                bmi.w .loc_138E4
+                cmpi.w #$FFFF,RaceActor_RespawnTimer(a2)
+                bne.w .loc_139EE
+                bclr.b #$4,RaceActor_ControlFlags(a2)
+                bsr.w Rand_NextWord
+                andi.w #$FFF,d0
+                lea (unk_13A1A).l,a4
+                move.w (Menu_ram_PlayerLevel).l,d1
+                asl.w #$1,d1
+                move.w (a4,d1.w),d1
+                mulu.w d1,d0
+                swap d0
+                move.w d0,RaceActor_RespawnTimer(a2)
+                bra.w .loc_138E4
+.loc_139EE:
+                cmpi.l #$708,(Race_ram_ProgressSnapshotB).l
+                bcs.w .loc_138E4
+                move.w (Race_ram_FrameDelay).l,d2
+                sub.w d2,RaceActor_RespawnTimer(a2)
+                bgt.w .loc_138E4
+                move.w #$FFFF,RaceActor_RespawnTimer(a2)
+                bsr.w sub_13A5C
+                bra.w .loc_138E4
+
 
 
 .return:
@@ -4675,18 +4153,11 @@ sub_138CE:
 ; End of function sub_138CE
 
 
-unk_13A1A:      dc.b $FF
-                dc.b $FF
-                dc.b $B3
-                dc.b $33 ; 3
-                dc.b $80
-                dc.b   0
-                dc.b $4C ; L
-                dc.b $CC
-                dc.b $33 ; 3
-                dc.b $33 ; 3
-                dc.b $22 ; "
-                dc.b $22 ; "
+; 6-word per-level multiplier used by the dead respawn-timer block (raw_139AC);
+; values decrease with Menu_ram_PlayerLevel.
+unk_13A1A:
+                dc.w    $FFFF, $B333, $8000, $4CCC, $3333, $2222
+
 
 
 
@@ -4707,60 +4178,28 @@ sub_13A26:
 ; End of function sub_13A26
 
 
-                dc.b   8
-                dc.b $AA
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b $68 ; h
-                dc.b $30 ; 0
-                dc.b $3C ; <
-                dc.b   0
-                dc.b   0
-                dc.b $35 ; 5
-                dc.b $40 ; @
-                dc.b   0
-                dc.b   2
-                dc.b $35 ; 5
-                dc.b $40 ; @
-                dc.b   0
-                dc.b $3C ; <
-                dc.b $35 ; 5
-                dc.b $40 ; @
-                dc.b   0
-                dc.b $3A ; :
-                dc.b $35 ; 5
-                dc.b $40 ; @
-                dc.b   0
-                dc.b $32 ; 2
-                dc.b $20
-                dc.b $39 ; 9
-                dc.b   0
-                dc.b $FF
-                dc.b $1E
-                dc.b $68 ; h
-                dc.b   4
-                dc.b $80
-                dc.b   0
-                dc.b $1F
-                dc.b $80
-                dc.b   0
-                dc.b $25 ; %
-                dc.b $40 ; @
-                dc.b   0
-                dc.b   4
-                dc.b $25 ; %
-                dc.b $40 ; @
-                dc.b   0
-                dc.b $1E
-                dc.b   8
-                dc.b $EA
-                dc.b   0
-                dc.b   6
-                dc.b   0
-                dc.b $68 ; h
-                dc.b $4E ; N
-                dc.b $75 ; u
+; *************************************************
+; Function sub_13A5C (proposed: Race_ResetActorFarBehind)
+; Clears ControlFlags bit0, resets PosZ/CurveStep/CurveAccum/CollisionOffset,
+; sets X and PreviousX to PlayerProgress-$1F8000 and sets ControlFlags bit6.
+; In:  a2 - actor; Out: as above; Clobbers: d0
+; *************************************************
+
+sub_13A5C:
+                bclr.b #$0,RaceActor_ControlFlags(a2)
+                move.w #$0,d0
+                move.w d0,RaceActor_PosZ(a2)
+                move.w d0,RaceActor_CurveStep(a2)
+                move.w d0,RaceActor_CurveAccum(a2)
+                move.w d0,RaceActor_CollisionOffset(a2)
+                move.l (Race_ram_PlayerProgress).l,d0
+                subi.l #$1F8000,d0
+                move.l d0,RaceActor_X(a2)
+                move.l d0,RaceActor_PreviousX(a2)
+                bset.b #$6,RaceActor_ControlFlags(a2)
+                rts
+; End of function sub_13A5C
+
 
 ; *************************************************
 ; Function Race_UpdateActorSpeedState
@@ -5016,162 +4455,66 @@ sub_13CFE:
 ; End of function sub_13CFE
 
 
-                dc.b $48 ; H
-                dc.b $E7
-                dc.b $E0
-                dc.b $E0
-                dc.b $20
-                dc.b $79 ; y
-                dc.b   0
-                dc.b $FF
-                dc.b $D7
-                dc.b $CC
-                dc.b $33 ; 3
-                dc.b $FC
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b $FF
-                dc.b $18
-                dc.b $A4
-                dc.b $22 ; "
-                dc.b $10
-                dc.b $B2
-                dc.b $BC
-                dc.b $FF
-                dc.b $FF
-                dc.b $FF
-                dc.b $FF
-                dc.b $67 ; g
-                dc.b   0
-                dc.b   0
-                dc.b $7A ; z
-                dc.b $42 ; B
-                dc.b $41 ; A
-                dc.b $24 ; $
-                dc.b   1
-                dc.b $94
-                dc.b $A9
-                dc.b   0
-                dc.b   4
-                dc.b $6E ; n
-                dc.b   0
-                dc.b   0
-                dc.b   4
-                dc.b $58 ; X
-                dc.b $88
-                dc.b $B4
-                dc.b $BC
-                dc.b   0
-                dc.b $1E
-                dc.b   0
-                dc.b   0
-                dc.b $64 ; d
-                dc.b   0
-                dc.b   0
-                dc.b $62 ; b
-                dc.b $42 ; B
-                dc.b $40 ; @
-                dc.b $10
-                dc.b $28 ; (
-                dc.b   0
-                dc.b   2
-                dc.b $45 ; E
-                dc.b $F9
-                dc.b   0
-                dc.b   1
-                dc.b $47 ; G
-                dc.b $64 ; d
-                dc.b $E7
-                dc.b $40 ; @
-                dc.b $D4
-                dc.b $C0
-                dc.b $4A ; J
-                dc.b $6A ; j
-                dc.b   0
-                dc.b   6
-                dc.b $67 ; g
-                dc.b   0
-                dc.b   0
-                dc.b $1A
-                dc.b $32 ; 2
-                dc.b $28 ; (
-                dc.b   0
-                dc.b   2
-                dc.b   2
-                dc.b $41 ; A
-                dc.b   0
-                dc.b  $F
-                dc.b $EB
-                dc.b $41 ; A
-                dc.b   4
-                dc.b $41 ; A
-                dc.b   1
-                dc.b   0
-                dc.b $30 ; 0
-                dc.b $29 ; )
-                dc.b   0
-                dc.b $30 ; 0
-                dc.b $B1
-                dc.b $41 ; A
-                dc.b $6A ; j
-                dc.b   0
-                dc.b   0
-                dc.b   6
-                dc.b $58 ; X
-                dc.b $48 ; H
-                dc.b $60 ; `
-                dc.b $A8
-                dc.b $30 ; 0
-                dc.b $29 ; )
-                dc.b   0
-                dc.b $12
-                dc.b $67 ; g
-                dc.b   0
-                dc.b   0
-                dc.b $26 ; &
-                dc.b $84
-                dc.b $C0
-                dc.b $33 ; 3
-                dc.b $C2
-                dc.b   0
-                dc.b $FF
-                dc.b $1B
-                dc.b $46 ; F
-                dc.b $30 ; 0
-                dc.b $3C ; <
-                dc.b   0
-                dc.b   2
-                dc.b $4A ; J
-                dc.b $69 ; i
-                dc.b   0
-                dc.b $30 ; 0
-                dc.b $6A ; j
-                dc.b   0
-                dc.b   0
-                dc.b   4
-                dc.b $54 ; T
-                dc.b $40 ; @
-                dc.b $4E ; N
-                dc.b $B9
-                dc.b   0
-                dc.b   1
-                dc.b $38 ; 8
-                dc.b $92
-                dc.b $33 ; 3
-                dc.b $FC
-                dc.b   0
-                dc.b   1
-                dc.b   0
-                dc.b $FF
-                dc.b $18
-                dc.b $A4
-                dc.b $4C ; L
-                dc.b $DF
-                dc.b   7
-                dc.b   7
-                dc.b $4E ; N
-                dc.b $75 ; u
+; *************************************************
+; Function sub_13D44 (proposed: Race_UpdateTrackObjectSteering)
+; Scans Race_ram_TrackObjectRecordCursor for a nearby track object, looks up
+; Race_TrackObjectTypeTable[type*8], filters by the word at +6 and the side bit
+; in the object word +2, then sets ram_FF1B46 and calls Race_SteerTowardTarget
+; with mode 2/4. Sets ram_FF18A4=1 on success.
+; In:  a1 - actor; Out: ram_FF1B46, ram_FF18A4; Clobbers: d0-d2/a0-a2
+; @UNKNOWN(U-0014): record fields other than type and the +6 flag word.
+; *************************************************
+
+sub_13D44:
+                movem.l d0-d2/a0-a2,-(sp)
+                movea.l (Race_ram_TrackObjectRecordCursor).l,a0
+                move.w #$0,(ram_FF18A4).l
+.loc_13D56:
+                move.l (a0),d1
+                cmp.l #$FFFFFFFF,d1
+                beq.w .loc_13DDA
+                clr.w d1
+                move.l d1,d2
+                sub.l RaceActor_X(a1),d2
+                bgt.w .loc_13D70
+                addq.l #$4,a0
+.loc_13D70:
+                cmp.l #$1E0000,d2
+                bcc.w .loc_13DDA
+                clr.w d0
+                move.b $2(a0),d0
+                lea (Race_TrackObjectTypeTable).l,a2
+                asl.w #$3,d0
+                adda.w d0,a2
+                tst.w $6(a2)
+                beq.w .loc_13DAA
+                move.w $2(a0),d1
+                andi.w #$F,d1
+                asl.w #$5,d1
+                subi.w #$100,d1
+                move.w RaceActor_PosY(a1),d0
+                eor.w d0,d1
+                bpl.w .loc_13DAE
+.loc_13DAA:
+                addq.w #$4,a0
+                bra.s .loc_13D56
+.loc_13DAE:
+                move.w RaceActor_Speed(a1),d0
+                beq.w .loc_13DDA
+                divu.w d0,d2
+                move.w d2,(ram_FF1B46).l
+                move.w #$2,d0
+                tst.w RaceActor_PosY(a1)
+                bpl.w .loc_13DCC
+                addq.w #$2,d0
+.loc_13DCC:
+                jsr (Race_SteerTowardTarget).l
+                move.w #$1,(ram_FF18A4).l
+.loc_13DDA:
+                movem.l (sp)+,d0-d2/a0-a2
+                rts
+; End of function sub_13D44
+
 
 
 

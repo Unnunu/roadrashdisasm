@@ -33,6 +33,9 @@ audio live in `src/race/race_anim_audio.asm`; PRNG/LFSR helpers are in
 - `Race_SetupActorSprite` `0x13746`: actor sprite/field setup.
 - `Race_UpdateBikeLean` `0x13EA0` / `Race_UpdateBikeCurve` `0x13EFA`: lean/curve.
 - `Race_GetCurveSpeedLimit` `0x13FE6`: curve speed limit (`Track_CurveBuffer`, `unk_14056`).
+- Gap set (R30): `sub_1131A` shadow-follow, `sub_11A5E` curve-position integration,
+  `sub_12B2A` adjusted attack reach, `sub_133F0` curve direction,
+  `sub_13704` distance ratio, `sub_13A5C` far respawn, `sub_13D44` track-object steering.
 
 ## Coverage matrix
 
@@ -42,5 +45,6 @@ audio live in `src/race/race_anim_audio.asm`; PRNG/LFSR helpers are in
 | actor action dispatch | `0x12D0A`-`0x131BE` | [x] | [x] | [x] | [x] | [x] | [~] | static table + demo trace |
 | bike lean/curve | `0x13EA0`/`0x13EFA` | [x] | [~] | [x] | [x] | [~] | [~] | static + steering snapshots |
 | curve speed limit | `0x13FE6` | [x] | [~] | [x] | [x] | [~] | [ ] | static |
+| gap functions | `0x1131A`-`0x13DDF` | [~] | [~] | [x] | [x] | [~] | [ ] | disassembled (R30); contracts static |
 
 Detailed flow: `docs/analysis/race.md`; spawn: `docs/analysis/race_spawn.md`.

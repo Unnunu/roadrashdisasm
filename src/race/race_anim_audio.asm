@@ -4,26 +4,12 @@
 ; PRNG/LFSR helpers are in rand.asm, included at their original ROM location.
 ; *************************************************
 
-unk_14056:      dc.b   1
-                dc.b $38 ; 8
-                dc.b   1
-                dc.b $30 ; 0
-                dc.b   1
-                dc.b $28 ; (
-                dc.b   1
-                dc.b $20
-                dc.b   1
-                dc.b $10
-                dc.b   1
-                dc.b $60 ; `
-                dc.b   1
-                dc.b $50 ; P
-                dc.b   1
-                dc.b $40 ; @
-                dc.b   1
-                dc.b $30 ; 0
-                dc.b   1
-                dc.b $20
+; 10-word multiplier table indexed by RaceActor_GraphicsIndex*2 in
+; Race_GetCurveSpeedLimit (race_ai.asm).
+unk_14056:
+                dc.w    $0138, $0130, $0128, $0120, $0110, $0160, $0150, $0140
+                dc.w    $0130, $0120
+
 
 
 
@@ -80,546 +66,200 @@ Race_UpdateLeanCurve:
 ; End of function Race_UpdateLeanCurve
 
 
-                dc.b $42 ; B
-                dc.b $80
-                dc.b $30 ; 0
-                dc.b $28 ; (
-                dc.b   0
-                dc.b  $E
-                dc.b $E1
-                dc.b $80
-                dc.b $D0
-                dc.b $B9
-                dc.b   0
-                dc.b $FF
-                dc.b $1E
-                dc.b $68 ; h
-                dc.b   8
-                dc.b $29 ; )
-                dc.b   0
-                dc.b   3
-                dc.b   0
-                dc.b $69 ; i
-                dc.b $67 ; g
-                dc.b   0
-                dc.b   0
-                dc.b  $C
-                dc.b   4
-                dc.b $80
-                dc.b   0
-                dc.b   0
-                dc.b $A0
-                dc.b   0
-                dc.b $60 ; `
-                dc.b   0
-                dc.b   0
-                dc.b   8
-                dc.b   6
-                dc.b $80
-                dc.b   0
-                dc.b   0
-                dc.b $40 ; @
-                dc.b   0
-                dc.b $23 ; #
-                dc.b $40 ; @
-                dc.b   0
-                dc.b   4
-                dc.b $23 ; #
-                dc.b $40 ; @
-                dc.b   0
-                dc.b $1E
-                dc.b $4E ; N
-                dc.b $75 ; u
-                dc.b  $C
-                dc.b $69 ; i
-                dc.b  $F
-                dc.b $A0
-                dc.b   0
-                dc.b $12
-                dc.b $6A ; j
-                dc.b   0
-                dc.b   0
-                dc.b  $A
-                dc.b $61 ; a
-                dc.b   0
-                dc.b   2
-                dc.b   4
-                dc.b $60 ; `
-                dc.b   0
-                dc.b   0
-                dc.b $A8
-                dc.b $61 ; a
-                dc.b $BA
-                dc.b $61 ; a
-                dc.b   0
-                dc.b   2
-                dc.b $8A
-                dc.b $30 ; 0
-                dc.b $29 ; )
-                dc.b   0
-                dc.b $34 ; 4
-                dc.b $6A ; j
-                dc.b   0
-                dc.b   0
-                dc.b   4
-                dc.b $44 ; D
-                dc.b $40 ; @
-                dc.b $B0
-                dc.b $7C ; |
-                dc.b   0
-                dc.b   3
-                dc.b $6B ; k
-                dc.b   0
-                dc.b   0
-                dc.b  $C
-                dc.b $4E ; N
-                dc.b $B9
-                dc.b   0
-                dc.b   1
-                dc.b $55 ; U
-                dc.b $38 ; 8
-                dc.b $60 ; `
-                dc.b   0
-                dc.b   0
-                dc.b $24 ; $
-                dc.b $30 ; 0
-                dc.b $29 ; )
-                dc.b   0
-                dc.b $12
-                dc.b $33 ; 3
-                dc.b $C0
-                dc.b   0
-                dc.b $FF
-                dc.b $18
-                dc.b $A6
-                dc.b $B0
-                dc.b $7C ; |
-                dc.b $17
-                dc.b $70 ; p
-                dc.b $6A ; j
-                dc.b   0
-                dc.b   0
-                dc.b  $C
-                dc.b $4E ; N
-                dc.b $B9
-                dc.b   0
-                dc.b   1
-                dc.b $55 ; U
-                dc.b $80
-                dc.b $60 ; `
-                dc.b   0
-                dc.b   0
-                dc.b   8
-                dc.b $4E ; N
-                dc.b $B9
-                dc.b   0
-                dc.b   1
-                dc.b $55 ; U
-                dc.b $5C ; 
-                dc.b $13
-                dc.b $7C ; |
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b $6E ; n
-                dc.b $13
-                dc.b $7C ; |
-                dc.b   0
-                dc.b $FF
-                dc.b   0
-                dc.b $6F ; o
-                dc.b $4A ; J
-                dc.b $79 ; y
-                dc.b   0
-                dc.b $FF
-                dc.b $17
-                dc.b $68 ; h
-                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
-                dc.b   0
-                dc.b   0
-                dc.b $3C ; <
-                dc.b $4E ; N
-                dc.b $B9
-                dc.b   0
-                dc.b   1
-                dc.b $42 ; B
-                dc.b $D8
-                dc.b $61 ; a
-                dc.b   0
-                dc.b $D7
-                dc.b $A4
-                dc.b $30 ; 0
-                dc.b $3C ; <
-                dc.b $C0
-                dc.b   0
-                dc.b $61 ; a
-                dc.b   0
-                dc.b   2
-                dc.b   4
-                dc.b $B3
-                dc.b $FC
-                dc.b   0
-                dc.b $FF
-                dc.b $1E
-                dc.b $AA
-                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
-                dc.b   0
-                dc.b   0
-                dc.b $32 ; 2
-                dc.b $13
-                dc.b $FC
-                dc.b   0
-                dc.b   9
-                dc.b   0
-                dc.b $FF
-                dc.b $1A
-                dc.b $D6
-                dc.b $30 ; 0
-                dc.b $39 ; 9
-                dc.b   0
-                dc.b $FF
-                dc.b $18
-                dc.b $A6
-                dc.b $61 ; a
-                dc.b   0
-                dc.b   1
-                dc.b $C4
-                dc.b $E2
-                dc.b $48 ; H
-                dc.b $D1
-                dc.b $79 ; y
-                dc.b   0
-                dc.b $FF
-                dc.b $1B
-                dc.b $26 ; &
-                dc.b $60 ; `
-                dc.b   0
-                dc.b   0
-                dc.b $14
-                dc.b $B3
-                dc.b $FC
-                dc.b   0
-                dc.b $FF
-                dc.b $1E
-                dc.b $AA
-                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
-                dc.b   0
-                dc.b   0
-                dc.b  $A
-                dc.b $13
-                dc.b $FC
-                dc.b   0
-                dc.b  $F
-                dc.b   0
-                dc.b $FF
-                dc.b $1A
-                dc.b $D6
-                dc.b   8
-                dc.b $E9
-                dc.b   0
-                dc.b   4
-                dc.b   0
-                dc.b $68 ; h
-                dc.b $4E ; N
-                dc.b $75 ; u
-                dc.b   8
-                dc.b $29 ; )
-                dc.b   0
-                dc.b   3
-                dc.b   0
-                dc.b $69 ; i
-                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
-                dc.b   0
-                dc.b   0
-                dc.b  $E
-                dc.b $30 ; 0
-                dc.b $29 ; )
-                dc.b   0
-                dc.b $12
-                dc.b $B0
-                dc.b $7C ; |
-                dc.b  $F
-                dc.b $A0
-                dc.b $6A ; j
-                dc.b   0
-                dc.b   0
-                dc.b  $A
-                dc.b $61 ; a
-                dc.b   0
-                dc.b   1
-                dc.b $38 ; 8
-                dc.b $60 ; `
-                dc.b   0
-                dc.b   0
-                dc.b $E4
-                dc.b $33 ; 3
-                dc.b $C0
-                dc.b   0
-                dc.b $FF
-                dc.b $18
-                dc.b $A6
-                dc.b $C0
-                dc.b $FC
-                dc.b $40 ; @
-                dc.b   0
-                dc.b $48 ; H
-                dc.b $40 ; @
-                dc.b $B0
-                dc.b $7C ; |
-                dc.b $27 ; '
-                dc.b $10
-                dc.b $6D ; m
-                dc.b   0
-                dc.b   0
-                dc.b   6
-                dc.b $30 ; 0
-                dc.b $3C ; <
-                dc.b $27 ; '
-                dc.b $10
-                dc.b $33 ; 3
-                dc.b $40 ; @
-                dc.b   0
-                dc.b $12
-                dc.b $20
-                dc.b $3C ; <
-                dc.b   0
-                dc.b   0
-                dc.b $60 ; `
-                dc.b   0
-                dc.b $92
-                dc.b $68 ; h
-                dc.b   0
-                dc.b  $E
-                dc.b $48 ; H
-                dc.b $C1
-                dc.b $E1
-                dc.b $81
-                dc.b $6B ; k
-                dc.b   0
-                dc.b   0
-                dc.b   4
-                dc.b $44 ; D
-                dc.b $80
-                dc.b $D0
-                dc.b $A9
-                dc.b   0
-                dc.b   4
-                dc.b $90
-                dc.b $81
-                dc.b $23 ; #
-                dc.b $40 ; @
-                dc.b   0
-                dc.b   4
-                dc.b $61 ; a
-                dc.b   0
-                dc.b   1
-                dc.b $86
-                dc.b   8
-                dc.b $E9
-                dc.b   0
-                dc.b   4
-                dc.b   0
-                dc.b $68 ; h
-                dc.b   8
-                dc.b $E9
-                dc.b   0
-                dc.b   3
-                dc.b   0
-                dc.b $69 ; i
-                dc.b $30 ; 0
-                dc.b $29 ; )
-                dc.b   0
-                dc.b $34 ; 4
-                dc.b $6A ; j
-                dc.b   0
-                dc.b   0
-                dc.b   4
-                dc.b $44 ; D
-                dc.b $40 ; @
-                dc.b $B0
-                dc.b $7C ; |
-                dc.b   0
-                dc.b   3
-                dc.b $6B ; k
-                dc.b   0
-                dc.b   0
-                dc.b  $C
-                dc.b $4E ; N
-                dc.b $B9
-                dc.b   0
-                dc.b   1
-                dc.b $55 ; U
-                dc.b $38 ; 8
-                dc.b $60 ; `
-                dc.b   0
-                dc.b   0
-                dc.b $1E
-                dc.b  $C
-                dc.b $79 ; y
-                dc.b $1F
-                dc.b $40 ; @
-                dc.b   0
-                dc.b $FF
-                dc.b $18
-                dc.b $A6
-                dc.b $6B ; k
-                dc.b   0
-                dc.b   0
-                dc.b  $C
-                dc.b $33 ; 3
-                dc.b $7C ; |
-                dc.b   0
-                dc.b   9
-                dc.b   0
-                dc.b $54 ; T
-                dc.b $60 ; `
-                dc.b   0
-                dc.b   0
-                dc.b   8
-                dc.b $33 ; 3
-                dc.b $7C ; |
-                dc.b   0
-                dc.b   5
-                dc.b   0
-                dc.b $54 ; T
-                dc.b $13
-                dc.b $7C ; |
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b $6E ; n
-                dc.b $13
-                dc.b $7C ; |
-                dc.b   0
-                dc.b $FF
-                dc.b   0
-                dc.b $6F ; o
-                dc.b $4A ; J
-                dc.b $79 ; y
-                dc.b   0
-                dc.b $FF
-                dc.b $17
-                dc.b $68 ; h
-                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
-                dc.b   0
-                dc.b   0
-                dc.b $3A ; :
-                dc.b $4E ; N
-                dc.b $B9
-                dc.b   0
-                dc.b   1
-                dc.b $42 ; B
-                dc.b $D8
-                dc.b $61 ; a
-                dc.b   0
-                dc.b $D6
-                dc.b $9A
-                dc.b $30 ; 0
-                dc.b $3C ; <
-                dc.b $C0
-                dc.b   0
-                dc.b $61 ; a
-                dc.b   0
-                dc.b   0
-                dc.b $FA
-                dc.b $B3
-                dc.b $FC
-                dc.b   0
-                dc.b $FF
-                dc.b $1E
-                dc.b $AA
-                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
-                dc.b   0
-                dc.b   0
-                dc.b $30 ; 0
-                dc.b $13
-                dc.b $FC
-                dc.b   0
-                dc.b   9
-                dc.b   0
-                dc.b $FF
-                dc.b $1A
-                dc.b $D6
-                dc.b $30 ; 0
-                dc.b $39 ; 9
-                dc.b   0
-                dc.b $FF
-                dc.b $18
-                dc.b $A6
-                dc.b $61 ; a
-                dc.b   0
-                dc.b   0
-                dc.b $BA
-                dc.b $D1
-                dc.b $79 ; y
-                dc.b   0
-                dc.b $FF
-                dc.b $1B
-                dc.b $26 ; &
-                dc.b $60 ; `
-                dc.b   0
-                dc.b   0
-                dc.b $14
-                dc.b $B3
-                dc.b $FC
-                dc.b   0
-                dc.b $FF
-                dc.b $1E
-                dc.b $AA
-                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
-                dc.b   0
-                dc.b   0
-                dc.b  $A
-                dc.b $13
-                dc.b $FC
-                dc.b   0
-                dc.b  $F
-                dc.b   0
-                dc.b $FF
-                dc.b $1A
-                dc.b $D6
-                dc.b $4E ; N
-                dc.b $75 ; u
-                dc.b $61 ; a
-                dc.b   0
-                dc.b $FE
-                dc.b $3C ; <
-                dc.b $13
-                dc.b $FC
-                dc.b   0
-                dc.b  $F
-                dc.b   0
-                dc.b $FF
-                dc.b $1A
-                dc.b $D6
-                dc.b $4E ; N
-                dc.b $75 ; u
-                dc.b $61 ; a
-                dc.b   0
-                dc.b $FE
-                dc.b $2E ; .
-                dc.b $13
-                dc.b $FC
-                dc.b   0
-                dc.b $17
-                dc.b   0
-                dc.b $FF
-                dc.b $1A
-                dc.b $D6
-                dc.b $4E ; N
-                dc.b $75 ; u
-                dc.b   8
-                dc.b $E9
-                dc.b   0
-                dc.b   1
-                dc.b   0
-                dc.b $6B ; k
-                dc.b $4E ; N
-                dc.b $F9
-                dc.b   0
-                dc.b   1
-                dc.b $40 ; @
-                dc.b $EE
+; *************************************************
+; Function sub_140BC (proposed: Race_UpdateActorXFromTrackObject)
+; Sets X/PreviousX from ($E(a0)<<8)+PlayerProgress, subtracting $A000 when
+; StateFlags bit3 is set, otherwise adding $4000.
+; In:  a0 - track object/actor; a1 - actor; Out: X, PreviousX; Clobbers: d0
+; *************************************************
+
+sub_140BC:
+                clr.l d0
+                move.w $E(a0),d0
+                asl.l #$8,d0
+                add.l (Race_ram_PlayerProgress).l,d0
+                btst.b #$3,RaceActor_StateFlags(a1)
+                beq.w .loc_140DE
+                subi.l #$A000,d0
+                bra.w .loc_140E4
+.loc_140DE:
+                addi.l #$4000,d0
+.loc_140E4:
+                move.l d0,RaceActor_X(a1)
+                move.l d0,RaceActor_PreviousX(a1)
+                rts
+; End of function sub_140BC
+
+; *************************************************
+; Function sub_140EE (proposed: Race_ApplyActorCrash)
+; Main crash handler for on-road actors: at Speed < $FA0 it only calls
+; sub_142FE (road-Y clamp); otherwise it updates X from the track object,
+; scales the actor shadow speed, selects a fall SFX from $34/steering, sets
+; AnimState/AnimFrame and applies BikeDamage (player) or ram_FF1AD6=$F (opponent).
+; In:  a1 - actor; a0 - track object/actor; Out: ControlFlags bit4, $6E/$6F, X, damage
+; *************************************************
+
+sub_140EE:
+                cmpi.w #$FA0,RaceActor_Speed(a1)
+                bpl.w .loc_14100
+                bsr.w sub_142FE
+                bra.w .loc_141A6
+.loc_14100:
+                bsr.s sub_140BC
+                bsr.w sub_1438E
+                move.w $34(a1),d0
+                bpl.w .loc_14110
+                neg.w d0
+.loc_14110:
+                cmp.w #$3,d0
+                bmi.w .loc_14122
+                jsr (sub_15538).l
+                bra.w .loc_14144
+.loc_14122:
+                move.w RaceActor_Speed(a1),d0
+                move.w d0,(ram_FF18A6).l
+                cmp.w #$1770,d0
+                bpl.w .loc_1413E
+                jsr (sub_15580).l
+                bra.w .loc_14144
+.loc_1413E:
+                jsr (sub_1555C).l
+.loc_14144:
+                move.b #$0,RaceActor_AnimState(a1)
+                move.b #$FF,RaceActor_AnimFrame(a1)
+                tst.w (ram_FF1768).l
+                bne.w .loc_14194
+                jsr (sub_142D8).l
+                bsr.w Race_SaveActorShadow
+                move.w #$C000,d0
+                bsr.w sub_1436E
+                cmpa.l #$FF1EAA,a1
+                bne.w .loc_141A6
+                move.b #$9,(ram_FF1AD6).l
+                move.w (ram_FF18A6).l,d0
+                bsr.w Race_ScaleImpactDamage
+                lsr.w #$1,d0
+                add.w d0,(Race_ram_BikeDamage).l
+                bra.w .loc_141A6
+.loc_14194:
+                cmpa.l #$FF1EAA,a1
+                bne.w .loc_141A6
+                move.b #$F,(ram_FF1AD6).l
+.loc_141A6:
+                bset.b #$4,RaceActor_ControlFlags(a1)
+                rts
+; End of function sub_140EE
+
+; *************************************************
+; Function sub_141AE (proposed: Race_ApplyActorHighSpeedCrash)
+; High-speed/off-road crash: falls back to sub_142FE when StateFlags bit3 is
+; set or Speed < $FA0; otherwise clamps Speed to $2710, shifts X by $6000
+; relative to the track object, sets ControlFlags bit4/StateFlags bit3,
+; selects FallState $9/$5 and applies the same damage/SFX path as sub_140EE.
+; *************************************************
+
+sub_141AE:
+                btst.b #$3,RaceActor_StateFlags(a1)
+                bne.w .loc_141C4
+                move.w RaceActor_Speed(a1),d0
+                cmp.w #$FA0,d0
+                bpl.w .loc_141CC
+.loc_141C4:
+                bsr.w sub_142FE
+                bra.w .loc_142AE
+.loc_141CC:
+                move.w d0,(ram_FF18A6).l
+                mulu.w #$4000,d0
+                swap d0
+                cmp.w #$2710,d0
+                blt.w .loc_141E4
+                move.w #$2710,d0
+.loc_141E4:
+                move.w d0,RaceActor_Speed(a1)
+                move.l #$6000,d0
+                sub.w $E(a0),d1
+                ext.l d1
+                asl.l #$8,d1
+                bmi.w .loc_141FC
+                neg.l d0
+.loc_141FC:
+                add.l RaceActor_X(a1),d0
+                sub.l d1,d0
+                move.l d0,RaceActor_X(a1)
+                bsr.w sub_1438E
+                bset.b #$4,RaceActor_ControlFlags(a1)
+                bset.b #$3,RaceActor_StateFlags(a1)
+                move.w $34(a1),d0
+                bpl.w .loc_14220
+                neg.w d0
+.loc_14220:
+                cmp.w #$3,d0
+                bmi.w .loc_14232
+                jsr (sub_15538).l
+                bra.w .loc_1424E
+.loc_14232:
+                cmpi.w #$1F40,(ram_FF18A6).l
+                bmi.w .loc_14248
+                move.w #$9,RaceActor_FallState(a1)
+                bra.w .loc_1424E
+.loc_14248:
+                move.w #$5,RaceActor_FallState(a1)
+.loc_1424E:
+                move.b #$0,RaceActor_AnimState(a1)
+                move.b #$FF,RaceActor_AnimFrame(a1)
+                tst.w (ram_FF1768).l
+                bne.w .loc_1429C
+                jsr (sub_142D8).l
+                bsr.w Race_SaveActorShadow
+                move.w #$C000,d0
+                bsr.w sub_1436E
+                cmpa.l #$FF1EAA,a1
+                bne.w .loc_142AE
+                move.b #$9,(ram_FF1AD6).l
+                move.w (ram_FF18A6).l,d0
+                bsr.w Race_ScaleImpactDamage
+                add.w d0,(Race_ram_BikeDamage).l
+                bra.w .loc_142AE
+.loc_1429C:
+                cmpa.l #$FF1EAA,a1
+                bne.w .loc_142AE
+                move.b #$F,(ram_FF1AD6).l
+.loc_142AE:
+                rts
+; End of function sub_141AE
+
+; *************************************************
+; Function sub_142B0 (proposed: Race_ApplyCrash0F)
+; Calls sub_140EE and sets ram_FF1AD6=$F.
+; *************************************************
+
+sub_142B0:
+                bsr.w sub_140EE
+                move.b #$F,(ram_FF1AD6).l
+                rts
+; End of function sub_142B0
+
+; *************************************************
+; Function sub_142BE (proposed: Race_ApplyCrash17)
+; Calls sub_140EE and sets ram_FF1AD6=$17.
+; *************************************************
+
+sub_142BE:
+                bsr.w sub_140EE
+                move.b #$17,(ram_FF1AD6).l
+                rts
+; End of function sub_142BE
+
+; *************************************************
+; Function sub_142CC (proposed: Race_ApplyCrashWithAttackFlag)
+; Sets AttackFlags bit1, then jumps to sub_140EE.
+; *************************************************
+
+sub_142CC:
+                bset.b #$1,RaceActor_AttackFlags(a1)
+                jmp (sub_140EE).l
+; End of function sub_142CC
+
 
 
 
@@ -642,82 +282,38 @@ sub_142D8:
 ; End of function sub_142D8
 
 
-                dc.b $30 ; 0
-                dc.b $39 ; 9
-                dc.b   0
-                dc.b $FF
-                dc.b $1B
-                dc.b $14
-                dc.b   8
-                dc.b $29 ; )
-                dc.b   0
-                dc.b   1
-                dc.b   0
-                dc.b $69 ; i
-                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
-                dc.b   0
-                dc.b   0
-                dc.b  $C
-                dc.b $90
-                dc.b $69 ; i
-                dc.b   0
-                dc.b $4E ; N
-                dc.b $59 ; Y
-                dc.b $40 ; @
-                dc.b $60 ; `
-                dc.b   0
-                dc.b   0
-                dc.b   8
-                dc.b $D0
-                dc.b $69 ; i
-                dc.b   0
-                dc.b $4C ; L
-                dc.b $58 ; X
-                dc.b $40 ; @
-                dc.b $32 ; 2
-                dc.b   0
-                dc.b $92
-                dc.b $69 ; i
-                dc.b   0
-                dc.b $30 ; 0
-                dc.b $D3
-                dc.b $69 ; i
-                dc.b   0
-                dc.b   0
-                dc.b $33 ; 3
-                dc.b $40 ; @
-                dc.b   0
-                dc.b $30 ; 0
-                dc.b $33 ; 3
-                dc.b $40 ; @
-                dc.b   0
-                dc.b $1A
-                dc.b $4A ; J
-                dc.b $A9
-                dc.b   0
-                dc.b $26 ; &
-                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
-                dc.b   0
-                dc.b   0
-                dc.b $12
-                dc.b   4
-                dc.b $A9
-                dc.b   0
-                dc.b   0
-                dc.b $40 ; @
-                dc.b   0
-                dc.b   0
-                dc.b   4
-                dc.b   4
-                dc.b $A9
-                dc.b   0
-                dc.b   0
-                dc.b $40 ; @
-                dc.b   0
-                dc.b   0
-                dc.b $1E
-                dc.b $4E ; N
-                dc.b $75 ; u
+; *************************************************
+; Function sub_142FE (proposed: Race_UpdateActorRoadY)
+; Sets PosY/$1A to ram_FF1B14 adjusted by CollisionExtentUpper/Lower (+/-4),
+; applies the PosY delta to word $0, and when FrameDistance is zero shifts
+; X/PreviousX back by $4000.
+; In:  a1 - actor; Out: PosY/$1A, X/PreviousX, word $0; Clobbers: d0/d1
+; *************************************************
+
+sub_142FE:
+                move.w (ram_FF1B14).l,d0
+                btst.b #$1,RaceActor_StateFlags(a1)
+                bne.w .loc_14318
+                sub.w RaceActor_CollisionExtentLower(a1),d0
+                subq.w #$4,d0
+                bra.w .loc_1431E
+.loc_14318:
+                add.w RaceActor_CollisionExtentUpper(a1),d0
+                addq.w #$4,d0
+.loc_1431E:
+                move.w d0,d1
+                sub.w RaceActor_PosY(a1),d1
+                add.w d1,0.w(a1)
+                move.w d0,RaceActor_PosY(a1)
+                move.w d0,$1A(a1)
+                tst.l RaceActor_FrameDistance(a1)
+                bne.w .loc_14348
+                subi.l #$4000,RaceActor_X(a1)
+                subi.l #$4000,RaceActor_PreviousX(a1)
+.loc_14348:
+                rts
+; End of function sub_142FE
+
 
 
 
@@ -744,38 +340,26 @@ Race_ScaleImpactDamage:
 ; End of function Race_ScaleImpactDamage
 
 
-                dc.b $49 ; I
-                dc.b $F9
-                dc.b   0
-                dc.b   2
-                dc.b $58 ; X
-                dc.b $AE
-                dc.b $14
-                dc.b $29 ; )
-                dc.b   0
-                dc.b $71 ; q
-                dc.b $48 ; H
-                dc.b $82
-                dc.b $E5
-                dc.b $42 ; B
-                dc.b $28 ; (
-                dc.b $74 ; t
-                dc.b $20
-                dc.b   0
-                dc.b $34 ; 4
-                dc.b $2C ; ,
-                dc.b   0
-                dc.b $12
-                dc.b $C4
-                dc.b $C0
-                dc.b $48 ; H
-                dc.b $42 ; B
-                dc.b $39 ; 9
-                dc.b $42 ; B
-                dc.b   0
-                dc.b $12
-                dc.b $4E ; N
-                dc.b $75 ; u
+; *************************************************
+; Function sub_1436E (proposed: Race_ScaleActorShadowSpeed)
+; Multiplies the shadow actor Speed by d0 (unsigned 16.16; d0=$C000 from the
+; crash handlers) and stores the result.
+; In:  a1 - actor; d0 - scale; Out: shadow Speed; Clobbers: d2/a4
+; *************************************************
+
+sub_1436E:
+                lea (Race_ActorShadowTable).l,a4
+                move.b RaceActor_Index(a1),d2
+                ext.w d2
+                asl.w #$2,d2
+                movea.l (a4,d2.w),a4
+                move.w RaceActor_Speed(a4),d2
+                mulu.w d0,d2
+                swap d2
+                move.w d2,RaceActor_Speed(a4)
+                rts
+; End of function sub_1436E
+
 
 
 
@@ -816,136 +400,65 @@ sub_1438E:
 ; End of function sub_1438E
 
 
-                dc.b $61 ; a
-                dc.b $88
-                dc.b $4A ; J
-                dc.b $79 ; y
-                dc.b   0
-                dc.b $FF
-                dc.b $17
-                dc.b $68 ; h
-                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
-                dc.b   0
-                dc.b   0
-                dc.b  $C
-                dc.b $13
-                dc.b $7C ; |
-                dc.b   0
-                dc.b $FF
-                dc.b   0
-                dc.b $6E ; n
-                dc.b $60 ; `
-                dc.b   0
-                dc.b   0
-                dc.b $36 ; 6
-                dc.b  $C
-                dc.b $29 ; )
-                dc.b   0
-                dc.b   3
-                dc.b   0
-                dc.b $6E ; n
-                dc.b $67 ; g
-                dc.b   0
-                dc.b   0
-                dc.b $2C ; ,
-                dc.b $33 ; 3
-                dc.b $7C ; |
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b $54 ; T
-                dc.b $13
-                dc.b $7C ; |
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b $6E ; n
-                dc.b $13
-                dc.b $7C ; |
-                dc.b   0
-                dc.b $FF
-                dc.b   0
-                dc.b $6F ; o
-                dc.b $13
-                dc.b $FC
-                dc.b   0
-                dc.b  $F
-                dc.b   0
-                dc.b $FF
-                dc.b $1A
-                dc.b $D6
-                dc.b $4A ; J
-                dc.b $69 ; i
-                dc.b   0
-                dc.b $12
-                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
-                dc.b   0
-                dc.b   0
-                dc.b $10
-                dc.b $61 ; a
-                dc.b   0
-                dc.b $FC
-                dc.b $74 ; t
-                dc.b $60 ; `
-                dc.b   0
-                dc.b   0
-                dc.b   8
-                dc.b   8
-                dc.b $A9
-                dc.b   0
-                dc.b   4
-                dc.b   0
-                dc.b $68 ; h
-                dc.b $4E ; N
-                dc.b $75 ; u
-                dc.b  $C
-                dc.b $29 ; )
-                dc.b   0
-                dc.b   3
-                dc.b   0
-                dc.b $6E ; n
-                dc.b $6A ; j
-                dc.b   0
-                dc.b   0
-                dc.b  $E
-                dc.b   8
-                dc.b $E9
-                dc.b   0
-                dc.b   5
-                dc.b   0
-                dc.b $68 ; h
-                dc.b $13
-                dc.b $7C ; |
-                dc.b   0
-                dc.b $78 ; x
-                dc.b   0
-                dc.b $78 ; x
-                dc.b $4E ; N
-                dc.b $75 ; u
-                dc.b  $C
-                dc.b $29 ; )
-                dc.b   0
-                dc.b   3
-                dc.b   0
-                dc.b $6E ; n
-                dc.b $6A ; j
-                dc.b   0
-                dc.b   0
-                dc.b  $E
-                dc.b   8
-                dc.b $E9
-                dc.b   0
-                dc.b   5
-                dc.b   0
-                dc.b $68 ; h
-                dc.b $13
-                dc.b $7C ; |
-                dc.b   0
-                dc.b $1E
-                dc.b   0
-                dc.b $78 ; x
-                dc.b $4E ; N
-                dc.b $75 ; u
+; *************************************************
+; Function sub_14404 (proposed: Race_HandleActorCollisionImpact)
+; Calls sub_1438E. When ram_FF1768 is clear, clears AnimFrame. Otherwise, unless
+; AnimState is 3, resets FallState/AnimState/AnimFrame, sets ram_FF1AD6=$F and,
+; when Speed is zero, calls sub_140BC. Clears ControlFlags bit4 on the other path.
+; In:  a1 - actor; Out: as above; Clobbers: d0
+; *************************************************
+
+sub_14404:
+                bsr.s sub_1438E
+                tst.w (ram_FF1768).l
+                bne.w .loc_1441A
+                move.b #$FF,RaceActor_AnimState(a1)
+                bra.w .loc_1444E
+.loc_1441A:
+                cmpi.b #$3,RaceActor_AnimState(a1)
+                beq.w .loc_1444E
+                move.w #$0,RaceActor_FallState(a1)
+                move.b #$0,RaceActor_AnimState(a1)
+                move.b #$FF,RaceActor_AnimFrame(a1)
+                move.b #$F,(ram_FF1AD6).l
+                tst.w RaceActor_Speed(a1)
+                bne.w .loc_14454
+                bsr.w sub_140BC
+                bra.w .loc_14454
+.loc_1444E:
+                bclr.b #$4,RaceActor_ControlFlags(a1)
+.loc_14454:
+                rts
+; End of function sub_14404
+
+; *************************************************
+; Function sub_14456 (proposed: Race_SetActorFallShort)
+; If AnimState < 3, sets ControlFlags bit5 and AnimTimer=$78.
+; *************************************************
+
+sub_14456:
+                cmpi.b #$3,RaceActor_AnimState(a1)
+                bpl.w .loc_1446C
+                bset.b #$5,RaceActor_ControlFlags(a1)
+                move.b #$78,STRUCT_OFFSET_78(a1)
+.loc_1446C:
+                rts
+; End of function sub_14456
+
+; *************************************************
+; Function sub_1446E (proposed: Race_SetActorFallLong)
+; If AnimState < 3, sets ControlFlags bit5 and AnimTimer=$1E.
+; *************************************************
+
+sub_1446E:
+                cmpi.b #$3,RaceActor_AnimState(a1)
+                bpl.w .loc_14484
+                bset.b #$5,RaceActor_ControlFlags(a1)
+                move.b #$1E,STRUCT_OFFSET_78(a1)
+.loc_14484:
+                rts
+; End of function sub_1446E
+
 
 
 
@@ -1185,359 +698,62 @@ Race_ApplyImpactSpeedLoss:
 ; End of function Race_ApplyImpactSpeedLoss
 
 
-unk_1471A:      dc.b $E6
-                dc.b $46 ; F
-                dc.b $AB
-                dc.b $6D ; m
-                dc.b $B3
-                dc.b $1A
-                dc.b $66 ; f
-                dc.b $58 ; X
-                dc.b $E6
-                dc.b $46 ; F
-                dc.b $AB
-                dc.b $6D ; m
-                dc.b $B3
-                dc.b $1A
-                dc.b $66 ; f
-                dc.b $58 ; X
-                dc.b $E6
-                dc.b $46 ; F
-                dc.b $AB
-                dc.b $6D ; m
-                dc.b $B3
-                dc.b $1A
-                dc.b $66 ; f
-                dc.b $58 ; X
-                dc.b $E6
-                dc.b $46 ; F
-                dc.b $AB
-                dc.b $6D ; m
-                dc.b $99
-                dc.b $84
-                dc.b $4C ; L
-                dc.b $C2
-                dc.b $E6
-                dc.b $46 ; F
-                dc.b $AB
-                dc.b $6D ; m
-                dc.b $B3
-                dc.b $1A
-                dc.b $66 ; f
-                dc.b $58 ; X
+; 5 tracks x 4 words, loaded by Race_LoadTrackParams into
+; Race_ram_TrackParam0..3. Track 3 has different Param2/3 values.
+unk_1471A:
+                dc.w    $E646, $AB6D, $B31A, $6658 ; track 0: TrackParam0..3
+                dc.w    $E646, $AB6D, $B31A, $6658 ; track 1: TrackParam0..3
+                dc.w    $E646, $AB6D, $B31A, $6658 ; track 2: TrackParam0..3
+                dc.w    $E646, $AB6D, $9984, $4CC2 ; track 3: TrackParam0..3
+                dc.w    $E646, $AB6D, $B31A, $6658 ; track 4: TrackParam0..3
+
 word_14742:     dc.w $4CC2
-unk_14744:      dc.b   0
-                dc.b   1
-                dc.b $40 ; @
-                dc.b $EE
-                dc.b   0
-                dc.b   1
-                dc.b $44 ; D
-                dc.b   4
-                dc.b   0
-                dc.b   1
-                dc.b $41 ; A
-                dc.b $AE
-                dc.b   0
-                dc.b   1
-                dc.b $44 ; D
-                dc.b $56 ; V
-                dc.b   0
-                dc.b   1
-                dc.b $44 ; D
-                dc.b $6E ; n
-                dc.b   0
-                dc.b   1
-                dc.b $42 ; B
-                dc.b $CC
-                dc.b   0
-                dc.b   1
-                dc.b $42 ; B
-                dc.b $B0
-                dc.b   0
-                dc.b   1
-                dc.b $42 ; B
-                dc.b $BE
-Race_TrackObjectTypeTable:      dc.b   0
-                dc.b   0
-                dc.b   1
-                dc.b   0
-                dc.b   0
-                dc.b   3
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   1
-                dc.b   1
-                dc.b   0
-                dc.b   0
-                dc.b   4
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   1
-                dc.b   1
-                dc.b   0
-                dc.b   0
-                dc.b   4
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   1
-                dc.b $80
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   1
-                dc.b   0
-                dc.b   1
-                dc.b   2
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   1
-                dc.b   0
-                dc.b   1
-                dc.b   2
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   1
-                dc.b $80
-                dc.b   0
-                dc.b   2
-                dc.b   0
-                dc.b   1
-                dc.b   0
-                dc.b   2
-                dc.b   1
-                dc.b $80
-                dc.b   0
-                dc.b   2
-                dc.b   0
-                dc.b   1
-                dc.b   0
-                dc.b   1
-                dc.b   1
-                dc.b   0
-                dc.b   0
-                dc.b   1
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   1
-                dc.b   2
-                dc.b   0
-                dc.b   0
-                dc.b   1
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   1
-                dc.b   1
-                dc.b $80
-                dc.b   0
-                dc.b   7
-                dc.b   0
-                dc.b   1
-                dc.b   0
-                dc.b   1
-                dc.b   1
-                dc.b $80
-                dc.b   0
-                dc.b   1
-                dc.b   0
-                dc.b   1
-                dc.b   0
-                dc.b   1
-                dc.b   1
-                dc.b $80
-                dc.b   0
-                dc.b   7
-                dc.b   0
-                dc.b   1
-                dc.b   0
-                dc.b   1
-                dc.b   1
-                dc.b $80
-                dc.b   0
-                dc.b   7
-                dc.b   0
-                dc.b   1
-                dc.b   0
-                dc.b   1
-                dc.b   1
-                dc.b $80
-                dc.b   0
-                dc.b   7
-                dc.b   0
-                dc.b   1
-                dc.b   0
-                dc.b   1
-                dc.b   2
-                dc.b   0
-                dc.b   0
-                dc.b   1
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   1
-                dc.b   1
-                dc.b   0
-                dc.b   0
-                dc.b   4
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   1
-                dc.b   1
-                dc.b   0
-                dc.b   0
-                dc.b   1
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   1
-                dc.b   1
-                dc.b   0
-                dc.b   0
-                dc.b   1
-                dc.b   0
-                dc.b   0
-unk_147FC:      dc.b   0
-                dc.b   2
-                dc.b   2
-                dc.b   2
-                dc.b   2
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   2
-                dc.b   2
-                dc.b   2
-                dc.b   2
-                dc.b   2
-                dc.b   2
-                dc.b   2
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   2
-                dc.b   2
-                dc.b   2
-                dc.b   1
-                dc.b   7
-                dc.b   7
-                dc.b   7
-                dc.b   1
-                dc.b   1
-                dc.b   1
-                dc.b   1
-                dc.b   1
-                dc.b   0
-                dc.b   1
-                dc.b   1
-                dc.b   1
-                dc.b   1
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   1
-                dc.b   1
-                dc.b   1
-                dc.b   1
-                dc.b   0
-                dc.b   0
-                dc.b   1
-                dc.b   1
-                dc.b   1
-                dc.b   1
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   2
-                dc.b   2
-                dc.b   2
-                dc.b   2
-                dc.b   2
-                dc.b   2
-                dc.b   2
-                dc.b   2
-                dc.b   2
-                dc.b   2
-                dc.b   2
-                dc.b   2
-                dc.b   2
-                dc.b   2
-                dc.b   0
-                dc.b   2
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   6
-                dc.b   6
-                dc.b   6
-                dc.b   6
-                dc.b   6
-                dc.b   6
-                dc.b   0
+; 8 action handlers indexed by unk_147FC[]; sub_12070 dispatches to them.
+unk_14744:
+                dc.l    sub_140EE
+                dc.l    sub_14404
+                dc.l    sub_141AE
+                dc.l    sub_14456
+                dc.l    sub_1446E
+                dc.l    sub_142CC
+                dc.l    sub_142B0
+                dc.l    sub_142BE
+
+; 19 records x 8 bytes. sub_13D44 indexes by the object type byte ($2)*8 and
+; tests the word at +6; other field roles are not established (U-0014).
+Race_TrackObjectTypeTable:
+                dc.b    0, 0, $01, 0, 0, $03, 0, 0
+                dc.b    0, $01, $01, 0, 0, $04, 0, 0
+                dc.b    0, $01, $01, 0, 0, $04, 0, 0
+                dc.b    0, 0, $01, $80, 0, 0, 0, $01
+                dc.b    0, $01, $02, 0, 0, 0, 0, $01
+                dc.b    0, $01, $02, 0, 0, 0, 0, 0
+                dc.b    0, 0, $01, $80, 0, $02, 0, $01
+                dc.b    0, $02, $01, $80, 0, $02, 0, $01
+                dc.b    0, $01, $01, 0, 0, $01, 0, 0
+                dc.b    0, $01, $02, 0, 0, $01, 0, 0
+                dc.b    0, $01, $01, $80, 0, $07, 0, $01
+                dc.b    0, $01, $01, $80, 0, $01, 0, $01
+                dc.b    0, $01, $01, $80, 0, $07, 0, $01
+                dc.b    0, $01, $01, $80, 0, $07, 0, $01
+                dc.b    0, $01, $01, $80, 0, $07, 0, $01
+                dc.b    0, $01, $02, 0, 0, $01, 0, 0
+                dc.b    0, $01, $01, 0, 0, $04, 0, 0
+                dc.b    0, $01, $01, 0, 0, $01, 0, 0
+                dc.b    0, $01, $01, 0, 0, $01, 0, 0
+
+; 128-byte action-handler index table; each byte indexes unk_14744.
+; sub_12070 clamps the derived value to 0..127 before reading it.
+unk_147FC:
+                dc.b    0, $02, $02, $02, $02, 0, 0, 0, 0, $02, $02, $02, $02, $02, $02, $02
+                dc.b    0, 0, 0, 0, 0, $02, $02, $02, $01, $07, $07, $07, $01, $01, $01, $01
+                dc.b    $01, 0, $01, $01, $01, $01, 0, 0, 0, 0, $01, $01, $01, $01, 0, 0
+                dc.b    $01, $01, $01, $01, 0, 0, 0, 0, $02, $02, $02, $02, $02, $02, $02, $02
+                dc.b    $02, $02, $02, $02, $02, $02, 0, $02, 0, 0, 0, 0, 0, 0, 0, 0
+                dc.b    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+                dc.b    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+                dc.b    0, 0, 0, 0, 0, 0, 0, 0, 0, $06, $06, $06, $06, $06, $06, 0
+
 
 
 
@@ -1997,82 +1213,43 @@ Race_AdjustActorTrackPositions:
 ; End of function Race_AdjustActorTrackPositions
 
 
-                dc.b $30 ; 0
-                dc.b $29 ; )
-                dc.b   0
-                dc.b $12
-                dc.b   8
-                dc.b $29 ; )
-                dc.b   0
-                dc.b   3
-                dc.b   0
-                dc.b $68 ; h
-                dc.b $67 ; g
-                dc.b   0
-                dc.b   0
-                dc.b   4
-                dc.b $44 ; D
-                dc.b $40 ; @
-                dc.b $32 ; 2
-                dc.b $29 ; )
-                dc.b   0
-                dc.b $12
-                dc.b   8
-                dc.b $29 ; )
-                dc.b   0
-                dc.b   3
-                dc.b   0
-                dc.b $68 ; h
-                dc.b $67 ; g
-                dc.b   0
-                dc.b   0
-                dc.b   4
-                dc.b $44 ; D
-                dc.b $41 ; A
-                dc.b $90
-                dc.b $41 ; A
-                dc.b $E0
-                dc.b $40 ; @
-                dc.b $34 ; 4
-                dc.b $39 ; 9
-                dc.b   0
-                dc.b $FF
-                dc.b $30 ; 0
-                dc.b $4A ; J
-                dc.b $67 ; g
-                dc.b   0
-                dc.b   0
-                dc.b $16
-                dc.b $32 ; 2
-                dc.b $29 ; )
-                dc.b   0
-                dc.b $22 ; "
-                dc.b $92
-                dc.b $6A ; j
-                dc.b   0
-                dc.b $22 ; "
-                dc.b $67 ; g
-                dc.b   0
-                dc.b   0
-                dc.b   6
-                dc.b $48 ; H
-                dc.b $C1
-                dc.b $83
-                dc.b $C2
-                dc.b $60 ; `
-                dc.b   0
-                dc.b   0
-                dc.b  $A
-                dc.b $30 ; 0
-                dc.b $3C ; <
-                dc.b   0
-                dc.b   0
-                dc.b $32 ; 2
-                dc.b $3C ; <
-                dc.b   0
-                dc.b   1
-                dc.b $4E ; N
-                dc.b $75 ; u
+; *************************************************
+; Function sub_14DEC (proposed: Race_GetActorFrameDistanceDelta)
+; Returns d0=0 (both signed Speed terms read $12(a1), so their difference is
+; always zero) and d1=(FrameDistance(a1)-FrameDistance(a2))/FrameDelay.
+; In:  a1/a2 - actors; Out: d0=0, d1; Clobbers: d0-d2
+; @UNKNOWN(U-0015): the d0=0 result looks like a bug/vestige; no caller found yet.
+; *************************************************
+
+sub_14DEC:
+                move.w RaceActor_Speed(a1),d0
+                btst.b #$3,RaceActor_ControlFlags(a1)
+                beq.w .loc_14DFC
+                neg.w d0
+.loc_14DFC:
+                move.w RaceActor_Speed(a1),d1
+                btst.b #$3,RaceActor_ControlFlags(a1)
+                beq.w .loc_14E0C
+                neg.w d1
+.loc_14E0C:
+                sub.w d1,d0
+                asr.w #$8,d0
+                move.w (Race_ram_FrameDelay).l,d2
+                beq.w .loc_14E2E
+                move.w STRUCT_OFFSET_22(a1),d1
+                sub.w STRUCT_OFFSET_22(a2),d1
+                beq.w .loc_14E2A
+                ext.l d1
+                divs.w d2,d1
+.loc_14E2A:
+                bra.w .loc_14E36
+.loc_14E2E:
+                move.w #$0,d0
+                move.w #$1,d1
+.loc_14E36:
+                rts
+; End of function sub_14DEC
+
 
 
 
@@ -2592,22 +1769,13 @@ sub_15446:
                 bne.w   .loc_15468
                 bra.w   .loc_1546E
 
-                dc.b $4A ; J
-                dc.b $6A ; j
-                dc.b   0
-                dc.b $12
-                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
-                dc.b   0
-                dc.b   0
-                dc.b $10
-                dc.b $66 ; animation frame byte (IDA mis-named this as a struct offset)
-                dc.b   0
-                dc.b   0
-                dc.b  $C
-                dc.b $10
-                dc.b $3C ; <
-                dc.b   0
-                dc.b   2
+; Dead code inside sub_15446: the preceding bra.w .loc_1546E skips this block
+; and no branch targets $15458 (static). Kept byte-exact.
+                tst.w RaceActor_Speed(a2)
+                bne.w .loc_1546E
+                bne.w .loc_1546E
+                move.b #$2,d0
+
 
 
 .loc_15468:
@@ -2737,178 +1905,75 @@ sub_1555C:
 ; End of function sub_1555C
 
 
-                dc.b $48 ; H
-                dc.b $E7
-                dc.b $80
-                dc.b   8
-                dc.b $4E ; N
-                dc.b $B9
-                dc.b   0
-                dc.b   1
-                dc.b $60 ; `
-                dc.b $34 ; 4
-                dc.b   2
-                dc.b $40 ; @
-                dc.b   0
-                dc.b   7
-                dc.b $49 ; I
-                dc.b $F9
-                dc.b   0
-                dc.b   1
-                dc.b $56 ; V
-                dc.b $1C
-                dc.b $10
-                dc.b $34 ; 4
-                dc.b   0
-                dc.b   0
-                dc.b $48 ; H
-                dc.b $80
-                dc.b $33 ; 3
-                dc.b $40 ; @
-                dc.b   0
-                dc.b $54 ; T
-                dc.b $4C ; L
-                dc.b $DF
-                dc.b $10
-                dc.b   1
-                dc.b $4E ; N
-                dc.b $75 ; u
-unk_155A4:      dc.b   0
-                dc.b   1
-                dc.b $55 ; U
-                dc.b $AC
-                dc.b $FF
-                dc.b $FF
-                dc.b $FF
-                dc.b $FF
-unk_155AC:      dc.b   1
-                dc.b $5E ; ^
-                dc.b   8
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   1
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   2
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   3
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   4
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   5
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   6
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b   7
-                dc.b   0
-                dc.b   0
-                dc.b   0
-                dc.b $FF
-unk_155D0:      dc.b   0
-                dc.b   1
-                dc.b $57 ; W
-                dc.b $60 ; `
-                dc.b   0
-                dc.b   1
-                dc.b $57 ; W
-                dc.b $8C
-                dc.b   0
-                dc.b   1
-                dc.b $57 ; W
-                dc.b $B8
-                dc.b   0
-                dc.b   1
-                dc.b $57 ; W
-                dc.b $E4
-                dc.b   0
-                dc.b   1
-                dc.b $58 ; X
-                dc.b $10
-                dc.b   0
-                dc.b   1
-                dc.b $58 ; X
-                dc.b $3C ; <
-                dc.b   0
-                dc.b   1
-                dc.b $58 ; X
-                dc.b $68 ; h
-                dc.b   0
-                dc.b   1
-                dc.b $58 ; X
-                dc.b $94
-                dc.b   0
-                dc.b   1
-                dc.b $58 ; X
-                dc.b $C0
-                dc.b   0
-                dc.b   1
-                dc.b $58 ; X
-                dc.b $EC
-                dc.b   0
-                dc.b   1
-                dc.b $56 ; V
-                dc.b $2C ; ,
-                dc.b   0
-                dc.b   1
-                dc.b $56 ; V
-                dc.b $58 ; X
-                dc.b   0
-                dc.b   1
-                dc.b $56 ; V
-                dc.b $84
-                dc.b   0
-                dc.b   1
-                dc.b $56 ; V
-                dc.b $B0
-                dc.b   0
-                dc.b   1
-                dc.b $56 ; V
-                dc.b $DC
-                dc.b   0
-                dc.b   1
-                dc.b $57 ; W
-                dc.b   8
-                dc.b   0
-                dc.b   1
-                dc.b $57 ; W
-                dc.b $34 ; 4
-                dc.b   0
-                dc.b   1
-                dc.b $59 ; Y
-                dc.b $18
-unk_15618:      dc.b   6
-                dc.b  $A
-                dc.b  $B
-                dc.b  $C
-                dc.b   7
-                dc.b  $A
-                dc.b   2
-                dc.b   3
-                dc.b  $D
-                dc.b  $B
-                dc.b  $E
-                dc.b   7
-unk_15624:      dc.b   0
-                dc.b   3
-                dc.b  $E
-                dc.b  $F
-                dc.b $10
-                dc.b  $C
-                dc.b   7
-                dc.b   8
+; *************************************************
+; Function sub_15580 (proposed: Race_SetRandomFallState)
+; Picks FallState from the 8-entry unk_1561C table using Rand_NextWord & 7.
+; In:  a1 - actor; Out: FallState; Clobbers: d0/a4
+; *************************************************
+
+sub_15580:
+                movem.l d0/a4,-(sp)
+                jsr (Rand_NextWord).l
+                andi.w #$7,d0
+                lea (unk_1561C).l,a4
+                move.b (a4,d0.w),d0
+                ext.w d0
+                move.w d0,RaceActor_FallState(a1)
+                movem.l (sp)+,d0/a4
+                rts
+; End of function sub_15580
+
+; Pointer list used by sub_15478; the target unk_155AC is loaded into a0 but
+; a0 is not read before the loop (vestigial) [static].
+unk_155A4:
+                dc.l    unk_155AC
+                dc.l    $FFFFFFFF
+
+; sub_154D2 reads a 3-byte header, then 8 records of 4 bytes (stride 4 from
+; +3) plus an $FF sentinel: field +3 is added to d0, +4/+5/+6 go to d3/d5/d6.
+unk_155AC:
+                dc.b    $01, $5E, $08 ; header
+                dc.b    0, 0, 0, 0 ; record 0
+                dc.b    $01, 0, 0, 0 ; record 1
+                dc.b    $02, 0, 0, 0 ; record 2
+                dc.b    $03, 0, 0, 0 ; record 3
+                dc.b    $04, 0, 0, 0 ; record 4
+                dc.b    $05, 0, 0, 0 ; record 5
+                dc.b    $06, 0, 0, 0 ; record 6
+                dc.b    $07, 0, 0, 0 ; record 7
+                dc.b    $FF ; sentinel
+
+; 18 animation-sequence pointers for FallState 0..$11 (clamped in sub_151F0).
+unk_155D0:
+                dc.l    $00015760 ; FallState 0
+                dc.l    $0001578C ; FallState 1
+                dc.l    $000157B8 ; FallState 2
+                dc.l    $000157E4 ; FallState 3
+                dc.l    $00015810 ; FallState 4
+                dc.l    $0001583C ; FallState 5
+                dc.l    $00015868 ; FallState 6
+                dc.l    $00015894 ; FallState 7
+                dc.l    $000158C0 ; FallState 8
+                dc.l    $000158EC ; FallState 9
+                dc.l    $0001562C ; FallState 10
+                dc.l    $00015658 ; FallState 11
+                dc.l    $00015684 ; FallState 12
+                dc.l    $000156B0 ; FallState 13
+                dc.l    $000156DC ; FallState 14
+                dc.l    $00015708 ; FallState 15
+                dc.l    $00015734 ; FallState 16
+                dc.l    $00015918 ; FallState 17
+
+; Random FallState tables: unk_15618 (4 entries), unk_1561C (8), unk_15624 (8).
+unk_15618:
+                dc.b    $06, $0A, $0B, $0C ; sub_15538: rand & 3
+
+unk_1561C:
+                dc.b    $07, $0A, $02, $03, $0D, $0B, $0E, $07 ; sub_15580: rand & 7
+
+unk_15624:
+                dc.b    0, $03, $0E, $0F, $10, $0C, $07, $08 ; sub_1555C: rand & 7
+
                 dc.b   0
                 dc.b   1
                 dc.b $59 ; Y

@@ -240,7 +240,7 @@ doStart:
 
 .anyButtonPressed:
     move.l  #0,(ram_UpdateFunction).l
-    jmp     (loc_7E6A2).l
+    jmp     (TopLevel_Init).l
 
 ; end of function RESET
 

@@ -1,6 +1,3 @@
-sub_13D44 equ $13D44
-
-
 Audio_Update equ $19F62 ; per-frame tick; flush command buffer to Z80 mailbox
 Audio_Init equ $19F66 ; audio init; clear work RAM and load Z80 driver
 Audio_StartMusic equ $19F6A ; start song (d0 = song id 0..11)
@@ -23,9 +20,6 @@ Audio_Resume equ $19FA6 ; resume/continue audio unless $FF01F4==1
 
 ; Actor/opponent tables now defined in race_engine_tables.asm/race_actor_tables.asm/
 ; race_actor_extra_tables.asm; track records in race_track_data.asm (see docs/analysis/race_actors.md)
-
-
-loc_7E6A2 equ $7E6A2
 
 ; Rider intro portrait images (11 unique in the ROM tail).
 

@@ -480,3 +480,44 @@ uses. It exists so later analysis can decide whether a rename is worth doing.
 | `ram_FF1AB2` | RAM | `ram_const.asm:269 ($FF1AB2)` | race_ai: curve speed scale | placeholder | `[static]` | rename-later | `RaceBike_ram_CurveSpeedScale` | high | - |
 | `ram_FF1AB4` | RAM | `ram_const.asm:270 ($FF1AB4)` | race_ai: lean speed scale | placeholder | `[static]` | rename-later | `RaceBike_ram_LeanSpeedScale` | high | - |
 | `$78` (`STRUCT_OFFSET_78`) | field | `ram_const.asm:428 ($78)` | race_ai: bike-curve timer; zeroed at creation, only decremented | placeholder | `[static]` | rename-later | `RaceActor_CurveTimer` | medium | - |
+
+### Race gap pass (R30, `0x1131A`-`0x1562C`)
+
+Names stay `sub_XXXX`/`unk_XXXX`; proposals are not applied.
+
+| Identifier | Kind | Defined | Used in (file: role) | Name quality | Evidence | Rename verdict | Proposed | Confidence | Unknown ID |
+|---|---|---|---|---|---|---|---|---|---|
+| `sub_1131A` | routine | `race_ai.asm:558 ($1131A)` | race_ai: shadow PosY gap -> signed Y velocity; X update | placeholder | `[static]` | rename-later | `Race_UpdateActorShadowFollow` | medium | `U-0012` |
+| `sub_11A5E` | routine | `race_ai.asm:1321 ($11A5E)` | race_ai: X integration over `Track_CurveBuffer` | placeholder | `[static]` | rename-later | `Race_UpdateActorCurvePosition` | medium | `U-0013` |
+| `sub_12B2A` | routine | `race_ai.asm:2777 ($12B2A)` | race_ai: close-attack reach from `unk_12BCC` | placeholder | `[static]` | rename-later | `Race_GetAttackerReachAdjusted` | medium | - |
+| `sub_133F0` | routine | `race_ai.asm:3896 ($133F0)` | race_ai: target-PosY delta -> signed `$46` | placeholder | `[static]` | rename-later | `Race_SetActorCurveDirection` | medium | - |
+| `sub_135E8` | routine | `race_ai.asm:4098 ($135E8)` | race_ai: clears `$68` bit1, sets bit2 | placeholder | `[static]` | rename-later | `Race_SetActorAccelerateFlag` | medium | - |
+| `sub_13704` | routine | `race_ai.asm:4236 ($13704)` | race_ai: `ram_FF1B46` distance ratio | placeholder | `[static]` | rename-later | `Race_UpdateActorDistanceRatio` | medium | - |
+| `sub_13A5C` | routine | `race_ai.asm:4710 ($13A5C)` | race_ai: far respawn reset (`X=PP-$1F8000`) | placeholder | `[static]` | rename-later | `Race_ResetActorFarBehind` | medium | - |
+| `sub_13D44` | routine | `race_ai.asm:4468 ($13D44)` | race_ai/combat: track-object -> `Race_SteerTowardTarget` | placeholder | `[static]` | rename-later | `Race_UpdateTrackObjectSteering` | medium | `U-0014` |
+| `sub_140BC` | routine | `race_anim_audio.asm:76 ($140BC)` | race_anim: X from `($E(a0)<<8)+PP` | placeholder | `[static]` | rename-later | `Race_UpdateActorXFromTrackObject` | medium | - |
+| `sub_140EE` | routine | `race_anim_audio.asm:102 ($140EE)` | race_anim: main on-road crash handler | placeholder | `[static]` | rename-later | `Race_ApplyActorCrash` | medium | - |
+| `sub_141AE` | routine | `race_anim_audio.asm:161 ($141AE)` | race_anim: high-speed/off-road crash | placeholder | `[static]` | rename-later | `Race_ApplyActorHighSpeedCrash` | medium | - |
+| `sub_142B0` | routine | `race_anim_audio.asm:236 ($142B0)` | race_anim: crash wrapper `$F` | placeholder | `[static]` | rename-later | `Race_ApplyCrash0F` | low | - |
+| `sub_142BE` | routine | `race_anim_audio.asm:247 ($142BE)` | race_anim: crash wrapper `$17` | placeholder | `[static]` | rename-later | `Race_ApplyCrash17` | low | - |
+| `sub_142CC` | routine | `race_anim_audio.asm:258 ($142CC)` | race_anim: `$6B` bit1 + crash | placeholder | `[static]` | rename-later | `Race_ApplyCrashWithAttackFlag` | low | - |
+| `sub_142FE` | routine | `race_anim_audio.asm:293 ($142FE)` | race_anim: road-Y clamp | placeholder | `[static]` | rename-later | `Race_UpdateActorRoadY` | medium | - |
+| `sub_1436E` | routine | `race_anim_audio.asm:350 ($1436E)` | race_anim: shadow Speed scale | placeholder | `[static]` | rename-later | `Race_ScaleActorShadowSpeed` | medium | - |
+| `sub_14404` | routine | `race_anim_audio.asm:411 ($14404)` | race_anim: collision impact/fall fallback | placeholder | `[static]` | rename-later | `Race_HandleActorCollisionImpact` | medium | - |
+| `sub_14456` | routine | `race_anim_audio.asm:439 ($14456)` | race_anim: `$68` bit5 + `$78` timer | placeholder | `[static]` | rename-later | `Race_SetActorFallShort` | low | - |
+| `sub_1446E` | routine | `race_anim_audio.asm:453 ($1446E)` | race_anim: `$68` bit5 + `$1E` timer | placeholder | `[static]` | rename-later | `Race_SetActorFallLong` | low | - |
+| `sub_14DEC` | routine | `race_anim_audio.asm:1224 ($14DEC)` | race_anim: frame-distance delta; `d0` always 0 | placeholder | `[static]` | blocked-unknown | `Race_GetActorFrameDistanceDelta` | low | `U-0015` |
+| `sub_15580` | routine | `race_anim_audio.asm:1914 ($15580)` | race_anim: random FallState (`unk_1561C`) | placeholder | `[static]` | rename-later | `Race_SetRandomFallState` | medium | - |
+| `unk_12168` | data | `race_ai.asm:1887 ($12168)` | race_ai: 9 actor handler pointers; no static reader | placeholder | `[static]` | blocked-unknown | `Race_ActorImpactHandlerTable` | low | `U-0016` |
+| `unk_12B7C` | data | `race_ai.asm:2812 ($12B7C)` | race_ai: 80 extent bytes | placeholder | `[static]` | rename-later | `Race_CollisionExtentTable` | medium | - |
+| `unk_12BCC` | data | `race_ai.asm:2824 ($12BCC)` | race_ai: 6 close-attack reaches | placeholder | `[static]` | rename-later | `Race_CloseAttackReachTable` | medium | - |
+| `unk_13A1A` | data | `race_ai.asm:4158 ($13A1A)` | race_ai: 6 per-level respawn words | placeholder | `[static]` | rename-later | `Race_LevelRespawnScale` | medium | - |
+| `unk_14744` | data | `race_anim_audio.asm:712 ($14744)` | race_anim/ai: 8 action handlers | placeholder | `[static]` | rename-later | `Race_ActionHandlerTable` | high | - |
+| `Race_TrackObjectTypeTable` | data | `race_anim_audio.asm:724 ($14764)` | race_ai/road: 19 x 8-byte track-object records | narrow | `[static]` | rename-later | `Race_TrackObjectRecordTable` | medium | `U-0014` |
+| `unk_147FC` | data | `race_anim_audio.asm:747 ($147FC)` | race_ai: 128 handler-index bytes | placeholder | `[static]` | rename-later | `Race_ActionHandlerIndexTable` | high | - |
+| `unk_155A4` | data | `race_anim_audio.asm:1928 ($155A4)` | race_anim: 1 pointer + `$FFFFFFFF`; unread | placeholder | `[static]` | rename-later | `Race_UnusedAnimationPtrList` | low | - |
+| `unk_155AC` | data | `race_anim_audio.asm:1934 ($155AC)` | race_anim: sequencer header + 8 records | placeholder | `[static]` | rename-later | `Race_AnimationSequenceTable` | medium | - |
+| `unk_155D0` | data | `race_anim_audio.asm:1947 ($155D0)` | race_anim: 18 FallState sequence pointers | placeholder | `[static]` | rename-later | `Race_FallSequenceTable` | high | - |
+| `unk_15618` | data | `race_anim_audio.asm:1968 ($15618)` | race_anim: random FallState (4) | placeholder | `[static]` | rename-later | `Race_FallStateRand4` | medium | - |
+| `unk_1561C` | data | `race_anim_audio.asm:1971 ($1561C)` | race_anim: random FallState (8) | placeholder | `[static]` | rename-later | `Race_FallStateRand8A` | medium | - |
+| `unk_15624` | data | `race_anim_audio.asm:1974 ($15624)` | race_anim: random FallState (8) | placeholder | `[static]` | rename-later | `Race_FallStateRand8B` | medium | - |
