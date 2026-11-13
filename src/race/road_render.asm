@@ -1,7 +1,8 @@
 ; *************************************************
 ; road_render.asm - race road/object renderer
 ; ROM range: $8FB4-$98C1
-; Status:    partially analyzed (object list/records confirmed; shape math TODO)
+; Status:    analyzed (object list/records, shape header/control/interpolator/tile
+;            writer pixel map and Data4 flags; L6c/E8 confirmed)
 ; API:       Road_DrawObjects (called from race.asm), Road_DrawObject, Road_DrawStrip, helpers
 ; *************************************************
 

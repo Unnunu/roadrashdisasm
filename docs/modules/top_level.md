@@ -11,69 +11,21 @@ The source is generated from `baserom.md`:
 python3 tools/disasm.py 0x7E6A2 0x7EA66 --mode project --symbolize-immediates --entry-name TopLevel_Init
 ```
 
-The not-yet-disassembled gap `0x016E70`–`0x07E6A1` is bridged with raw ROM bytes in
-`src/main.asm`; shrink that bridge as the gap is disassembled.
+The region `0x016E70`–`0x07E6A1` is split into source/data modules (rider-intro quotes,
+race/actor/track tables, road shapes, race misc data). The 68k audio block
+`0x019F62`–`0x0257CF` is still a raw `binclude` bridge in `src/main.asm`.
 
 ## Role / purpose
-
 Top-level screen flow: boot/intro, menu, character select, high score, race, and the
 results/shop/end-level dispatcher. It runs the per-frame update function through
 `ram_UpdateFunction` (`$FF1A62`) and uses the `src/core/fade.asm` helpers for transitions.
 
 ## Entry points & API
-
 | Symbol | Address | Called by | Description |
 |--------|---------|-----------|-------------|
 | `TopLevel_Init` | `0x07E6A2` | `src/main.asm` (`jmp (loc_7E6A2).l` after `doStart`) | Entry of the screen-flow state machine. |
 
-## Control flow / state machine
-
-`[static]`:
-
-- **Intro (`$7E6A2`).** Clears `ram_FF1B3E`, sets `sr=$2500`, writes VDP `$8174`.
-  Waits for `ram_UpdateFunction==0`, runs `Fade_InitFadeOut`, copies the target
-  palette to the current palette, installs `Fade_GameTick`, waits.
-  Calls `Race_InitPhysicsConstants`, `Audio_Init`, `Intro_Init`, `Fade_InitFadeIn`; installs
-  `Fade_GameTick`, waits; installs `Intro_GameTick`, waits; `Fade_InitFadeOut`,
-  installs `Fade_GameTick`, waits.
-  `Intro_ram_TextTimer >= 0` -> menu; otherwise `MainMenu_ram_DemoMode = -1` and the
-  demo high-score path.
-- **Menu (`$7E74C`).** `Menu_Init`, `a0 = MainMenu_GameTick`, `Fade_InitFadeIn`,
-  install `FadeWithFunction_GameTick`, wait; fade out with `Fade_GameTick`, wait.
-  Demo mode -> high score; otherwise `RiderIntro_Init`, `a0 = RiderIntro_GameTick`, same
-  fade pair; demo off -> race.
-- **High score (`$7E7CC`).** `HighScore_Init`, `a0 = HighScore_GameTick_Demo`, same
-  fade pair; demo off -> menu, otherwise race.
-- **Race (`$7E80C`).** `Race_Init`, `Fade_InitFadeIn`, `sr=$2300`, install
-  `Fade_GameTickWithInit`, wait; install `Race_GameTick` (`$BA76`). The frame loop
-  (`$7E836`) optionally resets demo state, calls `Race_Update`, tracks
-  `Race_ram_PlayerProgress`/`Race_ram_BestProgress`, and on `Race_ram_GameEnded` returns to the menu (demo) or
-  enters the results dispatcher.
-- **Results dispatcher (`$7E924`).** Uses `RaceResults_ram_NextFunction` to select the next screen:
-  `RaceResults_Init` -> `RaceResults_GameTick`, `HighScore_Init` ->
-  `HighScore_GameTick`, `Shop_Init` -> `Shop_GameTick`, and (when `RaceResults_ram_Outcome == 4`)
-  `EndLevel_Init` -> `EndLevel_GameTick`. Each runs the fade-in/out pair and loops
-  back.
-- After the dispatcher, `Menu_ram_PlayerMode == 3` toggles `Menu_ram_Player` with
-  `eori.w #3`, then jumps back to the menu.
-- Final stub (`$7EA5C`): `movea.l (vectorTable).w,sp`,
-  `movea.l ($0004).w,a0`, `jmp (a0)` — reloads the initial stack pointer and jumps
-  through the RESET vector.
-
-## RAM / ROM & structures
-
-- `ram_UpdateFunction` `$FF1A62` — per-frame update pointer (called by
-  `VerticalInterrupt` at `$1164`).
-- `MainMenu_ram_DemoMode` — demo/attract mode flag (also `Menu_ram_PlayerMode`,
-  `Menu_ram_Player`).
-- `Race_ram_State`, `Race_ram_GameEnded`, `Race_ram_DemoGameEnded`.
-- `RaceResults_ram_NextFunction` — results/shop/end-level next-screen selector.
-- `RaceResults_ram_Outcome` — compared with `4` to select the end-level screen.
-- `Race_ram_PlayerProgress`, `Race_ram_BestProgress`, `Race_ram_ProgressSnapshotA`, `Race_ram_ProgressSnapshotB`, `Race_ram_ProgressSnapshotC` — race progress
-  / timer values.
-
 ## External calls / dependencies
-
 - Fades: `Fade_InitFadeOut`, `Fade_InitFadeIn`, `Fade_GameTick`,
   `Fade_GameTickWithInit`, `FadeWithFunction_GameTick` (see `fade.md`).
 - Screens: `Intro_*`, `Menu_Init`/`MainMenu_GameTick`, `Character_*`, `HighScore_*`,
@@ -82,42 +34,8 @@ results/shop/end-level dispatcher. It runs the per-frame update function through
 - Helpers: `Race_InitPhysicsConstants`, `TrackData_DecodeNextChunk`, `Race_ComputeStandings`, `Race_ComputeResults`.
 
 ## Hacks / bugs / quirks
-
-- The gap from `$016E70` to `$07E6A1` is currently a raw ROM bridge in `src/main.asm`; it
-  is not part of the disassembly yet.
+- Only the 68k audio block (`$019F62`–`$0257CF`) remains a raw ROM bridge; the rest of
+  the former gap is real source/data (see `src/main.asm` includes).
 - The source is generated; keep it in sync with `baserom.md` and the tool.
 - `move.w #$2500,sr` / `move.w #$2300,sr` are privileged; `src/main.asm` has
   `supmode on`.
-
-## Verified facts
-
-- `[static]` The flow structure above (addresses and calls) comes from the
-  disassembly of `baserom.md` and is reproduced byte-for-byte by `./build.sh`.
-- `[confirmed]` The fade timer and `ram_UpdateFunction` behavior were verified in
-  BlastEm (see `fade.md`): `Fade_GameTick` steps the palette every 4th frame and
-  `VerticalInterrupt` (`$1164`) calls `$FF1A62` each frame.
-- `[dynamic]` The boot/attract `Fade_InitFadeOut` call was observed from `$7E6BC`
-  (return address `$0007E6C0`).
-
-## Hypotheses
-
-- `[hypothesis]` `MainMenu_ram_DemoMode` selects the attract/demo path (menu ->
-  high score -> race) rather than the interactive path. Test: watch it at the
-  `$7E74C`/`$7E7CC` branches.
-- `[hypothesis]` `RaceResults_ram_Outcome == 4` selects the end-level screen; the value is a screen
-  id, not a structure offset. Test: break at `$7E9FA` and record `RaceResults_ram_Outcome` for each
-  post-race screen.
-
-## Experiments performed
-
-| Goal | Setup / breakpoint | Observed | Conclusion |
-|------|--------------------|----------|------------|
-| Validate the generated flow | `tools/roundtrip.py 0x7E6A2 0x7EA66` | `Round-trip OK: 964 bytes` | `[confirmed]` bytes match. |
-| Confirm fade dispatcher | GDB remote: `break *0x1242`, timer/update checks | timer 3,2,1,0; `$FF1A62=$1242` | `[confirmed]` (see `fade.md`). |
-
-## Open questions
-
-- [ ] Meaning of `RaceResults_ram_Outcome`, `$FF3692`, `$FF3696`, `$FF369A`.
-- [ ] What `Race_InitPhysicsConstants`, `TrackData_DecodeNextChunk`, `Race_ComputeStandings`, `Race_ComputeResults` do.
-- [ ] What `Audio_Init` (`$19F66`) starts.
-- [ ] Shrink the raw gap bridge as the region below `$7E6A2` is disassembled.

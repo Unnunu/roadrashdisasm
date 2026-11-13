@@ -8,19 +8,17 @@
   `docs/ram-map.md`
 
 ## Role / purpose
-
 `Road_ShapeTable` maps an object shape index (`+8`/`+$12`) to a shape-data pointer.
 `Road_ScaleShape`/`Road_ProjectShape` in `src/race/road_render.asm` and the race AI read the
 shape bytes to project the object edge; `Road_DrawStrip`/`Road_WriteTileColumns` turn
 the per-row bitplane stream into column-major 4bpp sprite tiles. The bytes are included
 from `baserom.md`.
 
-## Coverage matrix
-
+## API
 | Data | Address | Contract | Algorithm | Data | Hardware | Why | Dynamic | Status |
 |------|---------|----------|-----------|------|----------|-----|---------|--------|
-| `Road_ShapeTable` | `0x3BF1A` | [x] | - | [x] | - | [x] | [ ] | analyzed |
-| `word_3C7EA` (count) | `0x3C7EA` | [x] | - | [x] | - | [x] | [ ] | analyzed |
-| `Road_ShapeData` | `0x3C7EC` | [x] | [x] | [x] | - | [x] | [x] | analyzed |
+| `Road_ShapeTable` | ``0x3BF1A`` |
+| `word_3C7EA` (count) | ``0x3C7EA`` |
+| `Road_ShapeData` | ``0x3C7EC`` |
 
-Detailed analysis: `docs/analysis/road_shapes.md`.
+Full list: the related analysis page.

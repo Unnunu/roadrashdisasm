@@ -7,13 +7,11 @@
   `docs/analysis/race_spawn.md`, `docs/ram-map.md`, `docs/modules/race.md`
 
 ## Role / purpose
-
 Race top-level and setup: `Race_Init`, asset loaders, track/bike/actor initialization,
 `Race_GameTick`, `Race_Update`, buffer rotation, input, race outcome helpers and the
 actor definition tables. This is the code executed around the `race_hud` module.
 
 ## Entry points & API
-
 | Symbol | Address | Called by | Description |
 |--------|---------|-----------|-------------|
 | `Race_Init` | `0xA4E2` | `src/core/top_level.asm` | Full level setup + warm-up frames. |
@@ -22,20 +20,3 @@ actor definition tables. This is the code executed around the `race_hud` module.
 | `Race_GetInput`/`Demo` | `0xBE56`/`0xBE2C` | `Race_GameTick` | Steering/buttons/pause. |
 | `Race_ComputeResults` | `0xC3F8` | race end | Outcome/places/password/money. |
 | `Race_CreateActors` | `0xCAD0` | `Race_Init` | Actor structs from definitions. |
-
-## Coverage matrix
-
-| Function | Address | Contract | Algorithm | Data | Hardware | Why | Dynamic | Status |
-|----------|---------|----------|-----------|------|----------|-----|---------|--------|
-| `Race_Init`/loaders | `0xA4E2`+ | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
-| `Race_GameTick`/`Update` | `0xBA76`/`0xC00C` | [x] | [~] | [x] | [x] | [x] | [ ] | partial |
-| `Race_CreateActors` | `0xCAD0` | [x] | [x] | [x] | [x] | [x] | [~] | analyzed; init dump `0xB72A` |
-| `Race_ComputeResults` | `0xC3F8` | [x] | [~] | [x] | - | [x] | [ ] | partial |
-| actor definitions | `0xCCDA` | [x] | [x] | [x] | - | [x] | - | parsed |
-
-Detailed flow/structures: `docs/analysis/race.md`; actors: `docs/analysis/race_actors.md`.
-`unk_D19A` holds Natasha's actor index per level; `Race_ComputeResults` latches and
-decays the persisted Natasha encounter counter (`U-0004`).
-
-Dynamic actor init was captured before/after `Race_InitActorPositions` (`0xB72A`,
-`0xA544`); see `docs/analysis/race_actors.md` for the field matrix and dump names.

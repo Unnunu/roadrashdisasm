@@ -5,6 +5,7 @@
 - **Source of truth:** module cards, `docs/analysis/`, `docs/callgraph.md`,
   `tools/field_usage.py`.
 - **Rule:** do not re-read documented code; close one unknown per durable artifact.
+- **Single dashboard:** this page; module cards and analysis pages carry durable facts only.
 
 ## Understanding levels
 

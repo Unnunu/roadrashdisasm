@@ -263,7 +263,7 @@ Notes:
 | `unk_13A1A` | `Race_LevelRespawnScale` | per-level static respawn scale | medium |
 | `ram_FF1B32`/`ram_FF1B34`/`ram_FF1B36`/`ram_FF1B3A` | `Race_ReservedSpawnTimer`/`Race_ReservedSpawnOffset`/`Race_ReservedSpawned`/`Race_ReservedLastDistance` | `sub_13BF4` | medium |
 
-## L1 actor-core static pass (2026-11-12)
+## L1 actor-core static contract
 
 - **Init split:** `Race_InitActorLists` builds `ram_FF1A08` = PlayerA +
   `Race_ActorStruct_9..15` (8 entries) and `Race_ram_OpponentFreeList` =

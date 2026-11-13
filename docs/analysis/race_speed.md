@@ -1,5 +1,8 @@
 # Race speed, gear and curve limits (L2 control contract)
 
+> Status note: this page is the durable speed/gear/curve reference. It folds into
+> `race_ai.md` after the line-by-line AI pass; until then it stays separate.
+
 Scope: `Race_GetInput`, `Race_GetInputDemo`, `Race_UpdateActorAI` pre-step,
 `Race_UpdateActorSpeedGear`, `Race_UpdateActorSpeedState`,
 `Race_UpdateActorSpeedCurve`, `Race_UpdateActorRoadSteering`,

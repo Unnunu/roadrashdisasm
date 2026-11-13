@@ -6,28 +6,20 @@
   `docs/analysis/animation.md`, `docs/ram-map.md`, `docs/modules/race.md`
 
 ## Role / purpose
-
 Draws the race HUD: time, place, stamina, bike HP, player name/place, opponent name,
 speed/RPM needles and odometer. Called from `Race_Update` via `RaceHud_Draw`; writes
 `Race_ram_CurrentHudBuffer` and, for the needles, the SAT/tile arrays via
 `UpdateAnimation`.
 
-## Coverage matrix
-
+## API
 | Function | Address | Contract | Algorithm | Data | Hardware | Why | Dynamic | Status |
 |----------|---------|----------|-----------|------|----------|-----|---------|--------|
-| `RaceHud_Draw` | `0xD278` | [x] | [x] | [x] | [x] | [x] | [x] | analyzed |
-| `RaceHud_DrawSpeedArrow` | `0xD29E` | [x] | [x] | [x] | [x] | [x] | [x] | analyzed |
-| `RaceHud_DrawRPMArrow` | `0xD2DC` | [x] | [x] | [x] | [x] | [x] | [x] | analyzed |
-| `RaceHud_DrawOdometer` | `0xD334` | [x] | [x] | [x] | [x] | [x] | [x] | analyzed |
-| `RaceHud_DrawPlace` | `0xD3F6` | [x] | [x] | [x] | [x] | [x] | [x] | analyzed |
-| `RaceHud_DrawTime` | `0xD410` | [x] | [x] | [x] | [x] | [x] | [x] | analyzed |
-| `RaceHud_DrawStamina` | `0xD458` | [x] | [x] | [x] | [x] | [x] | [x] | analyzed |
-| `Race_DrawBikeHPBar` | `0xD534` | [x] | [x] | [x] | [x] | [x] | [x] | analyzed |
-| `Race_DrawPlayerNameOrPlace` | `0xD5CE` | [x] | [x] | [x] | [x] | [x] | [x] | analyzed |
-| `Race_DrawOpponentName` | `0xD73A` | [x] | [x] | [x] | [x] | [x] | [x] | analyzed |
-| `RaceHud_DrawSymbol` | `0xD830` | [x] | [x] | [x] | [x] | [x] | [x] | analyzed |
-| `RaceHud_DrawNumber2Digits` | `0xD850` | [x] | [x] | [x] | [x] | [x] | [x] | analyzed |
-| `RaceHud_DrawNumber4Digits` | `0xD890` | [x] | [x] | [x] | [x] | [x] | [x] | analyzed |
+| `RaceHud_Draw` | ``0xD278`` |
+| `RaceHud_DrawSpeedArrow` | ``0xD29E`` |
+| `RaceHud_DrawRPMArrow` | ``0xD2DC`` |
+| `RaceHud_DrawOdometer` | ``0xD334`` |
+| `RaceHud_DrawPlace` | ``0xD3F6`` |
+| `RaceHud_DrawTime` | ``0xD410`` |
+| `RaceHud_DrawStamina` | ``0xD458`` |
 
-Detailed analysis: `docs/analysis/race_hud.md`.
+Full list: the related analysis page.

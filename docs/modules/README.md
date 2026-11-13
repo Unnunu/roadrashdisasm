@@ -3,8 +3,10 @@
 One card per source module, based on [`_template.md`](_template.md).
 See [`../architecture.md`](../architecture.md) for the ROM map and include order.
 
-To add a card: copy `_template.md` to `<file>.md`, fill in what is verified, and add a
-row to the table below.
+To add a card: copy `_template.md` to `<file>.md`, keep it a thin router, and add a
+row to the table below. Cards hold ROM range, status, role, API, dependencies and
+quirks only. Coverage/status lives in `docs/analysis/coverage.md`; durable contracts
+live in the analysis page; session history lives in the task file.
 
 | File | Address | Role (tentative) | Card |
 |------|---------|------------------|------|

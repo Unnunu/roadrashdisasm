@@ -7,18 +7,16 @@
   `docs/modules/race.md`
 
 ## Role / purpose
-
 Sprite animation renderer: `UpdateAnimation`/`UpdateAnimation2` consume animation
 scripts (`{tilemap, frame_count, frame_ptrs[]}`), write SAT entries, optionally copy
 the needed tiles, and advance the animation tile/sprite indices. Used by race/actor
 rendering, the HUD needles and the rider sprite chain.
 
-## Coverage matrix
-
+## API
 | Function | Address | Contract | Algorithm | Data | Hardware | Why | Dynamic | Status |
 |----------|---------|----------|-----------|------|----------|-----|---------|--------|
-| `UpdateAnimation` | `0x16860` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
-| `UpdateAnimation2` | `0x16926` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
-| `Animation_dTileCountMinus1` | `0x169A0` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
+| `UpdateAnimation` | ``0x16860`` |
+| `UpdateAnimation2` | ``0x16926`` |
+| `Animation_dTileCountMinus1` | ``0x169A0`` |
 
-Detailed analysis: `docs/analysis/animation.md`.
+Full list: the related analysis page.

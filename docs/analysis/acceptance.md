@@ -44,7 +44,7 @@ Each program criterion is restated as a checklist row.
 | A2 | Every race function has an L0-L2 contract; L3 detail for the semantic hubs. | `docs/callgraph.md` race range (275 entries) cross-checked against `docs/analysis/race_*.md`, `road_*.md` and the module cards: 0 missing; L3 addendum and L3/E3 in `race_ai.md`/`race_map.md` | pass |
 | A3 | Every action handler has a confirmed behavior family and a `$74` profile mapping. | `race_ai.md` profile pages/families; `Race_ActorProfileTable`, `Race_ActorActionTable`, `Race_StaticActionTable`; E3 in `race_map.md` | pass |
 | A4 | Impact/damage, fall/knockdown, spawn/recycle and results/standings formulas are documented and dynamically corroborated where possible. | `race_impact.md`, `race_spawn.md`, `race_results.md`; E4/E5/E7; R30 crash timing waived (R-06) | pass (with R-06) |
-| A5 | L6 has a documented row/tile/shape map; L7 has results and animation data. | `road_render.md`, `road_shapes.md`, `shape_writer_verify.md`, `race_track_data.md`; `race_hud.md`, `race_results.md`, `animation.md`; matrix v9/v12 | pass |
+| A5 | L6 has a documented row/tile/shape map; L7 has results and animation data. | `road_render.md`, `road_shapes.md`, `race_track_data.md`; `race_hud.md`, `race_results.md`, `animation.md`; matrix v9/v12 | pass |
 | A6 | Every R30 function has an L0-L2 contract and its actor/RAM fields are in the matrix; `U-0012`..`U-0016` are closed. | `race_R30_integration.md`; `race_map.md` v5; `race_ai.md`, `race_anim_audio.md`, `race_data_tables.md` | pass |
 | A7 | Build/asset/diff verification stays clean. | table above | pass |
 
@@ -84,7 +84,7 @@ Handler/table coverage:
 
 | Formula | Where |
 |---|---|
-| `FrameDistance = Speed * FrameDelay`; `X += FrameDistance` | `race_movement.md` |
+| `FrameDistance = Speed * FrameDelay`; `X += FrameDistance` | `race_physics.md` (actor movement section) |
 | gear thresholds `+E`/`+1A`; off-road `$14 -= $14>>2` | `race_speed.md` |
 | lean `$0C = (FrameDistance>>8)*$42>>8`; curve `$3E = (limit<<8)/(d0>>8)`; LeanCurve `$40` | `race_speed.md` |
 | AI target buckets `clamp(($30>>6)+3,0,5)`; dispatch budget `ram_FF1A96` | `race_ai.md` |
@@ -93,7 +93,7 @@ Handler/table coverage:
 | spawn timers `(Rand&$FFF)*unk_13A1A[level]>>16`; static respawn `PlayerProgress+$208000` | `race_spawn.md` |
 | standings key `value=(key>>8)/6`, `$FFFF` DNF; points `unk_D1A0[place]*level` | `race_results.md` |
 | HUD cell `2*(y*64+x)`, word `$8000\|palette<<13\|tile`; speed `min(speed/453,31)`; RPM `((speed<<16)/divisor)/682` | `race_hud.md` |
-| VScroll/HScroll band arithmetic and shape writer `base + 4*r + c*(gap+4)` | `race_physics.md`, `road_render.md`, `shape_writer_verify.md` |
+| VScroll/HScroll band arithmetic and shape writer `base + 4*r + c*(gap+4)` | `race_physics.md`, `road_render.md` |
 
 ## Waived residuals
 
@@ -119,12 +119,14 @@ art.
 
 ## Documentation hygiene
 
-- `docs/analysis/race_map.md` is the authoritative field matrix (v13). Some older
-  analysis pages still carry pre-L2 "TODO/hypothesis" wording (notably
-  `race_actors.md`); those rows are superseded by matrix v13 and the L2-L7 passes.
-- `docs/analysis/race_impact.md` still says the opponent stamina cap needs a sample;
-  `U-0017`/`race_residual_unknowns.md` closed it dynamically.
-- These stale sentences are documentation clean-up, not open semantics.
+- `race_map.md` (matrix v13) is the authoritative field matrix; older analysis pages
+  cite it and no longer carry stale pre-L2 TODO wording (corrected in the
+  docs-hygiene pass). Status is centralized in `coverage.md`; module cards are thin
+  routers.
+- `U-0017`/`U-0018` are closed in `race_residual_unknowns.md`; `U-0019` is closed by
+  L6c/E8. `race_impact.md` no longer lists the stamina cap as needing a sample.
+- Experiment/capture detail moved to `race_captures.md`; actor movement merged into
+  `race_physics.md`; shape-writer verification merged into `road_render.md`.
 
 ## Acceptance statement
 

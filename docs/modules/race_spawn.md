@@ -7,12 +7,10 @@
   `docs/ram-map.md`, `docs/modules/race.md`
 
 ## Role / purpose
-
 Track-data initialization/streaming, dynamic opponent/traffic spawn and the active/free
 actor lists; the final part of the race module.
 
 ## Entry points & API
-
 | Symbol | Address | Called by | Description |
 |--------|---------|-----------|-------------|
 | `TrackData_InitLevel` | `0x169B0` | `Race_Init` | Initial track data + scaling. |
@@ -23,14 +21,3 @@ actor lists; the final part of the race module.
 | `sub_138CE`/`sub_13A26` | `0x138CE`/`0x13A26` | `Race_Update`/timer | Static pair respawn cycle. |
 | `Race_InitExtraStaticActor`/`Update` | `0x128E0`/`0x12974` | `Race_Update` | `$FF2FAA` extra slot (`shape $186` marker). |
 | `Race_UpdateSpeedDisplay`/`Race_FormatDecimal` | `0xF108`/`0xF11C` | HUD/debug | Speed/decimal (`src/race/race_ai_road.asm`). |
-
-## Coverage matrix
-
-| Function | Address | Contract | Algorithm | Data | Hardware | Why | Dynamic | Status |
-|----------|---------|----------|-----------|------|----------|-----|---------|--------|
-| track data init/chunk | `0x169B0`/`0x16A32` | [x] | [x] | [x] | - | [x] | [x] | analyzed |
-| spawn tick/paths | `0x16AF6`+ | [x] | [x] | [x] | - | [x] | [~] | analyzed; E5-6 not naturally exercised |
-| active/free lists | `0x16D0A`+ | [x] | [x] | [x] | - | [x] | [x] | analyzed (dynamic list snapshots) |
-| reserved opponent / static / extra | `0x13BF4`/`0x138CE`/`0x128E0` | [x] | [x] | [x] | - | [x] | [x] | L5/E5 confirmed |
-
-Detailed listing: `docs/analysis/race_spawn.md`.

@@ -7,6 +7,15 @@ analysis/module card, then `line-by-line-checklist.md`. Large registries
 (`callgraph.md`, `ram-map.md`, `analysis/identifiers.md`) are lookup tables: grep the
 symbol/row and read only that slice.
 
+## Documentation rules
+
+- Analysis pages hold durable facts and contracts; they do not carry dated pass logs.
+- Task files (`tasks/`) hold session history and the request/budget plan; completed
+  tasks are under `tasks/archive/`.
+- `ram-map.md` is the single RAM lookup table; `coverage.md` is the only status
+  dashboard. Module cards are thin routers.
+- `docs/archive/` holds retired planning artifacts and the state history.
+
 ## Top-level
 
 | File | When to read |
@@ -36,7 +45,8 @@ symbol/row and read only that slice.
 | `analysis/endlevel.md` | Level-complete animation and level-up screen. |
 | `analysis/highscore.md` | High-score screen behavior and layout. |
 | `analysis/intro.md` | Intro/title/credits screen, text and H-scroll. |
-| `analysis/identifiers.md` | Cross-file identifier quality map and rename verdicts. |
+| `analysis/identifiers.md` | Verdict policy and the actionable rename queue. |
+| `analysis/identifiers_inventory.md` | Full per-identifier keep/rename table (grep lookup). |
 | `analysis/logoEA.md` | EA logo screen, decompression and plane trick. |
 | `analysis/main.md` | Boot, interrupts, input, VDP/DMA and top-level helpers. |
 | `analysis/menu_main.md` | Main menu, race selection, tooltips and menu input. |
@@ -46,15 +56,14 @@ symbol/row and read only that slice.
 | `analysis/race_ai.md` | Actor AI, action dispatch, targeting, movement/speed. |
 | `analysis/race_ai_road.md` | Road profile, object lists/standings/speed helpers. |
 | `analysis/race_anim_audio.md` | Race animation, PRNG, impact and audio helper paths. |
+| `analysis/race_captures.md` | E1-E8 experiment setups, result transcripts and capture matrix. |
 | `analysis/race_data_tables.md` | Race data/table layouts and consumers. |
 | `analysis/race_hud.md` | Race HUD drawing and data tables. |
 | `analysis/race_hud_debug.md` | HUD digit/debug writers and callers. |
 | `analysis/race_impact.md` | Pair impact, collision, crash and fall contracts. |
-| `analysis/race_impact_map.md` | Prioritized race analysis targets by impact/fan-in. |
 | `analysis/race_map.md` | Race frame timeline, dataflow spine, actor field ownership matrix, capture matrix and study order. |
 | `analysis/race.md` | Race top-level init, frame loop, input and buffers. |
 | `analysis/race_misc_data.md` | HUD/palette/results tables in the data gap. |
-| `analysis/race_movement.md` | Actor movement/curve dataflow and Y clamping. |
 | `analysis/race_physics.md` | Camera, projection, nearest target and actor rendering. |
 | `analysis/race_results.md` | Post-race results panel and outcome dispatch. |
 | `analysis/race_spawn.md` | Opponent/traffic spawn records, lists and setup. |
@@ -68,13 +77,19 @@ symbol/row and read only that slice.
 | `analysis/road_shapes.md` | Road shape table/data layout, split and preview status. |
 | `analysis/rom_tail.md` | Raw/labelled ROM tail, assets and boot checksum. |
 | `analysis/screens_flow.md` | Screen state machine, VDP map and flow evidence. |
-| `analysis/shape_writer_verify.md` | Runtime verification of shape writer/output. |
 | `analysis/shop.md` | Bike shop screen, layout and input. |
 | `analysis/track_data.md` | Track decoder and curve-buffer format. |
 | `analysis/uncompress.md` | LZSS B/W/stream/VRAM decompression formats. |
 | `analysis/unknowns.md` | Registry of live `@UNKNOWN` semantic gaps. |
 | `analysis/z80_driver.md` | Z80 loader/entry/mailbox analysis. |
 | `analysis/_template.md` | Template for a new detailed analysis document. |
+
+## Archive
+
+| File | Contents |
+|---|---|
+| `archive/state_history.md` | Chronological pass log moved out of `STATE.md`. |
+| `archive/race_impact_map.md` | Retired race prioritization plan (historical). |
 
 ## Module cards
 

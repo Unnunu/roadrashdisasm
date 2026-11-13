@@ -55,7 +55,7 @@ analysis/golden/race_track_background_0_decompressed.bin
 The split bytes and special handoff are verified; the current candidate
 `preview_p4_line3.png`/`preview_p6_line3.png` are **not** trusted until the
 writer destination and palette line are modeled.
-See `docs/analysis/shape_writer_verify.md`.
+See the runtime verification section of `docs/analysis/road_render.md`.
 
 ## Next verification targets
 

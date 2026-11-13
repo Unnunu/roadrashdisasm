@@ -7,20 +7,18 @@
   `docs/ram-map.md`
 
 ## Role / purpose
-
 Five per-track records selected by `Menu_ram_CurrentTrackId`; each record points at a
 5-word level table and five data streams (`RaceTrack_Data2..Data6`) consumed by the
 track decoder, spawn and background/graphics code. The stream bytes are opaque
 compressed data included from `baserom.md`; the record/level tables are assembled from
 source.
 
-## Coverage matrix
-
+## API
 | Function / data | Address | Contract | Algorithm | Data | Hardware | Why | Dynamic | Status |
 |-----------------|---------|----------|-----------|------|----------|-----|---------|--------|
-| `unk_25EC0` (track pointers) | `0x25EC0` | [x] | - | [x] | - | [x] | [ ] | analyzed |
-| `Track_Record0..4` | `0x25ED4`+ | [x] | - | [x] | - | [x] | [ ] | analyzed |
-| `Track_LevelWords0..4` | `0x25EEC`+ | [x] | - | [x] | - | [x] | [ ] | analyzed |
-| `Track_Data2..Data6_0..4` | stream ranges | [x] | [~] | [~] | - | [~] | [~] | Data4/5/6 mapped |
+| `unk_25EC0` (track pointers) | ``0x25EC0`` |
+| `Track_Record0..4` | ``0x25ED4`+` |
+| `Track_LevelWords0..4` | ``0x25EEC`+` |
+| `Track_Data2..Data6_0..4` | `stream ranges` |
 
-Detailed analysis: `docs/analysis/race_track_data.md`.
+Full list: the related analysis page.

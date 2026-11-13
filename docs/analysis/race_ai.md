@@ -432,7 +432,7 @@ Full lifecycle: `docs/analysis/race_spawn.md` (E5 results there).
 ## Open questions
 
 - L2 closed the input/lean/curve/speed contracts statically (`race_speed.md`);
-  Experiment Pack E2 in `race_map.md` covers the residual dynamic checks.
+  Experiment Pack E2 in `race_captures.md` covers the residual dynamic checks.
 - Visual roles of the static pair and `$FF2FAA` remain police/traffic/pacer
   hypotheses; their lifecycle is resolved (L5/E5).
 - AI tables: `unk_12B7C`/`unk_12BCC` and `unk_13A1A` roles are described in

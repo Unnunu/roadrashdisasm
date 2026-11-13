@@ -1,5 +1,8 @@
 # Analysis: `src/race/race.asm` actors (riders/opponents)
 
+> Status note: this is the actor-struct reference. `race_map.md` field ownership
+> matrix stays authoritative for writers/readers.
+
 - **Module:** actor/rider initialization for the race
 - **Source:** `src/race/race_core.asm` (`Race_CreateActors` `0xCAD0`, `Race_InitActorLists`
   `0xB6C4`-area, `Race_InitActorPositions`), `src/data/race_actor_tables.asm`
@@ -28,7 +31,7 @@
   pointers (`$FF1FAA,$FF202A,$FF20AA,$FF212A,$FF21AA,$FF222A,$FF22AA`). `$FF1F2A`
   is outside both lists in this snapshot; its role is still TODO.
 
-## Dynamic snapshots (2026-11-09)
+## Dynamic snapshots
 
 Headless BlastEm/GDB captures in `analysis/dumps/`:
 
@@ -329,7 +332,7 @@ Applied in R1: `RaceActor_X` (`$04`), `RaceActor_XLow` (`$06`),
 `RaceActor_Lean` (`$42`), `RaceActor_TileBase` (`$5C`),
 `RaceActor_Rating` (`$66`).
 
-## L1 actor-core static pass (2026-11-12)
+## L1 actor-core static pass
 
 This pass verified the L1 hubs and produced field matrix v1 in `docs/analysis/race_map.md`
 (authoritative for writers/readers). Key results:
@@ -359,10 +362,10 @@ This pass verified the L1 hubs and produced field matrix v1 in `docs/analysis/ra
   span; neither the routine nor `Race_SetupActor` initializes it (`U-0011`, now closed:
   `d4=0` on all observed AI and spawn calls). Only the extra candidate buckets are
   affected, not the base `AnimIndex`.
-- Experiment Pack E1 (five checks) is in `race_map.md`; results are in the dynamic
+- Experiment Pack E1 (five checks) is in `race_captures.md`; results are in the dynamic
   pass below.
 
-## L1 actor-core dynamic pass (2026-11-12)
+## L1 actor-core dynamic pass
 
 E1 was executed with `analysis/capture_L1b_*` on the demo race (60 s headless run).
 

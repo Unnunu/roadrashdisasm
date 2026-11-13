@@ -168,17 +168,6 @@ the blinking Start icon, index 20 = terminator. The screen therefore auto-exits 
 - The portrait palette overwrites all 64 global palette words; the background/gamepad/
   font therefore use the rider palette on this screen. `[static]`
 
-## Line-by-line pass (2026-11-12)
-
-- Comment-only pass over both routines: verified the VDP register/clear counts, record
-  index math, image prefix/header offsets, 64-colour palette copy, name centering,
-  quote stride, overlay guard, and the GameTick release-edge/timer/terminator logic.
-- Renamed the 85 intro-only quote records to `RiderIntro_Quote_<Rider>_<NN>` and
-  updated `RiderIntro_RecordTable`, the `RiderIntro_QuoteData` alias, and docs. The 70
-  results/end-level quotes keep `RaceQuote_*`; portraits are unchanged.
-- `U-0008` resolved: the overlay is a close-up Natasha face/expression layer, drawn
-  only during the non-zero encounter counter. Dynamic rendering is still optional.
-
 ## Dynamic status
 
 The demo path skips this screen (`src/core/top_level.asm` `0x7E782`), and the GDB forced-path

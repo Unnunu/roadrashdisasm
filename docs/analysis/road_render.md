@@ -6,7 +6,7 @@
   pixel map and Data4 flag path confirmed statically + E8)
 - **Source:** `src/race/road_render.asm`
 - **Related:** `docs/analysis/road_shapes.md`, `docs/analysis/race_track_data.md`,
-  `docs/analysis/shape_writer_verify.md`, `docs/analysis/rider_sprites.md`,
+  `docs/analysis/rider_sprites.md`,
   `docs/architecture.md`, `docs/hardware.md`, `docs/ram-map.md`
 
 ## Coverage matrix
@@ -229,6 +229,31 @@ Strides `[confirmed]` E8-A + golden replay:
 - E8-C: at `Road_DrawObjects`, `ram_FFDE72=22`, `PlayerProgress=$00078000`;
   `ram_FF1B50` is the raw producer key list, `ram_FF1C50` is ascending
   (`$00008000,$00008000,$00038000,...`), and `ram_FF1D50` is the index order drawn.
+
+## Runtime verification (merged from shape_writer_verify.md)
+
+Reference shape `$56`; GDB breakpoint at `Road_WriteTileColumns` (`0x9318`, after `a4`
+load) and at its return (`0x93D0`), with full work-RAM dumps in the git-ignored
+`analysis/golden/`.
+
+| Field | Value |
+|---|---|
+| `Race_ShapeTable[0x56]` | `0x05994C` |
+| writer source pointer (`ram_FF1348`) | `0x05994E` (special handoff `P+2`) |
+| row-data pointer (`ram_FF0D2A`) | `0x059952` (`P+6`) |
+| left/right strip counts (`ram_FF132E/1330`) | `4` / `$35` |
+| destination (`a4`) | `$FF511C` (`CurrentSpriteTileArray + $80`) |
+| strides `ram_FFDE66/68/6A` | `$5C/$200/$7C` |
+
+The split asset matches: `assets/shapes/056/data.bin` starts at `0x05994C`, has header
+`10 37 20 36`, and the writer consumes `P+6`. The before/after dump proves the writer
+changes `$FF511C..$FF5573`. The L6c replay reproduces all 1080 written bytes (0
+mismatches; 5 columns x 54 rows); see the byte-exact validation above.
+
+Runtime destination previews live in `assets/shapes/056/` (`preview_runtime.png`,
+`preview_sat_size_line0.png`); only the composed, cropped SAT image is final shape art.
+Remaining optional work: compose the writer output with the live SAT chain and crop it
+to the true sprite.
 
 ## Quirks / open questions
 

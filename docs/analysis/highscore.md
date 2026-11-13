@@ -134,17 +134,6 @@ The demo path reaches this screen (after the intro); no capture was taken in thi
 session. To confirm: run the demo until the high-score screen, or open it from the
 results screen (A) in the native console.
 
-## Line-by-line pass (2026-11-12)
-
-- All four routines and their local labels were re-read and commented.
-- Corrections: VDP reg0/reg1 wording; SAT clear is two entries; `$FFE0` is the `$7FF`
-  blank tile; palette source is the title blob (not the background); `EncodeString`
-  ignores the header `y/x`; demo timer is 601 decrements; the message-id lower-bound
-  clamp is unreachable; `HandleInput` writes a byte.
-- Applied rename: `unk_A2E68` -> `FontHighScoreDigits` (content is ten digit glyphs
-  `0`-`9`; stable preview in `assets/tilesets/highscore_extra/`).
-- `U-0009` resolved: the `$1000` digit font is loaded but never displayed (wontfix).
-
 ## Rename proposals (apply only on request)
 
 | Current | Proposed | Evidence | Confidence |

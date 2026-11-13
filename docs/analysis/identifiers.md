@@ -1,703 +1,188 @@
 # Identifier map
 
-Durable, cross-file assessment of how well each identifier's name matches its observed
-uses. It exists so later analysis can decide whether a rename is worth doing.
+Durable, cross-file assessment of how well each identifier name matches its
+observed uses. Policy and the actionable rename queue live here; the full
+table is `docs/analysis/identifiers_inventory.md`.
 
-- Rules and rubric: `docs/line-by-line-analysis.md` section 8.
+## Verdict policy
+
 - `Name quality`: `good` / `narrow` / `misleading` / `placeholder` / `wrong/unknown`.
 - `Rename verdict`: `keep` / `rename-later` / `blocked-unknown`.
 - `blocked-unknown` references an ID in `docs/analysis/unknowns.md`.
-- Only `[confirmed]` evidence may justify a rename; renames are a separate task.
-- The per-file summary lives in `docs/analysis/<file>.md`; this file is the source of
-  truth.
-- **Usage:** do not read the whole table during a normal pass. `grep -n '<identifier>'`
-  here (or read the per-file summary) and read only the matching rows. Append new rows
-  at the end; do not reorder existing rows.
+- Only `[confirmed]` evidence may justify a rename; renames are a separate,
+  build-verified task. `rename-later` means the proposal is sound but not applied.
+- `keep` includes intentional placeholders, dead code and retained aliases.
+- The per-file summary lives in `docs/analysis/<file>.md`.
+- **Usage:** grep the symbol in the inventory (or this queue) and read only the
+  matching row. Append new rows at the end; do not reorder existing rows.
 
-| Identifier | Kind | Defined | Used in (file: role) | Name quality | Evidence | Rename verdict | Proposed | Confidence | Unknown ID |
-|---|---|---|---|---|---|---|---|---|---|
-| `Menu_Init` | routine | `menu_main.asm:47` (`$3400`) | menu_main: VDP/asset/frame-buffer init | good | `[static]` | keep | - | high | - |
-| `WriteNametableToBuffer` | routine | `menu_main.asm:326` (`$37AA`) | menu_main: RAM nametable blit; shared by many screens | good | `[static]` | keep | - | high | - |
-| `Menu_WriteNametableMasked` | routine | `menu_main.asm:374` (`$37D2`) | menu_main: sentinel-masked card blit | good | `[static]` | keep | - | high | - |
-| `MainMenu_GameTick` | routine | `menu_main.asm:417` (`$3802`) | menu_main: per-frame callback via `ram_UpdateFunction` | good | `[static]` | keep | - | high | - |
-| `Menu_DrawPlayerInfo` | routine | `menu_main.asm:536` (`$39AE`) | menu_main; menu_password: A/B border, name, level | good | `[static]` | keep | - | high | - |
-| `Menu_BuildRaceTooltip` | routine | `menu_main.asm:682` (`$3B56`) | menu_main: race-name + distance tooltip (level word = 16-ft units) | good | `[static]` | keep | - | high | `U-0001` resolved |
-| `MainMenu_HandleInput` | routine | `menu_main.asm:747` (`$3BE2`) | menu_main: newly pressed button actions | good | `[static]` | keep | - | high | - |
-| `Menu_DrawRaceSelection` | routine | `menu_main.asm:932` (`$3F18`) | menu_main; menu_password: badge + five-card carousel (even-id divide is vestigial) | good | `[static]` | keep | - | high | `U-0003` resolved |
-| `Menu_DrawRaceCard` | routine | `menu_main.asm:1051` (`$408E`) | menu_main: one card + place text | good | `[static]` | keep | - | high | - |
-| `Menu_ShowMessage` | routine | `menu_main.asm:1127` (`$417C`) | menu_main and other screens: blinking tooltip | good | `[static]` | keep | - | high | - |
-| `Audio_StartMusic` | routine | `core/audio` (`$19F6A`) | menu_main: start menu music | good | `[static]` | keep | - | high | - |
-| `Audio_StopMusic` | routine | `core/audio` (`$19F6E`) | menu_main: stop music on toggle/exit | good | `[static]` | keep | - | high | - |
-| `Audio_Update` | routine | `core/audio` (`$19F62`) | menu_main: flush command mailbox each tick | good | `[static]` | keep | - | high | - |
-| `DmaWriteVRAM` | routine | `core/dma` (`$0D8FA`) | menu_main: frame buffer -> window `$7000` | good | `[static]` | keep | - | high | - |
-| `EncodeString` | routine | `intro.asm` (`$2288`) | menu_main: text record -> font tile indices | good | `[static]` | keep | - | high | - |
-| `GetInputPlayerA` | routine | `core/input` (`$10D4`) | menu_main: pad A state (low `d0.b`) | good | `[static]` | keep | - | high | - |
-| `GetInputPlayerB` | routine | `core/input` (`$111C`) | menu_main: pad B state (low `d0.b`) | good | `[static]` | keep | - | high | - |
-| `Intro_InitPlayerA` | routine | `intro.asm` (`$1A2C`) | menu_main: reset A profile when money < 0 | narrow | `[static]` | rename-later | `Player_InitA` | medium | - |
-| `Intro_InitPlayerB` | routine | `intro.asm` (`$1B48`) | menu_main: reset B profile when money < 0 | narrow | `[static]` | rename-later | `Player_InitB` | medium | - |
-| `MenuPassword_SelectCurrentTrack` | routine | `menu_password.asm` (`$2B2E`) | menu_main: pick first unplayed/worst finished track | good | `[static]` | keep | - | high | - |
-| `MenuPassword_DrawNamesAndPasswords` | routine | `menu_password.asm` (`$3306`) | menu_main: draw name/password fields | good | `[static]` | keep | - | high | - |
-| `MenuPassword_GameTick` | routine | `menu_password.asm` (`$24CC`) | menu_main: installed when C opens the password screen | good | `[static]` | keep | - | high | - |
-| `FadeWithFunction_GameTick` | routine | `core/fade.asm` | menu_main: detect an in-progress fade | good | `[static]` | keep | - | high | - |
-| `Message_Clear` | routine | `message.asm` (`$426A`) | menu_main: black-out an animated tooltip | good | `[static]` | keep | - | high | - |
-| `Message_ShowEmpty` | routine | `message.asm` (`$4226`) | menu_main: blank the static message field | good | `[static]` | keep | - | high | - |
-| `Rand_NextWord` | routine | `core/rand` (`$16034`) | menu_main: advance the main PRNG each tick | good | `[static]` | keep | - | high | - |
-| `Rand_StepLfsrAMod` | routine | `core/rand` (`$160B0`) | menu_main: advance LFSR A (`d2=1`) | good | `[static]` | keep | - | high | - |
-| `Rand_StepLfsrB` | routine | `core/rand` (`$160CC`) | menu_main: advance LFSR B | good | `[static]` | keep | - | high | - |
-| `UncompressB` | routine | `core/uncompress` (`$09B9E`) | menu_main: byte-planar image blobs | good | `[static]` | keep | - | high | - |
-| `UncompressW` | routine | `core/uncompress` (`$09C26`) | menu_main: word-planar image blobs | good | `[static]` | keep | - | high | - |
-| `WriteNametable` | routine | `intro.asm` (`$2402`) | menu_main: VRAM nametable rectangles | good | `[static]` | keep | - | high | - |
-| `WriteTilesetToVRAM` | routine | `core/vdp` (`$0AFF2`) | menu_main: upload decompressed tiles | good | `[static]` | keep | - | high | - |
-| `Message_MsgArray` | data | `message.asm:468` | menu_main/menu_password/shop/highscore/race_results/endlevel: 8-byte text/show-function entries | good | `[static]` | keep | - | high | - |
-| `Menu_dRaceNameTable` | data | `message.asm:607` | menu_main: five race-name text pointers | good | `[static]` | keep | - | high | - |
-| `unk_25EC0` | data | `race_track_data.asm:17` | menu_main: five track-record pointers (level-word table at +$00) | placeholder | `[static]` | rename-later | `RaceTrack_dRecords` | medium | - |
-| `Menu_dPasswordLabels` | data | `message.asm:726` | menu_main: "Name"/"Password" label record (7x12) | good | `[static]` | keep (renamed from `word_4EEE`) | - | high | - |
-| `dStringCodeTable` | data | `intro.asm:793` | menu_main: ASCII -> font tile index table | good | `[static]` | keep | - | high | - |
-| `img_MainMenu_Background` | asset | `rom_assets.asm` | menu_main: 39 tiles + 40x28 map (`+$4E4/+$4E8`) | good | `[static]` | keep | - | high | - |
-| `img_MainMenu_RaceSelectionBackground` | asset | `rom_assets.asm` | menu_main: 23 tiles + 40x14 map (`+$2E4/+$2E8`) | good | `[static]` | keep | - | high | - |
-| `img_PasswordMenu_PlayerSelection` | asset | `rom_assets.asm` | menu_main: 6-tile password border, map at `+$C8` | good | `[static]` | keep | - | high | - |
-| `img_Gamepad` | asset | `rom_assets.asm` | menu_main: 90 tiles, header 12x9 at `+$B44`, map `+$B48`; all callers use 12x6, lower 3 rows unused | narrow | `[static]` | keep | - | medium | `U-0002` resolved |
-| `img_mainMenu_PlayerSelection` | asset | `rom_assets.asm` | menu_main: 6-tile player border, map at `+$C8` | good | `[static]` | keep | - | high | - |
-| `img_MainMenu_RaceBadges` | asset | `rom_assets.asm` | menu_main: 108 tiles + 12x12 map (`+$D84/+$D88`) | good | `[static]` | keep | - | high | - |
-| `img_mainMenu_RaceCards` | asset | `rom_assets.asm` | menu_main: 311 tiles + 12x30 map (`+$2764/+$2768`), palette `+$26E4` | good | `[static]` | keep | - | high | - |
-| `img_Intro_Font` | asset | `rom_assets.asm` | menu_main: 50 font tiles at VRAM `$0000` | good | `[static]` | keep | - | high | - |
-| `VdpCtrl` | hardware | `core/hw_const.asm` | menu_main: VDP control/status port `$C00004` | good | `[hardware]` | keep | - | high | - |
-| `VdpData` | hardware | `core/hw_const.asm` | menu_main: VDP data port `$C00000` | good | `[hardware]` | keep | - | high | - |
-| `Global_ram_PalettePtr` | RAM | `ram_const.asm` (`$FF305A`) | menu_main: active palette pointer | good | `[static]` | keep | - | high | - |
-| `Global_ram_Palette` | RAM | `ram_const.asm` (`$FF305E`) | menu_main: palette shadow (64 words) | good | `[static]` | keep | - | high | - |
-| `Intro_ram_ImageBuffer` | RAM | `ram_const.asm` (`$FF509C`) | menu_main/message: shared decompression/staging buffer for every asset | narrow | `[static]` | rename-later | `ram_ImageStagingBuffer` | medium | - |
-| `Race_ram_ImageBuffer2` | RAM | `ram_const.asm` (`$FF8364`) | menu_main only: badge/card nametable staging (12x42) | misleading | `[static]` | rename-later | `MainMenu_ram_RaceCardBuffer` | medium | - |
-| `Menu_ram_FrameBuffer` | RAM | `ram_const.asm` (`$FFB62C`) | menu_main/message: 64x28 window overlay | good | `[static]` | keep | - | high | - |
-| `Menu_ram_Player` | RAM | `ram_const.asm` (`$FF0508`) | menu_main: 0=A, `$FFFF`=B | good | `[static]` | keep | - | high | - |
-| `Menu_ram_PlayerMode` | RAM | `ram_const.asm` (`$FF05DA`) | menu_main: 1=A, 2=B, 3=two players | good | `[static]` | keep | - | high | - |
-| `Menu_ram_PlayerALevel` | RAM | `ram_const.asm` (`$FF050C`) | menu_main: level index for the distance tooltip | good | `[static]` | keep | - | high | - |
-| `Menu_ram_PlayerBLevel` | RAM | `ram_const.asm` (`$FF050E`) | menu_main: level index for the distance tooltip | good | `[static]` | keep | - | high | - |
-| `Menu_ram_MoneyPlayerA` | RAM | `ram_const.asm` (`$FF0518`) | menu_main: negative = uninitialized profile | good | `[static]` | keep | - | high | - |
-| `Menu_ram_MoneyPlayerB` | RAM | `ram_const.asm` (`$FF051C`) | menu_main: negative = uninitialized profile | good | `[static]` | keep | - | high | - |
-| `Menu_ram_PlayerAPlaces` | RAM | `ram_const.asm` (`$FF052E`) | menu_main: five place words (race ids 0,2,4,6,8) | good | `[static]` | keep | - | high | - |
-| `Menu_ram_PlayerBPlaces` | RAM | `ram_const.asm` (`$FF0538`) | menu_main: five place words | good | `[static]` | keep | - | high | - |
-| `Menu_PlayerPlacesPtr` | RAM | `ram_const.asm` (`$FF05E0`) | menu_main: points at the active player's places | narrow | `[static]` | rename-later | `Menu_ram_PlayerPlacesPtr` | high | - |
-| `Menu_ram_CurrentTrackId` | RAM | `ram_const.asm` (`$FF05DC`) | menu_main: current even track id 0..8 | good | `[static]` | keep | - | high | - |
-| `Menu_ram_CurrentlyDrawnRaceCard` | RAM | `ram_const.asm` (`$FF05E4`) | menu_main: selected id, then carousel scratch (always even) | narrow | `[static]` | rename-later | `Menu_ram_CarouselRaceId` | medium | `U-0003` resolved |
-| `Menu_ram_NextMessageTimer` | RAM | `ram_const.asm` (`$FF05D0`) | menu_main: tooltip advance delay | good | `[static]` | keep | - | high | - |
-| `Menu_ram_MessageBlinkTimer` | RAM | `ram_const.asm` (`$FF05D2`) | menu_main: tooltip text blink phase | good | `[static]` | keep | - | high | - |
-| `Menu_ram_CurrentMessageId` | RAM | `ram_const.asm` (`$FF05D4`) | menu_main/menu_password/shop/highscore/race_results/endlevel: `Message_MsgArray` byte index (multiple of 8) | good | `[static]` | keep | - | high | - |
-| `Menu_ram_CurrentButtonsPtr` | RAM | `ram_const.asm` (`$FF0412`) | menu_main: current pad-state pointer for input handlers | good | `[static]` | keep | - | high | - |
-| `Menu_ram_ChangedButtonsPtr` | RAM | `ram_const.asm` (`$FF0416`) | menu_main: edge-mask pointer for input handlers | good | `[static]` | keep | - | high | - |
-| `Menu_ram_StrPlayerName` | RAM | `ram_const.asm` (`$FF046A`) | menu_main: scratch text record (name + level), reused for A and B | narrow | `[static]` | rename-later | `Menu_ram_PlayerInfoString` | medium | - |
-| `Menu_ram_TempString` | RAM | `ram_const.asm` (`$FF0756`) | menu_main/message: race-name/distance tooltip record | good | `[static]` | keep | - | high | - |
-| `MainMenu_ram_DemoMode` | RAM | `ram_const.asm` (`$FF3692`) | menu_main: set after 30 s idle | good | `[static]` | keep | - | high | - |
-| `MainMenu_ram_FrameCounter` | RAM | `ram_const.asm` (`$FF3694`) | menu_main: idle/demo frame counter | good | `[static]` | keep | - | high | - |
-| `MainMenu_ram_ButtonsPlayerA` | RAM | `ram_const.asm` (`$FF05C8`) | menu_main: pad A current state | good | `[static]` | keep | - | high | - |
-| `MainMenu_ram_ChangedButtonsPlayerA` | RAM | `ram_const.asm` (`$FF05CA`) | menu_main: pad A old XOR new | good | `[static]` | keep | - | high | - |
-| `MainMenu_ram_ButtonsPlayerB` | RAM | `ram_const.asm` (`$FF05CC`) | menu_main: pad B current state | good | `[static]` | keep | - | high | - |
-| `MainMenu_ram_ChangedButtonsPlayerB` | RAM | `ram_const.asm` (`$FF05CE`) | menu_main: pad B old XOR new | good | `[static]` | keep | - | high | - |
-| `MainMenu_ram_CurrentButtons` | RAM | `ram_const.asm` (`$FF05DE`) | menu_main: newly pressed mask being handled | good | `[static]` | keep | - | high | - |
-| `Message_ram_ButtonBlinkPeriod` | RAM | `ram_const.asm` (`$FF05E8`) | menu_main/message/other screens: button-icon blink period | good | `[static]` | keep | - | high | - |
-| `ram_MusicEnabled` | RAM | `ram_const.asm` (`$FF05D6`) | menu_main: B toggles music | good | `[static]` | keep | - | high | - |
-| `ram_CurrentSong` | RAM | `ram_const.asm` (`$FF05D8`) | menu_main: current song id (0/1) | good | `[static]` | keep | - | high | - |
-| `ram_UpdateFunction` | RAM | `ram_const.asm` (`$FF1A62`) | menu_main: stage callback install/clear | good | `[static]` | keep | - | high | - |
-| `Fade_ram_UpdateFunction` | RAM | `ram_const.asm` (`$FF0302`) | menu_main: queue the password screen behind an in-progress fade | good | `[static]` | keep | - | high | - |
-| `MenuPassword_ram_CursorX` | RAM | `ram_const.asm` (`$FF0424`) | menu_main: password cursor column (reset to 1) | good | `[static]` | keep | - | high | - |
-| `MenuPassword_ram_CursorY` | RAM | `ram_const.asm` (`$FF0422`) | menu_main: password cursor row (reset to 9) | good | `[static]` | keep | - | high | - |
-| `MenuPassword_ram_HoldTimer` | RAM | `ram_const.asm` (`$FF0426`) | menu_main: `$FFFF` suppresses hold-repeat | good | `[static]` | keep | - | high | - |
-| `MenuPassword_ram_HeldButtons` | RAM | `ram_const.asm` (`$FF0428`) | menu_main: cleared when the password screen opens | good | `[static]` | keep | - | high | - |
-| `MenuPassword_ram_StrPlayerNamePtr` | RAM | `ram_const.asm` (`$FF041A`) | menu_main: active name record for the password screen | good | `[static]` | keep | - | high | - |
-| `MenuPassword_ram_StrPlayerPasswordPtr` | RAM | `ram_const.asm` (`$FF041E`) | menu_main: active password record | good | `[static]` | keep | - | high | - |
-| `MenuPassword_ram_StrPlayerAName` | RAM | `ram_const.asm` (`$FF04A4`) | menu_main: A name record (header + 10 chars) | good | `[static]` | keep | - | high | - |
-| `MenuPassword_ram_StrPlayerAPassword` | RAM | `ram_const.asm` (`$FF042A`) | menu_main: A password record (header + 24 chars) | good | `[static]` | keep | - | high | - |
-| `MenuPassword_ram_StrPlayerBName` | RAM | `ram_const.asm` (`$FF04B6`) | menu_main: B name record | good | `[static]` | keep | - | high | - |
-| `MenuPassword_ram_StrPlayerBPassword` | RAM | `ram_const.asm` (`$FF044A`) | menu_main: B password record | good | `[static]` | keep | - | high | - |
-| `MenuPassword_HandleInput` | routine | `menu_password.asm:269` (`$2710`) | menu_password: apply presses to name/password, move cursor | good | `[static]` | keep | - | high | - |
-| `MenuPassword_UpdateStatus` | routine | `menu_password.asm:490` (`$2A1E`) | menu_password: status text, validate/parse password | good | `[static]` | keep | - | high | - |
-| `MenuPassword_SetCursorPos` | routine | `menu_password.asm:587` (`$2B18`) | menu_password: write one cell's palette/high byte | good | `[static]` | keep | - | high | - |
-| `MenuPassword_SwapPlayerBlocks` | routine | `menu_password.asm:683` (`$2BEE`) | menu_password: move the 16x14 selection panel | good | `[static]` | keep | - | high | - |
-| `MenuPassword_ValidatePassword` | routine | `menu_password.asm:735` (`$2C32`) | menu_password: checksum verification | good | `[static]` | keep | - | high | - |
-| `MenuPassword_ParsePassword` | routine | `menu_password.asm:857` (`$2D1E`) | menu_password: password words -> player state | good | `[static]` | keep | - | high | - |
-| `MenuPassword_CreatePassword` | routine | `menu_password.asm:1063` (`$2F3A`) | menu_password; race_core/shop/endlevel: state -> password | good | `[static]` | keep | - | high | - |
-| `Menu_DefaultPassword` | data | `menu_password.asm:47` | menu_password/intro: 24-char template (invalid checksum) | good | `[static]` | keep | - | high | - |
-| `Menu_DefaultName` | data | `menu_password.asm:53` | intro: initial "Player A  " name | good | `[static]` | keep | - | high | - |
-| `unk_2468` | data | `menu_password.asm:58` | unreferenced 5x20 status text (dead data) | placeholder | `[static]` | keep | - | medium | - |
-| `MenuPassword_StrPasswordStatus` | RAM | `ram_const.asm` (`$FF067E`) | menu_password/message/race_results: 5x16 status record | good | `[static]` | keep | - | high | - |
-| `MenuPassword_StrStatusTemplate` | data | `message.asm:699` | menu_password: 5x16 "PASSWORD INVALID" status template | good | `[static]` | keep (renamed from `unk_4E20`) | - | high | - |
-| `dStringDecodeTable` | data | `intro.asm:806` (`$23D0`) | menu_password: font tile index -> ASCII | good | `[static]` | keep | - | high | - |
-| `DecodeString` | routine | `intro.asm:777` (`$22B2`) | menu_password: password words -> string | good | `[static]` | keep | - | high | - |
-| `MenuPassword_ram_CurrentButtons` | RAM | `ram_const.asm` (`$FF05C6`) | menu_password: input byte latched for the edit handlers | good | `[static]` | keep | - | high | - |
-| `Menu_ram_PlayerAOpponents` | RAM | `ram_const.asm` (`$FF0546`) | menu_password: 16-word A opponent definition list | good | `[static]` | keep | - | high | - |
-| `Menu_ram_PlayerBOpponents` | RAM | `ram_const.asm` (`$FF0566`) | menu_password: 16-word B opponent definition list | good | `[static]` | keep | - | high | - |
-| `Menu_ram_BikeIdPlayerA` | RAM | `ram_const.asm` (`$FF0542`) | menu_password: A bike id (`w20` bits 0..2) | good | `[static]` | keep | - | high | - |
-| `Menu_ram_BikeIdPlayerB` | RAM | `ram_const.asm` (`$FF0544`) | menu_password: B bike id | good | `[static]` | keep | - | high | - |
-| `Player_ram_CareerScoreA` | RAM | `ram_const.asm` (`$FF0510`) | menu_password/race_core: A 20-bit career score / high-score value (`w7..w10`) | narrow | `[static]` | keep (renamed from `ram_FF0510`) | - | medium | `U-0005` resolved |
-| `Player_ram_CareerScoreB` | RAM | `ram_const.asm` (`$FF0514`) | menu_password/race_core: B 20-bit career score / high-score value | narrow | `[static]` | keep (renamed from `ram_FF0514`) | - | medium | `U-0005` resolved |
-| `ram_FF0522` | RAM | `ram_const.asm` (`$FF0522`) | menu_password/intro/race: A persisted Natasha encounter counter (0..3) | narrow | `[static]` | rename-later | `Player_ram_NatashaCounterA` | medium | `U-0004` resolved |
-| `ram_FF0524` | RAM | `ram_const.asm` (`$FF0524`) | menu_password/intro/race: B persisted Natasha encounter counter (0..3) | narrow | `[static]` | rename-later | `Player_ram_NatashaCounterB` | medium | `U-0004` resolved |
-| `Message_ShowNoop` | routine | `message.asm:56` (`$4268`) | message: no-op show function; also the rts ending `Message_ShowEmpty` | good | `[static]` | keep (renamed from `sub_4268`) | - | high | - |
-| `Message_BlinkButtonA` | routine | `message.asm:103` (`$42AA`) | message/Menu_ShowMessage: blink A-button icon | good | `[static]` | keep | - | high | - |
-| `Message_DrawButtonA` | routine | `message.asm:128` (`$42D0`) | message: draw-only A-button entry | good | `[static]` | keep | - | high | - |
-| `Message_BlinkButtonB` | routine | `message.asm:153` (`$4302`) | message/Menu_ShowMessage: blink B-button icon | good | `[static]` | keep | - | high | - |
-| `Message_DrawButtonB` | routine | `message.asm:178` (`$432A`) | message: draw-only B-button entry | good | `[static]` | keep | - | high | - |
-| `Message_BlinkButtonsAB` | routine | `message.asm:205` (`$4362`) | message/Menu_ShowMessage: blink A+B icons | good | `[static]` | keep | - | high | - |
-| `Message_BlinkButtonC` | routine | `message.asm:235` (`$4392`) | message/Menu_ShowMessage: blink C-button icon | good | `[static]` | keep | - | high | - |
-| `Message_BlinkButtonStart` | routine | `message.asm:275` (`$43F6`) | message/Menu_ShowMessage: blink Start-button icon | good | `[static]` | keep | - | high | - |
-| `Message_BlinkDirPadHorizontal` | routine | `message.asm:319` (`$445E`) | message/shop: blink the horizontal dpad pair (left/right prompts) | good | `[static]` | keep (renamed from `Message_DrawDirPadVert`) | - | high | - |
-| `Message_DrawDirPadHorizontalIcon` | routine | `message.asm:345` (`$4486`) | message: draw-only horizontal dpad pair | good | `[static]` | keep (renamed from `loc_4486`) | - | high | - |
-| `Message_BlinkDirPadVertical` | routine | `message.asm:381` (`$44D6`) | message: blink the vertical dpad pair (up/down) | good | `[static]` | keep (renamed from `Message_DrawDirPadRight`) | - | high | - |
-| `Message_DrawDirPadVerticalIcon` | routine | `message.asm:406` (`$44FE`) | message: draw-only vertical dpad pair | good | `[static]` | keep (renamed from `loc_44FE`) | - | high | - |
-| `Message_BlinkDirectionalPad` | routine | `message.asm:440` (`$454E`) | message/Menu_ShowMessage: blink the complete dpad | good | `[static]` | keep | - | high | - |
-| `StrPressStartToExit` | data | `message.asm:561` (`$479E`) | message: 1x22 exit prompt (rider intro/end level) | good | `[static]` | keep | - | high | - |
-| `StrPressABToChangeLetter` | data | `message.asm:564` (`$47BC`) | message: 3x20 password edit prompt | good | `[static]` | keep | - | high | - |
-| `StrPressCToSelectOtherPlayer` | data | `message.asm:569` (`$4800`) | message: 3x20 password player-switch prompt | good | `[static]` | keep | - | high | - |
-| `StrUseDirPadToMoveCursor` | data | `message.asm:574` (`$4844`) | message: 3x20 password cursor prompt | good | `[static]` | keep | - | high | - |
-| `StrOnePlayerModeSelected` | data | `message.asm:579` (`$4888`) | message: 5x20 main-menu confirmation | good | `[static]` | keep | - | high | - |
-| `StrTwoPlayerModeSelected` | data | `message.asm:586` (`$48F4`) | message: 5x20 main-menu confirmation | good | `[static]` | keep | - | high | - |
-| `StrMusicOn` | data | `message.asm:593` (`$4960`) | message: 3x20 main-menu confirmation | good | `[static]` | keep | - | high | - |
-| `StrMusicOff` | data | `message.asm:598` (`$49A4`) | message: 3x20 main-menu confirmation | good | `[static]` | keep | - | high | - |
-| `Menu_StrRaceSierraNevada` | data | `message.asm:614` (`$49FC`) | message/menu_main: 5x20 race-name record | good | `[static]` | keep (renamed from `unk_49FC`) | - | high | - |
-| `Menu_StrRacePacificCoast` | data | `message.asm:621` (`$4A68`) | message/menu_main: 5x20 race-name record | good | `[static]` | keep (renamed from `unk_4AE8`) | - | high | - |
-| `Menu_StrRaceRedwoodForest` | data | `message.asm:628` (`$4AD4`) | message/menu_main: 5x20 race-name record | good | `[static]` | keep (renamed from `unk_4AD4`) | - | high | - |
-| `Menu_StrRacePalmDesert` | data | `message.asm:635` (`$4B40`) | message/menu_main: 5x20 race-name record | good | `[static]` | keep (renamed from `unk_4B40`) | - | high | - |
-| `Menu_StrRaceGrassValley` | data | `message.asm:642` (`$4BAC`) | message/menu_main: 5x20 race-name record | good | `[static]` | keep (renamed from `unk_4BAC`) | - | high | - |
-| `DemoHighScoreTable` | data | `message.asm:653` (`$4C18`) | intro: 7x20 demo high-score table body | good | `[static]` | keep | - | high | - |
-| `Message_StrPressStartToRace` | data | `message.asm:663` (`$4CA4`) | message: 3x20 main-menu tooltip | good | `[static]` | keep (renamed from `unk_4CA4`) | - | high | - |
-| `Message_StrPressAPlayerSelection` | data | `message.asm:669` (`$4CE8`) | message: 3x20 main-menu tooltip | good | `[static]` | keep (renamed from `unk_4CE8`) | - | high | - |
-| `Message_StrPressBMusicToggle` | data | `message.asm:675` (`$4D2C`) | message: 3x20 main-menu tooltip | good | `[static]` | keep (renamed from `unk_4D2C`) | - | high | - |
-| `Message_StrPressCPassword` | data | `message.asm:681` (`$4D70`) | message: 5x20 main-menu tooltip | good | `[static]` | keep (renamed from `unk_4D70`) | - | high | - |
-| `Message_StrDirPadSelectTrack` | data | `message.asm:689` (`$4DDC`) | message: 3x20 main-menu tooltip | good | `[static]` | keep (renamed from `unk_4DDC`) | - | high | - |
-| `Message_StrBlank` | data | `message.asm:709` (`$4E78`) | message: 5x20 all-space record | good | `[static]` | keep (renamed from `unk_4E78`) | - | high | - |
-| `Message_StrBlankCell` | data | `message.asm:720` (`$4EE4`) | message: 1x1 blank record (second byte is alignment padding) | good | `[static]` | keep (renamed from `unk_4EE4`) | - | high | - |
-| `Message_StrPressAHighScores` | data | `message.asm:738` (`$4F4A`) | message: 5x20 "Press A ... High Scores" prompt | good | `[static]` | keep (renamed from `unk_4F4A`) | - | high | - |
-| `Message_StrPressCNewBikes` | data | `message.asm:746` (`$4FB6`) | message: 3x20 "Press C ... new bikes" prompt | good | `[static]` | keep (renamed from `unk_4FB6`) | - | high | - |
-| `Message_StrPressStartTrackSelection` | data | `message.asm:752` (`$4FFA`) | message: 3x20 "Press Start ... Track Selection" prompt | good | `[static]` | keep (renamed from `unk_4FFA`) | - | high | - |
-| `Message_StrPressBRaceResults` | data | `message.asm:758` (`$503E`) | message: 5x20 "Press B ... Race Results" prompt | good | `[static]` | keep (renamed from `unk_503E`) | - | high | - |
-| `Message_StrPressCBuyNewBike` | data | `message.asm:766` (`$50AA`) | message/shop: 5x20 "Press C ... buy a new" prefix | good | `[static]` | keep (renamed from `unk_50AA`) | - | high | - |
-| `Message_StrPressLeftDirPad` | data | `message.asm:774` (`$5116`) | message/shop: 4x20 left-bike prompt prefix | good | `[static]` | keep (renamed from `unk_5116`) | - | high | - |
-| `Message_StrPressRightDirPad` | data | `message.asm:781` (`$516E`) | message/shop: 4x20 right-bike prompt prefix | good | `[static]` | keep (renamed from `unk_516E`) | - | high | - |
-| `Message_StrAlreadyOwnBike` | data | `message.asm:791` (`$51C6`) | message/shop: 3x20 "You already own a" prefix | good | `[static]` | keep (renamed from `unk_51C6`) | - | high | - |
-| `Message_StrNeedMoreCredit` | data | `message.asm:797` (`$520A`) | message/shop: 5x20 "You need more credit" prefix | good | `[static]` | keep (renamed from `unk_520A`) | - | high | - |
-| `Message_StrCompleteEveryCourse` | data | `message.asm:807` (`$5276`) | message/race_results: 4x20 incomplete-course text | good | `[static]` | keep (renamed from `unk_5276`) | - | high | - |
-| `Message_StrComplete4thPlace` | data | `message.asm:814` (`$52CE`) | message/race_results: 5x20 worse-than-4th text | good | `[static]` | keep (renamed from `unk_52CE`) | - | high | - |
-| `Message_StrCongratulations` | data | `message.asm:827` (`$533A`) | message/race_results: 5x20 level-clear text (level digit patched) | good | `[static]` | keep (renamed from `unk_533A`) | - | high | - |
-| `Message_StrTradeInCredit` | data | `message.asm:837` (`$53A6`) | message/shop: 4x20 trade-in credit note | good | `[static]` | keep (renamed from `unk_53A6`) | - | high | - |
-| `Message_StrBikeDescShuriken400` | data | `message.asm:848` (`$53FE`) | message/shop: bike id 0 prose description | good | `[static]` | keep (renamed from `unk_53FE`) | - | high | - |
-| `Message_StrBikeDescPanda600` | data | `message.asm:854` (`$5466`) | message/shop: bike id 1 prose description | good | `[static]` | keep (renamed from `unk_5466`) | - | high | - |
-| `Message_StrBikeDescBanzai750` | data | `message.asm:860` (`$54C2`) | message/shop: bike id 2 prose description | good | `[static]` | keep (renamed from `unk_54C2`) | - | high | - |
-| `Message_StrBikeDescKamikaze750` | data | `message.asm:866` (`$5524`) | message/shop: bike id 3 prose description | good | `[static]` | keep (renamed from `unk_5524`) | - | high | - |
-| `Message_StrBikeDescShuriken1000` | data | `message.asm:871` (`$556C`) | message/shop: bike id 4 prose description | good | `[static]` | keep (renamed from `unk_556C`) | - | high | - |
-| `Message_StrBikeDescFerruci850` | data | `message.asm:877` (`$55C8`) | message/shop: bike id 5 prose description | good | `[static]` | keep (renamed from `unk_55C8`) | - | high | - |
-| `Message_StrBikeDescPanda750` | data | `message.asm:883` (`$5624`) | message/shop: bike id 6 prose description | good | `[static]` | keep (renamed from `unk_5624`) | - | high | - |
-| `Message_StrBikeDescDiablo1000` | data | `message.asm:888` (`$5668`) | message/shop: bike id 7 prose description | good | `[static]` | keep (renamed from `unk_5668`) | - | high | - |
-| `Message_StrCaughtByCops` | data | `message.asm:896` (`$56AC`) | message/race_results: 2x18 busted-screen text | good | `[static]` | keep (renamed from `unk_56AC`) | - | high | - |
-| `Message_StrCantAffordBail` | data | `message.asm:901` (`$56D8`) | message/race_results: 2x18 GAME OVER busted text | good | `[static]` | keep (renamed from `unk_56D8`) | - | high | - |
-| `Message_StrBikeNeedsRepairs` | data | `message.asm:908` (`$5704`) | message/race_results: 2x18 repair-screen text | good | `[static]` | keep (renamed from `unk_5704`) | - | high | - |
-| `Message_StrNoMoneyForRepairs` | data | `message.asm:913` (`$5730`) | message/race_results: 2x20 GAME OVER repair text | good | `[static]` | keep (renamed from `unk_5730`) | - | high | - |
-| `Message_ram_ButtonBlinkCounter` | RAM | `ram_const.asm` (`$FF05E6`) | message: shared blink phase counter (advanced per show call) | good | `[static]` | keep | - | high | - |
-| `Shop_StrBuyNewBike` | RAM | `ram_const.asm` (`$FF06EA`) | shop/message: runtime 5x20 "Press C to buy ..." record | good | `[static]` | keep | - | high | - |
-| `ram_FF07C2` | RAM | `ram_const.asm` (`$FF07C2`) | shop/message: runtime 5x20 left-bike prompt record | placeholder | `[static]` | rename-later | `Shop_StrLeftBike` | medium | - |
-| `ram_FF082E` | RAM | `ram_const.asm` (`$FF082E`) | shop/message: runtime 5x20 right-bike prompt record | placeholder | `[static]` | rename-later | `Shop_StrRightBike` | medium | - |
-| `Message_ram_DynamicRecord` | RAM | `ram_const.asm:72` (`$FF089A`) | shop/race_results/message: runtime 5x20 dynamic message record | good | `[static]` | keep (renamed from `ram_FF089A`) | - | high | - |
-| `RiderSprites_Build` | routine | `rider_sprites.asm:48` (`$5760`) | rider_sprites: build linked rider/bike SAT chain | good | `[static]` | keep | - | high | - |
-| `RiderSprites_BuildAlt` | routine | `rider_sprites.asm:224` (`$593E`) | rider_sprites: unused wrapper | good | `[static]` | keep | - | high | - |
-| `RiderSprites_StripTable` | data | `rider_sprites.asm:248` (`$5944`) | rider_sprites: 16 x 8-byte per-block SAT layout table | good | `[static]` | keep | - | high | - |
-| `Race_ram_CurrentSpriteAttributeTable` | RAM | `ram_const.asm:567` (`$FF38AC`) | race/rider_sprites: SAT base pointer | good | `[static]` | keep | - | high | - |
-| `Animation_ram_TileIndex` | RAM | `ram_const.asm:642` (`$FFDE60`) | animation/rider_sprites: tile cursor | good | `[static]` | keep | - | high | - |
-| `Animation_ram_SpriteIndex` | RAM | `ram_const.asm:644` (`$FFDE64`) | animation/rider_sprites: next free SAT slot | good | `[static]` | keep | - | high | - |
-| `Animation_ram_BaseTile` | RAM | `ram_const.asm:603` (`$FFD34A`) | animation/rider_sprites: base tile added to entries | good | `[static]` | keep | - | high | - |
-| `ram_FFDE5E` | RAM | `ram_const.asm:641` (`$FFDE5E`) | road_render/rider_sprites: object palette/priority/base bits | placeholder | `[static]` | rename-later | `Road_ram_SpriteTileBits` | medium | - |
-| `ram_FFDE62` | RAM | `ram_const.asm:643` (`$FFDE62`) | road_render/rider_sprites: chain-end/overflow flag | placeholder | `[static]` | rename-later | `Road_ram_ChainEnd` | medium | - |
-| `ram_FFDE66` | RAM | `ram_const.asm:645` (`$FFDE66`) | road_render/rider_sprites: remainder-band tile-column gap (stride-4; `$5C` -> `$60`) | placeholder | `[static]`/E8-A | rename-later | `SpriteStrip_ram_TailColumnGap` | high | - |
-| `ram_FFDE68` | RAM | `ram_const.asm:646` (`$FFDE68`) | road_render/rider_sprites: 32-row band advance after the partial +128 | placeholder | `[static]`/E8-A | rename-later | `SpriteStrip_ram_BandAdvance` | high | - |
-| `ram_FFDE6A` | RAM | `ram_const.asm:647` (`$FFDE6A`) | road_render/rider_sprites: full-band tile-column gap (stride-4; `$7C` -> `$80`) | placeholder | `[static]`/E8-A | rename-later | `SpriteStrip_ram_ColumnGap` | high | - |
-| `ram_FFDE6E` | RAM | `ram_const.asm:649` (`$FFDE6E`) | road_render/rider_sprites: object base X | placeholder | `[static]` | rename-later | `Road_ram_ObjectX` | medium | - |
-| `ram_FFDE70` | RAM | `ram_const.asm:650` (`$FFDE70`) | road_render/rider_sprites: object base Y | placeholder | `[static]` | rename-later | `Road_ram_ObjectY` | medium | - |
-| `ram_FF0906` | RAM | `ram_const.asm:74` (`$FF0906`) | rider_sprites: horizontal remainder code C as byte offset | placeholder | `[static]` | rename-later | `Rider_ram_ColCode` | medium | - |
-| `ram_FF0908` | RAM | `ram_const.asm:75` (`$FF0908`) | rider_sprites: vertical remainder code R as byte offset | placeholder | `[static]` | rename-later | `Rider_ram_RowCode` | medium | - |
-| `ram_FF090A` | RAM | `ram_const.asm:76` (`$FF090A`) | rider_sprites: horizontal block count | placeholder | `[static]` | rename-later | `Rider_ram_ColBlocks` | medium | - |
-| `ram_FF090C` | RAM | `ram_const.asm:77` (`$FF090C`) | rider_sprites: vertical block count | placeholder | `[static]` | rename-later | `Rider_ram_RowBlocks` | medium | - |
-| `ram_FF090E` | RAM | `ram_const.asm:78` (`$FF090E`) | rider_sprites: tile cursor at row start | placeholder | `[static]` | rename-later | `Rider_ram_RowStartTile` | medium | - |
-| `ram_FF1336` | RAM | `ram_const.asm:101` (`$FF1336`) | road_render/rider_sprites: mirror X offset | placeholder | `[static]` | rename-later | `Road_ram_MirrorXOffset` | medium | - |
-| `Road_ram_MirrorFlag` | RAM | `ram_const.asm:102` (`$FF133A`) | road_render/rider_sprites: mirror pass flag (object flags bit15) | good | `[static]` | keep (renamed from `ram_FF133A`) | - | high | `U-0007` resolved |
-| `ram_FF1366` | RAM | `ram_const.asm:120` (`$FF1366`) | road_render/rider_sprites: tile-budget/SAT chain-end flag | placeholder | `[static]` | rename-later | `Road_ram_ChainEndAlt` | medium | - |
-| `RiderIntro_Init` | routine | `rider_intro.asm:20` (`$59C4`) | rider_intro: build the intro screen (VDP, assets, opponent record, name/quote, DMA) | good | `[static]` | keep | - | high | - |
-| `RiderIntro_GameTick` | routine | `rider_intro.asm:393` (`$5E66`) | rider_intro: per-frame DMA, pad release edge, timed message | good | `[static]` | keep | - | high | - |
-| `RiderIntro_RecordTable` | data | `race_data_tables.asm:8` (`$19A12`) | rider_intro: 5 levels x 5 tracks x 4 variants, 8-byte (quote,image) records | good | `[static]` | keep | - | high | - |
-| `Race_ram_ActiveController` | RAM | `ram_const.asm:287` (`$FF1ADA`) | rider_intro/race: 0/1 controller that exited the intro | good | `[static]` | keep | - | high | - |
-| `ram_FF0520` | RAM | `ram_const.asm:34` (`$FF0520`) | rider_intro/race: current-race Natasha encounter flag (0/3); selects variant 3/overlay | narrow | `[static]` | rename-later | `Player_ram_NatashaCounter` | medium | `U-0004` resolved |
-| `RiderIntro_PortraitPanel` | data | `rom_assets.asm:7` (`$7EA66`) | rider_intro/endlevel/results: portrait panel image (11 tiles + 12x14 map) | good | `[static]` | keep (renamed from `unk_7EA66`) | - | high | - |
-| `RiderIntro_Portrait_0` | data | `rom_assets.asm:176` (`$AF902`) | rider_intro: Natasha portrait image (header name parsed) | good | `[static]` | keep (renamed from `unk_AF902`) | - | high | - |
-| `RiderIntro_NatashaFaceOverlay` | data | `rom_assets.asm:180` (`$B1506`) | rider_intro: close-up Natasha face/expression overlay drawn during the encounter counter | good | `[static]` | keep (renamed from `unk_B1506`) | - | high | `U-0008` resolved |
-| `RiderIntro_Quote_Natasha_01` | data | `rider_intro_quotes.asm:14` (`$16E70`) | rider_intro: intro quote for Natasha (portrait 0); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_16E70`) | - | high | - |
-| `RiderIntro_Quote_Natasha_02` | data | `rider_intro_quotes.asm:22` (`$16EC4`) | rider_intro: intro quote for Natasha (portrait 0); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_16EC4`) | - | high | - |
-| `RiderIntro_Quote_Natasha_03` | data | `rider_intro_quotes.asm:29` (`$16F08`) | rider_intro: intro quote for Natasha (portrait 0); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_16F08`) | - | high | - |
-| `RiderIntro_Quote_Natasha_04` | data | `rider_intro_quotes.asm:36` (`$16F52`) | rider_intro: intro quote for Natasha (portrait 0); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_16F52`) | - | high | - |
-| `RiderIntro_Quote_Natasha_05` | data | `rider_intro_quotes.asm:43` (`$16F9A`) | rider_intro: intro quote for Natasha (portrait 0); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_16F9A`) | - | high | - |
-| `RiderIntro_Quote_Natasha_06` | data | `rider_intro_quotes.asm:51` (`$16FF2`) | rider_intro: intro quote for Natasha (portrait 0); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_16FF2`) | - | high | - |
-| `RiderIntro_Quote_Natasha_07` | data | `rider_intro_quotes.asm:59` (`$1704E`) | rider_intro: intro quote for Natasha (portrait 0); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_1704E`) | - | high | - |
-| `RiderIntro_Quote_Natasha_08` | data | `rider_intro_quotes.asm:66` (`$17098`) | rider_intro: intro quote for Natasha (portrait 0); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_17098`) | - | high | - |
-| `RiderIntro_Quote_Natasha_09` | data | `rider_intro_quotes.asm:73` (`$170DA`) | rider_intro: intro quote for Natasha (portrait 0); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_170DA`) | - | high | - |
-| `RiderIntro_Quote_Natasha_10` | data | `rider_intro_quotes.asm:80` (`$17118`) | rider_intro: intro quote for Natasha (portrait 0); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_17118`) | - | high | - |
-| `RiderIntro_Quote_Natasha_11` | data | `rider_intro_quotes.asm:87` (`$17154`) | rider_intro: intro quote for Natasha (portrait 0); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_17154`) | - | high | - |
-| `RiderIntro_Quote_Natasha_12` | data | `rider_intro_quotes.asm:94` (`$17198`) | rider_intro: intro quote for Natasha (portrait 0); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_17198`) | - | high | - |
-| `RiderIntro_Quote_Natasha_13` | data | `rider_intro_quotes.asm:103` (`$171FA`) | rider_intro: intro quote for Natasha (portrait 0); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_171FA`) | - | high | - |
-| `RiderIntro_Quote_Natasha_14` | data | `rider_intro_quotes.asm:111` (`$1724E`) | rider_intro: intro quote for Natasha (portrait 0); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_1724E`) | - | high | - |
-| `RiderIntro_Quote_Natasha_15` | data | `rider_intro_quotes.asm:118` (`$17292`) | rider_intro: intro quote for Natasha (portrait 0); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_17292`) | - | high | - |
-| `RiderIntro_Quote_Natasha_16` | data | `rider_intro_quotes.asm:125` (`$172D0`) | rider_intro: intro quote for Natasha (portrait 0); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_172D0`) | - | high | - |
-| `RiderIntro_Quote_Natasha_17` | data | `rider_intro_quotes.asm:137` (`$1731E`) | rider_intro: intro quote for Natasha (portrait 0); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_1731E`) | - | high | - |
-| `RiderIntro_Quote_Natasha_18` | data | `rider_intro_quotes.asm:145` (`$1737E`) | rider_intro: intro quote for Natasha (portrait 0); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_1737E`) | - | high | - |
-| `RiderIntro_Quote_Natasha_19` | data | `rider_intro_quotes.asm:152` (`$173C2`) | rider_intro: intro quote for Natasha (portrait 0); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_173C2`) | - | high | - |
-| `RiderIntro_Quote_Natasha_20` | data | `rider_intro_quotes.asm:160` (`$1741E`) | rider_intro: intro quote for Natasha (portrait 0); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_1741E`) | - | high | - |
-| `RiderIntro_Quote_Natasha_21` | data | `rider_intro_quotes.asm:166` (`$1744C`) | rider_intro: intro quote for Natasha (portrait 0); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_1744C`) | - | high | - |
-| `RiderIntro_Quote_Natasha_22` | data | `rider_intro_quotes.asm:173` (`$17494`) | rider_intro: intro quote for Natasha (portrait 0); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_17494`) | - | high | - |
-| `RiderIntro_Quote_Natasha_23` | data | `rider_intro_quotes.asm:180` (`$174D2`) | rider_intro: intro quote for Natasha (portrait 0); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_174D2`) | - | high | - |
-| `RiderIntro_Quote_Natasha_24` | data | `rider_intro_quotes.asm:187` (`$17516`) | rider_intro: intro quote for Natasha (portrait 0); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_17516`) | - | high | - |
-| `RiderIntro_Quote_Natasha_25` | data | `rider_intro_quotes.asm:195` (`$1756E`) | rider_intro: intro quote for Natasha (portrait 0); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_1756E`) | - | high | - |
-| `RiderIntro_Quote_Natasha_26` | data | `rider_intro_quotes.asm:202` (`$175B2`) | rider_intro: intro quote for Natasha (portrait 0); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_175B2`) | - | high | - |
-| `RiderIntro_Quote_Natasha_27` | data | `rider_intro_quotes.asm:211` (`$1761E`) | rider_intro: intro quote for Natasha (portrait 0); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_1761E`) | - | high | - |
-| `RiderIntro_Quote_Natasha_28` | data | `rider_intro_quotes.asm:217` (`$17648`) | rider_intro: intro quote for Natasha (portrait 0); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_17648`) | - | high | - |
-| `RiderIntro_Quote_Natasha_29` | data | `rider_intro_quotes.asm:224` (`$1768A`) | rider_intro: intro quote for Natasha (portrait 0); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_1768A`) | - | high | - |
-| `RiderIntro_Quote_Natasha_30` | data | `rider_intro_quotes.asm:232` (`$176DE`) | rider_intro: intro quote for Natasha (portrait 0); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_176DE`) | - | high | - |
-| `RiderIntro_Quote_Biff_01` | data | `rider_intro_quotes.asm:602` (`$18548`) | rider_intro: intro quote for Biff (portrait 6); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_18548`) | - | high | - |
-| `RiderIntro_Quote_Biff_02` | data | `rider_intro_quotes.asm:610` (`$1859C`) | rider_intro: intro quote for Biff (portrait 6); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_1859C`) | - | high | - |
-| `RiderIntro_Quote_Biff_03` | data | `rider_intro_quotes.asm:617` (`$185DE`) | rider_intro: intro quote for Biff (portrait 6); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_185DE`) | - | high | - |
-| `RiderIntro_Quote_Biff_04` | data | `rider_intro_quotes.asm:625` (`$1862A`) | rider_intro: intro quote for Biff (portrait 6); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_1862A`) | - | high | - |
-| `RiderIntro_Quote_Biff_05` | data | `rider_intro_quotes.asm:632` (`$18674`) | rider_intro: intro quote for Biff (portrait 6); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_18674`) | - | high | - |
-| `RiderIntro_Quote_Biff_06` | data | `rider_intro_quotes.asm:639` (`$186B8`) | rider_intro: intro quote for Biff (portrait 6); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_186B8`) | - | high | - |
-| `RiderIntro_Quote_Slater_01` | data | `rider_intro_quotes.asm:691` (`$188B0`) | rider_intro: intro quote for Slater (portrait 7); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_188B0`) | - | high | - |
-| `RiderIntro_Quote_Slater_02` | data | `rider_intro_quotes.asm:698` (`$188FA`) | rider_intro: intro quote for Slater (portrait 7); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_188FA`) | - | high | - |
-| `RiderIntro_Quote_Slater_03` | data | `rider_intro_quotes.asm:705` (`$1893E`) | rider_intro: intro quote for Slater (portrait 7); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_1893E`) | - | high | - |
-| `RiderIntro_Quote_Slater_04` | data | `rider_intro_quotes.asm:712` (`$18982`) | rider_intro: intro quote for Slater (portrait 7); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_18982`) | - | high | - |
-| `RiderIntro_Quote_Slater_05` | data | `rider_intro_quotes.asm:720` (`$189DE`) | rider_intro: intro quote for Slater (portrait 7); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_189DE`) | - | high | - |
-| `RiderIntro_Quote_Slater_06` | data | `rider_intro_quotes.asm:727` (`$18A26`) | rider_intro: intro quote for Slater (portrait 7); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_18A26`) | - | high | - |
-| `RiderIntro_Quote_Slater_07` | data | `rider_intro_quotes.asm:735` (`$18A7E`) | rider_intro: intro quote for Slater (portrait 7); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_18A7E`) | - | high | - |
-| `RiderIntro_Quote_Slater_08` | data | `rider_intro_quotes.asm:742` (`$18AC6`) | rider_intro: intro quote for Slater (portrait 7); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_18AC6`) | - | high | - |
-| `RiderIntro_Quote_Slater_09` | data | `rider_intro_quotes.asm:749` (`$18B0A`) | rider_intro: intro quote for Slater (portrait 7); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_18B0A`) | - | high | - |
-| `RiderIntro_Quote_Slater_10` | data | `rider_intro_quotes.asm:757` (`$18B62`) | rider_intro: intro quote for Slater (portrait 7); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_18B62`) | - | high | - |
-| `RiderIntro_Quote_Slater_11` | data | `rider_intro_quotes.asm:765` (`$18BAE`) | rider_intro: intro quote for Slater (portrait 7); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_18BAE`) | - | high | - |
-| `RiderIntro_Quote_OLeary_01` | data | `rider_intro_quotes.asm:276` (`$178A4`) | rider_intro: intro quote for O'Leary (portrait 1); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_178A4`) | - | high | - |
-| `RiderIntro_Quote_OLeary_02` | data | `rider_intro_quotes.asm:283` (`$178E8`) | rider_intro: intro quote for O'Leary (portrait 1); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_178E8`) | - | high | - |
-| `RiderIntro_Quote_OLeary_03` | data | `rider_intro_quotes.asm:291` (`$17940`) | rider_intro: intro quote for O'Leary (portrait 1); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_17940`) | - | high | - |
-| `RiderIntro_Quote_ORourke_01` | data | `rider_intro_quotes.asm:342` (`$17B32`) | rider_intro: intro quote for O'Rourke (portrait 2); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_17B32`) | - | high | - |
-| `RiderIntro_Quote_ORourke_02` | data | `rider_intro_quotes.asm:350` (`$17B8A`) | rider_intro: intro quote for O'Rourke (portrait 2); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_17B8A`) | - | high | - |
-| `RiderIntro_Quote_ORourke_03` | data | `rider_intro_quotes.asm:358` (`$17BEA`) | rider_intro: intro quote for O'Rourke (portrait 2); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_17BEA`) | - | high | - |
-| `RiderIntro_Quote_ORourke_04` | data | `rider_intro_quotes.asm:365` (`$17C34`) | rider_intro: intro quote for O'Rourke (portrait 2); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_17C34`) | - | high | - |
-| `RiderIntro_Quote_Ikira_01` | data | `rider_intro_quotes.asm:825` (`$18DC8`) | rider_intro: intro quote for Ikira (portrait 8); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_18DC8`) | - | high | - |
-| `RiderIntro_Quote_Ikira_02` | data | `rider_intro_quotes.asm:833` (`$18E20`) | rider_intro: intro quote for Ikira (portrait 8); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_18E20`) | - | high | - |
-| `RiderIntro_Quote_Ikira_03` | data | `rider_intro_quotes.asm:840` (`$18E5E`) | rider_intro: intro quote for Ikira (portrait 8); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_18E5E`) | - | high | - |
-| `RiderIntro_Quote_Ikira_04` | data | `rider_intro_quotes.asm:847` (`$18EA0`) | rider_intro: intro quote for Ikira (portrait 8); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_18EA0`) | - | high | - |
-| `RiderIntro_Quote_Ikira_05` | data | `rider_intro_quotes.asm:855` (`$18EF8`) | rider_intro: intro quote for Ikira (portrait 8); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_18EF8`) | - | high | - |
-| `RiderIntro_Quote_Ikira_06` | data | `rider_intro_quotes.asm:862` (`$18F42`) | rider_intro: intro quote for Ikira (portrait 8); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_18F42`) | - | high | - |
-| `RiderIntro_Quote_Ikira_07` | data | `rider_intro_quotes.asm:869` (`$18F80`) | rider_intro: intro quote for Ikira (portrait 8); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_18F80`) | - | high | - |
-| `RiderIntro_Quote_Sergio_01` | data | `rider_intro_quotes.asm:924` (`$19178`) | rider_intro: intro quote for Sergio (portrait 9); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_19178`) | - | high | - |
-| `RiderIntro_Quote_Sergio_02` | data | `rider_intro_quotes.asm:931` (`$191C0`) | rider_intro: intro quote for Sergio (portrait 9); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_191C0`) | - | high | - |
-| `RiderIntro_Quote_Sergio_03` | data | `rider_intro_quotes.asm:938` (`$191FC`) | rider_intro: intro quote for Sergio (portrait 9); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_191FC`) | - | high | - |
-| `RiderIntro_Quote_Sergio_04` | data | `rider_intro_quotes.asm:945` (`$1923E`) | rider_intro: intro quote for Sergio (portrait 9); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_1923E`) | - | high | - |
-| `RiderIntro_Quote_Sergio_05` | data | `rider_intro_quotes.asm:952` (`$1927C`) | rider_intro: intro quote for Sergio (portrait 9); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_1927C`) | - | high | - |
-| `RiderIntro_Quote_Sergio_06` | data | `rider_intro_quotes.asm:959` (`$192BA`) | rider_intro: intro quote for Sergio (portrait 9); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_192BA`) | - | high | - |
-| `RiderIntro_Quote_Sergio_07` | data | `rider_intro_quotes.asm:967` (`$1930E`) | rider_intro: intro quote for Sergio (portrait 9); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_1930E`) | - | high | - |
-| `RiderIntro_Quote_Sergio_08` | data | `rider_intro_quotes.asm:975` (`$1936A`) | rider_intro: intro quote for Sergio (portrait 9); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_1936A`) | - | high | - |
-| `RiderIntro_Quote_Sergio_09` | data | `rider_intro_quotes.asm:983` (`$193B2`) | rider_intro: intro quote for Sergio (portrait 9); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_193B2`) | - | high | - |
-| `RiderIntro_Quote_Sergio_10` | data | `rider_intro_quotes.asm:990` (`$193FA`) | rider_intro: intro quote for Sergio (portrait 9); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_193FA`) | - | high | - |
-| `RiderIntro_Quote_Flynn_01` | data | `rider_intro_quotes.asm:414` (`$17E02`) | rider_intro: intro quote for Flynn (portrait 3); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_17E02`) | - | high | - |
-| `RiderIntro_Quote_Flynn_02` | data | `rider_intro_quotes.asm:421` (`$17E46`) | rider_intro: intro quote for Flynn (portrait 3); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_17E46`) | - | high | - |
-| `RiderIntro_Quote_Flynn_03` | data | `rider_intro_quotes.asm:428` (`$17E88`) | rider_intro: intro quote for Flynn (portrait 3); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_17E88`) | - | high | - |
-| `RiderIntro_Quote_OShea_01` | data | `rider_intro_quotes.asm:482` (`$180AE`) | rider_intro: intro quote for O'Shea (portrait 4); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_180AE`) | - | high | - |
-| `RiderIntro_Quote_OShea_02` | data | `rider_intro_quotes.asm:490` (`$1810E`) | rider_intro: intro quote for O'Shea (portrait 4); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_1810E`) | - | high | - |
-| `RiderIntro_Quote_OShea_03` | data | `rider_intro_quotes.asm:498` (`$1816A`) | rider_intro: intro quote for O'Shea (portrait 4); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_1816A`) | - | high | - |
-| `RiderIntro_Quote_Helldog_01` | data | `rider_intro_quotes.asm:1055` (`$1968A`) | rider_intro: intro quote for Helldog (portrait 10); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_1968A`) | - | high | - |
-| `RiderIntro_Quote_Helldog_02` | data | `rider_intro_quotes.asm:1063` (`$196DE`) | rider_intro: intro quote for Helldog (portrait 10); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_196DE`) | - | high | - |
-| `RiderIntro_Quote_Helldog_03` | data | `rider_intro_quotes.asm:1070` (`$19720`) | rider_intro: intro quote for Helldog (portrait 10); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_19720`) | - | high | - |
-| `RiderIntro_Quote_Helldog_04` | data | `rider_intro_quotes.asm:1077` (`$19768`) | rider_intro: intro quote for Helldog (portrait 10); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_19768`) | - | high | - |
-| `RiderIntro_Quote_Helldog_05` | data | `rider_intro_quotes.asm:1084` (`$197AC`) | rider_intro: intro quote for Helldog (portrait 10); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_197AC`) | - | high | - |
-| `RiderIntro_Quote_Helldog_06` | data | `rider_intro_quotes.asm:1092` (`$19804`) | rider_intro: intro quote for Helldog (portrait 10); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_19804`) | - | high | - |
-| `RiderIntro_Quote_OConnor_01` | data | `rider_intro_quotes.asm:545` (`$18302`) | rider_intro: intro quote for O'Connor (portrait 5); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_18302`) | - | high | - |
-| `RiderIntro_Quote_OConnor_02` | data | `rider_intro_quotes.asm:552` (`$18346`) | rider_intro: intro quote for O'Connor (portrait 5); only `RiderIntro_RecordTable` | good | `[static]` | keep (renamed from `RaceQuote_18346`) | - | high | - |
-| `RiderIntro_QuoteData` | data alias | `rider_intro_quotes.asm:1143` (`$16E70`) | rider_intro: aliases the first intro quote; no current reader | narrow | `[static]` | rename-later | `RiderIntro_FirstQuote` | medium | - |
-| `RaceResults_Init` | routine | `race_results.asm ($5F28)` | race_results: outcome copy, VDP setup, layout dispatch, status box, audio | good | `[static]` | keep | - | high | - |
-| `RaceResults_DrawStandings` | routine | `race_results.asm ($62CE)` | race_results: title, track image/palette, standings, player row | good | `[static]` | keep | - | high | - |
-| `RaceResults_DrawBusted` | routine | `race_results.asm ($647E)` | race_results: busted title/panel, cop portrait/quote, fine or GAME OVER | good | `[static]` | keep | - | high | - |
-| `RaceResults_DrawRepair` | routine | `race_results.asm ($67AC)` | race_results: repair panel, level portrait/quote, cost or GAME OVER | good | `[static]` | keep | - | high | - |
-| `RaceResults_GameTick` | routine | `race_results.asm ($6A90)` | race_results: per-frame DMA, input, message cycle, exit | good | `[static]` | keep | - | high | - |
-| `RaceResults_HandleInput` | routine | `race_results.asm ($6BD4)` | race_results: A high score, B status box, C shop | good | `[static]` | keep | - | high | - |
-| `DrawString` | routine | `race_results.asm ($6C5E)` | race_results: unused text draw helper (dead: no callers) | good | `[static]` | keep | - | high | - |
-| `Race_ram_PlayerAOutcome` | RAM | `ram_const.asm:37 ($FF0526)` | race_core/intro/endlevel/race_results: player A race outcome (0/>4/4) | good | `[static]` | keep (renamed) | - | high | - |
-| `Race_ram_PlayerBOutcome` | RAM | `ram_const.asm:38 ($FF0528)` | race_core/intro/endlevel/race_results: player B race outcome (0/>4/4) | good | `[static]` | keep (renamed) | - | high | - |
-| `RaceResults_ram_NextFunction` | RAM | `ram_const.asm:78 ($FF0910)` | race_results/highscore/shop: next-screen pointer | good | `[static]` | keep | - | high | - |
-| `RaceResults_ram_DrawRoutine` | RAM | `ram_const.asm:79 ($FF0914)` | race_results: active draw routine pointer (written, never read) | good | `[static]` | keep | - | high | - |
-| `RaceResults_ram_Outcome` | RAM | `ram_const.asm:80 ($FF0918)` | race_results: copied outcome; 4 selects the end-level screen | good | `[static]` | keep | - | high | - |
-| `RaceResults_ram_Amount` | RAM | `ram_const.asm:81 ($FF091A)` | race_results: fine/repair amount for the bust/repair message | good | `[static]` | keep | - | high | - |
-| `RaceResults_ram_CurrentButtons` | RAM | `ram_const.asm:82 ($FF091C)` | race_results: current pad byte passed to HandleInput | good | `[static]` | keep | - | high | - |
-| `Menu_ram_PlayerLevel` | RAM | `ram_const.asm:27 ($FF050A)` | race_results/rider_intro/shop/endlevel: 1-based player level | good | `[static]` | keep | - | high | - |
-| `RaceResults_ram_StandingsRecord` | RAM | `ram_const.asm:176 ($FF1414)` | race_results/race_core: standings text record (header + chars) | good | `[static]` | keep (renamed from `ram_FF1414`) | - | high | - |
-| `RaceResults_ram_StandingsHeight` | RAM | `ram_const.asm:177 ($FF1418)` | race_results/race_core: standings text height | good | `[static]` | keep (renamed from `ram_FF1418`) | - | high | - |
-| `RaceResults_ram_StandingsWidth` | RAM | `ram_const.asm:178 ($FF141A)` | race_results/race_core: standings text width | good | `[static]` | keep (renamed from `ram_FF141A`) | - | high | - |
-| `Race_EventBuffer` | RAM | `ram_const.asm:25 ($FF04C8)` | race_results/race_core: 16-long event buffer; first word $FFFF = busted/destroyed | good | `[static]` | keep | - | high | - |
-| `Race_CopIndex` | RAM | `ram_const.asm:313 ($FF1B1A)` | race_results/race_core: cop index 1..5; 0 = bike destroyed | good | `[static]` | keep | - | high | - |
-| `Race_ComputeResults` | routine | `race_core.asm ($C3F8)` | race_results: computes outcome, fine/repair, places, password | good | `[static]` | keep | - | high | - |
-| `Race_FormatMoney` | routine | `race_core.asm ($C6C4)` | race_results: backwards right-aligned cash formatter | good | `[static]` | keep | - | high | - |
-| `Race_FormatNumber` | routine | `race_core.asm ($C79A)` | race_results/shop/race: backwards number formatter for fines/costs | good | `[static]` | keep | - | high | - |
-| `HighScore_Init` | routine | `highscore.asm ($6DC0)` | race_results: A opens the high-score screen | good | `[static]` | keep | - | high | - |
-| `Shop_Init` | routine | `shop.asm:17 ($74AA)` | race_results/shop: C opens the shop; builds the whole screen | good | `[static]` | keep | - | high | - |
-| `RaceResults_TitleTiles` | data | `rom_assets.asm ($AF26C)` | race_results: results title tiles (27x2 map) | good | `[static]` | keep (renamed from `unk_AF26C`) | - | high | - |
-| `RaceResults_BustedTitleTiles` | data | `rom_assets.asm ($7ED66)` | race_results: busted title tiles ($15x2 map) | good | `[static]` | keep (renamed from `unk_7ED66`) | - | high | - |
-| `RaceResults_TrackImagePtrs` | data | `race_misc_data.asm ($7E670)` | race_results: five long pointers to per-track images | good | `[static]` | keep (renamed from `unk_7E670`) | - | high | - |
-| `RaceResults_TrackImageOffsets` | data | `race_misc_data.asm ($7E684)` | race_results: five word image offsets in the staging buffer | good | `[static]` | keep (renamed from `unk_7E684`) | - | high | - |
-| `RaceResults_TrackNametableOffsets` | data | `race_misc_data.asm ($7E68E)` | race_results: five word nametable offsets | good | `[static]` | keep (renamed from `unk_7E68E`) | - | high | - |
-| `RaceResults_TrackPaletteOffsets` | data | `race_misc_data.asm ($7E698)` | race_results: five word palette offsets | good | `[static]` | keep (renamed from `unk_7E698`) | - | high | - |
-| `RaceResults_CopTablePos` | data | `race_data_tables.asm ($19E22)` | race_results: cop portraits, money>=0, 5x4 8-byte records | good | `[static]` | keep | - | high | - |
-| `RaceResults_CopTableNeg` | data | `race_data_tables.asm ($19EC2)` | race_results: cop portraits, money<0, 5x2 8-byte records | good | `[static]` | keep | - | high | - |
-| `RaceResults_LevelTablePos` | data | `race_data_tables.asm ($19D32)` | race_results: level portraits, money>=0, 5x4 8-byte records | good | `[static]` | keep | - | high | - |
-| `RaceResults_LevelTableNeg` | data | `race_data_tables.asm ($19DD2)` | race_results: level portraits, money<0, 5x2 8-byte records | good | `[static]` | keep | - | high | - |
-| `RaceResults_StrNextLevelShort` | data | `race_results.asm ($6C94)` | race_results: dead 5x20 'next level' text (duplicate of endlevel $8C96) | good | `[static]` | keep (renamed from `unk_6C94`) | - | high | - |
-| `RaceResults_StrNotReadyEncoded` | data | `race_results.asm ($6D00)` | race_results: dead 20-byte ASCII with bit 7 set 'You aren't ready for' (duplicate $8D02) | good | `[static]` | keep (renamed from `unk_6D00`) | - | high | - |
-| `RaceResults_StrNotReadyTail` | data | `race_results.asm ($6D14)` | race_results: dead continuation text (duplicate of endlevel $8D16) | good | `[static]` | keep (renamed from `unk_6D14`) | - | high | - |
-| `RaceResults_StrContinuePlay` | data | `race_results.asm ($6D50)` | race_results: dead 3x16 'Continue play at' text (duplicate $8D52) | good | `[static]` | keep (renamed from `unk_6D50`) | - | high | - |
-| `RaceResults_StrNextLevel` | data | `race_results.asm ($6D88)` | race_results: dead 3x16 'The next level' text (duplicate $8D8A) | good | `[static]` | keep (renamed from `unk_6D88`) | - | high | - |
-| `VDP_VRAM_WRITE` | macro | `hw_const.asm:9` | race_results and other screens: staged VRAM write helper | good | `[static]` | keep | - | high | - |
-| `VDP_VSRAM_WRITE` | macro | `hw_const.asm:25` | race_results and other screens: staged VSRAM write helper | good | `[static]` | keep | - | high | - |
-| `HighScore_GameTick` | routine | `highscore.asm:406` (`$732E`) | highscore: normal tick (frame DMA, release/new-press, message cycle) | good | `[static]` | keep | - | high | - |
-| `HighScore_GameTick_Demo` | routine | `highscore.asm:364` (`$72BA`) | highscore: attract tick (release edge or 600-frame timer) | good | `[static]` | keep | - | high | - |
-| `HighScore_HandleInput` | routine | `highscore.asm:484` (`$7460`) | highscore: A/B/C -> restart/results/shop | good | `[static]` | keep | - | high | - |
-| `HighScore_ram_Table` | RAM | `ram_const.asm:66` (`$FF05EA`) | highscore/intro/race_core: header + 7x20 high-score table | good | `[static]` | keep | - | high | - |
-| `HighScore_ram_PlayerATableOffset` | RAM | `ram_const.asm:39` (`$FF052A`) | highscore/intro/race_core: player A row byte offset | good | `[static]` | keep | - | high | - |
-| `HighScore_ram_PlayerBTableOffset` | RAM | `ram_const.asm:40` (`$FF052C`) | highscore/intro/race_core: player B row byte offset | good | `[static]` | keep | - | high | - |
-| `HighScore_ram_CurrentButtons` | RAM | `ram_const.asm:83` (`$FF094E`) | highscore: low byte of the pad state handled by A/B/C | narrow | `[static]` | keep | - | medium | - |
-| `ImgHighScoreTitle` | asset | `rom_assets.asm:152` (`$A2F5C`) | highscore: 20x2 title to `$9000`; its palette (+$4E4) is loaded to 4 palettes | good | `[static]` | keep | - | high | - |
-| `ImgHighScoreBadge` | asset | `rom_assets.asm:10` (`$7EB72`) | highscore: yellow badge to `$B000`, drawn five times | good | `[static]` | keep | - | high | - |
-| `FontHighScoreTable` | asset | `rom_assets.asm:146` (`$A2BAA`) | highscore: 20-wide table font to `$800` | good | `[static]` | keep | - | high | - |
-| `FontHighScoreDigits` | asset | `rom_assets.asm:149` (`$A2E68`) | highscore: 10 digit glyphs (0-9) to `$1000`; loaded but never drawn | good | `[static]` | keep (renamed from `unk_A2E68`) | - | high | `U-0009` wontfix |
-| `Shop_DrawBikeName` | routine | `shop.asm:339 ($7996)` | shop: encode/draw the selected bike name+stats at (13,18) | good | `[static]` | keep | - | high | - |
-| `Shop_ShowBikeDescription` | routine | `shop.asm:367 ($79DA)` | shop: select description message 51..58 for 600 frames | good | `[static]` | keep | - | high | - |
-| `Shop_GameTick` | routine | `shop.asm:385 ($79F8)` | shop: frame DMA, H-scroll, Start->results, pad edges, message cycle | good | `[static]` | keep | - | high | - |
-| `Shop_HandleInput` | routine | `shop.asm:469 ($7B4C)` | shop: A high score, B results, C buy/trade-in, Left/Right select | good | `[static]` | keep | - | high | - |
-| `Shop_DrawCreditsAndPrice` | routine | `shop.asm:604 ($7D5E)` | shop: credits + price; palette 2 when affordable, palette 3 when not | good | `[static]` | keep | - | high | - |
-| `Shop_DrawString` | routine | `shop.asm:684 ($7E70)` | shop: encode/draw a string with the caller palette word | good | `[static]` | keep | - | high | - |
-| `Shop_ShowAlreadyOwned` | routine | `shop.asm:708 ($7EA2)` | shop: dynamic "You already own a ..." message 59 | good | `[static]` | keep | - | high | - |
-| `Shop_ShowCannotAfford` | routine | `shop.asm:748 ($7F02)` | shop: dynamic "You need more credit ..." message 59 | good | `[static]` | keep | - | high | - |
-| `Shop_PrepareMessages` | routine | `shop.asm:789 ($7F62)` | shop: build the buy/left/right prompt records | good | `[static]` | keep | - | high | - |
-| `Shop_DrawBikes` | routine | `shop.asm:885 ($803C)` | shop: palette lines 2/3 + five bike images on the plane | good | `[static]` | keep | - | high | - |
-| `Shop_UpdateScroll` | routine | `shop.asm:996 ($8178)` | shop: clamp +/-8 and animate the H-scroll band back to $160 | good | `[static]` | keep | - | high | - |
-| `Shop_BikeDescriptions` | data | `shop.asm:1029 ($81D2)` | shop: eight pointers to name/power/weight records | good | `[static]` | keep | - | high | - |
-| `Shop_StrShuriken400` | data | `shop.asm:1039 ($81F2)` | shop: bike id 0 name/power/weight record | good | `[static]` | keep | - | high | - |
-| `Shop_StrPanda600` | data | `shop.asm:1043 ($8216)` | shop: bike id 1 name/power/weight record | good | `[static]` | keep | - | high | - |
-| `Shop_StrBanzai750` | data | `shop.asm:1047 ($823A)` | shop: bike id 2 name/power/weight record | good | `[static]` | keep | - | high | - |
-| `Shop_StrKamikaze750` | data | `shop.asm:1051 ($825E)` | shop: bike id 3 name/power/weight record | good | `[static]` | keep | - | high | - |
-| `Shop_StrShuriken1000` | data | `shop.asm:1055 ($8282)` | shop: bike id 4 name/power/weight record | good | `[static]` | keep | - | high | - |
-| `Shop_StrFerruci850` | data | `shop.asm:1059 ($82A6)` | shop: bike id 5 name/power/weight record | good | `[static]` | keep | - | high | - |
-| `Shop_StrPanda750` | data | `shop.asm:1063 ($82CA)` | shop: bike id 6 name/power/weight record | good | `[static]` | keep | - | high | - |
-| `Shop_StrDiablo1000` | data | `shop.asm:1067 ($82EE)` | shop: bike id 7 name/power/weight record | good | `[static]` | keep | - | high | - |
-| `Shop_dPrices` | data | `shop.asm:1073 ($8312)` | shop: eight bike prices; half the current price is trade-in credit | good | `[static]` | keep | - | high | - |
-| `Shop_BikeImageTable` | data | `shop.asm:1084 ($8322)` | shop: eight ids -> one of three 18x9 RAM maps [3,3,3,1,1,2,1,2] | good | `[static]` | keep | - | high | - |
-| `Shop_BikePalettes` | data | `race_misc_data.asm:86 ($7E370)` | shop/race_core: eight 32-byte 16-colour bike palettes | good | `[static]` | keep | - | high | - |
-| `Shop_CurrentBikeId` | RAM | `ram_const.asm:84 ($FF0950)` | shop: selected bike id 0..7 | good | `[static]` | keep | - | high | - |
-| `Shop_ram_CurrentButtons` | RAM | `ram_const.asm:85 ($FF0952)` | shop: low byte of the pad state being handled (upper byte stale) | narrow | `[static]` | keep | - | medium | - |
-| `Shop_ScrollPos` | RAM | `ram_const.asm:86 ($FF0954)` | shop: H-scroll band position (centre $160) | good | `[static]` | keep | - | high | - |
-| `Shop_ImageBike1` | RAM | `ram_const.asm:87 ($FF0956)` | shop: 18x9 nametable map for bike model 1 | good | `[static]` | keep | - | high | - |
-| `Shop_ImageBike2` | RAM | `ram_const.asm:88 ($FF0A9A)` | shop: 18x9 nametable map for bike model 2 | good | `[static]` | keep | - | high | - |
-| `Shop_ImageBike3` | RAM | `ram_const.asm:89 ($FF0BDE)` | shop: 18x9 nametable map for bike model 3 | good | `[static]` | keep | - | high | - |
-| `ImgShopArrowLeft` | asset | `rom_assets.asm:125 ($9E784)` | shop: 4x2 left arrow tiles to $B000 | good | `[static]` | keep | - | high | - |
-| `ImgShopArrowRight` | asset | `rom_assets.asm:128 ($9E874)` | shop: 4x2 right arrow tiles to $B100; its palette (+$C4) becomes the screen palette | good | `[static]` | keep | - | high | - |
-| `ImgShopBike1` | asset | `rom_assets.asm:131 ($9EA1E)` | shop: bike model 1 tiles to $C000; 18x9 map to Shop_ImageBike1 | good | `[static]` | keep | - | high | - |
-| `ImgShopBike2` | asset | `rom_assets.asm:134 ($9FDDE)` | shop: bike model 2 tiles to $D000; 18x9 map to Shop_ImageBike2 | good | `[static]` | keep | - | high | - |
-| `ImgShopBike3` | asset | `rom_assets.asm:137 ($A122A)` | shop: bike model 3 tiles to $E000; 18x9 map to Shop_ImageBike3 | good | `[static]` | keep | - | high | - |
-| `DmaWriteCRAM` | routine | `race_physics.asm:49 ($0D96A)` | shop/race: upload Global_ram_PalettePtr to CRAM while the shop scroll moves | good | `[static]` | keep | - | high | - |
-| `EndLevel_Init` | routine | `endlevel.asm:29 ($8342)` | endlevel: VDP, background/window/tiles/font, race-animation state | good | `[static]` | keep | - | high | - |
-| `EndLevel_InitVictoryCharacter` | routine | `endlevel.asm:220 ($8682)` | endlevel: panel, rider portrait/name/quote/palette, AdvanceLevel | good | `[static]` | keep | - | high | - |
-| `EndLevel_AdvanceLevel` | routine | `endlevel.asm:422 ($8946)` | endlevel: level++ (clamp 5), places/outcome clear, opponents, password | good | `[static]` | keep | - | high | - |
-| `EndLevel_GameTickVictoryCharacter` | routine | `endlevel.asm:494 ($8A1A)` | endlevel: window DMA, Start-held exit, message group $180 | good | `[static]` | keep | - | high | - |
-| `EndLevel_GameTick` | routine | `endlevel.asm:558 ($8AEE)` | endlevel: swap-delay DMA/SAT and end-stage switch | good | `[static]` | keep | - | high | - |
-| `EndLevel_UpdateAnimation` | routine | `endlevel.asm:615 ($8B94)` | endlevel: per-level frame limit, UpdateAnimation2, end input | good | `[static]` | keep | - | high | - |
-| `EndLevel_FrameCounts` | data | `endlevel.asm:685 ($8C8C)` | endlevel: five inclusive last frame indices (35,54,81,91,123) | good | `[static]` | keep | - | high | - |
-| `unk_8C96` | data | `endlevel.asm:690 ($8C96)` | endlevel: dead 5x20 text; duplicate of `RaceResults_StrNextLevelShort` | placeholder | `[static]` | rename-later | `EndLevel_StrNextLevelShort` | medium | - |
-| `unk_8D02` | data | `endlevel.asm:700 ($8D02)` | endlevel: dead bit-7 ASCII ("You aren't ready for"); duplicate of `RaceResults_StrNotReadyEncoded` | placeholder | `[static]` | rename-later | `EndLevel_StrNotReadyEncoded` | medium | - |
-| `unk_8D16` | data | `endlevel.asm:706 ($8D16)` | endlevel: dead text; duplicate of `RaceResults_StrNotReadyTail` | placeholder | `[static]` | rename-later | `EndLevel_StrNotReadyTail` | medium | - |
-| `unk_8D52` | data | `endlevel.asm:710 ($8D52)` | endlevel: dead text; duplicate of `RaceResults_StrContinuePlay` | placeholder | `[static]` | rename-later | `EndLevel_StrContinuePlay` | medium | - |
-| `unk_8D8A` | data | `endlevel.asm:717 ($8D8A)` | endlevel: dead text; duplicate of `RaceResults_StrNextLevel` | placeholder | `[static]` | rename-later | `EndLevel_StrNextLevel` | medium | - |
-| `EndLevel_AnimationScript` | data | `endlevel.asm:727 ($8DC2)` | endlevel: `UpdateAnimation2` script; 123 pointers into the decompressed animation buffer | good | `[static]` | keep | - | high | - |
-| `EndLevel_LevelRiderTable` | data | `race_data_tables.asm:101 ($19F12)` | endlevel: 5 levels x 2 quote/portrait records | good | `[static]` | keep | - | high | - |
-| `EndLevel_AnimationTiles` | asset | `rom_assets.asm:74 ($80000)` | endlevel: compressed tile set -> VRAM `$5C00` | good | `[static]` | keep | - | high | - |
-| `EndLevel_AnimationData` | asset | `rom_assets.asm:77 ($8BF12)` | endlevel: compressed frame stream -> `$5066` bytes in `Intro_ram_ImageBuffer` | good | `[static]` | keep | - | high | - |
-| `EndLevel_WindowImage` | asset | `rom_assets.asm:19 ($7F400)` | endlevel: 40x14 window image -> VRAM `$2020`, palette `+$2E4` | good | `[static]` | keep | - | high | - |
-| `Intro_TitleScrollTable` | RAM | `ram_const.asm:585 ($FF439C)` | endlevel/rider_intro: H-scroll table `$400` + SAT half `$280` | good | `[static]` | keep | - | high | - |
-| `UpdateAnimation2` | routine | `animation.asm:101 ($16926)` | endlevel: build SAT entries without copying tiles | good | `[static]` | keep | - | high | - |
-| `Race_SwapFrames` | routine | `race_core.asm:1586 ($BBFE)` | endlevel/race: flip the next HScroll/SAT/HUD/sprite buffers | good | `[static]` | keep | - | high | - |
-| `Race_FinishFrame` | routine | `race_core.asm:1644 ($BD24)` | endlevel/race: publish the current frame and flip current buffers | good | `[static]` | keep | - | high | - |
-| `Race_ram_NextScrollTable` | RAM | `ram_const.asm:564 ($FF38A4)` | endlevel/race: next H-scroll/SAT base pointer | good | `[static]` | keep | - | high | - |
-| `Race_ram_SpriteSize1` | RAM | `ram_const.asm:592 ($FFD32C)` | endlevel/race: sprite-size buffer 1 | good | `[static]` | keep | - | high | - |
-| `Race_ram_SpriteSize2` | RAM | `ram_const.asm:593 ($FFD32E)` | endlevel/race: sprite-size buffer 2 | good | `[static]` | keep | - | high | - |
-| `Race_ram_SpriteDestination` | RAM | `ram_const.asm:639 ($FFDE5C)` | endlevel/race: sprite destination tile base (`$8680`/`$C680` parity) | narrow | `[static]` | keep | - | medium | - |
-| `EndLevel_ram_AnimFrame` | RAM | `ram_const.asm:90 ($FF0D22)` | endlevel: animation frame; `-1` ends the stage | good | `[static]` | keep | - | high | - |
-| `EndLevel_ram_SpriteSwapDelay` | RAM | `ram_const.asm:91 ($FF0D24)` | endlevel: swap countdown; reload 5 gives a 6-GameTick DMA period | good | `[static]` | keep | - | high | - |
-| `Race_InitActorLists` | routine | `race_core.asm:1160 ($B6C4)` | race_core: build ram_FF1A08 (PlayerA+Struct_9..15) and the 7-entry opponent free list | good | `[static]` | keep | - | high | - |
-| `Race_InitActorPositions` | routine | `race_core.asm:1201 ($B72A)` | race_core: initial $00/$04/$1A/$1E/$30 for the 8 AI-loop actors | good | `[static]` | keep | - | high | - |
-| `Race_CreateActors` | routine | `race_core.asm:2728 ($CAD0)` | race_core: definition/ID list -> player/opponent structs, static group, extra index $12 | good | `[static]` | keep | - | high | - |
-| `Race_ActivateActor` | routine | `race_spawn.asm:444 ($16D0A)` | race_spawn: append actor to Race_ram_ActiveActorList, count++ | good | `[static]` | keep | - | high | - |
-| `Race_RemoveActiveActor` | routine | `race_spawn.asm:584 ($16E26)` | race_spawn: shift the active list, count-- | good | `[static]` | keep | - | high | - |
-| `Race_PushFreeActor` | routine | `race_spawn.asm:614 ($16E48)` | race_spawn: push a1 onto the free list at a2 (count at +0, pointers at +2) | good | `[static]` | keep | - | high | - |
-| `Race_PopFreeActor` | routine | `race_spawn.asm:634 ($16E54)` | race_spawn: pop a free actor; $FFFFFFFF when empty | good | `[static]` | keep | - | high | - |
-| `Race_RecycleActor` | routine | `race_spawn.asm:404 ($16CAE)` | race_spawn: first-opponent level transition or traffic free push; $66 = X/scale | narrow | `[static]` | keep | - | high | - |
-| `Race_RecycleOpponent` | routine | `race_spawn.asm:382 ($16C9A)` | race_spawn: push to opponent free list and remove from active | good | `[static]` | keep | - | high | - |
-| `Race_InitOpponentActor` | routine | `race_spawn.asm:469 ($16D2A)` | race_spawn: place opponent $200000 ahead, Speed=rating, setup, curve clamp | good | `[static]` | keep | - | high | - |
-| `Race_InitTrafficActor` | routine | `race_spawn.asm:499 ($16D60)` | race_spawn: place traffic $100000 behind, set PreviousX, Speed=rating, setup, clamp | good | `[static]` | keep | - | high | - |
-| `Race_SetupActor` | routine | `race_spawn.asm:534 ($16D9A)` | race_spawn: curve sample -> $08/$0C, reset flags/fields, $30 abs -> $1A/$00, sprite setup | good | `[static]` | keep | - | high | - |
-| `Race_ApplyActorRating` | routine | `race_spawn.asm:346 ($16C4E)` | race_spawn: opponent id -> definition byte5*100 -> $66 (dead `a0` load) | good | `[static]` | keep | - | high | - |
-| `Race_UpdateActorShadow` | routine | `race_ai.asm:1145 ($1180C)` | race_ai: advance the shadow copy (accel/speed/movement), clamp shadow X to ±$A0000 | good | `[static]` | keep | - | high | - |
-| `Race_SaveActorShadow` | routine | `race_ai.asm:1251 ($11906)` | race_ai: copy $80 bytes to the shadow, `$2C>>=1`, ram_FF176A=1 | good | `[static]` | keep | - | high | - |
-| `Race_SetupActorSprite` | routine | `race_ai.asm:4259 ($13746)` | race_ai: AnimIndex from Y, register up to 3 target-candidate buckets; ambient d4 is 0 on the AI path (E1) and on the spawn path (E2, `U-0011` closed) | good | `[static]/[dynamic]` | keep | - | high | `U-0011` |
-| `Race_GetActorDistance` | routine | `race_spawn.asm:262 ($16BC8)` | race_spawn: Rating($66) * ActorDistanceScale >> 16 | good | `[static]` | keep | - | high | - |
-| `Race_ActorList` | data | `race_actor_tables.asm:10 ($25856)` | race_core: PlayerA, ram_FF1F2A, Struct_2..15, sentinel | good | `[static]` | keep | - | high | - |
-| `Race_ActorListMid` | data | `race_actor_tables.asm:13 ($2585E)` | race_core: free-opponent sub-list Struct_2..15 + sentinel | good | `[static]` | keep | - | high | - |
-| `Race_StaticActorList` | data | `race_actor_tables.asm:31 ($2589A)` | race_core: static actor slots $FF2EAA/$FF2F2A + sentinel | good | `[static]` | keep | - | high | - |
-| `Race_ActorShadowTable` | data | `race_actor_tables.asm:44 ($258AE)` | race_ai: 16 shadow pointers indexed by +$71; entries 2/9 are swapped slots | narrow | `[static]` | keep | - | high | - |
-| `Race_ActorGraphicsTable` | data | `race_actor_tables.asm:51 ($258EE)` | race_core: 10 graphics records selected by definition graphics index | good | `[static]` | keep | - | high | - |
-| `Race_ActorLevelBase` | data | `race_core.asm:2854 ($CCD0)` | race_core: first opponent id per level (0/15/30/45/60) | good | `[static]` | keep | - | high | - |
-| `Race_ActorDefinitionTable` | data | `race_core.asm:2860 ($CCDA)` | race_core: 76 x 16-byte actor definitions + Player def | good | `[static]` | keep | - | high | - |
-| `ram_FF1A08` | RAM | `ram_const.asm:244 ($FF1A08)` | race_core/ai: AI-loop actor pointer list (8 entries: PlayerA + 7 opponents) | narrow | `[static]` | rename-later | `Race_ram_AiActorList` | medium | - |
-| `Race_ram_ActiveActorList` | RAM | `ram_const.asm` (`$FF1A0C`) | race_spawn/ai: active opponent list (starts one pointer into ram_FF1A08) | good | `[static]` | keep | - | high | - |
-| `Race_ram_ActiveActorCount` | RAM | `ram_const.asm` (`$FF1A06`) | race_spawn/ai: active count including PlayerA (8 at init) | good | `[static]` | keep | - | high | - |
-| `Race_ram_OpponentFreeList` | RAM | `ram_const.asm` (`$FF1982`) | race_spawn: 7-entry free opponent list (count at +0) | good | `[static]` | keep | - | high | - |
-| `Race_ram_TrafficFreeList` | RAM | `ram_const.asm` (`$FF19C4`) | race_spawn: traffic free list; empty at init | good | `[static]` | keep | - | high | - |
-| `Race_GetInput` | routine | `race_core.asm:1724 ($BE56)` | race_core: SACBRLDU pad -> steering, `$68` bit1/bit2, Start debounce; E2-4 confirmed flags and steering sign | good | `[static]/[dynamic]` | keep | - | high | - |
-| `Race_GetInputDemo` | routine | `race_core.asm:1702 ($BE2C)` | race_core: any pad byte ends the demo; no control writes | good | `[static]` | keep | - | high | - |
-| `Race_LoadTrackParams` | routine | `race_core.asm:1279 ($B840)` | race_core: `unk_1471A[track]` -> TrackParam0..3 | good | `[static]` | keep | - | high | - |
-| `Race_LoadBikeData` | routine | `race_core.asm:1300 ($B86A)` | race_core: 19-word bike record + always `unk_25AC4[0]` (index computed but unused) | good | `[static]` | keep | - | high | - |
-| `Race_UpdateActorSpeedState` | routine | `race_ai.asm:4739 ($13A92)` | race_ai: `$68` flags -> `$14`; gear via `+E/+1A/+2`; E2-1 confirmed word gear, same-call up/down oscillation, max-gear `-5` | good | `[static]/[dynamic]` | keep | - | high | - |
-| `Race_UpdateActorSpeedGear` | routine | `race_ai.asm:3630 ($131EE)` | race_ai: relative speed/distance + curve limit -> `$68` bit1/bit2 | good | `[static]` | keep | - | high | - |
-| `Race_UpdateActorSpeedCurve` | routine | `race_ai.asm:3900 ($13422)` | race_ai: target-bucket scan -> `Race_SteerTowardTarget`, `$68` bit1/bit2 | good | `[static]` | keep | - | high | - |
-| `Race_UpdateActorRoadSteering` | routine | `race_ai.asm:4401 ($1384C)` | race_ai: road-center steer -> `$46`, `$69` bit2 | good | `[static]` | keep | - | high | - |
-| `Race_SteerTowardTarget` | routine | `race_ai.asm:4441 ($13892)` | race_ai: bucket offset/speed -> `$46`, `$69` bit2 | good | `[static]` | keep | - | high | - |
-| `Race_UpdateBikeLean` | routine | `race_ai.asm:5225 ($13EA0)` | race_ai: `$42 = sign(steer)*abs(steer)*FF1AAA / ((FF1AA6>>3)*(Speed*FF1AB4>>8))`; E2-2 confirmed the sign | good | `[static]/[dynamic]` | keep | - | high | - |
-| `Race_UpdateBikeCurve` | routine | `race_ai.asm:5270 ($13EFA)` | race_ai: `$3E/$40/$68` bit5 from `$08`, Speed, TrackParam0/2/3; `$78`/`word_14742` dead; E2-3 confirmed `$3E` and bit5 | good | `[static]/[dynamic]` | keep | - | high | - |
-| `Race_GetCurveSpeedLimit` | routine | `race_ai.asm:5370 ($13FE6)` | race_ai: `(TP<<3)/(curve*scale>>8)`; TP2 off-road | good | `[static]` | keep | - | high | - |
-| `Race_UpdateLeanCurve` | routine | `race_anim_audio.asm:39 ($1406A)` | race_anim_audio: `ram_FF3042=(d0*$3E)>>16`, `$40` from `$3E` | good | `[static]` | keep | - | high | - |
-| `unk_25A10` | data | `race_actor_extra_tables.asm:57 ($25A10)` | race_ai: 13 actor-record pointers indexed by `$16` | placeholder | `[static]` | rename-later | `Race_ActorBikeRecordTable` | high | - |
-| `ActorBikeRecord_*` | data | `race_actor_extra_tables.asm:131+ ($25B80+)` | race_ai/core: 19-word gear record (max/accel/upshift/downshift) | good | `[static]` | keep | - | high | - |
-| `unk_25AC4` | data | `race_actor_extra_tables.asm:106 ($25AC4)` | race_core: steering/engine block; always block 0 | placeholder | `[static]` | rename-later | `Race_BikeSteeringTable` | high | - |
-| `unk_25B50` | data | `race_actor_extra_tables.asm:117 ($25B50)` | race_core: 8 bikeId -> even record pointers | placeholder | `[static]` | rename-later | `Race_PlayerBikeRecordTable` | high | - |
-| `unk_1471A` | data | `race_anim_audio.asm:1188 ($1471A)` | race_core: 5 track x 4 words -> TrackParam0..3 | placeholder | `[static]` | rename-later | `Race_TrackCurveParams` | high | - |
-| `word_14742` | data | `race_anim_audio.asm:1228 ($14742)` | race_ai: `$78`-timer curve limit; branch unreachable | placeholder | `[static]` | rename-later | `Race_CurveTimerLimit` | high | - |
-| `unk_14056` | data | `race_anim_audio.asm:7 ($14056)` | race_ai: 10-word curve scale indexed by `$75` | placeholder | `[static]` | rename-later | `Race_CurveScaleTable` | high | - |
-| `ram_FF1AA6` | RAM | `ram_const.asm:264 ($FF1AA6)` | race_ai: lean steering divisor (`>>3`) | placeholder | `[static]` | rename-later | `RaceBike_ram_LeanSteeringDivisor` | high | - |
-| `ram_FF1AAA` | RAM | `ram_const.asm:265 ($FF1AAA)` | race_ai: lean multiplier (usually `$8000`) | placeholder | `[static]` | rename-later | `RaceBike_ram_LeanMultiplier` | high | - |
-| `ram_FF1AB2` | RAM | `ram_const.asm:269 ($FF1AB2)` | race_ai: curve speed scale | placeholder | `[static]` | rename-later | `RaceBike_ram_CurveSpeedScale` | high | - |
-| `ram_FF1AB4` | RAM | `ram_const.asm:270 ($FF1AB4)` | race_ai: lean speed scale | placeholder | `[static]` | rename-later | `RaceBike_ram_LeanSpeedScale` | high | - |
-| `$78` (`STRUCT_OFFSET_78`) | field | `ram_const.asm:428 ($78)` | race_ai: bike-curve timer; zeroed at creation, only decremented | placeholder | `[static]` | rename-later | `RaceActor_CurveTimer` | medium | - |
+## Rename queue
 
-### Race gap pass (R30, `0x1131A`-`0x1562C`)
+Non-`keep` rows: 146 (`rename-later` 146, `blocked-unknown` 0).
 
-Names stay `sub_XXXX`/`unk_XXXX`; proposals are not applied.
+| Identifier | Proposed | Verdict | Confidence | Evidence | Unknown ID |
+|---|---|---|---|---|---|
+| `Intro_InitPlayerA` | `Player_InitA` | rename-later | medium | `[static]` | - |
+| `Intro_InitPlayerB` | `Player_InitB` | rename-later | medium | `[static]` | - |
+| `unk_25EC0` | `RaceTrack_dRecords` | rename-later | medium | `[static]` | - |
+| `Intro_ram_ImageBuffer` | `ram_ImageStagingBuffer` | rename-later | medium | `[static]` | - |
+| `Race_ram_ImageBuffer2` | `MainMenu_ram_RaceCardBuffer` | rename-later | medium | `[static]` | - |
+| `Menu_PlayerPlacesPtr` | `Menu_ram_PlayerPlacesPtr` | rename-later | high | `[static]` | - |
+| `Menu_ram_CurrentlyDrawnRaceCard` | `Menu_ram_CarouselRaceId` | rename-later | medium | `[static]` | `U-0003` resolved |
+| `Menu_ram_StrPlayerName` | `Menu_ram_PlayerInfoString` | rename-later | medium | `[static]` | - |
+| `ram_FF0522` | `Player_ram_NatashaCounterA` | rename-later | medium | `[static]` | `U-0004` resolved |
+| `ram_FF0524` | `Player_ram_NatashaCounterB` | rename-later | medium | `[static]` | `U-0004` resolved |
+| `ram_FF07C2` | `Shop_StrLeftBike` | rename-later | medium | `[static]` | - |
+| `ram_FF082E` | `Shop_StrRightBike` | rename-later | medium | `[static]` | - |
+| `ram_FFDE5E` | `Road_ram_SpriteTileBits` | rename-later | medium | `[static]` | - |
+| `ram_FFDE62` | `Road_ram_ChainEnd` | rename-later | medium | `[static]` | - |
+| `ram_FFDE66` | `SpriteStrip_ram_TailColumnGap` | rename-later | high | `[static]`/E8-A | - |
+| `ram_FFDE68` | `SpriteStrip_ram_BandAdvance` | rename-later | high | `[static]`/E8-A | - |
+| `ram_FFDE6A` | `SpriteStrip_ram_ColumnGap` | rename-later | high | `[static]`/E8-A | - |
+| `ram_FFDE6E` | `Road_ram_ObjectX` | rename-later | medium | `[static]` | - |
+| `ram_FFDE70` | `Road_ram_ObjectY` | rename-later | medium | `[static]` | - |
+| `ram_FF0906` | `Rider_ram_ColCode` | rename-later | medium | `[static]` | - |
+| `ram_FF0908` | `Rider_ram_RowCode` | rename-later | medium | `[static]` | - |
+| `ram_FF090A` | `Rider_ram_ColBlocks` | rename-later | medium | `[static]` | - |
+| `ram_FF090C` | `Rider_ram_RowBlocks` | rename-later | medium | `[static]` | - |
+| `ram_FF090E` | `Rider_ram_RowStartTile` | rename-later | medium | `[static]` | - |
+| `ram_FF1336` | `Road_ram_MirrorXOffset` | rename-later | medium | `[static]` | - |
+| `ram_FF1366` | `Road_ram_ChainEndAlt` | rename-later | medium | `[static]` | - |
+| `ram_FF0520` | `Player_ram_NatashaCounter` | rename-later | medium | `[static]` | `U-0004` resolved |
+| `RiderIntro_QuoteData` | `RiderIntro_FirstQuote` | rename-later | medium | `[static]` | - |
+| `unk_8C96` | `EndLevel_StrNextLevelShort` | rename-later | medium | `[static]` | - |
+| `unk_8D02` | `EndLevel_StrNotReadyEncoded` | rename-later | medium | `[static]` | - |
+| `unk_8D16` | `EndLevel_StrNotReadyTail` | rename-later | medium | `[static]` | - |
+| `unk_8D52` | `EndLevel_StrContinuePlay` | rename-later | medium | `[static]` | - |
+| `unk_8D8A` | `EndLevel_StrNextLevel` | rename-later | medium | `[static]` | - |
+| `ram_FF1A08` | `Race_ram_AiActorList` | rename-later | medium | `[static]` | - |
+| `unk_25A10` | `Race_ActorBikeRecordTable` | rename-later | high | `[static]` | - |
+| `unk_25AC4` | `Race_BikeSteeringTable` | rename-later | high | `[static]` | - |
+| `unk_25B50` | `Race_PlayerBikeRecordTable` | rename-later | high | `[static]` | - |
+| `unk_1471A` | `Race_TrackCurveParams` | rename-later | high | `[static]` | - |
+| `word_14742` | `Race_CurveTimerLimit` | rename-later | high | `[static]` | - |
+| `unk_14056` | `Race_CurveScaleTable` | rename-later | high | `[static]` | - |
+| `ram_FF1AA6` | `RaceBike_ram_LeanSteeringDivisor` | rename-later | high | `[static]` | - |
+| `ram_FF1AAA` | `RaceBike_ram_LeanMultiplier` | rename-later | high | `[static]` | - |
+| `ram_FF1AB2` | `RaceBike_ram_CurveSpeedScale` | rename-later | high | `[static]` | - |
+| `ram_FF1AB4` | `RaceBike_ram_LeanSpeedScale` | rename-later | high | `[static]` | - |
+| `$78` (`STRUCT_OFFSET_78`) | `RaceActor_CurveTimer` | rename-later | medium | `[static]` | - |
+| `sub_11A5E` | `Race_UpdateActorCurvePosition` | rename-later | medium | `[static]` | `U-0013` resolved |
+| `sub_12B2A` | `Race_GetAttackerReachAdjusted` | rename-later | medium | `[static]` | - |
+| `sub_133F0` | `Race_SetActorCurveDirection` | rename-later | medium | `[static]` | - |
+| `sub_135E8` | `Race_SetActorAccelerateFlag` | rename-later | medium | `[static]` | - |
+| `sub_13704` | `Race_UpdateActorDistanceRatio` | rename-later | medium | `[static]` | - |
+| `sub_13A5C` | `Race_ResetActorFarBehind` | rename-later | medium | `[static]` | - |
+| `sub_13D44` | `Race_UpdateTrackObjectSteering` | rename-later | medium | `[static]` | `U-0014` resolved |
+| `sub_140BC` | `Race_UpdateActorXFromTrackObject` | rename-later | medium | `[static]` | - |
+| `sub_140EE` | `Race_ApplyActorCrash` | rename-later | medium | `[static]` | - |
+| `sub_141AE` | `Race_ApplyActorHighSpeedCrash` | rename-later | medium | `[static]` | - |
+| `sub_142B0` | `Race_ApplyCrash0F` | rename-later | low | `[static]` | - |
+| `sub_142BE` | `Race_ApplyCrash17` | rename-later | low | `[static]` | - |
+| `sub_142CC` | `Race_ApplyCrashWithAttackFlag` | rename-later | low | `[static]` | - |
+| `sub_142FE` | `Race_UpdateActorRoadY` | rename-later | medium | `[static]` | - |
+| `sub_1436E` | `Race_ScaleActorShadowSpeed` | rename-later | medium | `[static]` | - |
+| `sub_14404` | `Race_HandleActorCollisionImpact` | rename-later | medium | `[static]` | - |
+| `sub_14456` | `Race_SetActorFallShort` | rename-later | low | `[static]` | - |
+| `sub_1446E` | `Race_SetActorFallLong` | rename-later | low | `[static]` | - |
+| `sub_15580` | `Race_SetRandomFallState` | rename-later | medium | `[static]` | - |
+| `unk_12B7C` | `Race_CollisionExtentTable` | rename-later | medium | `[static]` | - |
+| `unk_12BCC` | `Race_CloseAttackReachTable` | rename-later | medium | `[static]` | - |
+| `unk_13A1A` | `Race_LevelRespawnScale` | rename-later | high | `[static]/[dynamic]` E5-3 | - |
+| `unk_14744` | `Race_ActionHandlerTable` | rename-later | high | `[static]` | - |
+| `Race_TrackObjectTypeTable` | `Race_TrackObjectRecordTable` | rename-later | medium | `[static]` | `U-0014` resolved |
+| `unk_147FC` | `Race_ActionHandlerIndexTable` | rename-later | high | `[static]` | - |
+| `unk_155A4` | `Race_UnusedAnimationPtrList` | rename-later | low | `[static]` | - |
+| `unk_155AC` | `Race_AnimationSequenceTable` | rename-later | medium | `[static]` | - |
+| `unk_155D0` | `Race_FallSequenceTable` | rename-later | high | `[static]` | - |
+| `unk_15618` | `Race_FallStateRand4` | rename-later | medium | `[static]` | - |
+| `unk_1561C` | `Race_FallStateRand8A` | rename-later | medium | `[static]` | - |
+| `unk_15624` | `Race_FallStateRand8B` | rename-later | medium | `[static]` | - |
+| `Race_StaticActionTable` | `Race_StaticActorProfileTable` | rename-later | high | `[static]/[dynamic]` E3 | - |
+| `ram_FF1A96` | `Race_ram_ActionDispatchBudget` | rename-later | high | `[static]/[dynamic]` E3 | - |
+| `ram_FF1A98` | `Race_ram_ActionDispatchCount` | rename-later | high | `[static]/[dynamic]` E3 | - |
+| `sub_1438E` | `Race_ApplyImpactLatch` | rename-later | medium | `[static]` | - |
+| `sub_142D8` | `Race_SetWeaponAnimSpeedFlag` | rename-later | low | `[static]` | - |
+| `RaceActor_TileBase` | `RaceActor_Stamina` | rename-later | high | `[confirmed]` E4-B + HUD | - |
+| `ram_FF18AC` | `Race_ram_StaminaHitScale` | rename-later | high | `[confirmed]` E4-B | - |
+| `ram_FF18A8` | `Race_ram_StaminaBaseline` | rename-later | medium | `[confirmed]` U-0017 | - |
+| `ram_FF18AA` | `Race_ram_PlayerStaminaMax` | rename-later | high | `[confirmed]` HUD | - |
+| `ram_FF3038` | `Race_ram_PairXWindow` | rename-later | medium | `[confirmed]` E4-F | - |
+| `ram_FF303E` | `Race_ram_ImpactPenetration` | rename-later | medium | `[confirmed]` E4-F | - |
+| `ram_FF3040` | `Race_ram_CollisionSideState` | rename-later | medium | `[confirmed]` E4-F | - |
+| `ram_FF1768` | `Race_ram_CrashAnimActive` | rename-later | high | `[confirmed]` E4-F | - |
+| `sub_138CE` | `Race_UpdateStaticSpawnCycle` | rename-later | high | `[static]/[dynamic]` E5-3 | - |
+| `sub_13A26` | `Race_RespawnStaticActor` | rename-later | high | `[static]/[dynamic]` E5-4 | - |
+| `sub_13BF4` | `Race_UpdateReservedOpponentSpawn` | rename-later | high | `[static]/[dynamic]` E5-2 | - |
+| `sub_13CFE` | `Race_InitReservedOpponent` | rename-later | high | `[static]/[dynamic]` E5-2 | - |
+| `ram_FF1F2A` | `Race_ReservedOpponent` | rename-later | medium | `[static]/[dynamic]` E5-2 | - |
+| `word_B976` | `RaceTrack_SpawnAcceptThreshold` | rename-later | high | `[static]` | - |
+| `word_B980` | `RaceTrack_SpecialSpawnCap` | rename-later | high | `[static]` | - |
+| `off_B98A` | `RaceTrack_SpecialSpawnPages` | rename-later | high | `[static]` | - |
+| `ram_FFDBD4` | `Race_ram_SpecialSpawnCursor` | rename-later | high | `[static]/[dynamic]` E5-2 | - |
+| `ram_FF1B2E` | `Race_ram_MarkerRunLength` | rename-later | medium | `[static]` | - |
+| `ram_FF1B30` | `Race_ram_MarkerSlot` | rename-later | high | `[static]/[dynamic]` E5-5 | - |
+| `ram_FF1B32` | `Race_ram_ReservedSpawnTimer` | rename-later | medium | `[static]` | - |
+| `ram_FF1B34` | `Race_ram_ReservedSpawnOffset` | rename-later | medium | `[static]` | - |
+| `ram_FF1B36` | `Race_ram_ReservedSpawned` | rename-later | medium | `[static]` | - |
+| `ram_FF1B3A` | `Race_ram_ReservedLastDistance` | rename-later | low | `[static]` | - |
+| `Race_ram_LevelIndex` | `Race_ram_ReservedPageIndex` | rename-later | medium | `[static]/[dynamic]` E5-2 | - |
+| `unk_D1A0` | `Race_PointsByPlace` | rename-later | high | `[static]/[dynamic]` E7-C | - |
+| `unk_D1C0` | `Race_StandingsTemplate` | rename-later | high | `[static]/[dynamic]` E7-C | - |
+| `sub_15014` | `Race_UpdateActorFallAnimation` | rename-later | high | `[static]/[dynamic]` E7-B | - |
+| `sub_154D2` | `Race_StepAnimationScript` | rename-later | high | `[static]` | - |
+| `unk_15CE0` | `Race_FallScriptSideA` | rename-later | high | `[static]/[dynamic]` E7-B | - |
+| `unk_15CFC` | `Race_FallScriptSideB` | rename-later | high | `[static]/[dynamic]` E7-B | - |
+| `ram_FF1E50` / `ram_FF1E52` | `Race_ram_CurveScrollA/B` | rename-later | medium | `[confirmed]` E6 | - |
+| `ram_FF1E54` / `ram_FF1E56` | `Race_ram_CurveSumA/B` | rename-later | medium | `[confirmed]` E6 | - |
+| `ram_FF1E58` / `ram_FF1E5A` | `Race_ram_CurveScaledA/B` | rename-later | medium | `[confirmed]` E6 | - |
+| `ram_FF1E60` | `Race_ram_CameraY` | rename-later | high | `[confirmed]` E6 | - |
+| `ram_FF1E64` | `Race_ram_CameraCollision` | rename-later | medium | `[confirmed]` E6 | - |
+| `ram_FF1E6C` | `Race_ram_CurveByte` | rename-later | medium | `[static]/[dynamic]` E6 | - |
+| `ram_FF1E76` | `Race_ram_ProgressBias` | rename-later | high | `[confirmed]` E6 | - |
+| `ram_FF1E7A` / `ram_FF1E7E` / `ram_FF1E86` | unused camera fields | rename-later | high | `[static]` | - |
+| `ram_FF30EA`/`EE`/`F2`/`F6`/`FA`/`FE` | `Race_ram_HScrollLayerA/B..` | rename-later | medium | `[static]/[dynamic]` E6 | - |
+| `ram_FF310A`/`31D2`/`3236`/`329A`/`3362`/`D77C` | `Race_ram_Profile*` | rename-later | medium | `[static]/[dynamic]` E6 | - |
+| `ram_FFDE72` | `Road_ram_ObjectCount` | rename-later | high | `[static]` L6b | - |
+| `ram_FF1B48` | `Road_ram_ActorObjectCount` | rename-later | medium | `[static]` L6b | - |
+| `ram_FF1B4A` | `Road_ram_TrackObjectDelta` | rename-later | medium | `[static]` L6b | - |
+| `ram_FF1B50` / `ram_FF1C50` / `ram_FF1D50` | `Road_ram_ObjectKeys*`/visible | rename-later | high | `[static]` L6b | - |
+| `ram_FF1B16` | `Race_ram_CustomAnimFlag` | rename-later | medium | `[static]` L6b | - |
+| `ram_FF1B2E` | `Race_ram_MarkerRunLength` | rename-later | medium | `[static]` L5/L6b | - |
+| `ram_FF1B30` | `Race_ram_MarkerSlot` | rename-later | high | `[static]/[dynamic]` E5 | - |
+| `ram_FF1ACC` / `ram_FF1AC8` / `ram_FF1ACE` | `Race_ram_*Shape*` | rename-later | medium | `[static]` L6b | - |
+| `ram_FF1AD9` / `ram_FF1ADC` | `Race_ram_LeanPhase`/`FallPhase` | rename-later | medium | `[static]` L6b | - |
+| `ram_FFD338` / `ram_FFD33E` | `Race_ram_ShapeThresholds*` | rename-later | medium | `[static]` L6b | - |
+| `Road_DrawStrip` | `SpriteStrip_Draw` | rename-later | medium | `[static]` L6c | - |
+| `Road_InterpolateRightEdgeAlt` | `Road_InterpolateRightEdgeUnused` | rename-later | medium | `[static]` | - |
+| `Road_WriteTileColumns` | `SpriteStrip_WriteTiles` | rename-later | high | `[static]`/`[confirmed]` golden replay | - |
+| `word_3C7EA` | `Road_ShapeCount` | rename-later | high | `[static]` | - |
+| `ram_FF0D2A` | `SpriteStrip_ram_SourcePtr` | rename-later | high | `[static]`/E8-A | - |
+| `ram_FF0D2E` | `SpriteStrip_ram_PlaneOffsets` | rename-later | high | `[static]`/`[dynamic]` E8-A | - |
+| `ram_FF102E` | `SpriteStrip_ram_RowOffsets` | rename-later | high | `[static]`/`[dynamic]` E8-A | - |
+| `ram_FF132E` | `SpriteStrip_ram_ColumnCount` | rename-later | high | `[static]`/E8-A | - |
+| `ram_FF1330` | `SpriteStrip_ram_RowCount` | rename-later | high | `[static]`/E8-A | - |
+| `ram_FF1332` | `SpriteStrip_ram_HalfWidth` | rename-later | high | `[static]`/E8-A | - |
+| `ram_FF133C` | `SpriteStrip_ram_Mirror` | rename-later | medium | `[static]` | - |
+| `ram_FF133E` | `SpriteStrip_ram_Priority` | rename-later | medium | `[static]`/E8-B | - |
+| `ram_FF135E` | `SpriteStrip_ram_Clip` | rename-later | high | `[static]`/E8-A | - |
+| `ram_FF136A` | `SpriteStrip_ram_Horizon` | rename-later | medium | `[static]`/E8 | - |
+| `ram_FFDE5E` | `SpriteStrip_ram_FillWord` | rename-later | high | `[static]`/E8 | - |
 
-| Identifier | Kind | Defined | Used in (file: role) | Name quality | Evidence | Rename verdict | Proposed | Confidence | Unknown ID |
-|---|---|---|---|---|---|---|---|---|---|
-| `sub_1131A` | routine | `race_ai.asm:558 ($1131A)` | race_ai: shadow PosY gap -> Y velocity; no caller (dead twin of `Race_HandleInputOnFoot`) | placeholder | `[static]` | keep (dead) | `Race_UpdateActorShadowFollow` | medium | `U-0012` resolved |
-| `sub_11A5E` | routine | `race_ai.asm:1321 ($11A5E)` | race_ai: X integration over `Track_CurveBuffer` (`$E/$10` write-only) | placeholder | `[static]` | rename-later | `Race_UpdateActorCurvePosition` | medium | `U-0013` resolved |
-| `sub_12B2A` | routine | `race_ai.asm:2777 ($12B2A)` | race_ai: close-attack reach from `unk_12BCC` | placeholder | `[static]` | rename-later | `Race_GetAttackerReachAdjusted` | medium | - |
-| `sub_133F0` | routine | `race_ai.asm:3896 ($133F0)` | race_ai: target-PosY delta -> signed `$46` | placeholder | `[static]` | rename-later | `Race_SetActorCurveDirection` | medium | - |
-| `sub_135E8` | routine | `race_ai.asm:4098 ($135E8)` | race_ai: clears `$68` bit1, sets bit2 | placeholder | `[static]` | rename-later | `Race_SetActorAccelerateFlag` | medium | - |
-| `sub_13704` | routine | `race_ai.asm:4236 ($13704)` | race_ai: `ram_FF1B46` distance ratio | placeholder | `[static]` | rename-later | `Race_UpdateActorDistanceRatio` | medium | - |
-| `sub_13A5C` | routine | `race_ai.asm:4710 ($13A5C)` | race_ai: far respawn reset (`X=PP-$1F8000`) | placeholder | `[static]` | rename-later | `Race_ResetActorFarBehind` | medium | - |
-| `sub_13D44` | routine | `race_ai.asm:4468 ($13D44)` | race_ai/combat: track-object -> `Race_SteerTowardTarget` | placeholder | `[static]` | rename-later | `Race_UpdateTrackObjectSteering` | medium | `U-0014` resolved |
-| `sub_140BC` | routine | `race_anim_audio.asm:76 ($140BC)` | race_anim: X from `($E(a0)<<8)+PP` | placeholder | `[static]` | rename-later | `Race_UpdateActorXFromTrackObject` | medium | - |
-| `sub_140EE` | routine | `race_anim_audio.asm:102 ($140EE)` | race_anim: main on-road crash handler | placeholder | `[static]` | rename-later | `Race_ApplyActorCrash` | medium | - |
-| `sub_141AE` | routine | `race_anim_audio.asm:161 ($141AE)` | race_anim: high-speed/off-road crash | placeholder | `[static]` | rename-later | `Race_ApplyActorHighSpeedCrash` | medium | - |
-| `sub_142B0` | routine | `race_anim_audio.asm:236 ($142B0)` | race_anim: crash wrapper `$F` | placeholder | `[static]` | rename-later | `Race_ApplyCrash0F` | low | - |
-| `sub_142BE` | routine | `race_anim_audio.asm:247 ($142BE)` | race_anim: crash wrapper `$17` | placeholder | `[static]` | rename-later | `Race_ApplyCrash17` | low | - |
-| `sub_142CC` | routine | `race_anim_audio.asm:258 ($142CC)` | race_anim: `$6B` bit1 + crash | placeholder | `[static]` | rename-later | `Race_ApplyCrashWithAttackFlag` | low | - |
-| `sub_142FE` | routine | `race_anim_audio.asm:293 ($142FE)` | race_anim: road-Y clamp | placeholder | `[static]` | rename-later | `Race_UpdateActorRoadY` | medium | - |
-| `sub_1436E` | routine | `race_anim_audio.asm:350 ($1436E)` | race_anim: shadow Speed scale | placeholder | `[static]` | rename-later | `Race_ScaleActorShadowSpeed` | medium | - |
-| `sub_14404` | routine | `race_anim_audio.asm:411 ($14404)` | race_anim: collision impact/fall fallback | placeholder | `[static]` | rename-later | `Race_HandleActorCollisionImpact` | medium | - |
-| `sub_14456` | routine | `race_anim_audio.asm:439 ($14456)` | race_anim: `$68` bit5 + `$78` timer | placeholder | `[static]` | rename-later | `Race_SetActorFallShort` | low | - |
-| `sub_1446E` | routine | `race_anim_audio.asm:453 ($1446E)` | race_anim: `$68` bit5 + `$1E` timer | placeholder | `[static]` | rename-later | `Race_SetActorFallLong` | low | - |
-| `sub_14DEC` | routine | `race_anim_audio.asm:1224 ($14DEC)` | race_anim: frame-distance delta; `d0` always 0; no caller (vestigial) | placeholder | `[static]` | keep (dead) | `Race_GetActorFrameDistanceDelta` | low | `U-0015` resolved |
-| `sub_15580` | routine | `race_anim_audio.asm:1914 ($15580)` | race_anim: random FallState (`unk_1561C`) | placeholder | `[static]` | rename-later | `Race_SetRandomFallState` | medium | - |
-| `unk_12168` | data | `race_ai.asm:1887 ($12168)` | race_ai: 9 actor handler pointers; unreferenced dead data | placeholder | `[static]` | keep (dead) | `Race_ActorImpactHandlerTable` | low | `U-0016` resolved |
-| `unk_12B7C` | data | `race_ai.asm:2812 ($12B7C)` | race_ai: 80 extent bytes | placeholder | `[static]` | rename-later | `Race_CollisionExtentTable` | medium | - |
-| `unk_12BCC` | data | `race_ai.asm:2824 ($12BCC)` | race_ai: 6 close-attack reaches | placeholder | `[static]` | rename-later | `Race_CloseAttackReachTable` | medium | - |
-| `unk_13A1A` | data | `race_ai.asm:4158 ($13A1A)` | race_ai: 6 per-level static-respawn scale words (`FFFF,B333,8000,4CCC,3333,2222`); E5-3 observed the timer product | placeholder | `[static]/[dynamic]` E5-3 | rename-later | `Race_LevelRespawnScale` | high | - |
-| `unk_14744` | data | `race_anim_audio.asm:712 ($14744)` | race_anim/ai: 8 action handlers | placeholder | `[static]` | rename-later | `Race_ActionHandlerTable` | high | - |
-| `Race_TrackObjectTypeTable` | data | `race_anim_audio.asm:724 ($14764)` | race_ai/road: 19 x 8-byte records (flags/size/handler/steerable) | narrow | `[static]` | rename-later | `Race_TrackObjectRecordTable` | medium | `U-0014` resolved |
-| `unk_147FC` | data | `race_anim_audio.asm:747 ($147FC)` | race_ai: 128 handler-index bytes | placeholder | `[static]` | rename-later | `Race_ActionHandlerIndexTable` | high | - |
-| `unk_155A4` | data | `race_anim_audio.asm:1928 ($155A4)` | race_anim: 1 pointer + `$FFFFFFFF`; unread | placeholder | `[static]` | rename-later | `Race_UnusedAnimationPtrList` | low | - |
-| `unk_155AC` | data | `race_anim_audio.asm:1934 ($155AC)` | race_anim: sequencer header + 8 records | placeholder | `[static]` | rename-later | `Race_AnimationSequenceTable` | medium | - |
-| `unk_155D0` | data | `race_anim_audio.asm:1947 ($155D0)` | race_anim: 18 FallState sequence pointers | placeholder | `[static]` | rename-later | `Race_FallSequenceTable` | high | - |
-| `unk_15618` | data | `race_anim_audio.asm:1968 ($15618)` | race_anim: random FallState (4) | placeholder | `[static]` | rename-later | `Race_FallStateRand4` | medium | - |
-| `unk_1561C` | data | `race_anim_audio.asm:1971 ($1561C)` | race_anim: random FallState (8) | placeholder | `[static]` | rename-later | `Race_FallStateRand8A` | medium | - |
-| `unk_15624` | data | `race_anim_audio.asm:1974 ($15624)` | race_anim: random FallState (8) | placeholder | `[static]` | rename-later | `Race_FallStateRand8B` | medium | - |
-| `Race_UpdateActorAI` | routine | `race_ai.asm:94 ($10E66)` | race_ai: actor speed/move loop; candidates, Y clamp, player/AI branches | good | `[static]` | keep | - | high | - |
-| `Race_AdvanceActorProgress` | routine | `race_ai.asm:262 ($1103A)` | race_ai: X += frame distance, finish latch, per-frame clears | good | `[static]` | keep | - | high | - |
-| `Race_UpdateActorActions` | routine | `race_ai.asm:2989 ($12EA2)` | race_ai: recycle, profile base/+4, `ram_FF1A96/98` budget, handler call | good | `[static]/[dynamic]` E3 | keep | - | high | - |
-| `Race_DispatchActorAction` | routine | `race_combat.asm:326 ($16458)` | race_ai/combat: action2/3/4 dispatcher | good | `[static]/[dynamic]` E3 | keep | - | high | - |
-| `Race_BuildTargetCandidates` | routine | `race_ai.asm:3921 ($137E4)` | race_ai: static actor -> three Y buckets | good | `[static]` | keep | - | high | - |
-| `Race_AddTargetCandidate` | routine | `race_ai.asm:3954 ($13812)` | race_ai: append `$71` to bucket `d0` | good | `[static]/[dynamic]` E3 | keep | - | high | - |
-| `Race_ScanTargetDistance` | routine | `race_ai.asm:3693 ($13626)` | race_ai: min `dX/relSpeed` over one bucket | good | `[static]` | keep | - | high | - |
-| `Race_ActorProfileTable` | data | `race_actor_extra_tables.asm:34 ($259C0)` | race_ai: 20 slots into `Race_ActorActionTable` (`$74`) | good | `[static]` | keep | - | high | - |
-| `Race_ActorActionTable` | data | `race_ai.asm:2962 ($12D16)` | race_ai: 99 action pointers; 5-dword profile groups | good | `[static]` | keep | - | high | - |
-| `Race_StaticActionTable` | data | `race_actor_extra_tables.asm:72 ($25A44)` | race_ai: 16 handler/speed/Y-offset entries; `$74` indexing confirmed by E3 | narrow | `[static]/[dynamic]` E3 | rename-later | `Race_StaticActorProfileTable` | high | - |
-| `ram_FF1A96` | data | `race_core.asm:2711 ($FF1A96)` | race_ai: per-level action-dispatch budget `[2,3,3,3,4]`; E3 confirmed all five levels | placeholder | `[static]/[dynamic]` E3 | rename-later | `Race_ram_ActionDispatchBudget` | high | - |
-| `ram_FF1A98` | data | `race_ai.asm:2990 ($FF1A98)` | race_ai: per-frame count of `+4` dispatcher choices; E3 confirmed increment/clamp | placeholder | `[static]/[dynamic]` E3 | rename-later | `Race_ram_ActionDispatchCount` | high | - |
-| `Race_ActorNormalVariant` | routine | `race_ai.asm:3141 ($1307C)` | race_ai: profile 0 action1; the profile-0 player always takes the base slot -> table slot unreachable | narrow | `[static]` | keep (dead) | - | medium | - |
-| `Race_UpdateActorPairCollision` | routine | `race_ai.asm:2202 ($124E2)` | race_ai: pair order/side/extent/reach; sets ContactFlags bit4 | good | `[static]/[dynamic]` E4 | keep | - | high | - |
-| `Race_GetCollisionExtent` | routine | `race_ai.asm:2665 ($12A88)` | race_ai: actor vs static extent selector | good | `[static]` | keep | - | high | - |
-| `Race_GetActorCollisionExtent` | routine | `race_ai.asm:2679 ($12A9C)` | race_ai: `unk_12B7C` index from `$8/$C/side` | good | `[static]` | keep | - | high | - |
-| `Race_GetStaticCollisionExtent` | routine | `race_ai.asm:2728 ($12AF8)` | race_ai: static extent `$37`/`$60` | good | `[static]` | keep | - | high | - |
-| `Race_GetAttackerReach` | routine | `race_ai.asm:2738 ($12B0C)` | race_ai: `$28` armed / `$19` unarmed | good | `[static]/[dynamic]` | keep | - | high | - |
-| `Race_GetDefenderReach` | routine | `race_ai.asm:2753 ($12B24)` | race_ai: defender reach `$1A` | good | `[static]/[dynamic]` | keep | - | high | - |
-| `Race_UpdateActorPairImpact` | routine | `race_anim_audio.asm:761 ($1487C)` | race_anim: exchange vs clamp/steal/knockdown chooser | good | `[static]/[dynamic]` E4 | keep | - | high | - |
-| `Race_ClampActorPairY` | routine | `race_anim_audio.asm:845 ($1496C)` | race_anim: Y separation with `$4C/$4E+$10` | good | `[static]/[dynamic]` E4 | keep | - | high | - |
-| `Race_StealClub` | routine | `race_anim_audio.asm:930 ($149C4)` | race_anim: club transfer/impact accumulation | good | `[static]/[dynamic]` | keep | - | medium | - |
-| `Race_StealClubMirror` | routine | `race_anim_audio.asm:1035 ($14B04)` | race_anim: mirror club transfer | good | `[static]/[dynamic]` | keep | - | medium | - |
-| `Race_ApplyFallKnockdown` | routine | `race_anim_audio.asm:1070 ($14C3C)` | race_anim: stamina `$5C` underflow -> fall/`$54=$11` | good | `[confirmed]` E4-B | keep | - | high | - |
-| `Race_ExchangeCollisionSpeed` | routine | `race_anim_audio.asm:1117 ($14CEC)` | race_anim: speed equalization + X push + damage | good | `[confirmed]` E4-D/E/F | keep | - | high | - |
-| `Race_AdjustActorTrackPositions` | routine | `race_anim_audio.asm:1174 ($14D84)` | race_anim: track-position split by `$22` | good | `[static]` | keep | - | medium | - |
-| `Race_ApplyCollisionImpact` | routine | `race_anim_audio.asm:466 ($14486)` | race_anim: deep/shallow impact; damage/speed/event | good | `[confirmed]` E4-F | keep | - | high | - |
-| `Race_UpdateCollisionSpeedState` | routine | `race_anim_audio.asm:579 ($145EC)` | race_anim: heavy/light speed state + event; returns magnitude | good | `[static]/[dynamic]` E4 | keep | - | high | - |
-| `Race_ApplyImpactSpeedLoss` | routine | `race_anim_audio.asm:663 ($146AC)` | race_anim: `$2C` decay / Speed loss `bit4` | good | `[static]` | keep | - | medium | - |
-| `Race_ScaleImpactDamage` | routine | `race_anim_audio.asm:318 ($1434A)` | race_anim: `abs(x)>>11`; 0 while `ram_FF1768` | good | `[confirmed]` E4-F | keep | - | high | - |
-| `Race_UpdateCollision` | routine | `race_combat.asm:761 ($16732)` | race_combat: attack state start/cooldown (no damage) | good | `[static]/[dynamic]` combat | keep | - | high | - |
-| `sub_1438E` | routine | `race_anim_audio.asm:370 ($1438E)` | race_anim: impact speed-loss latch | placeholder | `[static]` | rename-later | `Race_ApplyImpactLatch` | medium | - |
-| `sub_142D8` | routine | `race_anim_audio.asm:269 ($142D8)` | race_anim: weapon-anim speed flag | placeholder | `[static]` | rename-later | `Race_SetWeaponAnimSpeedFlag` | low | - |
-| `RaceActor_TileBase` | RAM field | `race_anim_audio.asm:4414` / `race_hud.asm:266` (`$5C`) | stamina/health: regen + knockdown + HUD bar; not a tile base | misleading | `[confirmed]` E4-B + HUD | rename-later | `RaceActor_Stamina` | high | - |
-| `ram_FF18AC` | data | `race_core.asm:1258 ($FF18AC)` | race_anim: stamina damage per pair-impact unit (`$10`) | placeholder | `[confirmed]` E4-B | rename-later | `Race_ram_StaminaHitScale` | high | - |
-| `ram_FF18A8` | data | `race_core.asm:1256 ($FF18A8)` | race_spawn/ai: shared stamina baseline (`$500`); above it the page max graphics `+$E` is restored | placeholder | `[confirmed]` U-0017 | rename-later | `Race_ram_StaminaBaseline` | medium | - |
-| `ram_FF18AA` | data | `race_core.asm:1257 ($FF18AA)` | core/ai/hud: player stamina max (`$A00`) | placeholder | `[confirmed]` HUD | rename-later | `Race_ram_PlayerStaminaMax` | high | - |
-| `ram_FF3038` | data | `race_ai.asm:1543 ($FF3038)` | race_ai/anim: pair X window (`$6000`/`$3700`) | placeholder | `[confirmed]` E4-F | rename-later | `Race_ram_PairXWindow` | medium | - |
-| `ram_FF303E` | data | `race_ai.asm:1545 ($FF303E)` | race_ai/anim: penetration threshold (`$40`) | placeholder | `[confirmed]` E4-F | rename-later | `Race_ram_ImpactPenetration` | medium | - |
-| `ram_FF3040` | data | `race_ai_road.asm:1092 ($FF3040)` | road/anim: collision side state (0..2) | placeholder | `[confirmed]` E4-F | rename-later | `Race_ram_CollisionSideState` | medium | - |
-| `ram_FF1768` | data | `race_ai.asm:1542 ($FF1768)` | race_ai/anim: current player in crash/fall (damage suppression) | placeholder | `[confirmed]` E4-F | rename-later | `Race_ram_CrashAnimActive` | high | - |
-| `ram_FF1B26` | data | `race_hud.asm:331 ($FF1B26)` | hud/core/anim: BikeDamage (inverse HP); `$20` threshold | good | `[confirmed]` E4-F | keep | - | high | - |
-| `Race_ApplyCrashImpact` | routine | `race_ai.asm:1428 ($11B7A)` | race_ai: lean-over crash (`DemoMode==0`); damage `ScaleImpactDamage(Speed)>>2` | good | `[static]` | keep | - | medium | - |
+## Audit notes
 
-### L5 spawn/lifecycle (E5)
+- Total identifier rows: 668.
+- `keep`: 521; `rename-later`: 146; `blocked-unknown`: 0; other: 1.
+- Other verdicts: `ram_FF3274` (retain alias).
+- Every identifier referenced by the analyzed source files has a row; renamed
+  identifiers record their old and new names.
+- Closed unknown IDs are marked `resolved` in the Unknown ID column; open rows
+  keep the `U-xxxx` reference.
+- Do not read the whole inventory during a normal pass; grep the symbol.
 
-| Identifier | Kind | Defined | Used in (file: role) | Name quality | Evidence | Rename verdict | Proposed | Confidence | Unknown ID |
-|---|---|---|---|---|---|---|---|---|---|
-| `Race_SpawnTick` | routine | `race_spawn.asm:158 ($16AF6)` | race_spawn: timer/count/speed gate -> opponent or traffic spawn | good | `[static]` E5-6 | keep | - | high | - |
-| `Race_CheckOpponentAhead` | routine | `race_spawn.asm:208 ($16B6A)` | race_spawn: recycle ahead actor; reserved opponent exempt | good | `[static]` | keep | - | high | - |
-| `Race_CheckTrafficBehind` | routine | `race_spawn.asm:236 ($16B9E)` | race_spawn: recycle behind traffic | good | `[static]` | keep | - | high | - |
-| `Race_SpawnOpponent` | routine | `race_spawn.asm:283 ($16BD6)` | race_spawn: free-list opponent -> activate/init $200000 ahead | good | `[static]` E5-6 | keep | - | high | - |
-| `Race_SpawnTraffic` | routine | `race_spawn.asm:316 ($16C1A)` | race_spawn: traffic free-list -> activate/init $100000 behind | good | `[static]` E5-6 | keep | - | high | - |
-| `Race_SpawnOpponents` | routine | `race_core.asm:1348 ($B8D0)` | race_core: Data5 -> normal (`FFD7D4`) and special (`FFDBD8`) lists | good | `[static]/[dynamic]` E5-1 | keep | - | high | - |
-| `Race_UpdateStaticActors` | routine | `race_ai.asm:2469 ($12868)` | race_ai: move active static pair; candidates/collision | good | `[static]/[dynamic]` E5 | keep | - | high | - |
-| `Race_InitExtraStaticActor` | routine | `race_ai.asm:2516 ($128E0)` | race_ai: `$FF2FAA` init from progress + marker offset | good | `[static]/[dynamic]` E5-5 | keep | - | high | - |
-| `Race_UpdateExtraStaticActor` | routine | `race_ai.asm:2569 ($12974)` | race_ai: steer/clamp `$FF2FAA` | good | `[static]/[dynamic]` E5-5 | keep | - | high | - |
-| `sub_138CE` | routine | `race_ai.asm:4059 ($138CE)` | race_ai: static respawn timer/palette/side/profile/speed | placeholder | `[static]/[dynamic]` E5-3 | rename-later | `Race_UpdateStaticSpawnCycle` | high | - |
-| `sub_13A26` | routine | `race_ai.asm:4169 ($13A26)` | race_ai: static respawn at `PlayerProgress+$208000`; set `$68` bit6 | placeholder | `[static]/[dynamic]` E5-4 | rename-later | `Race_RespawnStaticActor` | high | - |
-| `sub_13BF4` | routine | `race_ai.asm:4361 ($13BF4)` | race_ai: reserved opponent rating gate + Data5 special list | placeholder | `[static]/[dynamic]` E5-2 | rename-later | `Race_UpdateReservedOpponentSpawn` | high | - |
-| `sub_13CFE` | routine | `race_ai.asm:4437 ($13CFE)` | race_ai: activate/setup reserved opponent, graphics `page+4`, definition page | placeholder | `[static]/[dynamic]` E5-2 | rename-later | `Race_InitReservedOpponent` | high | - |
-| `ram_FF1F2A` | RAM | `ram_const.asm:430 ($FF1F2A)` | race_spawn/ai: reserved `Race_ActorList[1]` opponent (`$71=1`) | placeholder | `[static]/[dynamic]` E5-2 | rename-later | `Race_ReservedOpponent` | medium | - |
-| `word_B976` | data | `race_core.asm:1402 ($B976)` | race_core: per-level random-acceptance threshold for Data5 | placeholder | `[static]` | rename-later | `RaceTrack_SpawnAcceptThreshold` | high | - |
-| `word_B980` | data | `race_core.asm:1404 ($B980)` | race_core: per-level special-list cap | placeholder | `[static]` | rename-later | `RaceTrack_SpecialSpawnCap` | high | - |
-| `off_B98A` | data | `race_core.asm:1406 ($B98A)` | race_core: 5 per-level special colour/page lists | placeholder | `[static]` | rename-later | `RaceTrack_SpecialSpawnPages` | high | - |
-| `ram_FFDBD4` | RAM | `ram_const.asm:634 ($FFDBD4)` | race_core/ai: Data5 special-list cursor used by `sub_13BF4` | placeholder | `[static]/[dynamic]` E5-2 | rename-later | `Race_ram_SpecialSpawnCursor` | high | - |
-| `ram_FF1B2E` | RAM | `ram_const.asm:321 ($FF1B2E)` | race_ai_road: shape `$186` run length -> extra actor gate | placeholder | `[static]` | rename-later | `Race_ram_MarkerRunLength` | medium | - |
-| `ram_FF1B30` | RAM | `ram_const.asm:322 ($FF1B30)` | race_ai_road/ai: shape `$186` slot position; extra actor init/deactivate | placeholder | `[static]/[dynamic]` E5-5 | rename-later | `Race_ram_MarkerSlot` | high | - |
-| `ram_FF1B32` | RAM | `ram_const.asm:323 ($FF1B32)` | race_ai: reserved-opponent spawn delay | placeholder | `[static]` | rename-later | `Race_ram_ReservedSpawnTimer` | medium | - |
-| `ram_FF1B34` | RAM | `ram_const.asm:324 ($FF1B34)` | race_ai: reserved-opponent rating-distance offset (init `$E10`) | placeholder | `[static]` | rename-later | `Race_ram_ReservedSpawnOffset` | medium | - |
-| `ram_FF1B36` | RAM | `ram_const.asm:325 ($FF1B36)` | race_ai: reserved-opponent initial-placement latch | placeholder | `[static]` | rename-later | `Race_ram_ReservedSpawned` | medium | - |
-| `ram_FF1B3A` | RAM | `ram_const.asm:327 ($FF1B3A)` | race_ai: last reserved-opponent rating distance | placeholder | `[static]` | rename-later | `Race_ram_ReservedLastDistance` | low | - |
-| `Race_ram_LevelIndex` | RAM | `ram_const.asm:326 ($FF1B38)` | race_ai: Data5 special colour/page index; recycle compares with Menu level | narrow | `[static]/[dynamic]` E5-2 | rename-later | `Race_ram_ReservedPageIndex` | medium | - |
+## Links
 
-### L7 results/HUD/animation (E7)
-
-| Identifier | Kind | Defined | Used in (file: role) | Name quality | Evidence | Rename verdict | Proposed | Confidence | Unknown ID |
-|---|---|---|---|---|---|---|---|---|---|
-| `RaceHud_Draw` | routine | `race_hud.asm:12 ($D278)` | race_core: per-frame HUD chain | good | `[static]/[dynamic]` E7-A | keep | - | high | - |
-| `RaceHud_DrawSpeedArrow` | routine | `race_hud.asm:37 ($D29E)` | race_hud: speed needle (`speed/453`, frame 31) | good | `[static]` | keep | - | high | - |
-| `RaceHud_DrawRPMArrow` | routine | `race_hud.asm:68 ($D2DC)` | race_hud: RPM needle from gear curve | good | `[static]` | keep | - | high | - |
-| `RaceHud_DrawOdometer` | routine | `race_hud.asm:107 ($D334)` | race_hud: three-digit distance odometer | good | `[static]` | keep | - | high | - |
-| `RaceHud_DrawPlace` | routine | `race_hud.asm:199 ($D3F6)` | race_hud: packed-decimal place cell | good | `[static]/[dynamic]` E7-A | keep | - | high | - |
-| `RaceHud_DrawTime` | routine | `race_hud.asm:220 ($D410)` | race_hud: BCD minutes/seconds | good | `[static]` | keep | - | high | - |
-| `RaceHud_DrawStamina` | routine | `race_hud.asm:254 ($D458)` | race_hud: player/nearest stamina bars | good | `[static]/[dynamic]` E7-A | keep | - | high | - |
-| `Race_DrawBikeHPBar` | routine | `race_hud.asm:337 ($D534)` | race_hud: `$20-BikeDamage` bar | good | `[static]/[dynamic]` E7-A | keep | - | high | - |
-| `Race_DrawPlayerNameOrPlace` | routine | `race_hud.asm:399 ($D5CE)` | race_hud: name/"Nth PLACE" timer | good | `[static]/[dynamic]` E7-A | keep | - | high | - |
-| `Race_DrawOpponentName` | routine | `race_hud.asm:506 ($D73A)` | race_hud: nearest/finish rider name | good | `[static]` | keep | - | high | - |
-| `RaceHud_DrawSymbol` | routine | `race_hud.asm:575 ($D830)` | race_hud: one HUD tile cell | good | `[static]` | keep | - | high | - |
-| `RaceHud_DrawNumber2Digits` | routine | `race_hud.asm:598 ($D850)` | race_hud: two BCD digit cells | good | `[static]` | keep | - | high | - |
-| `RaceHud_DrawNumber4Digits` | routine | `race_hud.asm:636 ($D890)` | race_hud: four digit cells (no race caller) | good | `[static]` | keep | - | high | - |
-| `RaceHud_dRankStrings` | data | `race_hud.asm:370 ($D58E)` | race_hud: `" 1st".."16th"` rank text | good | `[static]` | keep | - | high | - |
-| `RaceHud_NeedleScript` | data | `race_misc_data.asm:45 ($7DEAA)` | race_hud: 32-frame needle script | good | `[static]` | keep | - | high | - |
-| `RaceHud_NeedleData` | data | `race_misc_data.asm:74 ($7DF30)` | race_hud: needle frame/tile data | good | `[static]` | keep | - | high | - |
-| `RaceHud_ram_OdometerFont` | RAM | `ram_const.asm:525 ($FF352C)` | race_core/hud: odometer digit tiles | good | `[static]` | keep | - | high | - |
-| `RaceHud_ram_NameTimer` | RAM | `ram_const.asm:180 ($FF14B8)` | race_hud: name/place phase timer | good | `[static]/[dynamic]` E7-A | keep | - | high | - |
-| `RaceHud_ram_LastPlace` | RAM | `ram_const.asm:182 ($FF14BA)` | race_hud: last seen place | good | `[static]/[dynamic]` E7-A | keep | - | high | - |
-| `RaceHud_ram_Rank` | RAM | `ram_const.asm:183 ($FF14BC)` | race_hud: displayed rank index | good | `[static]/[dynamic]` E7-A | keep | - | high | - |
-| `RaceHud_ram_NameFlags` | RAM | `ram_const.asm:181 ($FF14B9)` | race_hud: bit1 = show "PLACE" text | good | `[static]/[dynamic]` E7-A | keep | - | high | - |
-| `RaceHud_ram_TextDescriptor` | RAM | `ram_const.asm:184 ($FF14BE)` | race_hud: 10-char text descriptor | good | `[static]` | keep | - | high | - |
-| `Race_ram_PlayerRpmDivisor` | RAM | `ram_const.asm:262 ($FF1AA2)` | race_hud: stored `(curve<<2)&$FFFF` divisor | good | `[static]` | keep | - | high | - |
-| `Race_ram_PlayerPlace` | RAM | `ram_const.asm:329 ($FF1B40)` | race_physics: packed place; HUD/name | good | `[static]/[dynamic]` E7-A | keep | - | high | - |
-| `Race_ComputeStandings` | routine | `race_ai_road.asm:724 ($EFA4)` | top_level: event keys for results | good | `[static]/[dynamic]` E7-C | keep | - | high | - |
-| `Race_ScaleResultValue` | routine | `race_ai_road.asm:844 ($F0E4)` | standings: scale progress by event distance/track length | good | `[static]/[dynamic]` E7-C | keep | - | high | - |
-| `Race_SortResults` | routine | `race_core.asm:2086 ($C378)` | results: sort 16 event keys -> `value<<16|index` | good | `[static]/[dynamic]` E7-C | keep | - | high | - |
-| `Race_UpdateHighScoreTable` | routine | `race_core.asm:2272 ($C598)` | results: name/career/money -> high-score table | good | `[static]` | keep | - | high | - |
-| `Race_BuildStandings` | routine | `race_core.asm:2527 ($C868)` | results: 4-row standings record | good | `[static]/[dynamic]` E7-C | keep | - | high | - |
-| `Race_FormatTime` | routine | `race_core.asm:2645 ($C9D4)` | standings: format sorted value as time | good | `[static]` | keep | - | high | - |
-| `unk_D1A0` | data | `race_core.asm:2967 ($D1A0)` | results: place points `0,75,50,...,1` | placeholder | `[static]/[dynamic]` E7-C | rename-later | `Race_PointsByPlace` | high | - |
-| `unk_D1C0` | data | `race_core.asm:2970 ($D1C0)` | results: standings header `17,5,3,30` + template | placeholder | `[static]/[dynamic]` E7-C | rename-later | `Race_StandingsTemplate` | high | - |
-| `Race_ram_EventProgress` | RAM | `ram_const.asm:204 ($FF1762)` | standings: base distance for free-list keys | good | `[static]/[dynamic]` E7-C | keep | - | high | - |
-| `Race_ram_ProgressSnapshotC` | RAM | `ram_const.asm:367 ($FF1E9E)` | standings: player finish/distance snapshot | good | `[static]/[dynamic]` E7-C | keep | - | high | - |
-| `sub_15014` | routine | `race_anim_audio.asm:1408 ($15014)` | race_ai_road: fall/on-foot animation updater | placeholder | `[static]/[dynamic]` E7-B | rename-later | `Race_UpdateActorFallAnimation` | high | - |
-| `sub_154D2` | routine | `race_anim_audio.asm:1826 ($154D2)` | race_anim: frame-script sequencer (`header+4-byte frames`) | placeholder | `[static]` | rename-later | `Race_StepAnimationScript` | high | - |
-| `unk_15CE0` | data | `race_anim_audio.asm:3694 ($15CE0)` | race_anim: AnimState-3 "side" crash frames tiles `$B9..$BE` | placeholder | `[static]/[dynamic]` E7-B | rename-later | `Race_FallScriptSideA` | high | - |
-| `unk_15CFC` | data | `race_anim_audio.asm:3722 ($15CFC)` | race_anim: AnimState-3 "close" crash frames tiles `$BF..$C4` | placeholder | `[static]/[dynamic]` E7-B | rename-later | `Race_FallScriptSideB` | high | - |
-| `Race_UpdateCamera` | routine | `race_physics.asm:720 ($DE9E)` | race: camera offset + `PlayerProgress`; curve walk | good | `[static]/[dynamic]` E6 | keep | - | high | - |
-| `Race_IntegrateTrackCurve` | routine | `race_ai_road.asm:522 ($EDD0)` | race: 32-strip road profile from `Track_CurveBuffer` | good | `[static]/[dynamic]` E6 | keep | - | high | - |
-| `Road_FillProfileTables` | routine | `race_ai_road.asm:410 ($ECE0)` | race: road HScroll fg/bg + marking X/width | good | `[static]/[dynamic]` E6 | keep | - | high | - |
-| `Race_BuildVScrollInfo` | routine | `race_physics.asm:829 ($E004)` | race: HInt VScroll raster blocks/chain; four-phase compaction | good | `[static]/[dynamic]` E6 + U-0018 | keep | - | high | - |
-| `Race_BuildHScrollTable` | routine | `race_physics.asm:1157 ($E494)` | race: per-line HScroll plane A/B bands | good | `[static]/[dynamic]` E6 | keep | - | high | - |
-| `ram_FF1E50` / `ram_FF1E52` | RAM | `ram_const.asm:340-341` | race: `$1E54/56 + $1E58/5A` combined scroll | placeholder | `[confirmed]` E6 | rename-later | `Race_ram_CurveScrollA/B` | medium | - |
-| `ram_FF1E54` / `ram_FF1E56` | RAM | `ram_const.asm:342-343` | race: signed curve-byte sums over the progress delta | placeholder | `[confirmed]` E6 | rename-later | `Race_ram_CurveSumA/B` | medium | - |
-| `ram_FF1E58` / `ram_FF1E5A` | RAM | `ram_const.asm:344-345` | race: scaled current/next curve byte | placeholder | `[confirmed]` E6 | rename-later | `Race_ram_CurveScaledA/B` | medium | - |
-| `ram_FF1E60` | RAM | `ram_const.asm:347` | race: camera Y = `3*PosY/4` | placeholder | `[confirmed]` E6 | rename-later | `Race_ram_CameraY` | high | - |
-| `ram_FF1E64` | RAM | `ram_const.asm:348` | race: camera collision = `($32>>1)+$5D` (long) | placeholder | `[confirmed]` E6 | rename-later | `Race_ram_CameraCollision` | medium | - |
-| `ram_FF1E66` | RAM | `ram_const.asm:349` | low word of `ram_FF1E64` | narrow | `[confirmed]` E6 | keep | - | high | - |
-| `ram_FF1E6A` | RAM | `ram_const.asm:352` | low word of `Race_ram_PlayerProgress`; curve amplitude | narrow | `[confirmed]` E6 | keep | - | high | - |
-| `ram_FF1E6C` | RAM | `ram_const.asm:353` | race: current signed curve byte | placeholder | `[static]/[dynamic]` E6 | rename-later | `Race_ram_CurveByte` | medium | - |
-| `ram_FF1E76` | RAM | `ram_const.asm:355` | race: `$8000` progress bias set by `Race_CreateActors` | placeholder | `[confirmed]` E6 | rename-later | `Race_ram_ProgressBias` | high | - |
-| `ram_FF1E7A` / `ram_FF1E7E` / `ram_FF1E86` | RAM | `ram_const.asm:356-359` | camera bias/smoothing fields with no writer in `src/` | placeholder | `[static]` | rename-later | unused camera fields | high | - |
-| `ram_FF30EA`/`EE`/`F2`/`F6`/`FA`/`FE` | RAM | `ram_const.asm:494-503` | HInt HScroll plane A/B parallax accumulators | placeholder | `[static]/[dynamic]` E6 | rename-later | `Race_ram_HScrollLayerA/B..` | medium | - |
-| `ram_FF3274` | RAM | `ram_const.asm:517` | `ram_FF3236[31]`; horizon line used by the VScroll | narrow | `[confirmed]` E6 | retain alias | - | high | - |
-| `Race_ram_HIntVScroll` | RAM | `ram_const.asm:186 ($FF14DC)` | HInt HScroll base accumulator (`+$10000`/frame) | good | `[static]/[dynamic]` E6 | keep | - | high | - |
-| `ram_FF310A`/`31D2`/`3236`/`329A`/`3362`/`D77C` | RAM | `ram_const.asm:513-521` | race: 32-strip profile values/indexes/depth | placeholder | `[static]/[dynamic]` E6 | rename-later | `Race_ram_Profile*` | medium | - |
-| `Race_ProjectObject` | routine | `race_ai_road.asm:1932 ($FD96)` | race: generic 16.16 object -> `Road_ObjectArray` projection | good | `[static]` L6b | keep | - | high | `U-0019` resolved |
-| `Race_ProjectActorObject` | routine | `race_ai_road.asm:2082 ($1082A)` | race: near-actor projection (fractional X interpolation) | good | `[static]` L6b | keep | - | high | - |
-| `Race_ProjectActorSprite` | routine | `race_physics.asm:209 ($DAE2)` | race: far-behind actor sprite projection | good | `[static]` L6b | keep | - | high | - |
-| `Race_ProjectTrackObject` | routine | `race_ai_road.asm:3861 ($10C4E)` | race: track-stream record -> row tables/lane offset | good | `[static]` L6b | keep | - | high | - |
-| `Race_BuildActorObjectList` | routine | `race_ai_road.asm:1091 ($F40C)` | race: active/static/extra actor object records | good | `[static]` L1/L5/L6b | keep | - | high | - |
-| `Race_BuildTrackObjects` | routine | `race_ai_road.asm:3568 ($109B6)` | race: ROM track-object stream -> records | good | `[static]` L6b | keep | - | high | - |
-| `Road_BuildVisibleList` | routine | `race_ai_road.asm:3927 ($10D46)` | race: insertion sort of distance keys -> draw order | good | `[static]` L6b | keep | - | high | mixed-sign keys (E8) |
-| `Road_ObjectArray` | data | `ram_const.asm:624 ($FFD37C)` | race: 0x14-byte object records, max 51, `$FFFF` terminated | good | `[static]` L6b | keep | - | high | - |
-| `ram_FFDE72` | RAM | `ram_const.asm:650 ($FFDE72)` | race: live `Road_ObjectArray` record count | narrow | `[static]` L6b | rename-later | `Road_ram_ObjectCount` | high | - |
-| `ram_FF1B48` | RAM | `ram_const.asm:333 ($FF1B48)` | race: actor-object count (snapshot after the actor builder) | placeholder | `[static]` L6b | rename-later | `Road_ram_ActorObjectCount` | medium | - |
-| `ram_FF1B4A` | RAM | `ram_const.asm:334 ($FF1B4A)` | race: track-object count (`count - FF1B48`) | placeholder | `[static]` L6b | rename-later | `Road_ram_TrackObjectDelta` | medium | - |
-| `ram_FF1B50` / `ram_FF1C50` / `ram_FF1D50` | RAM | `ram_const.asm:337-339` | race: unsorted keys / sorted keys / visible index list | narrow | `[static]` L6b | rename-later | `Road_ram_ObjectKeys*`/visible | high | - |
-| `ram_FF1B16` | RAM | `ram_const.asm:311 ($FF1B16)` | race: per-actor custom-animation flag in the object builder | placeholder | `[static]` L6b | rename-later | `Race_ram_CustomAnimFlag` | medium | - |
-| `ram_FF1B2E` | RAM | `ram_const.asm:321 ($FF1B2E)` | race: shape-`$186` marker run length | placeholder | `[static]` L5/L6b | rename-later | `Race_ram_MarkerRunLength` | medium | - |
-| `ram_FF1B30` | RAM | `ram_const.asm:322 ($FF1B30)` | race: shape-`$186` marker row slot; extra-actor gate | placeholder | `[static]/[dynamic]` E5 | rename-later | `Race_ram_MarkerSlot` | high | - |
-| `ram_FF1ACC` / `ram_FF1AC8` / `ram_FF1ACE` | RAM | `ram_const.asm:276-277` | race: player-finish selector / speed tier / finish toggle | placeholder | `[static]` L6b | rename-later | `Race_ram_*Shape*` | medium | - |
-| `ram_FF1AD9` / `ram_FF1ADC` | RAM | `ram_const.asm:308-309` | race: lean-shape (mod 4) / fall-shape (mod 8) phase counters | placeholder | `[static]` L6b | rename-later | `Race_ram_LeanPhase`/`FallPhase` | medium | - |
-| `ram_FFD338` / `ram_FFD33E` | RAM | `ram_const.asm:595-597` | race: 4-entry / 3-entry shape-bucket threshold tables | narrow | `[static]` L6b | rename-later | `Race_ram_ShapeThresholds*` | medium | - |
-| `Road_DrawStrip` | routine | `road_render.asm:16` (`$8FB4`) | road_render: shape controls -> offset lists -> tile columns + SAT chain | narrow (draws object sprite tiles, not the road surface) | `[static]` L6c | rename-later | `SpriteStrip_Draw` | medium | - |
-| `Road_InterpolateLeftEdge` | routine | `road_render.asm:122` (`$9142`) | road_render: per-output-byte source advance list (`ram_FF0D2E`) | good | `[static]`/`[dynamic]` E8-A | keep | - | high | - |
-| `Road_InterpolateRightEdge` | routine | `road_render.asm:204` (`$91F0`) | road_render: per-row source advance list (`ram_FF102E`) | good | `[static]`/`[dynamic]` E8-A | keep | - | high | - |
-| `Road_InterpolateRightEdgeAlt` | routine | `road_render.asm:262` (`$9272`) | road_render: unused fixed-scale variant | misleading (no caller) | `[static]` | rename-later | `Road_InterpolateRightEdgeUnused` | medium | - |
-| `Road_WriteTileColumns` | routine | `road_render.asm:320` (`$9306`) | road_render: source bitplane stream -> column-major 4bpp sprite tile array | narrow (writes sprite tiles) | `[static]`/`[confirmed]` golden replay | rename-later | `SpriteStrip_WriteTiles` | high | - |
-| `Road_ClearEdgeTiles` | routine | `road_render.asm:409` (`$93D2`) | road_render: zero the unused edge strip bytes | good | `[static]`/E8 | keep | - | high | - |
-| `Road_DrawObjects` | routine | `road_render.asm:457` (`$942A`) | road_render: walk `Road_VisibleObjectList`, draw each record | good | `[static]`/`[dynamic]` E8-C | keep | - | high | - |
-| `Road_DrawObject` | routine | `road_render.asm:494` (`$9484`) | road_render: project shape(s), draw strip, copy SAT chain | good | `[static]`/`[confirmed]` E8-B | keep | - | high | - |
-| `Road_ScaleShape` | routine | `road_render.asm:693` (`$978C`) | road_render: scale `P+0/P+1` (mirror uses `P+2-P+0`) | good | `[static]`/E8-A | keep | - | high | - |
-| `Road_ProjectShapeSpecial` | routine | `road_render.asm:727` (`$97BC`) | road_render: special/two-part edge projection | good | `[static]` | keep | - | high | - |
-| `Road_ProjectShape` | routine | `road_render.asm:787` (`$9836`) | road_render: non-special edge projection + clip | good | `[static]` | keep | - | high | - |
-| `Race_BuildTrackObjects` | routine | `race_ai_road.asm:3588` (`$109B6`) | race_ai_road: Data4 run -> `Road_ObjectArray` + keys | good | `[static]`/`[dynamic]` E8 | keep | - | high | - |
-| `Race_ProjectTrackObject` | routine | `race_ai_road.asm:3824` (`$10C4E`) | race_ai_road: track object -> scale/Y/limit/x/lane row | good | `[static]`/E8 | keep | - | high | - |
-| `Road_ShapeTable` | data | `road_shapes.asm` (`$3BF1A`) | road_shapes: 564 shape-data pointers | good | `[static]` | keep | - | high | - |
-| `word_3C7EA` | data | `road_shapes.asm` (`$3C7EA`) | road_shapes: shape count `$234` | narrow | `[static]` | rename-later | `Road_ShapeCount` | high | - |
-| `Road_ShapeData` | data | `road_shapes.asm` (`$3C7EC`) | road_shapes: per-shape header/control/bitplane row data | good | `[static]`/`[confirmed]` golden replay | keep | - | high | - |
-| `ram_FF0D2A` | RAM | `ram_const.asm:94` (`$FF0D2A`) | road_render: current shape row-data pointer | placeholder | `[static]`/E8-A | rename-later | `SpriteStrip_ram_SourcePtr` | high | - |
-| `ram_FF0D2E` | RAM | `ram_const.asm:95` (`$FF0D2E`) | road_render: left/inter-byte source advance list | placeholder | `[static]`/`[dynamic]` E8-A | rename-later | `SpriteStrip_ram_PlaneOffsets` | high | - |
-| `ram_FF102E` | RAM | `ram_const.asm:96` (`$FF102E`) | road_render: right/per-row source advance list | placeholder | `[static]`/`[dynamic]` E8-A | rename-later | `SpriteStrip_ram_RowOffsets` | high | - |
-| `ram_FF132E` | RAM | `ram_const.asm:99` (`$FF132E`) | road_render: emitted tile columns minus 1 | placeholder | `[static]`/E8-A | rename-later | `SpriteStrip_ram_ColumnCount` | high | - |
-| `ram_FF1330` | RAM | `ram_const.asm:100` (`$FF1330`) | road_render: source rows minus 1 | placeholder | `[static]`/E8-A | rename-later | `SpriteStrip_ram_RowCount` | high | - |
-| `ram_FF1332` | RAM | `ram_const.asm:101` (`$FF1332`) | road_render: left half-width seed for the right list | placeholder | `[static]`/E8-A | rename-later | `SpriteStrip_ram_HalfWidth` | high | - |
-| `ram_FF133C` | RAM | `ram_const.asm:103` (`$FF133C`) | road_render: strip mirror selector (cleared by `Road_DrawObject`) | placeholder | `[static]` | rename-later | `SpriteStrip_ram_Mirror` | medium | - |
-| `ram_FF133E` | RAM | `ram_const.asm:104` (`$FF133E`) | road_render: SAT priority from `Flags & $3000` | placeholder | `[static]`/E8-B | rename-later | `SpriteStrip_ram_Priority` | medium | - |
-| `ram_FF135E` | RAM | `ram_const.asm:113` (`$FF135E`) | road_render: horizontal clip budget (0 = none) | placeholder | `[static]`/E8-A | rename-later | `SpriteStrip_ram_Clip` | high | - |
-| `ram_FF136A` | RAM | `ram_const.asm:119` (`$FF136A`) | road_render: horizon/limit row | placeholder | `[static]`/E8 | rename-later | `SpriteStrip_ram_Horizon` | medium | - |
-| `ram_FFDE5E` | RAM | `ram_const.asm:641` (`$FFDE5E`) | road_render: shape fill/tile word ORed into SAT entries | placeholder | `[static]`/E8 | rename-later | `SpriteStrip_ram_FillWord` | high | - |
+- Full table: `docs/analysis/identifiers_inventory.md`
+- Unknown registry: `docs/analysis/unknowns.md`
+- Rename rules: `docs/line-by-line-analysis.md` section 8
+- Status dashboard: `docs/analysis/coverage.md`

@@ -193,8 +193,8 @@ subsystem prefixes:
   `Shop_ram_*`, `EndLevel_ram_*`, `RoadMarking_ram_*`, `Animation_ram_*`.
 - `ram_XXXXXX` entries are not yet renamed.
 
-TODO: document major RAM structures (player state, race state, sprite tables,
-VDP buffers, input state) with sizes and layouts.
+RAM structures, field ownership and aliases live in `docs/ram-map.md`; race actor
+fields are authoritative in `docs/analysis/race_map.md`.
 
 ## Data / asset notes
 
@@ -203,9 +203,10 @@ VDP buffers, input state) with sizes and layouts.
 - `tools/extract.py` (Python 3 + Pillow) helps extract/decompress graphics from the
   ROM.
 
-## TODO
+## Documentation pointers
 
-- Fill in boot/start flow and top-level state machine (`doStart`).
-- Describe interrupts (what each does per frame).
-- Fill per-module cards, starting with `src/main.asm` and `src/race/race.asm`.
-- Document RAM structures and cross-module contracts.
+- Boot/start flow and the screen state machine: `modules/main.md`, `modules/top_level.md`.
+- Interrupts and VDP/DMA: `hardware.md`; per-frame dispatcher: `analysis/main.md`.
+- Module routers: `modules/README.md`; durable contracts: `analysis/*.md`.
+- RAM structures and cross-module contracts: `ram-map.md`, `analysis/race_map.md`.
+- Remaining open semantic gap: `RaceResults_ram_Outcome` / `$FF3692/96/9A` (plan row P3).
