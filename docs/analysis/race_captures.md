@@ -188,7 +188,7 @@ Decision:    if d0 matches the clamped AnimIndex and the actor $71 lands in
              ram_FF1792[d0*16+count] -> confirmed; else candidate model is wrong
 
 E3-2  profile slot choice (action0 vs action1)
-Goal:        confirm base/+4 conditions and the ram_FF1A98 budget
+Goal:        confirm base/+4 conditions and the Race_ram_ActionDispatchCount budget
 Scenario:    normal and forced: nearest actor, rating <= player Speed, budget full
 Breakpoint:  0x12FCE (+4 path) and 0x12FD8 (call site)
 Commands:    p/x $a1 ; p/x $a1+$71 ; p/x $a1+$74 ; p/x $a1+$66
@@ -211,7 +211,7 @@ Decision:    if non-player -> action2, close+cooldown(nearest) -> action3, and
              PlayerB/attack-active/final -> action4 -> confirmed
 
 E3-4  per-level budget
-Goal:        confirm ram_FF1A96 = [2,3,3,3,4] and the per-frame +4 count
+Goal:        confirm Race_ram_ActionDispatchBudget = [2,3,3,3,4] and the per-frame +4 count
 Scenario:    one normal frame on each level (or set Menu_ram_PlayerLevel)
 Breakpoint:  0x12FD8
 Commands:    p/x $ff0522 ; p/x $ff1a96 ; p/x $ff1a98 ; p/x $a1+$71
@@ -239,12 +239,12 @@ Runs: `analysis/capture_L3_a.gdb`, `capture_L3_a2.gdb`, `capture_L3_b.gdb`,
 | Check | Breakpoint / window | Observed | Decision |
 |---|---|---|---|
 | E3-1 candidate bucket | `0x13832`, demo | bucket 3 at `$30=$0020`, bucket 5 at `$30=$00A0`; `$71` written at `ram_FF1792[bucket*16+count]`; `ram_FF178A[bucket]` advanced | confirmed |
-| E3-2 profile slot | `0x12FD8`/`0x12FCE`, forced Speed `$7FFF` | PlayerA and over-budget non-nearest actors stayed on the base slot; `a4=slot+4` for nearest actors and while `ram_FF1A98 < ram_FF1A96`; the counter incremented on every `+4` (nearest included) and never exceeded the budget | confirmed |
+| E3-2 profile slot | `0x12FD8`/`0x12FCE`, forced Speed `$7FFF` | PlayerA and over-budget non-nearest actors stayed on the base slot; `a4=slot+4` for nearest actors and while `Race_ram_ActionDispatchCount < Race_ram_ActionDispatchBudget`; the counter incremented on every `+4` (nearest included) and never exceeded the budget | confirmed |
 | E3-3 action2 | `0x164A2`, forced non-player `a2` | 12 hits; branch condition is `a2 != -1 && a2 != RacePlayerA`. Natural demo: 0 hits (every target was PlayerA) | confirmed forced; unused naturally |
 | E3-3 action3 distance | `0x164F6`, forced `d0 >= d6` | 6 hits; `8(a4)` selected when `distance >= threshold` | confirmed forced |
 | E3-3 action3 nearest/cooldown | `0x16510`, natural | 262 hits; sampled `near=0`, `$5A=0` -> nearest-mismatch path. Cooldown variant remains `[static]` | confirmed (mismatch) |
 | E3-3 action4 | `0x16518`, natural | 174 hits; sampled `near=1`, `$5A=0`, `isPB=0` -> nearest with expired cooldown | confirmed |
-| E3-4 per-level budget | `Race_LoadBikePalette` `0xCAAC`, forced levels 1..5 | budgets `2,3,3,3,4`; demo level 1 budget `2`; `ram_FF1A98` never exceeded `ram_FF1A96` | confirmed |
+| E3-4 per-level budget | `Race_LoadBikePalette` `0xCAAC`, forced levels 1..5 | budgets `2,3,3,3,4`; demo level 1 budget `2`; `Race_ram_ActionDispatchCount` never exceeded `Race_ram_ActionDispatchBudget` | confirmed |
 | E3-5 static respawn | `0x1397E`/`0x1399E`/`0x139A4`, forced timers | `$74` selects `Race_StaticActionTable[$74]`; `$12/$46` matched its speed/Y-offset (`$0E -> $1B58/$FFEF`, `$0D -> $1770/$FFF8`, `$01 -> $1B58/$0010`, `$07 -> $1964/$000C`); timer expiry reached `sub_13A26` | confirmed |
 
 Notes:
@@ -253,7 +253,7 @@ Notes:
   action3 were reached only by forcing `a2`/`d0`; both agree with the static branch
   conditions and the older forced dispatcher trace.
 - Profiles 17/19 were never assigned; the AI loop used profiles 0/6/8/9 in the demo
-  sample. `ram_FF1A98` stayed `<= ram_FF1A96` on every sampled frame.
+  sample. `Race_ram_ActionDispatchCount` stayed `<= Race_ram_ActionDispatchBudget` on every sampled frame.
 - Forcing a high PlayerA speed (`$7FFF`) was needed because the demo opponents'
   ratings (`$1B58`+) exceed the early player speed; this isolates the slot/budget
   logic without changing the branch under test.
@@ -273,7 +273,7 @@ already used for them. New checks follow the Experiment Pack format in
 | Steering and lean | `0x10E66` with `RaceBike_ram_CurrentSteering=±$600`: `$42/$3E/$40/$3C`, `$69` | `$42` sign = lean; `$3E/$40` only under curve limit |
 | Speed/gear loop | `0x10E66` every 10th frame: `$12/$14/$18/$68/$69/$3A/$3C/$4C/$4E` | accel vs gear branch; `$4C/$4E` extent flips |
 | Off-road transition | `0x10E66` after 300 forced-left frames: `$68` bit3, `$30/$36/$00` | hard curve vs off-road bit |
-| Road objects | running/`road_objects` dump: `$FFDE72` count, `Road_ObjectArray`, `Road_VisibleObjectList` | object count is `ram_FFDE72` (22 in the demo), not `Race_ram_TrackObjectCount` |
+| Road objects | running/`road_objects` dump: `$FFDE72` count, `Road_ObjectArray`, `Road_VisibleObjectList` | object count is `Road_ram_ObjectCount` (22 in the demo), not `Race_ram_TrackObjectCount` |
 | Pair impact | `0x14486` (`Race_ApplyCollisionImpact`): `$1C/$2A/$2C/$2E/$54/$5C` | E4-F confirms both branches, Speed, BikeDamage, `$2A/$2C/$2E/$32`, event |
 | E1-1/E1-4 actor fields | `0x10FDE`/`0x10FE4`/`0x10F6C`/`0x115C6`, demo PlayerA | `$30 = $00-$36`; `$36` accumulator; `$3C` write-only |
 | E1-2 Y correction | `0x113C4`, demo PlayerA | `$22 = d0`, then `$00 += d0` |

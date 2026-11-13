@@ -54,8 +54,8 @@ with a fixed `$10000` scale. `[static]`
 ## Object list and records
 
 - Visible list `Road_VisibleObjectList` (`$FF1D50`): CPU object indices, `$FFFF`-terminated. Built
-  by `Road_BuildVisibleList` from `ram_FF1B50` (unsorted producer keys) into
-  `ram_FF1C50` (sorted keys) + `ram_FF1D50` (indices).
+  by `Road_BuildVisibleList` from `Road_ram_ObjectKeysUnsorted` (unsorted producer keys) into
+  `Road_ram_ObjectKeysSorted` (sorted keys) + `ram_FF1D50` (indices).
 - Object array `Road_ObjectArray` (`$FFD37C`), 0x14 bytes per record. Fields used by this
   module:
 
@@ -84,7 +84,7 @@ rendering each object and restores them on overflow.
    `ram_FF134C`.
 5. Special path (byte `+$B` bit7 set = flags bit15): `Road_ScaleShape` +
    `Road_ProjectShapeSpecial`, then `Road_DrawStrip`; otherwise `Road_ProjectShape`
-   computes the clip and `ram_FF135E`.
+   computes the clip and `SpriteStrip_ram_Clip`.
 6. `Road_WriteTileColumns` / `RiderSprites_Build` via `Road_DrawStrip`; if the chain end
    flag `ram_FF1366` is set, restore the saved animation indices and abort.
 7. If the second shape is active, reposition and repeat `Road_DrawStrip`.
@@ -111,7 +111,7 @@ The SAT copy-pass count is `move.b RoadObject_Flags(a0),d7` (the **high** byte) 
 | `P+5` | row data | fill/tile word low |
 | `P+6` | row data | row data |
 
-The fill word becomes `ram_FFDE5E` and is ORed into each SAT tile/priority word by
+The fill word becomes `SpriteStrip_ram_FillWord` and is ORed into each SAT tile/priority word by
 `RiderSprites_Build`. For shape `$56` the word is `$2036` -> palette 1, tile base `$36`.
 `[dynamic]`
 
@@ -122,17 +122,17 @@ advanced to `P` or `P+2`):
 
 - `Road_InterpolateLeftEdge(ctrl, scale, clip)` emits one 16-bit entry per output
   source byte. Each entry is the **source advance after that byte** (normally 1; 0
-  duplicates the byte, >1 skips). It writes `ram_FF1332 = ceil(ctrl/2)+1` and
+  duplicates the byte, >1 skips). It writes `SpriteStrip_ram_HalfWidth = ceil(ctrl/2)+1` and
   `ram_FF1336 = raw entry count`, pads the list to a multiple of 4, and returns
-  `d6 = ((padded+1) >> 2) - 1`. `Road_DrawStrip` stores that in `ram_FF132E`, so
-  the writer emits `ram_FF132E + 1` 8-pixel columns per band.
+  `d6 = ((padded+1) >> 2) - 1`. `Road_DrawStrip` stores that in `SpriteStrip_ram_ColumnCount`, so
+  the writer emits `SpriteStrip_ram_ColumnCount + 1` 8-pixel columns per band.
 - `Road_InterpolateRightEdge(ctrl, scale, clip)` emits one entry per source row.
   Each entry is the source advance after that row (normally 1 at scale `$10000`;
   larger when the scale is smaller; negative through the mirror path). It returns
-  `d6 = rows`, and `Road_DrawStrip` stores `d6-1` in `ram_FF1330`, so the writer
-  processes `ram_FF1330 + 1` source rows. `ram_FF0D28` is the padded
+  `d6 = rows`, and `Road_DrawStrip` stores `d6-1` in `SpriteStrip_ram_RowCount`, so the writer
+  processes `SpriteStrip_ram_RowCount + 1` source rows. `ram_FF0D28` is the padded
   right-count remainder used by `Road_ClearEdgeTiles`.
-- `clip` is `ram_FF135E`: 0 = no horizontal clip, >0 limits the emitted entries
+- `clip` is `SpriteStrip_ram_Clip`: 0 = no horizontal clip, >0 limits the emitted entries
   from the left, <0 from the right (control-byte threshold + `$7FFF` horizon limit).
 
 The generation algorithm (both routines):
@@ -154,27 +154,27 @@ for each control step:
 
 ### `Road_WriteTileColumns` destination map
 
-Inputs: `ram_FF0D2A` (row-data pointer), `ram_FF0D26` (tile cursor*32),
-`ram_FF132E` (columns-1), `ram_FF1330` (rows-1), `ram_FFDE68/6A/66` (strides),
+Inputs: `SpriteStrip_ram_SourcePtr` (row-data pointer), `ram_FF0D26` (tile cursor*32),
+`SpriteStrip_ram_ColumnCount` (columns-1), `SpriteStrip_ram_RowCount` (rows-1), `SpriteStrip_ram_BandAdvance/ColumnGap/TailColumnGap` (strides),
 plus the two offset lists.
 
-For each source row `r` (`0 .. ram_FF1330`):
+For each source row `r` (`0 .. SpriteStrip_ram_RowCount`):
 
 - `a4` starts at the band base and advances `+4` per row.
-- For each column `c` (`0 .. ram_FF132E`), write the next 4 source bytes to
+- For each column `c` (`0 .. SpriteStrip_ram_ColumnCount`), write the next 4 source bytes to
   `a4 + c*(gap+4) .. +3`; after each byte advance the source by the next left-list
   entry.
 - The 4 bytes are the four 4bpp bitplanes of one 8-pixel scanline of that column, so
   the destination is **column-major**: one column = `gap+4` bytes = `tiles_y * 32`.
 - After the row, advance the source by the next right-list entry.
-- Every 32 rows (`d4` wraps from 0) add `ram_FFDE68` to `a4` and switch `gap` from
-  `ram_FFDE6A` to `ram_FFDE66` for the remainder band.
+- Every 32 rows (`d4` wraps from 0) add `SpriteStrip_ram_BandAdvance` to `a4` and switch `gap` from
+  `SpriteStrip_ram_ColumnGap` to `SpriteStrip_ram_TailColumnGap` for the remainder band.
 
 Strides `[confirmed]` E8-A + golden replay:
 
-- `ram_FFDE6A = $7C` -> full-band column stride `$80` (4 tiles tall).
-- `ram_FFDE66 = $5C` -> remainder-band column stride `$60` (3 tiles tall).
-- `ram_FFDE68 = $200` -> band advance after the 32-row/128-byte partial advance.
+- `SpriteStrip_ram_ColumnGap = $7C` -> full-band column stride `$80` (4 tiles tall).
+- `SpriteStrip_ram_TailColumnGap = $5C` -> remainder-band column stride `$60` (3 tiles tall).
+- `SpriteStrip_ram_BandAdvance = $200` -> band advance after the 32-row/128-byte partial advance.
   `RiderSprites_Build` computes it from the first row's tile span; it is not a
   fixed constant.
 
@@ -186,7 +186,7 @@ Strides `[confirmed]` E8-A + golden replay:
 4-tile band plus a 22-row remainder band).
 
 `Road_ClearEdgeTiles` writes zero words to the unused edge strip bytes selected by
-`ram_FF0D28` and `ram_FFDE66`; it does not touch the writer's data bytes.
+`ram_FF0D28` and `SpriteStrip_ram_TailColumnGap`; it does not touch the writer's data bytes.
 
 ## Shape table / data
 
@@ -201,16 +201,16 @@ Strides `[confirmed]` E8-A + golden replay:
   edge (`d5`), adds object X and `$C0`, applies the mirror bit and clips; it returns
   the projected edge and sets `ram_FFDE62` when outside `0..edge`.
 - `Road_ProjectShape` is the non-special variant: it uses half the width, stores the
-  clip in `ram_FF135E`, and also sets `ram_FFDE62` on overflow.
+  clip in `SpriteStrip_ram_Clip`, and also sets `ram_FFDE62` on overflow.
 
 ## RAM summary
 
 - Object list/array: `Road_VisibleObjectList`, `Road_ObjectArray` (0x14 records).
-- Shape strip: `ram_FF0D26/0D28/0D2A/0D2E/102E`, `ram_FF132E/1330/1332/1336`,
+- Shape strip: `ram_FF0D26/0D28/0D2A/0D2E/102E`, `SpriteStrip_ram_ColumnCount/RowCount/1332/1336`,
   `ram_FF136A` (horizon), `ram_FF1366` (chain end).
 - Object/projection: `Road_ram_MirrorFlag` (facing/mirror), `ram_FF133C` (strip mirror),
   `ram_FF133E` (priority), `ram_FF1340/1342/1344/1348/134C/1350/1354/1356/1358/135A/135C/135E/1360/1362/1364`.
-- Sprite state: `Animation_ram_SpriteIndex/TileIndex/BaseTile`, `ram_FFDE5E..70`,
+- Sprite state: `Animation_ram_SpriteIndex/TileIndex/BaseTile`, `SpriteStrip_ram_FillWord..70`,
   `Race_ram_CurrentSpriteAttributeTable` (double-buffered `$FF479C`/`$FF4E1C`),
   `Race_ram_CurrentSpriteTileArray`.
 
@@ -225,9 +225,9 @@ Strides `[confirmed]` E8-A + golden replay:
   - `$FFD430`: `FF30 0060 5174 0060 01C3 1184 FF56 0380 00AC 01C4`.
 - First `Road_DrawStrip`: `d0=d1=$10000`, shape entry `$05994E` (`10 37 20 36`);
   the special path advances the shape pointer by `+2`, so controls/fill/row data
-  are read from the advanced pointer; `ram_FF0D2A` lands at shape+6.
-- E8-C: at `Road_DrawObjects`, `ram_FFDE72=22`, `PlayerProgress=$00078000`;
-  `ram_FF1B50` is the raw producer key list, `ram_FF1C50` is ascending
+  are read from the advanced pointer; `SpriteStrip_ram_SourcePtr` lands at shape+6.
+- E8-C: at `Road_DrawObjects`, `Road_ram_ObjectCount=22`, `PlayerProgress=$00078000`;
+  `Road_ram_ObjectKeysUnsorted` is the raw producer key list, `Road_ram_ObjectKeysSorted` is ascending
   (`$00008000,$00008000,$00038000,...`), and `ram_FF1D50` is the index order drawn.
 
 ## Runtime verification (merged from shape_writer_verify.md)
@@ -240,10 +240,10 @@ load) and at its return (`0x93D0`), with full work-RAM dumps in the git-ignored
 |---|---|
 | `Race_ShapeTable[0x56]` | `0x05994C` |
 | writer source pointer (`ram_FF1348`) | `0x05994E` (special handoff `P+2`) |
-| row-data pointer (`ram_FF0D2A`) | `0x059952` (`P+6`) |
-| left/right strip counts (`ram_FF132E/1330`) | `4` / `$35` |
+| row-data pointer (`SpriteStrip_ram_SourcePtr`) | `0x059952` (`P+6`) |
+| left/right strip counts (`SpriteStrip_ram_ColumnCount/RowCount`) | `4` / `$35` |
 | destination (`a4`) | `$FF511C` (`CurrentSpriteTileArray + $80`) |
-| strides `ram_FFDE66/68/6A` | `$5C/$200/$7C` |
+| strides `SpriteStrip_ram_TailColumnGap/BandAdvance/ColumnGap` | `$5C/$200/$7C` |
 
 The split asset matches: `assets/shapes/056/data.bin` starts at `0x05994C`, has header
 `10 37 20 36`, and the writer consumes `P+6`. The before/after dump proves the writer

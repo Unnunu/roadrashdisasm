@@ -125,7 +125,7 @@ This is the double/quad buffering that avoids tearing.
    4. `Race_UpdateActorAI` (`0x10E66`) — walk active actors; speed/position/AI.
    5. `sub_13E94`, `sub_10DBE`, `sub_10DDA`, `sub_13BF4`.
    6. `Race_UpdateStaticActors` (`0x12868`) — static/police slots.
-   7. `$FF2FAA` gate: if `ram_FF1B30 < $1C`, clear its `$68` bit6; otherwise
+   7. `$FF2FAA` gate: if `Race_ram_MarkerSlot < $1C`, clear its `$68` bit6; otherwise
       `Race_InitExtraStaticActor`/`Race_UpdateExtraStaticActor`.
    8. `sub_138CE`, `Race_ClearActorOnFootFlags`, `sub_11C44`, `sub_11CC8`, `sub_1218C`,
       `sub_123A8` — traffic/actor collision/action helpers.
@@ -269,7 +269,7 @@ Actors/player structures:
 
 Applied in Batch 3a: `RaceActor_PosZ/X/XLow/Speed/Type/Gear/PosY/Index/GraphicsIndex`.
 Applied in R1: `RaceActor_X`/`XLow`, `RaceActor_Acceleration`,
-`RaceActor_FrameDistance`, `RaceActor_Lean`, `RaceActor_TileBase`,
+`RaceActor_FrameDistance`, `RaceActor_Lean`, `RaceActor_Stamina`,
 `RaceActor_Rating`.
 | `$FF2FAA` struct | `RaceActor`/`RacePlayerVisual` | not in static list | low |
 

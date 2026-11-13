@@ -50,13 +50,13 @@ Data: `Race_RoadMarkingDataA/B` (`0xDC84`/`0xDD44`), `Race_ram_RearviewTileRows`
   - bit4 set and `Race_ram_State == 0`: `$6E < 2` adds `FrameDistance >> 4` (negated
     when `$69` bit3 = off-road) and clamps at `-$7000`; `$6E >= 2` decays
     `offset -= offset >> 2`.
-- Camera Y: `ram_FF1E60 = (PosY>>1) + (PosY>>2) + ram_FF1E7A`. `$1E7A` has no writer
+- Camera Y: `Race_ram_CameraY = (PosY>>1) + (PosY>>2) + Race_ram_CameraYBias`. `$1E7A` has no writer
   in `src/` (zeroed at init), so this is `3*PosY/4`. The block after `.loc_DF14` that
   would smooth `$1E60` through `$1E86` is skipped by `bra.w .loc_DF6E`; `$1E86` is dead.
-- Camera collision: `ram_FF1E64 = ($32>>1) + ram_FF1E7E + $5D`, with a `$5D` floor.
+- Camera collision: `ram_FF1E64 = ($32>>1) + Race_ram_CameraCollisionBias + $5D`, with a `$5D` floor.
   `$1E7E` also has no writer -> 0. `$1E66` is the low word of this long field.
-- Progress: `Race_ram_PlayerProgress = PlayerA.X - ram_FF1E76 - CameraOffset`.
-  `ram_FF1E76` is set to `$8000` by `Race_CreateActors`; `$1E6A` is the low word of
+- Progress: `Race_ram_PlayerProgress = PlayerA.X - Race_ram_ProgressBias - CameraOffset`.
+  `Race_ram_ProgressBias` is set to `$8000` by `Race_CreateActors`; `$1E6A` is the low word of
   32-bit `PlayerProgress` (`$1E68`).
 - Curve walk: the high word of the old and new progress selects the byte-pair index
   in `Track_CurveBuffer` (`index = (progress>>16 & $FF)*2`). The absolute high-word
@@ -181,9 +181,9 @@ road row written by `Road_FillProfileTables` (`fg=$017C`, `bg=$FFAB`).
 ## `Race_ProjectActorSprite` (`0xDAE2`, L6b contract)
 
 Builds a `Road_ObjectArray` record for an actor that is far behind the player
-(`rel.high < -$10`) at the current `ram_FFDE72` index. With `v = progress - actor.X`:
+(`rel.high < -$10`) at the current `Road_ram_ObjectCount` index. With `v = progress - actor.X`:
 
-- key `v` is appended to `ram_FF1B50`;
+- key `v` is appended to `Road_ram_ObjectKeysUnsorted`;
 - `base = $B00 + ((v>>10) * -$1B) / $10`; `Y1 = actor.$30 -
   ((PosY-$10)/$28)*$28`, `Y2 = actor.$30 - ((PosY+$10)/$28)*$28`;
   `t1 = (base*Y1)/$E0 >> 6`, `t2 = (base*Y2)/$E0 >> 6`;
@@ -192,7 +192,7 @@ Builds a `Road_ObjectArray` record for an actor that is far behind the player
 - flags `+$A = $4100 | (palette & 3)<<4` (H-flip from actor `$C` bit15);
 - shape: actor `$71 == 1` -> `$159`; `$71 in $10..$12` -> `$15A`/`$15A+2`
   (bit3 of `StateFlags`); otherwise `Race_GetActorShapeVariant` + `$154`;
-- the record is kept (`ram_FFDE72++`, `a0 += $14`) only when `+0 >= -$20` and
+- the record is kept (`Road_ram_ObjectCount++`, `a0 += $14`) only when `+0 >= -$20` and
   `+0 - +$C < $160`; an accepted X then gets `-$200`.
 
 ## `Race_UpdateNearestOpponent` (`0xE5EE`)
@@ -217,15 +217,15 @@ Builds a `Road_ObjectArray` record for an actor that is far behind the player
 - `ram_FF30EA/EE/F2/F6/FA/FE` HInt HScroll parallax accumulators; `ram_FF3274` =
   horizon line (`ram_FF3236[31]`).
 - `Race_ram_CameraOffset`; `ram_FF1E54/56` curve sums; `ram_FF1E58/5A` scaled current/
-  next curve bytes; `ram_FF1E50/52` combined scroll values; `ram_FF1E60` camera Y;
+  next curve bytes; `ram_FF1E50/52` combined scroll values; `Race_ram_CameraY` camera Y;
   `ram_FF1E64` camera collision (long, `$1E66` = low word); `ram_FF1E68`
   `PlayerProgress` (long, `$1E6A` = low word); `ram_FF1E6C` current curve byte;
-  `ram_FF1E76` = `$8000` progress bias; `$1E7A/$1E7E/$1E86` have no writer.
+  `Race_ram_ProgressBias` = `$8000` progress bias; `$1E7A/$1E7E/$1E86` have no writer.
 - `Race_ram_NearestBehindIndex`/`Race_ram_NearestAheadIndex` nearest actor indices;
   `Race_ram_NearestBehindSpeed`/`Race_ram_NearestAheadSpeed` engine-audio values;
   `Race_ram_PlayerPlace` player place.
 - `Race_ram_RearviewTileRows` road tile rows; `ram_FF3238` marking widths;
-  `ram_FF3A9C` marking X; `ram_FF1B50`/`ram_FFDE72` actor-sprite list/count.
+  `ram_FF3A9C` marking X; `Road_ram_ObjectKeysUnsorted`/`Road_ram_ObjectCount` actor-sprite list/count.
 
 
 ## Actor movement dataflow (merged from race_movement.md)

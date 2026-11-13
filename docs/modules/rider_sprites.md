@@ -28,7 +28,7 @@ horizontally mirrored copy.
   `src/race/road_marking.asm`, `src/race/race_hud.asm`.
 
 ## Hacks / bugs / quirks
-- The `$8000` sentinel in `ram_FFDE68` marks "band advance not computed"; it is
+- The `$8000` sentinel in `SpriteStrip_ram_BandAdvance` marks "band advance not computed"; it is
   replaced after the first row. It is not a per-row stride (see L6c).
 - Entries with `Y >= $118` do not get the priority bit `$8000`.
 - The mirror pass (`Road_ram_MirrorFlag`, from `RoadObject_Flags` bit15) sets the H-flip bit

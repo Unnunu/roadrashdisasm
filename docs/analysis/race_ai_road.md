@@ -47,7 +47,7 @@ Applied in R5: `RoadObject_X/Y/Scale/Limit/Shape/Flags/XOffset/Shape2/Size`;
 | `Race_BuildActorObjectList`/`Race_Add*Object` | `0xF40C`+ | Object-record producers (L6b contract below). |
 | `Race_WriteSpriteTiles` | `0x10972` | Sprite-tile staging to VRAM. |
 | `Race_BuildTrackObjects`/`Race_ProjectTrackObject` | `0x109B6`/`0x10C4E` | Track-object stream -> object records (L6b). |
-| `Road_BuildVisibleList` | `0x10D46` | Visible object list (`ram_FF1B50`/`1C50`/`1D50`). |
+| `Road_BuildVisibleList` | `0x10D46` | Visible object list (`Road_ram_ObjectKeysUnsorted`/`Road_ram_ObjectKeysSorted`/`Road_VisibleObjectList`). |
 | `sub_10DBE`/`sub_10DDA` | `0x10DBE`/`0x10DDA` | Actor/visible-list helpers. |
 
 ## Key flow
@@ -69,7 +69,7 @@ Applied in R5: `RoadObject_X/Y/Scale/Limit/Shape/Flags/XOffset/Shape2/Size`;
 - After the race, `Race_ComputeStandings`/`Race_ScaleResultValue` produce the event
   keys consumed by `Race_ComputeResults` (contract below).
 - `Road_BuildVisibleList` builds the visible object list from the sorted
-  `ram_FF1B50`/`ram_FF1C50` lists into `ram_FF1D50`; `Race_WriteSpriteTiles` stages the
+  `Road_ram_ObjectKeysUnsorted`/`Road_ram_ObjectKeysSorted` lists into `ram_FF1D50`; `Race_WriteSpriteTiles` stages the
   sprite tiles for `Race_GameTick`.
 
 ## Frame object-assembly order (L6b)
@@ -77,30 +77,30 @@ Applied in R5: `RoadObject_X/Y/Scale/Limit/Shape/Flags/XOffset/Shape2/Size`;
 `Race_Update` render-prep phase (`race_core.asm`):
 
 ```
-ram_FFDE72 = 0
+Road_ram_ObjectCount = 0
 Race_AddSpecialObject        ; cop / special timer object
 Race_AddTrackStartObject     ; start/finish gate when in range
 Race_BuildActorObjectList    ; active + static + extra actor(s)
-ram_FF1B48 = ram_FFDE72      ; actor-object count
+ram_FF1B48 = Road_ram_ObjectCount      ; actor-object count
 Race_BuildTrackObjects       ; ROM track-object stream
-ram_FF1B4A = ram_FFDE72 - ram_FF1B48   ; track-object count
+ram_FF1B4A = Road_ram_ObjectCount - ram_FF1B48   ; track-object count
 Race_AddStagedObjects        ; staged RAM traffic list
-ram_FF1B50[count] = $FFFFFFFF          ; terminate distance list
-Road_BuildVisibleList        ; sort into ram_FF1C50 + index list $FF1D50
+Road_ram_ObjectKeysUnsorted[count] = $FFFFFFFF          ; terminate distance list
+Road_BuildVisibleList        ; sort into Road_ram_ObjectKeysSorted + index list $FF1D50
 ...
 Road_DrawObjects             ; draw in visible-list order
 ```
 
 `Road_ObjectArray` is `$FFD37C..$FFD77B`, 0x14-byte records, at most 51
-(`$400/$14`); `ram_FFDE72` is the live count and the record word at index `count`
-is the `$FFFF` terminator. The parallel distance list `ram_FF1B50` holds one 32-bit
-key per record and is sorted into `ram_FF1C50`; `Road_VisibleObjectList`
+(`$400/$14`); `Road_ram_ObjectCount` is the live count and the record word at index `count`
+is the `$FFFF` terminator. The parallel distance list `Road_ram_ObjectKeysUnsorted` holds one 32-bit
+key per record and is sorted into `Road_ram_ObjectKeysSorted`; `Road_VisibleObjectList`
 (`$FF1D50`) holds the sorted record indices as words.
 
 `Road_ObjectArray` fields (`RoadObject_*`): `+0` screen X, `+2` screen Y,
 `+4` scale, `+6` limit/depth, `+8` shape, `+$A` flags, `+$C` X offset,
 `+$E` reserved (projected row byte for track objects), `+$10` reserved,
-`+$12` second shape. The distance key (`ram_FF1B50`) is stored separately, not in
+`+$12` second shape. The distance key (`Road_ram_ObjectKeysUnsorted`) is stored separately, not in
 the record.
 
 ## `Race_ComputeStandings` (`0xEFA4`, L7 contract)
@@ -157,9 +157,9 @@ After the road rows, the top `alpha` sky rows get zero scroll/X/width entries.
 
 ## Object-record producers (L6b)
 
-All producers write the current `Road_ObjectArray` record at `ram_FFDE72` and append
-one 32-bit key to `ram_FF1B50`, except the marker/gap paths and the dropped/clipped
-records (which do not increment `ram_FFDE72`).
+All producers write the current `Road_ObjectArray` record at `Road_ram_ObjectCount` and append
+one 32-bit key to `Road_ram_ObjectKeysUnsorted`, except the marker/gap paths and the dropped/clipped
+records (which do not increment `Road_ram_ObjectCount`).
 
 - `Race_AddSpecialObject` (`0xFD96`): when `Race_CopIndex != 0` uses shape `$170`
   (cop); otherwise it requires the negative `ram_FF3698` flag, resets `ram_FF369A`
@@ -181,7 +181,7 @@ records (which do not increment `ram_FFDE72`).
     `Race_ProjectActorSprite` (far behind); `rel > $1E` -> skip; otherwise the
     near-actor record is built:
     `row = rel.high & $1F` stored in `Flags` low bits, `Y` from
-    `ram_FF1E60 - actor.$30` divided by `(rel>>8)+$100`, plus `actor+8` and the lean
+    `Race_ram_CameraY - actor.$30` divided by `(rel>>8)+$100`, plus `actor+8` and the lean
     curve (bit5), bucketed through `ram_FFD338` (4 entries) or `unk_25802` (3
     entries) into signed `actor.$34`; the shape is selected by
     `Race_SelectExtraActorShape` / `Race_SelectOpponentShape` /
@@ -275,7 +275,7 @@ player `PosY ± $10`, `$28` steps and actor `$30`, screen X from
 - `word0` bit14 = alternate/second-part selector, bit15 = mirror;
 - shape remap: `$205` = gap/skip; `< $1BB` = as-is; `$1BB..$1E9` -> emits the pair
   `(base, base+1)` (second shape at `+$12`, `$B` bit7 set); `>= $1EA` -> `+$2F`;
-- shape `$186` is the extra-actor marker: stores `ram_FF1B30 = d0` (row slot) and
+- shape `$186` is the extra-actor marker: stores `Race_ram_MarkerSlot = d0` (row slot) and
   `ram_FF1B2E = remaining rows+1`, emits no object;
 - `Race_ram_TrackObjectDistance` accumulates `rowStep * (step)` per entry; the
   cursor rewinds while the previous entry's high word is at/after the player
@@ -291,7 +291,7 @@ byte2 = type index, byte3 = lane/length.
 ## `Road_BuildVisibleList` (`0x10D46`, L6b)
 
 `Road_BuildVisibleList` is an insertion sort of the 32-bit distance keys from
-`ram_FF1B50` (source `a0`) into `ram_FF1C50` (destination `a1`), maintaining the
+`Road_ram_ObjectKeysUnsorted` (source `a0`) into `Road_ram_ObjectKeysSorted` (destination `a1`), maintaining the
 parallel word index list in `Road_VisibleObjectList` (`$FF1D50`, `a2`):
 
 - copies the first key; `index[0]=0`;
@@ -329,7 +329,7 @@ scene with objects in front of and behind the player.
 
 At the first `Road_DrawObjects` (`0x942A`) hit in the demo race:
 
-- `ram_FFDE72 = 22` object records, `PlayerProgress = $00078000`;
+- `Road_ram_ObjectCount = 22` object records, `PlayerProgress = $00078000`;
 - `Road_ObjectArray` records decode as `x,y,scale,limit,shape,flags,c,e,f,shape2`;
   e.g. record 9: `x=-208,y=96,scale=$5174,shape=$01C3,flags=$1184,
   c=-170,e=$0380,f=$00AC,shape2=$01C4`;
@@ -344,14 +344,14 @@ by `Road_DrawObjects`/`Road_DrawStrip`.
 - `Road_ram_XLeftArray`/`XRightArray`/`MarkingXArray`;
   `RoadMarking_ram_XArray`/`WidthArray`; `Race_ram_CurrentHScrollTable`/`Alpha`.
 - `ram_FF310A`/`ram_FF31D2`/`ram_FF329A`/`ram_FF3236`/`ram_FF3362`/`ram_FF3A9C`/`ram_FFD77C`; `Race_ram_PlayerProgress`/`ram_FF1E6A`/`ram_FF1E6C`.
-- `Road_ObjectArray` (`$FFD37C`, 0x14-byte records, max 51); `ram_FFDE72` count.
+- `Road_ObjectArray` (`$FFD37C`, 0x14-byte records, max 51); `Road_ram_ObjectCount` count.
 - `ram_FF1B48` actor-object count, `ram_FF1B4A` track-object count,
   `Race_ram_TrackObjectCount` staged-object count.
-- `ram_FF1B50`/`1C50`/`1D50` visible lists; `Race_ram_CurrentHudBuffer`.
+- `Road_ram_ObjectKeysUnsorted`/`Road_ram_ObjectKeysSorted`/`Road_VisibleObjectList` visible lists; `Race_ram_CurrentHudBuffer`.
 - `ram_FFD338`/`ram_FFD33E` shape threshold tables; `ram_FF1ACC` player-finish
   selector; `ram_FF1AC8` speed tier; `ram_FF1ACE` finish toggle; `ram_FF1AD9`
   lean-shape phase; `ram_FF1ADC` fall-shape phase; `ram_FF1B16` custom-animation
-  flag; `ram_FF1B2E`/`ram_FF1B30` shape-`$186` marker run/slot.
+  flag; `ram_FF1B2E`/`Race_ram_MarkerSlot` shape-`$186` marker run/slot.
 - Sprite staging: `Race_ram_NextSpriteTileArray`, `Race_ram_SpriteDestination`,
   `Race_ram_CurrentSpriteTileArray`.
 - ROM data: `unk_EB34` road edges, `Interp_dDivisorMap`, `unk_102DE`, `unk_10E3E`,

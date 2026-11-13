@@ -63,13 +63,13 @@ unreferenced helpers.
 
 - `Race_UpdateLeanCurve` computes the lean/curve from `$3E`/d0 into `$40`/`ram_FF3042`.
 - `Race_UpdatePlayerAnimation` advances the player **stamina** `$5C` up to
-  `ram_FF18AA` by `Race_ram_FrameDelay` (on-foot/`$6E` gated).
+  `Race_ram_PlayerStaminaMax` by `Race_ram_FrameDelay` (on-foot/`$6E` gated).
 - `Race_ScaleImpactDamage`/`Race_ApplyCollisionImpact`/`Race_ExchangeCollisionSpeed`
   handle impact/damage side effects. L4 (`tasks/race_L4_impact_contracts.md`, E4)
   confirmed both `Race_ApplyCollisionImpact` branches, the `ScaleImpactDamage =
-  abs(x)>>11` scale (`ram_FF1768` suppression), and the knockdown `$5C` arithmetic;
+  abs(x)>>11` scale (`Race_ram_CrashAnimActive` suppression), and the knockdown `$5C` arithmetic;
   see `docs/analysis/race_impact.md`.
-- `Race_UpdateActorPairImpact` sets `ram_FF0520=3` when player A attacks the actor whose
+- `Race_UpdateActorPairImpact` sets `Player_ram_NatashaCounter=3` when player A attacks the actor whose
   `$71` index equals `ram_FF1ADB`, i.e. Natasha (`U-0004`).
 - `sub_15014` is the fall/on-foot animation updater. `Race_BuildActorObjectList`
   calls it when actor `$68` bit4 is set and `$6E >= 0`; it first runs

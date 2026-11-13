@@ -30,14 +30,14 @@ Four populations share the `$80`-byte actor struct. `$71` is the slot index: 0..
 | Loop opponents | `Race_ActorStruct_9..15` on `ram_FF1A08`, `Struct_2..8` on the opponent free list | 2..15 | `Race_CreateActors` | `Race_InitActorLists` (7 active) + `Race_SpawnOpponent` (free list) | `Race_RecycleOpponent` -> opponent free list |
 | Reserved opponent | `ram_FF1F2A` (entry 1 of `Race_ActorList`) | 1 | `Race_CreateActors` | `sub_13BF4` (rating gate or `Data5` special list) | `Race_RecycleActor` special case; not pushed to a free list |
 | Static pair | `$FF2EAA`, `$FF2F2A` (`Race_StaticActorList`) | `$10`, `$11` | `Race_CreateActors` | `sub_138CE` timer expiry -> `sub_13A26` | `Race_ClampActorY` clears `$68` bit6 |
-| Extra static | `$FF2FAA` | `$12` | `Race_CreateActors` (`$71=$12`) | `Race_InitExtraStaticActor` when a `shape $186` track object is at `ram_FF1B30 >= $1C` and `ProgressSnapshotB >= $708` | `Race_Update` clears bit6 while `ram_FF1B30` is negative/absent |
+| Extra static | `$FF2FAA` | `$12` | `Race_CreateActors` (`$71=$12`) | `Race_InitExtraStaticActor` when a `shape $186` track object is at `Race_ram_MarkerSlot >= $1C` and `ProgressSnapshotB >= $708` | `Race_Update` clears bit6 while `Race_ram_MarkerSlot` is negative/absent |
 
 `Race_Update` frame order around this subsystem:
 
 ```
 sub_13BF4            ; reserved opponent
 Race_UpdateStaticActors
-ram_FF1B30 gate      ; $FF (marker absent) -> deactivate extra, else init/update
+Race_ram_MarkerSlot gate      ; $FF (marker absent) -> deactivate extra, else init/update
 Race_InitExtraStaticActor / Race_UpdateExtraStaticActor
 sub_138CE            ; static respawn/profile cycle
 ```
@@ -51,7 +51,7 @@ sub_138CE            ; static respawn/profile cycle
 | `Race_ram_ActiveActorCount` | Active actor count; starts at 8 (player + 7 loop opponents), spawn threshold `>= 6` returns. |
 | `Race_ram_OpponentFreeList` | Opponent free list (7 entries `Struct_2..8` from `Race_InitActorLists`); pop/push by `Race_PopFreeActor`/`Race_PushFreeActor`. |
 | `Race_ram_TrafficFreeList` | Traffic free list; starts empty (`Race_InitActorLists` writes 0); `Race_RecycleActor` pushes and `Race_SpawnTraffic` pops. |
-| `ram_FFDBD4` | Cursor into the `Data5` **special** list (`ram_FFDBD8`); consumed by `sub_13BF4`. |
+| `Race_ram_SpecialSpawnCursor` | Cursor into the `Data5` **special** list (`ram_FFDBD8`); consumed by `sub_13BF4`. |
 | `Race_ram_TrackObjectRecordCursor` | Cursor into the `Data5` **normal** list (`ram_FFD7D4`); consumed by `Race_AddStagedObjects`. |
 | `Race_ram_PlayerProgress` | Player progress used by the ahead/behind checks. |
 | `Race_ram_ActorDistanceScale` | Actor-distance scale. |
@@ -109,7 +109,7 @@ is `$FF232A`. `ram_FF1F2A` is **not** in the free or active list at init; it wai
    `PlayerProgress - $100000` and `ram_FF1B36` is clear, set the latch, place the
    actor at `PlayerProgress - $100000`, Speed `$1F40`,
    `Race_ram_LevelIndex = Menu_ram_PlayerLevel`, and call `sub_13CFE`.
-3. If the rating gate does not fire, walk `ram_FFDBD4`: take the next 4-byte special
+3. If the rating gate does not fire, walk `Race_ram_SpecialSpawnCursor`: take the next 4-byte special
    record once the player is within `$200000` of its X; place the actor at the record
    X, set `Race_ram_LevelIndex` from record `+2`, lane
    `$30 = (record low nibble)*$20 - $100`, Speed `min(player Speed,$2710)`, then
@@ -149,13 +149,13 @@ entry (not used by levels 1..5).
 ## Extra static actor (`$FF2FAA`, index `$12`)
 
 - `Race_CreateActors` only sets `$71 = $12`; the slot is otherwise inactive.
-- `Race_BuildTrackObjects` writes `ram_FF1B30 = $FFFF` each frame and, when the
+- `Race_BuildTrackObjects` writes `Race_ram_MarkerSlot = $FFFF` each frame and, when the
   `shape $186` track object is inside the projected object window, replaces it with the
   object's slot position and `ram_FF1B2E` with the run length.
-- `Race_Update`: `ram_FF1B30 < 0` (`$FFFF`) -> clear `$68` bit6; `>= $1C` and bit6
+- `Race_Update`: `Race_ram_MarkerSlot < 0` (`$FFFF`) -> clear `$68` bit6; `>= $1C` and bit6
   clear -> `Race_InitExtraStaticActor`; then `Race_UpdateExtraStaticActor`.
 - Init (only when `ProgressSnapshotB >= $708`): set bit6; palette 0/2 from Rand bit0;
-  X = `(PlayerProgress_integer + ram_FF1B30 - 1) << 16`; Y = `±(Rand & $7FF)`
+  X = `(PlayerProgress_integer + Race_ram_MarkerSlot - 1) << 16`; Y = `±(Rand & $7FF)`
   (`$69` bit3 selects the sign); `$12 = $1770`; clear `$32`.
 - Update: after `ProgressSnapshotB >= $708`, steer against the static pair and adjust
   `$14`/`$12`/`$30`; clamps Speed to `$1770`. It does not register target candidates.
@@ -259,7 +259,7 @@ Notes:
 | `Race_ram_ActiveActorList` | `Race_ActiveActorList` | active list | high |
 | `Race_ram_OpponentFreeList`/`Race_ram_TrafficFreeList` | `Race_OpponentFreeList`/`Race_TrafficFreeList` | free lists | high |
 | `ram_FF1F2A` | `Race_ReservedOpponent` | reserved `Race_ActorList[1]`, `sub_13BF4` lifecycle | medium |
-| `ram_FFDBD4`/`ram_FFDBD8` | `Race_SpecialSpawnCursor`/`Race_SpecialSpawnList` | `Data5` special list | high |
+| `Race_ram_SpecialSpawnCursor`/`ram_FFDBD8` | `Race_SpecialSpawnCursor`/`Race_SpecialSpawnList` | `Data5` special list | high |
 | `unk_13A1A` | `Race_LevelRespawnScale` | per-level static respawn scale | medium |
 | `ram_FF1B32`/`ram_FF1B34`/`ram_FF1B36`/`ram_FF1B3A` | `Race_ReservedSpawnTimer`/`Race_ReservedSpawnOffset`/`Race_ReservedSpawned`/`Race_ReservedLastDistance` | `sub_13BF4` | medium |
 

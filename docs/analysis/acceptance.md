@@ -87,7 +87,7 @@ Handler/table coverage:
 | `FrameDistance = Speed * FrameDelay`; `X += FrameDistance` | `race_physics.md` (actor movement section) |
 | gear thresholds `+E`/`+1A`; off-road `$14 -= $14>>2` | `race_speed.md` |
 | lean `$0C = (FrameDistance>>8)*$42>>8`; curve `$3E = (limit<<8)/(d0>>8)`; LeanCurve `$40` | `race_speed.md` |
-| AI target buckets `clamp(($30>>6)+3,0,5)`; dispatch budget `ram_FF1A96` | `race_ai.md` |
+| AI target buckets `clamp(($30>>6)+3,0,5)`; dispatch budget `Race_ram_ActionDispatchBudget` | `race_ai.md` |
 | pair extent `6*clamp(\|$8>>4\|,0,3)+2*clamp(($C>>3)+2,0,4)+side` | `race_impact.md` |
 | impact classes: deep `$1C<$40`, shallow `$1C=$80`; stamina `$5C -= PairImpact*$18AC` | `race_impact.md` |
 | spawn timers `(Rand&$FFF)*unk_13A1A[level]>>16`; static respawn `PlayerProgress+$208000` | `race_spawn.md` |

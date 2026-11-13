@@ -992,7 +992,7 @@ Race_InitVariables:
                 move.w  #0,(Race_ram_DemoGameEnded).l
                 move.w  #0,(ram_FF1B22).l
                 move.w  #0,(ram_FF1B2E).l
-                move.w  #0,(ram_FF1B30).l
+                move.w  #0,(Race_ram_MarkerSlot).l
                 move.w  #0,(ram_FF1B3E).l
                 move.w  #0,(Race_ram_PlayerPlace).l
                 move.w  #0,(Rand_ram_LfsrA).l
@@ -1007,17 +1007,17 @@ Race_InitVariables:
                 move.w  #0,(ram_FF1E56).l
                 move.w  #0,(ram_FF1E58).l
                 move.w  #0,(ram_FF1E5A).l
-                move.l  #0,(ram_FF1E60).l
+                move.l  #0,(Race_ram_CameraY).l
                 move.l  #$5D,(ram_FF1E64).l
                 move.l  #$100,(Race_ram_PlayerProgress).l
                 move.w  #0,(Race_ram_BestProgress).l
                 move.w  #0,(ram_FF1E6C).l
                 move.w  #1,(ram_FF1E6E).l
                 move.w  #0,(ram_FF1E70).l
-                move.l  #0,(ram_FF1E76).l
-                move.l  #0,(ram_FF1E7A).l
-                move.l  #0,(ram_FF1E7E).l
-                move.l  #0,(ram_FF1E86).l
+                move.l  #0,(Race_ram_ProgressBias).l
+                move.l  #0,(Race_ram_CameraYBias).l
+                move.l  #0,(Race_ram_CameraCollisionBias).l
+                move.l  #0,(Race_ram_CameraYSmoothingAccum).l
                 move.l  #0,(ram_FF1E8A).l
                 move.l  #0,(ram_FF1E8E).l
                 move.w  #0,(ram_FF1E92).l
@@ -1116,23 +1116,23 @@ Race_InitVariables:
                 move.w  #0,(ram_FFD7C0).l
                 move.w  #0,(ram_FFD7C2).l
                 move.w  #0,(Race_ram_TrackObjectDistance).l
-                move.w  #0,(ram_FFDE5E).l
+                move.w  #0,(SpriteStrip_ram_FillWord).l
                 move.w  #0,(Animation_ram_TileIndex).l
                 move.w  #0,(ram_FFDE62).l
                 move.w  #0,(Animation_ram_SpriteIndex).l
-                move.w  #0,(ram_FFDE66).l
-                move.w  #0,(ram_FFDE68).l
-                move.w  #0,(ram_FFDE6A).l
+                move.w  #0,(SpriteStrip_ram_TailColumnGap).l
+                move.w  #0,(SpriteStrip_ram_BandAdvance).l
+                move.w  #0,(SpriteStrip_ram_ColumnGap).l
                 move.w  #0,(ram_FFDE6C).l
                 move.w  #0,(ram_FFDE6E).l
                 move.w  #0,(ram_FFDE70).l
-                move.w  #0,(ram_FFDE72).l
+                move.w  #0,(Road_ram_ObjectCount).l
                 move.w  #0,(ram_FFDE74).l
                 move.w  #0,(ram_FFDE76).l
                 move.w  #0,(ram_FFDE78).l
                 move.w  #0,(ram_FFDE7A).l
                 move.w  #0,(ram_FFDE7C).l
-                move.w  #0,(ram_FF0520).l ; current-race Natasha encounter flag (U-0004)
+                move.w  #0,(Player_ram_NatashaCounter).l ; current-race Natasha encounter flag (U-0004)
                 move.w  (Menu_ram_PlayerALevel).l,(Menu_ram_PlayerLevel).l
                 tst.w   (Menu_ram_Player).l
                 beq.w   .loc_B6AC
@@ -1255,10 +1255,10 @@ Race_InitPhysicsConstants:
                 move.w  #$4800,(ram_FF1AF2).l
                 move.w  #$6000,(ram_FF1AF4).l
                 move.w  #$1400,(ram_FF18B6).l
-                move.w  #$10,(ram_FF18AC).l
+                move.w  #$10,(Race_ram_StaminaHitScale).l
                 move.w  #$200,(ram_FF18AE).l
                 move.w  #$500,(ram_FF18A8).l
-                move.w  #$A00,(ram_FF18AA).l
+                move.w  #$A00,(Race_ram_PlayerStaminaMax).l
                 move.w  #$80,(ram_FF18B0).l
                 move.w  #$400,(ram_FF18B2).l
                 move.w  #$180,(ram_FF18B4).l
@@ -1298,7 +1298,7 @@ Race_LoadTrackParams:
 ; Function Race_LoadBikeData
 ; Loads the selected player bike record (19 words) and the steering/engine block.
 ; In:  Menu_ram_Player, Menu_ram_BikeIdPlayerA/B
-; Out: RaceBike_ram_Parameters (0x13 words); ram_FF1AA6/AAA; RaceBike_ram_*; ram_FF1AB2/B4
+; Out: RaceBike_ram_Parameters (0x13 words); RaceBike_ram_LeanSteeringDivisor/LeanMultiplier; RaceBike_ram_*; RaceBike_ram_CurveSpeedScale/LeanSpeedScale
 ; Notes:
 ;   unk_25B50 maps bikeId -> an even ActorBikeRecord_2..16.
 ;   The second asl.w #2 (bikeId*16) is computed but never applied to a0, so the
@@ -1325,13 +1325,13 @@ Race_LoadBikeData:
 
                 asl.w   #2,d0 ; bikeId*16 computed but a0 is not indexed:
                 lea     (unk_25AC4).l,a0 ; always unk_25AC4[0] [static]
-                move.w  (a0)+,(ram_FF1AA6).l
-                move.w  (a0)+,(ram_FF1AAA).l
+                move.w  (a0)+,(RaceBike_ram_LeanSteeringDivisor).l
+                move.w  (a0)+,(RaceBike_ram_LeanMultiplier).l
                 move.w  (a0)+,(RaceBike_ram_ReturnToStraightPower).l
                 move.w  (a0)+,(RaceBike_ram_SteeringPower).l
                 move.w  (a0)+,(RaceBike_ram_MaxSteering).l
-                move.w  (a0)+,(ram_FF1AB2).l
-                move.w  (a0)+,(ram_FF1AB4).l
+                move.w  (a0)+,(RaceBike_ram_CurveSpeedScale).l
+                move.w  (a0)+,(RaceBike_ram_LeanSpeedScale).l
                 rts
 ; End of function Race_LoadBikeData
 
@@ -1349,7 +1349,7 @@ Race_SpawnOpponents:
                 lea     (ram_FFD7D4).l,a1
                 move.l  a1,(Race_ram_TrackObjectRecordCursor).l
                 lea     (ram_FFDBD8).l,a2
-                move.l  a2,(ram_FFDBD4).l
+                move.l  a2,(Race_ram_SpecialSpawnCursor).l
                 movea.l (RaceTrack_Data5).l,a0
                 move.w  (Menu_ram_PlayerLevel).l,d0
                 subq.w  #1,d0
@@ -1898,7 +1898,7 @@ Race_Update:
                 jsr     (sub_13BF4).l
                 jsr     (Race_UpdateStaticActors).l
                 lea     (ram_FF2FAA).l,a1
-                move.w  (ram_FF1B30).l,d0
+                move.w  (Race_ram_MarkerSlot).l,d0
                 cmp.w   #$1C,d0
                 bpl.w   .loc_C0F6
                 tst.w   d0
@@ -1961,23 +1961,23 @@ Race_Update:
 
                 jsr     (Road_FillProfileTables).l
                 jsr     (Race_BuildVScrollInfo).l
-                move.w  #0,(ram_FFDE72).l
+                move.w  #0,(Road_ram_ObjectCount).l
                 jsr     (Race_AddSpecialObject).l
                 jsr     (Race_AddTrackStartObject).l
                 jsr     (Race_BuildActorObjectList).l
-                move.w  (ram_FFDE72).l,(ram_FF1B48).l
+                move.w  (Road_ram_ObjectCount).l,(ram_FF1B48).l
                 jsr     (Race_BuildTrackObjects).l
-                move.w  (ram_FFDE72).l,d0
+                move.w  (Road_ram_ObjectCount).l,d0
                 sub.w   (ram_FF1B48).l,d0
                 move.w  d0,(ram_FF1B4A).l
                 jsr     (Race_AddStagedObjects).l
-                lea     (ram_FF1B50).l,a6
-                move.w  (ram_FFDE72).l,d7
+                lea     (Road_ram_ObjectKeysUnsorted).l,a6
+                move.w  (Road_ram_ObjectCount).l,d7
                 asl.w   #2,d7
                 move.l  #$FFFFFFFF,(a6,d7.w)
 
-                lea     (ram_FF1B50).l,a0
-                lea     (ram_FF1C50).l,a1
+                lea     (Road_ram_ObjectKeysUnsorted).l,a0
+                lea     (Road_ram_ObjectKeysSorted).l,a1
                 lea     (Road_VisibleObjectList).l,a2
                 jsr     (Road_BuildVisibleList).l
 
@@ -2155,13 +2155,13 @@ Race_ComputeResults:
                 bne.w   .loc_C44E
 ; U-0004: decay the persisted Natasha counter (3->2->1->0) and latch the
 ; current race's encounter flag (3) into it.
-                move.w  (ram_FF0522).l,d0
+                move.w  (Player_ram_NatashaCounterA).l,d0
                 subq.w  #1,d0
                 bpl.w   .loc_C41A
                 clr.w   d0
 .loc_C41A:
-                or.w    (ram_FF0520).l,d0
-                move.w  d0,(ram_FF0522).l
+                or.w    (Player_ram_NatashaCounter).l,d0
+                move.w  d0,(Player_ram_NatashaCounterA).l
                 move.w  (Menu_ram_BikeIdPlayerA).l,d0
                 lea     (Menu_ram_PlayerAPlaces).l,a1
                 lea     (Player_ram_CareerScoreA).l,a2
@@ -2171,13 +2171,13 @@ Race_ComputeResults:
                 bra.w   .loc_C48C
 .loc_C44E:
 ; same decay/latch for player B
-                move.w  (ram_FF0524).l,d0
+                move.w  (Player_ram_NatashaCounterB).l,d0
                 subq.w  #1,d0
                 bpl.w   .loc_C45C
                 clr.w   d0
 .loc_C45C:
-                or.w    (ram_FF0520).l,d0
-                move.w  d0,(ram_FF0524).l
+                or.w    (Player_ram_NatashaCounter).l,d0
+                move.w  d0,(Player_ram_NatashaCounterB).l
                 move.w  (Menu_ram_BikeIdPlayerB).l,d0
                 lea     (Menu_ram_PlayerBPlaces).l,a1
                 lea     (Player_ram_CareerScoreB).l,a2
@@ -2708,7 +2708,7 @@ Race_LoadBikePalette:
                 lea     (unk_259B6).l,a4
                 asl.w   #1,d0
                 move.w  (a4,d0.w),d0
-                move.w  d0,(ram_FF1A96).l
+                move.w  d0,(Race_ram_ActionDispatchBudget).l
                 rts
 ; End of function Race_LoadBikePalette
 
@@ -2745,7 +2745,7 @@ Race_LoadActorPalette:
 
 Race_CreateActors:
                 clr.l   d0
-                move.l  #$8000,(ram_FF1E76).l
+                move.l  #$8000,(Race_ram_ProgressBias).l
                 move.w  #0,(ram_FF1E94).l
 ; player A + 15 opponent actor structs (sentinels $FFFFFFFF)
                 lea     (Race_ActorList).l,a0 ; get actor list
@@ -2788,10 +2788,10 @@ Race_CreateActors:
 ; graphics entry +$A/+$C/+$E -> actor sprite fields +$5E/+$60/+$5C
                 move.w  $A(a5),STRUCT_OFFSET_5E(a1)
                 move.w  $C(a5),STRUCT_OFFSET_60(a1)
-                move.w  $E(a5),RaceActor_TileBase(a1)
+                move.w  $E(a5),RaceActor_Stamina(a1)
                 cmpa.l  #RacePlayerA,a1
                 bne.w   .loc_CB80
-                move.w  (ram_FF18AA).l,RaceActor_TileBase(a1)
+                move.w  (Race_ram_PlayerStaminaMax).l,RaceActor_Stamina(a1)
 .loc_CB80:
 ; bytes 3/4 -> +$73/+$77; byte 5 * 100 -> +$66 (actor rating/skill)
                 move.b  (a2)+,RaceActor_Palette(a1)

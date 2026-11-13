@@ -211,7 +211,7 @@ and attack timing tables (`ram_FF1AC2`, `ram_FF1ABC`, `unk_257E2/E8/EE`).
 
 ## Damage
 
-`Race_ScaleImpactDamage` is the impact scale: if `ram_FF1768` (current player in a
+`Race_ScaleImpactDamage` is the impact scale: if `Race_ram_CrashAnimActive` (current player in a
 crash/fall animation) is non-zero it returns 0; otherwise `abs(d0) >> 11` and stores
 it in `Race_ram_ImpactScale`. Normal riding has `AnimState=$FF`, so impacts do add
 damage; during one crash the value is suppressed.
@@ -219,7 +219,7 @@ damage; during one crash the value is suppressed.
 | Source | Added to `Race_ram_BikeDamage` | Notes |
 |---|---|---|
 | `Race_ApplyCrashImpact` (`0x11B7A`, lean-over) | `Race_ScaleImpactDamage(Speed) / 4` | normal-mode player only (`DemoMode==0`); lean/curve threshold `ram_FFD33E`, `|$34|>=3` |
-| `sub_140EE` (on-road crash) | `Race_ScaleImpactDamage(Speed) / 2` | player branch, `ram_FF1768 == 0`; sets `$68` bit4 and the crash animation |
+| `sub_140EE` (on-road crash) | `Race_ScaleImpactDamage(Speed) / 2` | player branch, `Race_ram_CrashAnimActive == 0`; sets `$68` bit4 and the crash animation |
 | `sub_141AE` (off-road/high-speed crash) | `Race_ScaleImpactDamage(ram_FF18A6)` | player branch, no halving |
 | `Race_ApplyCollisionImpact` | `Race_ScaleImpactDamage(ram_FF18A6)` on the deep-penetration branch only | also copies `$69` bit3; shallow branch adds nothing (E4-F) |
 | `Race_ExchangeCollisionSpeed` | `Race_ScaleImpactDamage(delta)` | delta ~0.1x speed difference, so ordinary exchanges add 0 (E4-D/E) |

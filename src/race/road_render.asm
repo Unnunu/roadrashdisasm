@@ -25,9 +25,9 @@ Road_DrawStrip:
                 asl.w   #5,d2
                 move.w  d2,(ram_FF0D26).l
                 clr.w   (ram_FF1336).l
-                clr.w   (ram_FF132E).l
-                clr.w   (ram_FF1330).l
-                lea     (ram_FF0D2E).l,a2
+                clr.w   (SpriteStrip_ram_ColumnCount).l
+                clr.w   (SpriteStrip_ram_RowCount).l
+                lea     (SpriteStrip_ram_PlaneOffsets).l,a2
                 move.l  d0,d3
                 bsr.w   Road_InterpolateLeftEdge
                 tst.w   d6
@@ -35,8 +35,8 @@ Road_DrawStrip:
                 move.w  #1,(ram_FFDE62).l
                 bra.w   .locret_9140
 .loc_900A:
-                move.w  d6,(ram_FF132E).l
-                lea     (ram_FF102E).l,a2
+                move.w  d6,(SpriteStrip_ram_ColumnCount).l
+                lea     (SpriteStrip_ram_RowOffsets).l,a2
                 move.l  d1,d3
                 bsr.w   Road_InterpolateRightEdge
                 subq.w  #1,d6
@@ -44,21 +44,21 @@ Road_DrawStrip:
                 move.w  #1,(ram_FFDE62).l
                 bra.w   .locret_9140
 .loc_902E:
-                move.w  d6,(ram_FF1330).l
-                move.w  (a0)+,(ram_FFDE5E).l
+                move.w  d6,(SpriteStrip_ram_RowCount).l
+                move.w  (a0)+,(SpriteStrip_ram_FillWord).l
                 tst.w   (ram_FF133E).l
                 bmi.w   .loc_904E
-                move.w  (ram_FF133E).l,(ram_FFDE5E).l
+                move.w  (ram_FF133E).l,(SpriteStrip_ram_FillWord).l
 .loc_904E:
-                move.l  a0,(ram_FF0D2A).l
+                move.l  a0,(SpriteStrip_ram_SourcePtr).l
                 tst.w   (ram_FF133C).l
                 beq.w   .loc_9074
                 clr.w   d1
-                move.w  (ram_FF1332).l,d0
+                move.w  (SpriteStrip_ram_HalfWidth).l,d0
                 move.b  -3(a0),d1
                 subq.w  #1,d1
                 mulu.w  d1,d0
-                add.l   d0,(ram_FF0D2A).l
+                add.l   d0,(SpriteStrip_ram_SourcePtr).l
 .loc_9074:
                 tst.w   (ram_FF1354).l
                 beq.w   .loc_909A
@@ -70,20 +70,20 @@ Road_DrawStrip:
 .loc_909A:
                 move.w  (ram_FF1336).l,d1
                 sub.w   d1,(ram_FFDE6E).l
-                move.w  (ram_FF1330).l,d0
+                move.w  (SpriteStrip_ram_RowCount).l,d0
                 sub.w   d0,(ram_FFDE70).l
 .loc_90B2:
                 move.w  (ram_FFDE70).l,d1
                 cmp.w   (ram_FF136A).l,d1
                 bpl.w   .locret_9140
-                move.w  (ram_FF1330).l,d0
+                move.w  (SpriteStrip_ram_RowCount).l,d0
                 addq.w  #1,d0
                 move.w  d0,d1
                 add.w   (ram_FFDE70).l,d1
                 cmp.w   (ram_FF136A).l,d1
                 bmi.w   .loc_90EA
                 sub.w   (ram_FF136A).l,d1
-                sub.w   d1,(ram_FF1330).l
+                sub.w   d1,(SpriteStrip_ram_RowCount).l
                 sub.w   d1,d0
 .loc_90EA:
                 move.w  d0,d1
@@ -92,14 +92,14 @@ Road_DrawStrip:
                 beq.w   .loc_90FA
                 addq.w  #8,d1
 .loc_90FA:
-                move.w  (ram_FF132E).l,d0
+                move.w  (SpriteStrip_ram_ColumnCount).l,d0
                 addq.w  #1,d0
                 asl.w   #3,d0
                 bsr.w   RiderSprites_Build
                 cmpi.w  #$FFFF,(ram_FFDE62).l
                 beq.w   .locret_9140
                 bsr.w   Road_WriteTileColumns
-                move.w  (ram_FF1330).l,d2
+                move.w  (SpriteStrip_ram_RowCount).l,d2
                 addq.w  #1,d2
                 andi.w  #7,d2
                 move.w  #7,d3
@@ -114,9 +114,9 @@ Road_DrawStrip:
 
 ; *************************************************
 ; Function Road_InterpolateLeftEdge
-; Interpolates the left road edge into the ram_FF0D2E strip array.
-; In:  a0 - shape data; d3 - scale; ram_FF135E edge offset
-; Out: ram_FF0D2E strips, ram_FF1332/1336; d6 - strip count
+; Interpolates the left road edge into the SpriteStrip_ram_PlaneOffsets strip array.
+; In:  a0 - shape data; d3 - scale; SpriteStrip_ram_Clip edge offset
+; Out: SpriteStrip_ram_PlaneOffsets strips, SpriteStrip_ram_HalfWidth/ram_FF1336; d6 - strip count
 ; Clobbers: d0/d2/d4-d7, a2
 ; *************************************************
 
@@ -125,7 +125,7 @@ Road_InterpolateLeftEdge:
                 clr.l   d4
                 clr.w   d5
                 clr.w   d6
-                move.w  (ram_FF135E).l,d0
+                move.w  (SpriteStrip_ram_Clip).l,d0
                 beq.w   .loc_9164
                 bmi.w   .loc_9162
                 move.w  d0,d7
@@ -142,7 +142,7 @@ Road_InterpolateLeftEdge:
                 addq.w  #1,d2
 .loc_9172:
                 addq.w  #1,d2
-                move.w  d2,(ram_FF1332).l
+                move.w  d2,(SpriteStrip_ram_HalfWidth).l
                 subq.w  #2,d2
 .loc_917C:
                 addq.w  #1,d5
@@ -196,9 +196,9 @@ Road_InterpolateLeftEdge:
 
 ; *************************************************
 ; Function Road_InterpolateRightEdge
-; Interpolates the right road edge into the ram_FF102E strip array.
-; In:  a0 - shape data; d3 - scale; ram_FF1332/1340
-; Out: ram_FF102E strips, ram_FF0D28; d6 - strip count
+; Interpolates the right road edge into the SpriteStrip_ram_RowOffsets strip array.
+; In:  a0 - shape data; d3 - scale; SpriteStrip_ram_HalfWidth/ram_FF1340
+; Out: SpriteStrip_ram_RowOffsets strips, ram_FF0D28; d6 - strip count
 ; Clobbers: d0-d7, a2
 ; *************************************************
 
@@ -206,7 +206,7 @@ Road_InterpolateRightEdge:
                 move.l  #$10000,d0
                 clr.w   d2
                 clr.l   d4
-                move.w  (ram_FF1332).l,d7
+                move.w  (SpriteStrip_ram_HalfWidth).l,d7
                 move.w  (ram_FF1340).l,d1
                 move.w  #1,d5
                 clr.w   d6
@@ -256,7 +256,7 @@ Road_InterpolateRightEdge:
 ; Function Road_InterpolateRightEdgeAlt
 ; Alternate right-edge interpolation with fixed $10000 scaling; no direct caller.
 ; In:  a0 - shape data; d3 - scale
-; Out: ram_FF102E strips, ram_FF0D28
+; Out: SpriteStrip_ram_RowOffsets strips, ram_FF0D28
 ; Clobbers: d1/d2/d4-d6, a2
 ; *************************************************
 
@@ -282,22 +282,22 @@ Road_InterpolateRightEdgeAlt:
                 move.w  #1,d5
                 tst.w   (ram_FF133C).l
                 beq.w   .loc_92BA
-                sub.w   (ram_FF1332).l,d5
-                sub.w   (ram_FF1332).l,d5
+                sub.w   (SpriteStrip_ram_HalfWidth).l,d5
+                sub.w   (SpriteStrip_ram_HalfWidth).l,d5
 .loc_92BA:
                 addq.w  #1,d6
                 subi.l  #$10000,d4
                 cmp.l   #$10000,d4
                 blt.w   .loc_92EE
-                sub.w   (ram_FF1332).l,d5
+                sub.w   (SpriteStrip_ram_HalfWidth).l,d5
                 bra.s   .loc_929E
 .loc_92D4:
                 tst.w   (ram_FF133C).l
                 beq.w   .loc_92E8
-                sub.w   (ram_FF1332).l,d5
+                sub.w   (SpriteStrip_ram_HalfWidth).l,d5
                 bra.w   .loc_92EE
 .loc_92E8:
-                add.w   (ram_FF1332).l,d5
+                add.w   (SpriteStrip_ram_HalfWidth).l,d5
 .loc_92EE:
                 dbf     d2,.loc_9286
                 move.w  d6,d2
@@ -313,25 +313,25 @@ Road_InterpolateRightEdgeAlt:
 ; *************************************************
 ; Function Road_WriteTileColumns
 ; Writes the road tile columns (0x1F wide) into the sprite tile array.
-; In:  ram_FF0D2A/0D2E/102E strip data, ram_FF132E/1330, ram_FFDE68/6A/66
+; In:  SpriteStrip_ram_SourcePtr/PlaneOffsets/RowOffsets strip data, SpriteStrip_ram_ColumnCount/RowCount, SpriteStrip_ram_BandAdvance/ColumnGap/TailColumnGap
 ; Out: Race_ram_CurrentSpriteTileArray + ram_FF0D26
 ; Clobbers: d1-d5, a0-a4
 ; *************************************************
 
 Road_WriteTileColumns:
-                movea.l (ram_FF0D2A).l,a0
+                movea.l (SpriteStrip_ram_SourcePtr).l,a0
                 movea.l (Race_ram_CurrentSpriteTileArray).l,a4
                 adda.w  (ram_FF0D26).l,a4
                 move.w  #$1F,d4
-                lea     (ram_FF102E).l,a3
-                move.w  (ram_FF1330).l,d1
+                lea     (SpriteStrip_ram_RowOffsets).l,a3
+                move.w  (SpriteStrip_ram_RowCount).l,d1
                 cmp.w   #$F,d1
-                move.w  (ram_FFDE6A).l,d3
-                move.w  (ram_FFDE68).l,d5
+                move.w  (SpriteStrip_ram_ColumnGap).l,d3
+                move.w  (SpriteStrip_ram_BandAdvance).l,d5
 .loc_9338:
                 movea.l a4,a1
-                lea     (ram_FF0D2E).l,a2
-                move.w  (ram_FF132E).l,d2
+                lea     (SpriteStrip_ram_PlaneOffsets).l,a2
+                move.w  (SpriteStrip_ram_ColumnCount).l,d2
 .loc_9346:
                 move.b  (a0),(a1)+
                 adda.w  (a2)+,a0
@@ -387,7 +387,7 @@ Road_WriteTileColumns:
                 dbf     d4,.loc_93CA
                 cmp.w   #$1F,d1
                 bcc.w   .loc_93C4
-                move.w  (ram_FFDE66).l,d3
+                move.w  (SpriteStrip_ram_TailColumnGap).l,d3
 .loc_93C4:
                 move.w  #$1F,d4
                 adda.w  d5,a4
@@ -402,7 +402,7 @@ Road_WriteTileColumns:
 ; *************************************************
 ; Function Road_ClearEdgeTiles
 ; Clears the remaining road edge tiles (writes 0) for ram_FF0D28 strips.
-; In:  ram_FF0D28, ram_FFDE66
+; In:  ram_FF0D28, SpriteStrip_ram_TailColumnGap
 ; Out: sprite tile array (zeroed edge rows)
 ; Clobbers: d0-d3, a1/a4
 ; *************************************************
@@ -410,10 +410,10 @@ Road_WriteTileColumns:
 Road_ClearEdgeTiles:
                 clr.w   d0
                 move.w  (ram_FF0D28).l,d1
-                move.w  (ram_FFDE66).l,d3
+                move.w  (SpriteStrip_ram_TailColumnGap).l,d3
 .loc_93E0:
                 movea.l a4,a1
-                move.w  (ram_FF132E).l,d2
+                move.w  (SpriteStrip_ram_ColumnCount).l,d2
 .loc_93E8:
                 move.w  d0,(a1)+
                 move.w  d0,(a1)+
@@ -525,7 +525,7 @@ Road_DrawObject:
                 btst    #7,RoadObject_Flags+1(a0)
                 beq.w   .loc_962C
 .loc_9520:
-                move.w  #0,(ram_FF135E).l
+                move.w  #0,(SpriteStrip_ram_Clip).l
                 move.w  #1,(ram_FF1354).l
                 bsr.w   Road_ScaleShape
                 addq.l  #2,(ram_FF1348).l
@@ -533,7 +533,7 @@ Road_DrawObject:
                 move.w  d3,-(sp)
                 bsr.w   Road_ProjectShapeSpecial
                 move.w  d5,(ram_FF1356).l
-                move.w  d1,(ram_FF135E).l
+                move.w  d1,(SpriteStrip_ram_Clip).l
                 move.w  (sp)+,d3
                 tst.w   (ram_FFDE62).l
                 beq.w   .loc_958E
@@ -620,7 +620,7 @@ Road_DrawObject:
                 move.w  (ram_FF1342).l,(ram_FFDE6E).l
                 move.w  (ram_FF135A).l,(ram_FF1356).l
                 move.w  (ram_FF135C).l,(ram_FF1358).l
-                move.w  (ram_FF1360).l,(ram_FF135E).l
+                move.w  (ram_FF1360).l,(SpriteStrip_ram_Clip).l
                 move.w  #0,(ram_FF1340).l
                 move.l  #0,(ram_FF134C).l
                 bra.w   .loc_9660
@@ -630,7 +630,7 @@ Road_DrawObject:
                 move.b  RoadObject_Flags(a0),d7
                 andi.w  #7,d7
                 beq.w   .locret_978A
-                tst.w   (ram_FF135E).l
+                tst.w   (SpriteStrip_ram_Clip).l
                 bne.w   .locret_978A
 ; copy the built sprite chain into the SAT slots with the object x offset/clipping
                 movea.l (Race_ram_CurrentSpriteAttributeTable).l,a1
@@ -779,9 +779,9 @@ Road_ProjectShapeSpecial:
 
 ; *************************************************
 ; Function Road_ProjectShape
-; Like Road_ProjectShapeSpecial for the non-special path; stores the clip in ram_FF135E.
+; Like Road_ProjectShapeSpecial for the non-special path; stores the clip in SpriteStrip_ram_Clip.
 ; In:  a0 - object; a2 - shape; d0 - scale
-; Out: ram_FF135E; ram_FFDE62 on overflow
+; Out: SpriteStrip_ram_Clip; ram_FFDE62 on overflow
 ; Clobbers: d1-d3
 ; *************************************************
 
@@ -833,7 +833,7 @@ Road_ProjectShape:
 .loc_98AE:
                 asr.w   #1,d1
 .loc_98B0:
-                move.w  d1,(ram_FF135E).l
+                move.w  d1,(SpriteStrip_ram_Clip).l
                 rts
 .loc_98B8:
                 move.w  #1,(ram_FFDE62).l

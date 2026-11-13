@@ -1559,12 +1559,12 @@ sub_11CC8:
                 bmi.w   .loc_11D3C
                 cmpi.b  #4,RaceActor_AnimState(a1)
                 bpl.w   .loc_11D3C
-                move.w  #1,(ram_FF1768).l
+                move.w  #1,(Race_ram_CrashAnimActive).l
                 bra.w   .loc_11D44
 
 
 .loc_11D3C:
-                move.w  #0,(ram_FF1768).l
+                move.w  #0,(Race_ram_CrashAnimActive).l
 
 .loc_11D44:
                 movea.l (a0)+,a2
@@ -1591,7 +1591,7 @@ sub_11CC8:
 .loc_11D92:
                 cmpa.l  #ram_FF1F2A,a2
                 beq.w   .loc_11DFE
-                tst.w   (ram_FF1768).l
+                tst.w   (Race_ram_CrashAnimActive).l
                 bne.w   .loc_11DB0
                 cmpa.l  #RacePlayerB,a2
                 bcs.w   .loc_11DC2
@@ -1631,7 +1631,7 @@ sub_11CC8:
                 move.w  d0,$42(a1)
                 cmpa.l  #ram_FF1F2A,a2
                 beq.w   .loc_11E6A
-                tst.w   (ram_FF1768).l
+                tst.w   (Race_ram_CrashAnimActive).l
                 bne.w   .loc_11E4A
                 tst.b   RaceActor_AnimState(a1)
                 bmi.w   .loc_1202E
@@ -1654,7 +1654,7 @@ sub_11CC8:
                 tst.w   (Race_CopIndex).l
                 bne.w   .loc_11E88
                 move.b  #$FF,RaceActor_AnimState(a2)
-                tst.w   (ram_FF1768).l
+                tst.w   (Race_ram_CrashAnimActive).l
                 bne.w   .loc_11E88
                 bsr.w   Race_SaveActorShadow
 
@@ -1681,7 +1681,7 @@ sub_11CC8:
                 btst    #4,RaceActor_ControlFlags(a1)
                 beq.w   .loc_11EF4
                 move.w  $C(a1),(RaceBike_ram_CurrentSteering).l
-                tst.w   (ram_FF1768).l
+                tst.w   (Race_ram_CrashAnimActive).l
                 bne.w   .loc_1202E
                 bsr.w   Race_SaveActorShadow
                 bra.w   .loc_1202E
@@ -1701,7 +1701,7 @@ sub_11CC8:
                 btst    #4,RaceActor_ControlFlags(a1)
                 beq.w   .loc_1202E
                 move.w  $C(a1),(RaceBike_ram_CurrentSteering).l
-                tst.w   (ram_FF1768).l
+                tst.w   (Race_ram_CrashAnimActive).l
                 bne.w   .loc_1202E
                 bsr.w   Race_SaveActorShadow
                 bra.w   .loc_1202E
@@ -1780,7 +1780,7 @@ sub_11CC8:
                 tst.w   (ram_FF176A).l
                 bne.w   .locret_12066
                 move.w  #1,(ram_FF176A).l
-                move.w  #1,(ram_FF1768).l
+                move.w  #1,(Race_ram_CrashAnimActive).l
                 lea     (RacePlayerB).l,a1
                 bclr    #4,RaceActor_ControlFlags(a1)
                 bra.w   .loc_11E8C
@@ -1920,7 +1920,7 @@ sub_1218C:
 .loc_121B4:
                 btst    #6,RaceActor_ControlFlags(a1)
                 beq.s   .loc_12192
-                move.w  #0,(ram_FF1768).l
+                move.w  #0,(Race_ram_CrashAnimActive).l
                 move.l  a0,-(sp)
                 tst.b   (RacePlayerA + RaceActor_AnimState).l
                 bmi.w   .loc_121DA
@@ -1938,7 +1938,7 @@ sub_1218C:
                 beq.s   .loc_121DA
                 tst.b   RaceActor_AnimState(a1)
                 bmi.w   .loc_121FE
-                move.w  #1,(ram_FF1768).l
+                move.w  #1,(Race_ram_CrashAnimActive).l
 
 .loc_121FE:
                 bsr.w   Race_UpdateActorPairCollision
@@ -1958,7 +1958,7 @@ sub_1218C:
                 beq.s   .loc_121DA
 
 .loc_12234:
-                tst.w   (ram_FF1768).l
+                tst.w   (Race_ram_CrashAnimActive).l
                 beq.w   .loc_1224E
                 move.w  $12(a2),d0
                 add.w   $12(a1),d0
@@ -1980,7 +1980,7 @@ sub_1218C:
 
 .loc_12272:
                 bsr.w   Race_UpdateActorPairImpact
-                tst.w   (ram_FF1768).l
+                tst.w   (Race_ram_CrashAnimActive).l
                 bne.w   .loc_12284
                 bsr.w   Race_SaveActorShadow
 
@@ -2010,7 +2010,7 @@ sub_1218C:
                 bsr.w   Race_ApplyCollisionImpact
                 move.b  #0,RaceActor_AnimState(a1)
                 move.b  #$FF,RaceActor_AnimFrame(a1)
-                tst.w   (ram_FF1768).l
+                tst.w   (Race_ram_CrashAnimActive).l
                 bne.w   .loc_122FA
                 bsr.w   Race_SaveActorShadow
 
@@ -2044,7 +2044,7 @@ sub_1218C:
                 move.w  #0,RaceActor_FallState(a1)
                 move.b  #0,RaceActor_AnimState(a1)
                 move.b  #$FF,RaceActor_AnimFrame(a1)
-                tst.w   (ram_FF1768).l
+                tst.w   (Race_ram_CrashAnimActive).l
                 bne.w   .loc_12388
                 bsr.w   Race_SaveActorShadow
 
@@ -2519,7 +2519,7 @@ Race_InitExtraStaticActor:
                 bset    #6,RaceActor_ControlFlags(a1)
                 jsr     (Rand_NextWord).l
                 move.w  (Race_ram_PlayerProgress).l,d1
-                add.w   (ram_FF1B30).l,d1
+                add.w   (Race_ram_MarkerSlot).l,d1
                 subq.w  #1,d1
                 btst    #0,d0
                 bne.w   .loc_1291A
@@ -2987,7 +2987,7 @@ Race_ActorActionTable:
     dc.l    Race_ActorStateCollision,Race_ActorSteerRoadCenter,Race_ActorAttackIfClose
 
 Race_UpdateActorActions:
-                move.w  #0,(ram_FF1A98).l
+                move.w  #0,(Race_ram_ActionDispatchCount).l
                 lea     (ram_FF1A08).l,a0
                 tst.w   (MainMenu_ram_DemoMode).l
                 bne.w   .loc_12EBC
@@ -3061,7 +3061,7 @@ Race_UpdateActorActions:
                 bne.w   .loc_12FA6
 ; U-0004: during the 3-race Natasha encounter window, Natasha uses the
 ; alternate action profile instead of the default opponent behavior.
-                cmpi.w  #3,(ram_FF0520).l
+                cmpi.w  #3,(Player_ram_NatashaCounter).l
                 bne.w   .loc_12FD8
 
 .loc_12FA6:
@@ -3070,12 +3070,12 @@ Race_UpdateActorActions:
                 bgt.w   .loc_12FD8
                 cmpa.l  (Race_ram_NearestActor).l,a1
                 beq.w   .loc_12FCE
-                move.w  (ram_FF1A98).l,d0
-                cmp.w   (ram_FF1A96).l,d0
+                move.w  (Race_ram_ActionDispatchCount).l,d0
+                cmp.w   (Race_ram_ActionDispatchBudget).l,d0
                 bpl.w   .loc_12FD8
 
 .loc_12FCE:
-                addi.w  #1,(ram_FF1A98).l
+                addi.w  #1,(Race_ram_ActionDispatchCount).l
                 addq.w  #4,a4
 
 .loc_12FD8:
@@ -4397,7 +4397,7 @@ sub_13BF4:
 
 
 .loc_13C88:
-                movea.l (ram_FFDBD4).l,a2
+                movea.l (Race_ram_SpecialSpawnCursor).l,a2
                 move.l  (a2),d0
                 cmp.l   #$FFFFFFFF,d0
                 beq.w   .locret_13CFC
@@ -4406,7 +4406,7 @@ sub_13BF4:
                 sub.l   (RacePlayerA + RaceActor_X).l,d0
                 cmp.l   #$200000,d0
                 bpl.w   .locret_13CFC
-                addi.l  #4,(ram_FFDBD4).l
+                addi.l  #4,(Race_ram_SpecialSpawnCursor).l
                 btst    #6,RaceActor_ControlFlags(a1)
                 bne.w   .locret_13CFC
                 move.w  d1,d2
@@ -4608,11 +4608,11 @@ sub_13E94:
 ; *************************************************
 ; Function Race_UpdateBikeLean
 ; Computes the signed lean $42:
-;   $42 = sign(Steering) * |Steering| * ram_FF1AAA
-;         / ((ram_FF1AA6>>3) * (Speed*ram_FF1AB4>>8))
+;   $42 = sign(Steering) * |Steering| * RaceBike_ram_LeanMultiplier
+;         / ((RaceBike_ram_LeanSteeringDivisor>>3) * (Speed*RaceBike_ram_LeanSpeedScale>>8))
 ; and zero when Speed or the steering quotient is zero.
 ; In:  a1 - actor ($6E must be negative, i.e. normal bike);
-;      RaceBike_ram_CurrentSteering; ram_FF1AA6/AAA/B4
+;      RaceBike_ram_CurrentSteering; RaceBike_ram_LeanSteeringDivisor/LeanMultiplier/LeanSpeedScale
 ; Out: $42
 ; Clobbers: d0-d3
 ; *************************************************
@@ -4622,9 +4622,9 @@ Race_UpdateBikeLean:
                 bpl.w   .return
                 move.w  RaceActor_Speed(a1),d2
                 beq.w   .loc_13EF2
-                mulu.w  (ram_FF1AB4).l,d2
+                mulu.w  (RaceBike_ram_LeanSpeedScale).l,d2
                 lsr.l   #8,d2
-                move.w  (ram_FF1AA6).l,d1
+                move.w  (RaceBike_ram_LeanSteeringDivisor).l,d1
                 lsr.w   #3,d1
                 move.w  (RaceBike_ram_CurrentSteering).l,d3
                 move.w  d3,d0
@@ -4636,7 +4636,7 @@ Race_UpdateBikeLean:
                 beq.w   .loc_13EF2
                 swap    d0
                 divu.w  d2,d0
-                mulu.w  (ram_FF1AAA).l,d0
+                mulu.w  (RaceBike_ram_LeanMultiplier).l,d0
                 swap    d0
                 tst.w   d3
                 bpl.w   .loc_13EEA
@@ -4658,7 +4658,7 @@ Race_UpdateBikeLean:
 ; Function Race_UpdateBikeCurve
 ; Derives $3E/$40 and $68 bit5 from Speed, the side step $08 and a curve limit:
 ;   d0 = |$08|; for demo/non-player d0 = |$08|*$200>>8
-;   d1 = Speed * ram_FF1AB2 >> 8; d0 = d0 * d1 >> 3
+;   d1 = Speed * RaceBike_ram_CurveSpeedScale >> 8; d0 = d0 * d1 >> 3
 ; Limit selection:
 ;   $78 timer != 0                  -> word_14742 ($4CC2)
 ;   $78 == 0, bit5 set: bit3 -> TrackParam3, else TrackParam0
@@ -4679,7 +4679,7 @@ Race_UpdateBikeCurve:
                 bne.w   .loc_13FE0
                 move.w  $12(a1),d1
                 beq.w   .loc_13FCE
-                mulu.w  (ram_FF1AB2).l,d1
+                mulu.w  (RaceBike_ram_CurveSpeedScale).l,d1
                 lsr.l   #8,d1
                 move.w  8(a1),d0
                 beq.w   .loc_13FCE

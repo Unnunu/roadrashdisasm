@@ -24,7 +24,7 @@
 ;
 ; SAT entry layout (4 words): Y, size/link, tile/priority, X.
 ;   size/link = (size_code << 8) | link_index
-;   tile      = priority | ram_FFDE5E | Animation_ram_BaseTile | tile_index
+;   tile      = priority | SpriteStrip_ram_FillWord | Animation_ram_BaseTile | tile_index
 ; priority ($8000) is set for sprites above Y=$118. When Road_ram_MirrorFlag is set the
 ; pass is horizontally mirrored: tiles get the H-flip bit $800 and X is stepped
 ; left instead of right. Entries are chained through the low byte of the
@@ -47,7 +47,7 @@
 
 RiderSprites_Build:
 ; sentinel = "row stride not computed yet" (see the end of the first row)
-                move.w  #$8000,(ram_FFDE68).l
+                move.w  #$8000,(SpriteStrip_ram_BandAdvance).l
 ; a0 = SAT + SpriteIndex*8, the next free SAT slot
                 movea.l (Race_ram_CurrentSpriteAttributeTable).l,a0
                 move.w  (Animation_ram_SpriteIndex).l,d2
@@ -98,14 +98,14 @@ RiderSprites_Build:
                 move.w  d3,(ram_FF090C).l   ; vertical block count
 ; column/row strides for the road tile-array writer (Road_WriteTileColumns).
 ; $7C is the default within-row stride; a single-row sprite uses the shorter one.
-                move.w  #$7C,(ram_FFDE6A).l
+                move.w  #$7C,(SpriteStrip_ram_ColumnGap).l
                 move.w  (ram_FF0908).l,d4
                 addi.w  #$20,d4
                 subq.w  #4,d4
-                move.w  d4,(ram_FFDE66).l
+                move.w  d4,(SpriteStrip_ram_TailColumnGap).l
                 cmp.w   #0,d3
                 bne.w   .loc_580C
-                move.w  d4,(ram_FFDE6A).l
+                move.w  d4,(SpriteStrip_ram_ColumnGap).l
 
 .loc_580C:
 ; Y base (the SAT consumer subtracts $80 to get screen coordinates)
@@ -156,7 +156,7 @@ RiderSprites_Build:
                 bpl.w   .loc_5886
                 ori.w   #$8000,d6           ; sprites above Y=$118 draw in front
 .loc_5886:
-                or.w    (ram_FFDE5E).l,d6   ; object palette/priority/base bits
+                or.w    (SpriteStrip_ram_FillWord).l,d6   ; object palette/priority/base bits
                 add.w   (Animation_ram_BaseTile).l,d6
                 tst.w   (Road_ram_MirrorFlag).l
                 beq.w   .loc_58A4
@@ -195,13 +195,13 @@ RiderSprites_Build:
                 move.w  (ram_FF090A).l,d2
 ; derive the road tile-array row stride once, from the first row's tile span.
 ; (tiles -> bytes: 32 bytes per tile)
-                cmpi.w  #$8000,(ram_FFDE68).l
+                cmpi.w  #$8000,(SpriteStrip_ram_BandAdvance).l
                 bne.w   .loc_5924
                 move.w  d6,d0
                 sub.w   (ram_FF090E).l,d0
                 subq.w  #4,d0
                 asl.w   #5,d0
-                move.w  d0,(ram_FFDE68).l
+                move.w  d0,(SpriteStrip_ram_BandAdvance).l
 
 .loc_5924:
                 dbf     d3,.loc_5824

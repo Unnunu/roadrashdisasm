@@ -569,7 +569,7 @@ Race_IntegrateTrackCurve:
                 sub.w   d4,d0
                 move.w  d0,(ram_FF3108).l
                 move.w  d4,d3
-                move.w  (ram_FF1E60).l,d4
+                move.w  (Race_ram_CameraY).l,d4
                 neg.w   d4
                 move.b  (a1)+,d3
                 cmpa.l  #Race_ram_NextSpriteTileArray,a1
@@ -1094,7 +1094,7 @@ Race_BuildActorObjectList:
                 addi.b  #1,(ram_FF1ADC).l
                 andi.b  #7,(ram_FF1ADC).l
                 lea     (Road_ObjectArray).l,a0
-                move.w  (ram_FFDE72).l,d0
+                move.w  (Road_ram_ObjectCount).l,d0
                 mulu.w  #$14,d0
                 adda.w  d0,a0
                 lea     (ram_FF1A08).l,a2
@@ -1176,7 +1176,7 @@ Race_BuildActorObjectList:
                 lsr.l   #8,d2
                 addi.w  #$100,d2
                 clr.l   d1
-                move.w  (ram_FF1E60).l,d1
+                move.w  (Race_ram_CameraY).l,d1
                 sub.w   $30(a1),d1
                 bmi.w   .loc_F588
                 tst.w   d2
@@ -1274,8 +1274,8 @@ Race_BuildActorObjectList:
 .loc_F64E:
                 move.l  4(a1),d0
                 sub.l   (Race_ram_PlayerProgress).l,d0
-                lea     (ram_FF1B50).l,a6
-                move.w  (ram_FFDE72).l,d7
+                lea     (Road_ram_ObjectKeysUnsorted).l,a6
+                move.w  (Road_ram_ObjectCount).l,d7
                 asl.w   #2,d7
                 move.l  d0,(a6,d7.w)
                 bsr.w   Race_ProjectActorObject
@@ -1301,7 +1301,7 @@ Race_BuildActorObjectList:
 
 
 .loc_F6AA:
-                addi.w  #1,(ram_FFDE72).l
+                addi.w  #1,(Road_ram_ObjectCount).l
                 cmpa.l  #RacePlayerA,a1
                 bne.w   .loc_F6D6
                 cmpi.b  #2,RaceActor_AnimState(a1)
@@ -1354,8 +1354,8 @@ Race_BuildActorObjectList:
                 move.b  RaceActor_Palette(a1),d0
                 asl.b   #4,d0
                 move.b  d0,$A(a0)
-                lea     (ram_FF1B50).l,a6
-                move.w  (ram_FFDE72).l,d7
+                lea     (Road_ram_ObjectKeysUnsorted).l,a6
+                move.w  (Road_ram_ObjectCount).l,d7
                 asl.w   #2,d7
                 move.l  4(a1),d0
                 cmpi.b  #4,RaceActor_AnimState(a1)
@@ -1365,7 +1365,7 @@ Race_BuildActorObjectList:
 .loc_F79A:
                 sub.l   (Race_ram_PlayerProgress).l,d0
                 move.l  d0,(a6,d7.w)
-                addi.w  #1,(ram_FFDE72).l
+                addi.w  #1,(Road_ram_ObjectCount).l
                 move.b  $76(a1),d0
                 btst    #0,d0
                 bne.w   .loc_F7C2
@@ -1393,7 +1393,7 @@ Race_BuildActorObjectList:
                 bsr.w   Race_ProjectObject
                 tst.w   d0
                 bne.w   .loc_F802
-                subi.w  #1,(ram_FFDE72).l
+                subi.w  #1,(Road_ram_ObjectCount).l
                 bra.w   .loc_F838
 
 
@@ -1443,14 +1443,14 @@ Race_AddActorLeanObject:
 
 .loc_F872:
                 move.b  d0,$A(a0)
-                lea     (ram_FF1B50).l,a6
-                move.w  (ram_FFDE72).l,d7
+                lea     (Road_ram_ObjectKeysUnsorted).l,a6
+                move.w  (Road_ram_ObjectCount).l,d7
                 asl.w   #2,d7
                 move.l  4(a1),d0
                 subi.l  #$3000,d0
                 sub.l   (Race_ram_PlayerProgress).l,d0
                 move.l  d0,(a6,d7.w)
-                addi.w  #1,(ram_FFDE72).l
+                addi.w  #1,(Road_ram_ObjectCount).l
                 bclr    #3,$A(a0)
                 lea     (unk_10E3E).l,a4
                 bclr    #7,$A(a0)
@@ -1475,7 +1475,7 @@ Race_AddActorLeanObject:
                 bsr.w   Race_ProjectObject
                 tst.w   d0
                 bne.w   .loc_F8FE
-                subi.w  #1,(ram_FFDE72).l
+                subi.w  #1,(Road_ram_ObjectCount).l
                 bra.w   .locret_F90C
 
 
@@ -1515,14 +1515,14 @@ Race_AddActorImpactObject:
 .loc_F954:
                 addi.w  #$16A,d0
                 move.w  d0,8(a0)
-                lea     (ram_FF1B50).l,a6
-                move.w  (ram_FFDE72).l,d7
+                lea     (Road_ram_ObjectKeysUnsorted).l,a6
+                move.w  (Road_ram_ObjectCount).l,d7
                 asl.w   #2,d7
                 move.l  4(a1),d0
                 addi.l  #EndLevel_AnimationTiles,d0
                 sub.l   (Race_ram_PlayerProgress).l,d0
                 move.l  d0,(a6,d7.w)
-                addi.w  #1,(ram_FFDE72).l
+                addi.w  #1,(Road_ram_ObjectCount).l
                 bclr    #3,$A(a0)
                 move.w  $30(a1),d1
                 move.w  #0,d2
@@ -1531,7 +1531,7 @@ Race_AddActorImpactObject:
                 bsr.w   Race_ProjectObject
                 tst.w   d0
                 bne.w   .loc_F9B4
-                subi.w  #1,(ram_FFDE72).l
+                subi.w  #1,(Road_ram_ObjectCount).l
                 bra.w   .locret_F9C2
 
 
@@ -1560,14 +1560,14 @@ Race_AddActorFallObject:
                 lsr.b   #1,d0
                 addi.w  #$AC,d0
                 move.w  d0,8(a0)
-                lea     (ram_FF1B50).l,a6
-                move.w  (ram_FFDE72).l,d7
+                lea     (Road_ram_ObjectKeysUnsorted).l,a6
+                move.w  (Road_ram_ObjectCount).l,d7
                 asl.w   #2,d7
                 move.l  4(a1),d0
                 subi.l  #$100,d0
                 sub.l   (Race_ram_PlayerProgress).l,d0
                 move.l  d0,(a6,d7.w)
-                addi.w  #1,(ram_FFDE72).l
+                addi.w  #1,(Road_ram_ObjectCount).l
                 bclr    #3,$A(a0)
                 move.w  $30(a1),d1
                 move.w  #0,d2
@@ -1588,7 +1588,7 @@ Race_AddActorFallObject:
                 bsr.w   Race_ProjectObject
                 tst.w   d0
                 bne.w   .loc_FA70
-                subi.w  #1,(ram_FFDE72).l
+                subi.w  #1,(Road_ram_ObjectCount).l
                 bra.w   .locret_FA7E
 
 
@@ -1621,14 +1621,14 @@ Race_AddActorWeaponObject:
                 move.w  #0,$A(a0)
                 move.l  #0,$C(a0)
                 move.l  #0,$10(a0)
-                lea     (ram_FF1B50).l,a6
-                move.w  (ram_FFDE72).l,d7
+                lea     (Road_ram_ObjectKeysUnsorted).l,a6
+                move.w  (Road_ram_ObjectCount).l,d7
                 asl.w   #2,d7
                 move.l  4(a1),d0
                 addi.l  #$3000,d0
                 sub.l   (Race_ram_PlayerProgress).l,d0
                 move.l  d0,(a6,d7.w)
-                addi.w  #1,(ram_FFDE72).l
+                addi.w  #1,(Road_ram_ObjectCount).l
                 bclr    #3,$A(a0)
                 move.w  $30(a1),d1
                 move.w  #0,d2
@@ -1636,7 +1636,7 @@ Race_AddActorWeaponObject:
                 bsr.w   Race_ProjectObject
                 tst.w   d0
                 bne.w   .loc_FB10
-                subi.w  #1,(ram_FFDE72).l
+                subi.w  #1,(Road_ram_ObjectCount).l
                 bra.w   .locret_FB1C
 
 
@@ -1677,7 +1677,7 @@ Race_AddTrackStartObject:
 .loc_FB62:
                 move.l  d0,-(sp)
                 move.l  d1,-(sp)
-                move.w  (ram_FFDE72).l,d0
+                move.w  (Road_ram_ObjectCount).l,d0
                 mulu.w  #$14,d0
                 adda.w  d0,a0
                 bsr.w   sub_15478
@@ -1688,12 +1688,12 @@ Race_AddTrackStartObject:
                 move.b  #0,d0
                 asl.b   #4,d0
                 move.b  d0,$A(a0)
-                lea     (ram_FF1B50).l,a6
-                move.w  (ram_FFDE72).l,d7
+                lea     (Road_ram_ObjectKeysUnsorted).l,a6
+                move.w  (Road_ram_ObjectCount).l,d7
                 asl.w   #2,d7
                 move.l  (sp)+,(a6,d7.w)
                 move.l  (sp)+,d0
-                addi.w  #1,(ram_FFDE72).l
+                addi.w  #1,(Road_ram_ObjectCount).l
                 bclr    #7,$A(a0)
                 bra.w   .loc_FBC6
 
@@ -1709,7 +1709,7 @@ Race_AddTrackStartObject:
                 bsr.w   Race_ProjectObject
                 tst.w   d0
                 bne.w   .loc_FBF4
-                subi.w  #1,(ram_FFDE72).l
+                subi.w  #1,(Road_ram_ObjectCount).l
                 bra.w   .loc_FC08
 
 
@@ -1734,7 +1734,7 @@ Race_AddTrackStartObject:
 Race_AddStagedObjects:
                 move.w  #0,(Race_ram_TrackObjectCount).l
                 lea     (Road_ObjectArray).l,a0
-                move.w  (ram_FFDE72).l,d0
+                move.w  (Road_ram_ObjectCount).l,d0
                 mulu.w  #$14,d0
                 adda.w  d0,a0
                 move.l  a0,(Race_ram_TrackObjectWritePtr).l
@@ -1782,11 +1782,11 @@ Race_AddStagedObjects:
                 move.w  (a4),d0
                 asl.b   #4,d0
                 move.b  d0,$A(a0)
-                lea     (ram_FF1B50).l,a6
-                move.w  (ram_FFDE72).l,d7
+                lea     (Road_ram_ObjectKeysUnsorted).l,a6
+                move.w  (Road_ram_ObjectCount).l,d7
                 asl.w   #2,d7
                 move.l  d2,(a6,d7.w)
-                addi.w  #1,(ram_FFDE72).l
+                addi.w  #1,(Road_ram_ObjectCount).l
                 lsr.l   #8,d2
                 move.w  d2,$E(a0)
                 bclr    #7,$A(a0)
@@ -1812,7 +1812,7 @@ Race_AddStagedObjects:
                 bsr.w   Race_ProjectObject
                 tst.w   d0
                 bne.w   .loc_FD2E
-                subi.w  #1,(ram_FFDE72).l
+                subi.w  #1,(Road_ram_ObjectCount).l
                 bra.w   .loc_FD62
 
 
@@ -1899,19 +1899,19 @@ Race_AddSpecialObject:
                 bra.w   .return
 .loc_FDBE:
                 lea     (Road_ObjectArray).l,a0
-                move.w  (ram_FFDE72).l,d1
+                move.w  (Road_ram_ObjectCount).l,d1
                 mulu.w  #$14,d1
                 adda.w  d1,a0
                 move.w  d0,8(a0)
                 move.w  #0,$A(a0)
                 move.l  #0,$C(a0)
                 move.l  #0,$10(a0)
-                lea     (ram_FF1B50).l,a6
-                move.w  (ram_FFDE72).l,d7
+                lea     (Road_ram_ObjectKeysUnsorted).l,a6
+                move.w  (Road_ram_ObjectCount).l,d7
                 asl.w   #2,d7
                 moveq   #0,d0
                 move.l  d0,(a6,d7.w)
-                addi.w  #1,(ram_FFDE72).l
+                addi.w  #1,(Road_ram_ObjectCount).l
                 bclr    #7,$A(a0)
                 bclr    #3,$A(a0)
                 move.w  #$FEA0,(a0)
@@ -3586,7 +3586,7 @@ Race_WriteSpriteTiles:
 
 
 Race_BuildTrackObjects:
-                move.w  #$FFFF,(ram_FF1B30).l
+                move.w  #$FFFF,(Race_ram_MarkerSlot).l
                 movea.l (Race_ram_TrackObjectCursor).l,a1
                 move.w  (a1),d0
                 move.w  (Race_ram_PlayerProgress).l,d1
@@ -3670,7 +3670,7 @@ Race_BuildTrackObjects:
 .loc_10AA6:
                 move.w  2(a1),d6
                 lea     (Road_ObjectArray).l,a0
-                move.w  (ram_FFDE72).l,d7
+                move.w  (Road_ram_ObjectCount).l,d7
                 mulu.w  #$14,d7
                 adda.w  d7,a0
                 move.w  d0,d4
@@ -3714,7 +3714,7 @@ Race_BuildTrackObjects:
                 swap    d4
                 cmp.w   #$186,d4
                 bne.w   .loc_10B48
-                move.w  d0,(ram_FF1B30).l
+                move.w  d0,(Race_ram_MarkerSlot).l
                 move.w  d3,(ram_FF1B2E).l
                 addi.w  #1,(ram_FF1B2E).l
                 add.w   d3,d0
@@ -3733,14 +3733,14 @@ Race_BuildTrackObjects:
 
 .loc_10B6C:
                 movem.l d6-d7,-(sp)
-                lea     (ram_FF1B50).l,a6
+                lea     (Road_ram_ObjectKeysUnsorted).l,a6
                 move.w  d0,d6
                 ext.l   d6
                 swap    d6
                 clr.l   d7
                 move.w  (ram_FF1E6A).l,d7
                 sub.l   d7,d6
-                move.w  (ram_FFDE72).l,d7
+                move.w  (Road_ram_ObjectCount).l,d7
                 asl.w   #2,d7
                 move.l  d6,(a6,d7.w)
                 movem.l (sp)+,d6-d7
@@ -3908,7 +3908,7 @@ Race_ProjectTrackObject:
 .loc_10D38:
                 neg.w   d0
                 move.w  d0,(a0)
-                addi.w  #1,(ram_FFDE72).l
+                addi.w  #1,(Road_ram_ObjectCount).l
                 rts
 ; End of function Race_ProjectTrackObject
 
@@ -3919,7 +3919,7 @@ Race_ProjectTrackObject:
  ; *************************************************
 ; Function Road_BuildVisibleList
 ; Builds the visible object list from the sorted object index lists.
-; In:  ram_FF1B50, ram_FF1C50
+; In:  Road_ram_ObjectKeysUnsorted, Road_ram_ObjectKeysSorted
 ; Out: ram_FF1D50
 ; Clobbers: d0-d2/a0-a2
 ; *************************************************

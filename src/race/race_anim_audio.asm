@@ -127,7 +127,7 @@ sub_140EE:
 .loc_14144:
                 move.b #$0,RaceActor_AnimState(a1)
                 move.b #$FF,RaceActor_AnimFrame(a1)
-                tst.w (ram_FF1768).l
+                tst.w (Race_ram_CrashAnimActive).l
                 bne.w .loc_14194
                 jsr (sub_142D8).l
                 bsr.w Race_SaveActorShadow
@@ -207,7 +207,7 @@ sub_141AE:
 .loc_1424E:
                 move.b #$0,RaceActor_AnimState(a1)
                 move.b #$FF,RaceActor_AnimFrame(a1)
-                tst.w (ram_FF1768).l
+                tst.w (Race_ram_CrashAnimActive).l
                 bne.w .loc_1429C
                 jsr (sub_142D8).l
                 bsr.w Race_SaveActorShadow
@@ -319,7 +319,7 @@ sub_142FE:
 
 
 Race_ScaleImpactDamage:
-                tst.w   (ram_FF1768).l
+                tst.w   (Race_ram_CrashAnimActive).l
                 beq.w   .loc_1435A
                 clr.w   d0
                 bra.w   .locret_1436C
@@ -370,7 +370,7 @@ sub_1438E:
                 bne.w   .loc_143D4
                 cmp.w   #$3E8,d0
                 bmi.w   .loc_143D4
-                tst.w   (ram_FF1768).l
+                tst.w   (Race_ram_CrashAnimActive).l
                 bne.w   .loc_143BA
                 move.b  #6,(ram_FF1AD6).l
                 bra.w   .loc_143D4
@@ -402,7 +402,7 @@ sub_1438E:
 
 ; *************************************************
 ; Function sub_14404 (proposed: Race_HandleActorCollisionImpact)
-; Calls sub_1438E. When ram_FF1768 is clear, clears AnimFrame. Otherwise, unless
+; Calls sub_1438E. When Race_ram_CrashAnimActive is clear, clears AnimFrame. Otherwise, unless
 ; AnimState is 3, resets FallState/AnimState/AnimFrame, sets ram_FF1AD6=$F and,
 ; when Speed is zero, calls sub_140BC. Clears ControlFlags bit4 on the other path.
 ; In:  a1 - actor; Out: as above; Clobbers: d0
@@ -410,7 +410,7 @@ sub_1438E:
 
 sub_14404:
                 bsr.s sub_1438E
-                tst.w (ram_FF1768).l
+                tst.w (Race_ram_CrashAnimActive).l
                 bne.w .loc_1441A
                 move.b #$FF,RaceActor_AnimState(a1)
                 bra.w .loc_1444E
@@ -802,7 +802,7 @@ Race_UpdateActorPairImpact:
                 cmp.b   $71(a2),d2
                 bne.w   .loc_14910
 ; U-0004: player A attacked Natasha (actor index match) -> latch the encounter flag
-                move.w  #3,(ram_FF0520).l
+                move.w  #3,(Player_ram_NatashaCounter).l
 
 .loc_14910:
                 cmpi.b  #1,RaceActor_AttackPhase(a1)
@@ -1072,7 +1072,7 @@ Race_ApplyFallKnockdown:
                 bpl.w   .loc_14C8C
                 move.w  (Race_ram_PairImpactA).l,d0
                 beq.w   .loc_14C8C
-                mulu.w  (ram_FF18AC).l,d0
+                mulu.w  (Race_ram_StaminaHitScale).l,d0
                 sub.w   d0,$5C(a1)
                 bcc.w   .loc_14C8C
                 move.w  #0,$5C(a1)
@@ -1089,7 +1089,7 @@ Race_ApplyFallKnockdown:
                 bpl.w   .locret_14CEA
                 move.w  (Race_ram_PairImpactB).l,d0
                 beq.w   .locret_14CEA
-                mulu.w  (ram_FF18AC).l,d0
+                mulu.w  (Race_ram_StaminaHitScale).l,d0
                 sub.w   d0,$5C(a2)
                 bcc.w   .locret_14CEA
                 move.w  #0,$5C(a2)
@@ -4411,7 +4411,7 @@ unk_15CFC:      dc.b   0
 
  ; *************************************************
 ; Function Race_UpdatePlayerAnimation
-; Advances player stamina $5C toward ram_FF18AA by the frame delay.
+; Advances player stamina $5C toward Race_ram_PlayerStaminaMax by the frame delay.
 ; In:  RacePlayerA $5C/$6E/$68; Race_ram_FrameDelay
 ; Out: player $5C
 ; Clobbers: d0
@@ -4427,9 +4427,9 @@ Race_UpdatePlayerAnimation:
 .loc_160FA:
                 move.w  $5C(a1),d0
                 add.w   (Race_ram_FrameDelay).l,d0
-                cmp.w   (ram_FF18AA).l,d0
+                cmp.w   (Race_ram_PlayerStaminaMax).l,d0
                 bcs.w   .loc_16114
-                move.w  (ram_FF18AA).l,d0
+                move.w  (Race_ram_PlayerStaminaMax).l,d0
 
 .loc_16114:
                 move.w  d0,$5C(a1)

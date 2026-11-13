@@ -106,7 +106,7 @@ opponents. `Race_CreateActors` walks `Race_ActorList` and this id list in parall
 | `+$56` | `$FFFF`. |
 | `+$08/$0A/$0C/$14/$1C/$22/$24/$26/$2C/$32/$36/$38/$3A/$3C/$46/$68/$69/$6A/$72/$78` | zeroed. |
 | `Speed` (`+$12`), `Gear` (`+$18`) | zeroed here; set by the physics/input. |
-| `+$5C` player A | `ram_FF18AA` (tile base `$A00`); `+$5E/+$60` = `ram_FF18B2/B4` (`$400/$180`). |
+| `+$5C` player A | `Race_ram_PlayerStaminaMax` (tile base `$A00`); `+$5E/+$60` = `ram_FF18B2/B4` (`$400/$180`). |
 
 The player definition (`$4B`) is all zero; the player's real stats come from
 `Race_LoadBikeData`/`Race_InitPhysicsConstants` and the input/physics.
@@ -245,8 +245,8 @@ bit6). It uses `$16` as the `unk_25A10` type index, recomputes `$26`, calls
 
 `[confirmed]` Extra slot `$FF2FAA` (`$71=$12`) is not in the active/free/static
 lists. `Race_Update` activates it when a `shape $186` track object lands in the
-object window (`ram_FF1B30 >= $1C`) and `ProgressSnapshotB >= $708`; init sets
-`$68` bit6, palette 0/2, X = `(PlayerProgress_integer + ram_FF1B30 - 1) << 16`,
+object window (`Race_ram_MarkerSlot >= $1C`) and `ProgressSnapshotB >= $708`; init sets
+`$68` bit6, palette 0/2, X = `(PlayerProgress_integer + Race_ram_MarkerSlot - 1) << 16`,
 Y = `±(Rand & $7FF)` (`$69` bit3 = sign), Speed `$1770`. `Race_UpdateExtraStaticActor`
 then steers/clamps it. E5-5 observed init at progress `$01E84C52` with X
 `$02060000`, Y `$FEC8`, palette 0, `$68=$40`, and 130 update calls. The visual role
@@ -330,7 +330,7 @@ Applied in Batch 3a: `+$02/+$04/+$06/+$12/+$16/+$18/+$30/+$71/+$75` ->
 
 Applied in R1: `RaceActor_X` (`$04`), `RaceActor_XLow` (`$06`),
 `RaceActor_Acceleration` (`$14`), `RaceActor_FrameDistance` (`$26`),
-`RaceActor_Lean` (`$42`), `RaceActor_TileBase` (`$5C`),
+`RaceActor_Lean` (`$42`), `RaceActor_Stamina` (`$5C`),
 `RaceActor_Rating` (`$66`).
 
 ## L1 actor-core static pass

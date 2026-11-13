@@ -172,7 +172,7 @@ Widths match the actual instruction sizes: `$04/$1E/$26` are longs, the
 | `$56` | word | `RaceActor_RespawnTimer` | `Race_CreateActors` (`$FFFF`), static updater | static update | `[static/dynamic]` | - |
 | `$58` | word | (unnamed) | `Race_UpdateAnimation` (race_anim_audio) | `Race_BuildActorObjectList` copies to actor object `+8` | `[static]` | none: animation frame token |
 | `$5A` | word | `RaceActor_AttackCooldown` | combat | `Race_DispatchActorAction` (close-action branch), pursue/attack handlers | `[static]` | - |
-| `$5C` | word | `RaceActor_TileBase` | `Race_CreateActors`/`Race_SetupActor`/`Race_SpawnTick` (init), `Race_UpdatePlayerAnimation`/`Race_UpdateActorActions` (regen), `Race_ApplyFallKnockdown` (consume) | `RaceHud_DrawStamina` (bar `>>5`), knockdown | `[confirmed]` E4-B + U-0017: **stamina/health**, not a tile base; regen adds `FrameDelay` below `ram_FF18A8=$500`, then snaps to graphics `+$E` (`$500/$640/$780/$8C0/$A00`); player cap `ram_FF18AA=$A00`; hit `PairImpact*ram_FF18AC` | rename-later `RaceActor_Stamina` |
+| `$5C` | word | `RaceActor_Stamina` | `Race_CreateActors`/`Race_SetupActor`/`Race_SpawnTick` (init), `Race_UpdatePlayerAnimation`/`Race_UpdateActorActions` (regen), `Race_ApplyFallKnockdown` (consume) | `RaceHud_DrawStamina` (bar `>>5`), knockdown | `[confirmed]` E4-B + U-0017: **stamina/health**, not a tile base; regen adds `FrameDelay` below `ram_FF18A8=$500`, then snaps to graphics `+$E` (`$500/$640/$780/$8C0/$A00`); player cap `Race_ram_PlayerStaminaMax=$A00`; hit `PairImpact*Race_ram_StaminaHitScale` | rename-later `RaceActor_Stamina` |
 | `$5E` | word | (unnamed) | `Race_CreateActors` | sprite setup | `[static]` graphics `+$A` | none: sprite graphics field `+$A` |
 | `$60` | word | (unnamed) | `Race_CreateActors` | sprite setup | `[static]` graphics `+$C` | none: sprite graphics field `+$C` |
 | `$62` | long | (unnamed) | movement/advance (`= Race_ram_ProgressSnapshotB`) | none found | `[static]` | write-only late-race progress snapshot |
@@ -209,12 +209,12 @@ still owns dynamic confirmation of branch timing and damage.
 
 | Routine | Inputs / gates | Side effects |
 |---|---|---|
-| `sub_140EE` on-road crash | `a1` actor, `a0` track object; Speed `$FA0` gate | Speed < `$FA0`: `sub_142FE` + `$68` bit4. Else: `sub_140BC` (X from object), `sub_1438E` (speed-loss latch), SFX by `abs($34)` (`>=3` `sub_15538`; Speed < `$1770` `sub_15580`; else `sub_1555C`), `$6E=0`, `$6F=$FF`. If `ram_FF1768==0`: `sub_142D8`, `Race_SaveActorShadow`, `sub_1436E($C000)`; PlayerA -> `ram_FF1AD6=9`, `BikeDamage += scaled(Speed)/2`; else PlayerA -> `ram_FF1AD6=$F`. Sets `$68` bit4 |
+| `sub_140EE` on-road crash | `a1` actor, `a0` track object; Speed `$FA0` gate | Speed < `$FA0`: `sub_142FE` + `$68` bit4. Else: `sub_140BC` (X from object), `sub_1438E` (speed-loss latch), SFX by `abs($34)` (`>=3` `sub_15538`; Speed < `$1770` `sub_15580`; else `sub_1555C`), `$6E=0`, `$6F=$FF`. If `Race_ram_CrashAnimActive==0`: `sub_142D8`, `Race_SaveActorShadow`, `sub_1436E($C000)`; PlayerA -> `ram_FF1AD6=9`, `BikeDamage += scaled(Speed)/2`; else PlayerA -> `ram_FF1AD6=$F`. Sets `$68` bit4 |
 | `sub_141AE` high-speed/off-road crash | `$69` bit3 or Speed < `$FA0` gate | Gate: `sub_142FE` only (no `$68` bit4). Else: `ram_FF18A6=Speed`, `Speed=min(Speed/4,$2710)`, X shifted `$6000` relative to object `$E`, `sub_1438E`, sets `$68` bit4 + `$69` bit3; SFX by `abs($34)`, else FallState `9` when `ram_FF18A6 >= $1F40`, else `5`; `$6E=0`, `$6F=$FF`; same shadow path; PlayerA `BikeDamage += scaled(Speed)` (no `/2`) |
 | `sub_142B0` / `sub_142BE` / `sub_142CC` | wrappers around `sub_140EE` | `ram_FF1AD6=$F` / `$17` / set `$6B` bit1 first |
 | `sub_142FE` road-Y clamp | `a1` actor; `ram_FF1B14`; `$69` bit1 | `PosY=$1A=ram_FF1B14 +/- (extent+4)`; delta added to `$00`; `FrameDistance==0` -> X/PrevX `-$4000` |
 | `sub_1436E` shadow speed scale | `a1`, `d0` 16.16 | shadow(`$71`).Speed = Speed*`d0`>>16; `$C000` = 75% in both crash paths |
-| `sub_14404` collision-impact fallback | `a1`; `ram_FF1768`; `$6E` | `sub_1438E`; no active crash -> `$6E=$FF` + clear `$68` bit4; else unless `$6E==3`: FallState 0, `$6E=0`, `$6F=$FF`, `ram_FF1AD6=$F`, and if Speed==0 `sub_140BC`; `$6E==3` -> clear `$68` bit4 |
+| `sub_14404` collision-impact fallback | `a1`; `Race_ram_CrashAnimActive`; `$6E` | `sub_1438E`; no active crash -> `$6E=$FF` + clear `$68` bit4; else unless `$6E==3`: FallState 0, `$6E=0`, `$6F=$FF`, `ram_FF1AD6=$F`, and if Speed==0 `sub_140BC`; `$6E==3` -> clear `$68` bit4 |
 | `sub_14456` / `sub_1446E` fall timers | `$6E < 3` | set `$68` bit5 and `$78=$78` / `$78=$1E` (arms the `word_14742` curve limit) |
 | `sub_140BC` / `sub_142D8` / `sub_1438E` | helpers | X from object `$E`; weapon-anim speed flag; impact speed-loss latch |
 
@@ -295,7 +295,7 @@ Target pipeline:
 
 Budget and static dispatch:
 
-- `ram_FF1A96 = unk_259B6[level-1] = [2,3,3,3,4]`; `ram_FF1A98` counts the
+- `Race_ram_ActionDispatchBudget = unk_259B6[level-1] = [2,3,3,3,4]`; `Race_ram_ActionDispatchCount` counts the
   actors that took the `+4` dispatcher slot this frame (every `+4` path increments).
 - `Race_StaticActionTable`: 16 entries = `handler` (`Race_ClampActorY`) + speed +
   Y-offset. `sub_138CE` uses speed/Y-offset at respawn; `Race_UpdateStaticActions`
@@ -319,12 +319,12 @@ Full contract: `docs/analysis/race_impact.md`. Matrix v7 delta:
 - `$69` bit0 = pair X order, bit1 = pair Y side, bit3 = collision direction copied
   across the pair, bit7 = reach contact.
 - `$5C` is **stamina/health** (HUD `RaceHud_DrawStamina`, regen toward
-  `ram_FF18AA=$A00`/`ram_FF18A8=$500`, consumed by knockdown). Not a tile base.
-- `ram_FF1768` = "current player is in a crash/fall animation"; `Race_ScaleImpactDamage`
+  `Race_ram_PlayerStaminaMax=$A00`/`ram_FF18A8=$500`, consumed by knockdown). Not a tile base.
+- `Race_ram_CrashAnimActive` = "current player is in a crash/fall animation"; `Race_ScaleImpactDamage`
   returns 0 while it is set, preventing repeated damage during one crash.
 - New constants: `ram_FF3038` X window (`$6000`/`$3700`), `ram_FF303C` extent base
   (`$10`/`$37`/`$60`), `ram_FF303E` penetration threshold (`$40`), `ram_FF3040` side
-  state, `ram_FF18AC` stamina hit scale (`$10`), `ram_FF18B6` track-position scale
+  state, `Race_ram_StaminaHitScale` stamina hit scale (`$10`), `ram_FF18B6` track-position scale
   (`$1400`).
 
 Pair/impact chain (detail in `race_impact.md`):
@@ -335,7 +335,7 @@ Race_UpdateActorPairCollision   ; order/side/extent/reach, ContactFlags bit4 lat
      -> Race_ExchangeCollisionSpeed   ; ~0.1x speed delta, speeds equalize, X push $7000
      -> Race_ClampActorPairY          ; Y separation using $4C/$4E + $10
      -> Race_StealClub / Mirror       ; club transfer, $52 pair impact
-     -> Race_ApplyFallKnockdown       ; $5C -= PairImpact*ram_FF18AC -> fall at underflow
+     -> Race_ApplyFallKnockdown       ; $5C -= PairImpact*Race_ram_StaminaHitScale -> fall at underflow
   ; the coordinator calls the impact handler when ContactFlags bit4 is set:
   -> Race_ApplyCollisionImpact  ; deep (<$40): damage = ScaleImpactDamage(|dSpeed|),
                                 ;   Speed = a2.Speed + dSpeed/4, $2C/$2A/$2E
@@ -412,12 +412,12 @@ Four populations share the `$80`-byte actor struct (`$71` = slot index):
 | Loop opponents | `ram_FF1A08` `Struct_9..15` + opponent free list `Struct_2..8` | 2..15 | init / `Race_SpawnOpponent` | `Race_RecycleOpponent` |
 | Reserved opponent | `ram_FF1F2A` (`Race_ActorList[1]`) | 1 | `sub_13BF4` rating gate or `Data5` special list | `Race_RecycleActor` special case |
 | Static pair | `$FF2EAA`, `$FF2F2A` | `$10`, `$11` | `sub_138CE` timer -> `sub_13A26` | `Race_ClampActorY` (`$68` bit6) |
-| Extra static | `$FF2FAA` | `$12` | `shape $186` marker, `ram_FF1B30 >= $1C` | `ram_FF1B30 < 0` clears bit6 |
+| Extra static | `$FF2FAA` | `$12` | `shape $186` marker, `Race_ram_MarkerSlot >= $1C` | `Race_ram_MarkerSlot < 0` clears bit6 |
 
 Static cycle: `sub_138CE` sets timer `(Rand&$FFF)*unk_13A1A[level]>>16`, palette,
 side, `$74` profile and `Race_StaticActionTable` Speed/offset; `sub_13A26` respawns at
 `PlayerProgress+$208000`; `Race_ClampActorY` deactivates past `$210000`. Extra actor:
-X = `(PlayerProgress_integer + ram_FF1B30 - 1)<<16`, Y = `±(Rand&$7FF)`,
+X = `(PlayerProgress_integer + Race_ram_MarkerSlot - 1)<<16`, Y = `±(Rand&$7FF)`,
 Speed `$1770`, then steered by `Race_UpdateExtraStaticActor`.
 
 `Data5` split: normal list `ram_FFD7D4` -> `Race_AddStagedObjects` (track objects);
@@ -531,14 +531,14 @@ L6b covers the per-frame object-record assembly, the four projection helpers and
 visible-list sort. Full contract is in `docs/analysis/race_ai_road.md`; this is the
 matrix delta.
 
-- Assembly order: `ram_FFDE72 = 0` -> `Race_AddSpecialObject` ->
+- Assembly order: `Road_ram_ObjectCount = 0` -> `Race_AddSpecialObject` ->
   `Race_AddTrackStartObject` -> `Race_BuildActorObjectList` (`ram_FF1B48` =
   actor count) -> `Race_BuildTrackObjects` (`ram_FF1B4A` = track count) ->
   `Race_AddStagedObjects` -> `$FFFFFFFF` distance terminator ->
   `Road_BuildVisibleList` -> `Road_DrawObjects`.
 - `Road_ObjectArray` = `$FFD37C..$FFD77B`, 0x14-byte records, max 51; fields
   `+0 X, +2 Y, +4 scale, +6 limit, +8 shape, +$A flags, +$C X offset,
-  +$E row/reserved, +$10 reserved, +$12 shape2`; `ram_FFDE72` count.
+  +$E row/reserved, +$10 reserved, +$12 shape2`; `Road_ram_ObjectCount` count.
 - Producers and extras: special (fixed `$FEA0/$41/$4000/$E0`), track-start gate,
   near/far actor objects, fall/impact/lean/weapon/shadow extras, track stream, and
   the staged RAM traffic list.
@@ -552,10 +552,10 @@ matrix delta.
   closed by E8 (row and pass count are different bit fields).
 - Track stream: cursor `Race_ram_TrackObjectCursor` / accumulated
   `Race_ram_TrackObjectDistance`; word0 = `[rowCount][shape base]`, word2 =
-  `[step-1][flags:3][lane]`; shape `$186` = extra-actor marker (`ram_FF1B30/$1B2E`),
+  `[step-1][flags:3][lane]`; shape `$186` = extra-actor marker (`Race_ram_MarkerSlot/$1B2E`),
   `$205` = gap, `$1BB..$1E9` = `(shape, shape+1)` pair, `$1EA+` remaps `+$2F`.
-- Visible list: signed ascending long insertion sort of `ram_FF1B50` into
-  `ram_FF1C50`, parallel word index list in `Road_VisibleObjectList` (`$FF1D50`);
+- Visible list: signed ascending long insertion sort of `Road_ram_ObjectKeysUnsorted` into
+  `Road_ram_ObjectKeysSorted`, parallel word index list in `Road_VisibleObjectList` (`$FF1D50`);
   `Road_DrawObjects` draws in that order. Producers store `objectX - progress`
   (near actor / track / staged) while the far-actor sprite path stores
   `progress - actorX`; the mixed-sign visual result is left to E8.
@@ -572,15 +572,15 @@ contract is in `docs/analysis/road_render.md`, `road_shapes.md` and
   special `P+0/P+1/P+2` projection/width, `P+2/P+3` controls, `P+4/P+5` fill word,
   `P+6+` row data. The fill word is ORed into the SAT tile word (`$2036` -> palette
   1, tile base `$36` for shape `$56`).
-- Interpolators: left emits one source advance per output byte (`ram_FF0D2E`;
+- Interpolators: left emits one source advance per output byte (`SpriteStrip_ram_PlaneOffsets`;
   1 = four contiguous bitplane bytes, 0 = duplicate, >1 = skip) and returns
-  `ram_FF132E = columns-1`; right emits one advance per source row
-  (`ram_FF102E`) and returns `ram_FF1330 = rows-1`. `ram_FF1332` is the
-  half-width seed used by the right list; `ram_FF135E` is the clip budget.
+  `SpriteStrip_ram_ColumnCount = columns-1`; right emits one advance per source row
+  (`SpriteStrip_ram_RowOffsets`) and returns `SpriteStrip_ram_RowCount = rows-1`. `SpriteStrip_ram_HalfWidth` is the
+  half-width seed used by the right list; `SpriteStrip_ram_Clip` is the clip budget.
 - Writer: per row `r`, column `c`, plane `k` -> `base + 4*r + c*(gap+4) + k`.
   The 4 bytes are the 4bpp bitplanes of one 8-pixel scanline, so the destination
-  is column-major. Full band gap `ram_FFDE6A=$7C` (stride `$80`, 4 tiles); every
-  32 rows add `ram_FFDE68` and switch to `ram_FFDE66` (stride `$60`, 3 tiles) for
+  is column-major. Full band gap `SpriteStrip_ram_ColumnGap=$7C` (stride `$80`, 4 tiles); every
+  32 rows add `SpriteStrip_ram_BandAdvance` and switch to `SpriteStrip_ram_TailColumnGap` (stride `$60`, 3 tiles) for
   the remainder band. `Road_ClearEdgeTiles` zeroes the unused edge bytes.
 - Byte proof: shape `$56` (`base=$FF511C`, `src=$059952`, scale `$10000`,
   `132E=4`, `1330=$35`, `DE66/68/6A=$5C/$200/$7C`) replays 1080/1080 bytes
@@ -593,7 +593,7 @@ contract is in `docs/analysis/road_render.md`, `road_shapes.md` and
   = copy passes, bit12 = priority, bit14 = side, bit15 = facing.
 - E8 (`analysis/capture_L8_a/b/c.gdb`, traces `analysis/notes/L8*`): live offset
   lists match the generators (`$56` scale `$10000`; `$1C3` scale `$145D0`);
-  `$FFD430` (`flags=$1184`, pass=1) copied 6 entries once; `ram_FF1C50` is the
+  `$FFD430` (`flags=$1184`, pass=1) copied 6 entries once; `Road_ram_ObjectKeysSorted` is the
   ascending sorted key list and `ram_FF1D50` the draw order.
 
 ## Tooling and validation

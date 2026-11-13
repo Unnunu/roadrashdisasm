@@ -30,9 +30,9 @@ sets it on both actors at `0x127EA`, and every crash handler sets it. The caller
 `ControlFlags` bit0 is the **impact/speed-loss latch** set by
 `Race_ApplyCollisionImpact`, `Race_ApplyImpactSpeedLoss` and `sub_1438E`.
 
-Important: `ram_FF1768` is "the current player actor is in a crash/fall animation"
+Important: `Race_ram_CrashAnimActive` is "the current player actor is in a crash/fall animation"
 (`AnimState` 0..3), not "riding". Normal riding has `AnimState = $FF`. While
-`ram_FF1768 != 0`, `Race_ScaleImpactDamage` returns 0 and the crash handlers take the
+`Race_ram_CrashAnimActive != 0`, `Race_ScaleImpactDamage` returns 0 and the crash handlers take the
 event-only path, so a crash in progress cannot add damage again.
 
 ## Pair collision: `Race_UpdateActorPairCollision` (`0x124E2`)
@@ -77,7 +77,7 @@ Clears `PairSpeedDeltaA/B` (`$FF1A9A/9C`) and `PairImpactA/B` (`$FF18B8/BA`).
   previous-X separation -> `Race_ExchangeCollisionSpeed` (passing bump).
 - Otherwise close pair: `Race_ClampActorPairY`, then per actor:
   - active attack with reach (`StateFlags` bit4, `$50 != 0`) -> club-transfer check
-    and `ram_FF0520 = 3` when PlayerA attacks the Natasha actor;
+    and `Player_ram_NatashaCounter = 3` when PlayerA attacks the Natasha actor;
   - otherwise add `$52` to `$22` (push apart) and clear `$52` and the pair impact.
 - Finally `Race_AdjustActorTrackPositions` and `Race_ApplyFallKnockdown`.
 
@@ -154,7 +154,7 @@ Scales `$2C` by `$2000 >> 16` (about 1/8). If it becomes 0 -> clear bit0. Else, 
 For each actor with `AnimState < 0` (normal riding `$FF`) and non-zero pair impact:
 
 ```
-$5C -= PairImpact * ram_FF18AC          ; PairImpactA for a1, PairImpactB for a2
+$5C -= PairImpact * Race_ram_StaminaHitScale          ; PairImpactA for a1, PairImpactB for a2
 if no underflow: done
 $5C = 0
 ControlFlags bit4 set
@@ -169,7 +169,7 @@ The a2 `$0D` test on `a1` is intentional: `a1` is the acting player and `a2` the
 opponent that fell, so the check selects the player-specific sound. The `exg`/save
 dance only preserves the shadow-save argument.
 
-E4-B confirmed the arithmetic and stores: `PairImpact=1`, `ram_FF18AC=$10`,
+E4-B confirmed the arithmetic and stores: `PairImpact=1`, `Race_ram_StaminaHitScale=$10`,
 `$5C=$100 -> $0F0` (no fall), `$5C=$08 -> 0` with `FallState=$11`, `AnimState=0`,
 `AnimFrame=$FF`, `ControlFlags` bit4 and event `$0F`; the a2 underflow with
 `a1=PlayerA` reached the `$0D` store.
@@ -180,21 +180,21 @@ E4-B confirmed the arithmetic and stores: `PairImpact=1`, `ram_FF18AC=$10`,
 
 - init: `Race_CreateActors` from the graphics entry `+$E`; `Race_SetupActor` and
   `Race_SpawnTick` use `ram_FF18A8 = $500`; the player is overridden to
-  `ram_FF18AA = $A00`.
+  `Race_ram_PlayerStaminaMax = $A00`.
 - regeneration: the generic `Race_UpdateActorActions` loop adds `FrameDelay` while
   `$5C+FrameDelay < ram_FF18A8 ($500)`, then stores the graphics entry `+$E`
   (page maxima `$500/$640/$780/$8C0/$A00`). `ram_FF18A8` is the shared baseline, not
   the per-actor cap; the graphics `+$E` is the restored page maximum. The player is
   skipped by that loop outside demo mode and regenerates in
-  `Race_UpdatePlayerAnimation` toward `ram_FF18AA = $A00` (its spawn override).
+  `Race_UpdatePlayerAnimation` toward `Race_ram_PlayerStaminaMax = $A00` (its spawn override).
   `[confirmed]` `analysis/capture_L8_u17.gdb`: page-1 actor `$640`, forced
   `$4F0 -> $4F7 -> $4FE -> $640` across the `$500` threshold.
-- consumption: `Race_ApplyFallKnockdown` subtracts `PairImpact * ram_FF18AC`
-  (`ram_FF18AC = $10`).
+- consumption: `Race_ApplyFallKnockdown` subtracts `PairImpact * Race_ram_StaminaHitScale`
+  (`Race_ram_StaminaHitScale = $10`).
 - display: `RaceHud_DrawStamina` draws the two stamina bars from `$5C >> 5`
   (clamped `$50`, colours at `$1E`/`$F`).
 
-The older `RaceActor_TileBase` name is a misnomer; rename to `RaceActor_Stamina` is
+The older `RaceActor_Stamina` name is a misnomer; rename to `RaceActor_Stamina` is
 proposed in `identifiers.md` (rename task later). `$5E/$60` are the neighbouring
 sprite fields from graphics `+$A/+$C` and remain unchanged.
 
@@ -206,7 +206,7 @@ player; the 60 s demo does not produce one (E4-A: 0 calls to `sub_140EE`,
 
 - `sub_140EE` (on-road crash): Speed `< $FA0` -> only `sub_142FE` (road-Y clamp) and
   bit4. Else damage path: `sub_140BC` (X from object `$E`), `sub_1438E`, SFX by
-  `abs($34)`/Speed, `$6E=0`, `$6F=$FF`; if `ram_FF1768 == 0`: `sub_142D8`,
+  `abs($34)`/Speed, `$6E=0`, `$6F=$FF`; if `Race_ram_CrashAnimActive == 0`: `sub_142D8`,
   `Race_SaveActorShadow`, `sub_1436E($C000)` (shadow Speed to 75%); PlayerA
   `BikeDamage += Race_ScaleImpactDamage(Speed)/2`, event `$09`; if crashing already,
   event `$0F`. Sets bit4.
@@ -215,7 +215,7 @@ player; the 60 s demo does not produce one (E4-A: 0 calls to `sub_140EE`,
   (25%, clamped 10000), X shifted `+/-$6000` relative to object `$E`,
   `sub_1438E`, bit4 + `$69` bit3; FallState `$9` when `ram_FF18A6 >= $1F40` else
   `$5`; PlayerA `BikeDamage += Race_ScaleImpactDamage(ram_FF18A6)` (no `/2`).
-- `sub_14404` fallback: `sub_1438E`; `ram_FF1768 == 0` -> `AnimState=$FF`; else
+- `sub_14404` fallback: `sub_1438E`; `Race_ram_CrashAnimActive == 0` -> `AnimState=$FF`; else
   unless `AnimState==3`: FallState 0, `AnimState=0`, `AnimFrame=$FF`, event `$F`,
   and if Speed==0 `sub_140BC`; `AnimState==3` -> clear bit4.
 - `sub_142FE` road-Y clamp: `PosY=$1A = ram_FF1B14 +/- (extent+4)` by `$69` bit1;
@@ -223,7 +223,7 @@ player; the 60 s demo does not produce one (E4-A: 0 calls to `sub_140EE`,
 - `sub_1436E` scales the shadow actor's Speed by `d0` (16.16); `$C000` = 75% in both
   crash paths. `sub_1438E` is the speed-loss latch: `$2C = Speed >> 11`, `$2A=$02+$30`,
   bit0; PlayerA event `$06`, or crash animation/event `$0F` at Speed `>= $3E8` while
-  `ram_FF1768 != 0`.
+  `Race_ram_CrashAnimActive != 0`.
 - `sub_14456`/`sub_1446E`: if `AnimState < 3`, set `$68` bit5 and `$78 = $78`/`$1E`,
   arming the `word_14742` curve limit.
 
@@ -263,9 +263,9 @@ older combat note and is distinct from `sub_140EE` (half) and `sub_141AE` (full)
 | `$54` | FallState (`$11` knockdown) | `[confirmed]` E4-B |
 | `ram_FF18A6` | impact speed magnitude | `[confirmed]` E4-F |
 | `ram_FF18A8/AA` | shared stamina baseline / player cap (`$500`/`$A00`) | `[confirmed]` U-0017 + HUD |
-| `ram_FF18AC` | stamina damage per pair-impact unit (`$10`) | `[confirmed]` E4-B |
+| `Race_ram_StaminaHitScale` | stamina damage per pair-impact unit (`$10`) | `[confirmed]` E4-B |
 | `ram_FF18B6` | track-position adjustment scale (`$1400`) | `[static]` |
-| `ram_FF1768` | current player in crash/fall animation | `[confirmed]` E4-F |
+| `Race_ram_CrashAnimActive` | current player in crash/fall animation | `[confirmed]` E4-F |
 | `ram_FF3038/303E/3040` | X window / penetration threshold / side state | `[confirmed]` E4-F |
 | `ram_FF1B16` | pair Y-overlap flag | `[static]` |
 | `ram_FF1A9A/9C` | pair speed deltas | `[static]` |

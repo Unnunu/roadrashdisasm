@@ -153,8 +153,8 @@ Canonical formulas and the table decode are in `race_speed.md` and
 `Race_UpdateBikeLean` (`0x13EA0`, player only, normal `$6E`):
 
 ```
-$42 = sign(steering) * |steering| * ram_FF1AAA
-      / ((ram_FF1AA6>>3) * (Speed * ram_FF1AB4 >> 8))
+$42 = sign(steering) * |steering| * RaceBike_ram_LeanMultiplier
+      / ((RaceBike_ram_LeanSteeringDivisor>>3) * (Speed * RaceBike_ram_LeanSpeedScale >> 8))
 ```
 
 zero when `Speed == 0` or the steering quotient is zero.
@@ -167,7 +167,7 @@ state, and updates `$22`/`$00` from the curve term. `sub_113A4` is the AI varian
 `Race_UpdateBikeCurve` (`0x13EFA`) derives `$3E/$40` and `$68` bit5:
 
 - returns if `$68` bit0 is set;
-- `d1 = Speed * ram_FF1AB2 >> 8`; `d0 = |8(a1)|`;
+- `d1 = Speed * RaceBike_ram_CurveSpeedScale >> 8`; `d0 = |8(a1)|`;
 - for demo/non-player, `d0 = d0*$200 >>8`; then `d0 = d1*d0 >>3`;
 - limit select: `$78 != 0` -> `word_14742`; `$78 == 0` and `$68` bit5 set ->
   `TrackParam3` (bit3) or `TrackParam0`; `$78 == 0` and bit5 clear ->
@@ -338,18 +338,18 @@ The profiles collapse into five static behaviour families (all action0 =
 static actors use `Race_StaticActionTable`, so this action-1 slot is not reachable
 through `Race_UpdateActorActions` (static dead-table entry).
 
-Action-profile budget: `ram_FF1A96` is loaded in `Race_LoadBikePalette` from
-`unk_259B6[level-1]` = `[2,3,3,3,4]`; `ram_FF1A98` is reset to 0 at the start of
+Action-profile budget: `Race_ram_ActionDispatchBudget` is loaded in `Race_LoadBikePalette` from
+`unk_259B6[level-1]` = `[2,3,3,3,4]`; `Race_ram_ActionDispatchCount` is reset to 0 at the start of
 `Race_UpdateActorActions`. An actor takes the dispatcher slot (`a4 += 4`) when it is
 Player B (`ram_FF1F2A`), is `Race_ram_NearestActor`, or has `Rating <= PlayerA Speed`
-while `ram_FF1A98 < ram_FF1A96`; every `+4` selection increments `ram_FF1A98`
+while `Race_ram_ActionDispatchCount < Race_ram_ActionDispatchBudget`; every `+4` selection increments `Race_ram_ActionDispatchCount`
 (including the nearest actor and Player B). The player, a Natasha-rivalry actor, and actors whose rating exceeds the
 player's speed stay on action0.
 
 - `[dynamic]` Demo trace at `0x12FD8` (before `jsr (a6)`) observed the normal path
   for every active actor: player `$74=0` -> `$12D2A`/`Race_ActorNormalUpdate`; opponents with
   `$74=6/8/9` -> `$12D8A/$12DB2/$12DC6` and also `Race_ActorNormalUpdate`.
-- `[dynamic]` Forcing PlayerA Speed to `$3000` and `ram_FF1A96=$FFFF` at
+- `[dynamic]` Forcing PlayerA Speed to `$3000` and `Race_ram_ActionDispatchBudget=$FFFF` at
   `Race_UpdateActorActions` entry made profiles `6/8/9` advance to slot+4 and call `Race_DispatchActorAction`
   (`$12D8E/$12DB6/$12DCA`), confirming the dispatcher path. A follow-up trace at
   `0x1651C` saw targets `PlayerA`, `$5A=0`, profiles 6/8/9.
@@ -364,11 +364,11 @@ player's speed stay on action0.
   unreachable table entries.
 - `[dynamic]` E3 (`capture_L3_a2.gdb`, PlayerA Speed forced to `$7FFF`): profiles
   `6`/`8` took `slot+4` while the actor was `Race_ram_NearestActor` or while
-  `ram_FF1A98 < ram_FF1A96`; once the budget was full, non-nearest actors returned to
+  `Race_ram_ActionDispatchCount < Race_ram_ActionDispatchBudget`; once the budget was full, non-nearest actors returned to
   the base slot. The counter incremented on every `+4` (nearest included) and never
   exceeded the budget. Profiles 17/19 never appeared.
 - `[dynamic]` E3 (`capture_L3_level.gdb`) set `Menu_ram_PlayerALevel` before
-  `Race_LoadBikePalette`; the stored `ram_FF1A96` was `[2,3,3,3,4]` for levels 1..5.
+  `Race_LoadBikePalette`; the stored `Race_ram_ActionDispatchBudget` was `[2,3,3,3,4]` for levels 1..5.
 - `[dynamic]` E3 (`capture_L3_b2.gdb`) sampled the natural demo: 262 action3 hits
   (`near=0`, nearest mismatch) and 174 action4 hits (`near=1`, `$5A=0`, nearest with
   expired cooldown); action2 had 0 natural hits because every target was PlayerA.
@@ -376,7 +376,7 @@ player's speed stay on action0.
   selected the distance-based action3 (6 hits).
 - `Race_DispatchActorAction` is entered only after `Race_UpdateActorActions` selects slot+4. In the
   normal demo profiles `6/8/9` stay on `Race_ActorNormalUpdate`; the older trace
-  forced PlayerA Speed `$3000` plus `ram_FF1A96=$FFFF` to make the dispatcher reachable.
+  forced PlayerA Speed `$3000` plus `Race_ram_ActionDispatchBudget=$FFFF` to make the dispatcher reachable.
 - Handler roles: `Race_ActorNormalUpdate` normal target/curve update; `Race_ActorNormalVariant` variant
   (profile-0 `+4`, unreachable);
   `Race_ActorRecovery` recovery timer; `Race_ActorStateCollision` state/collision + `Race_UpdateActorSpeedState`;
@@ -417,14 +417,14 @@ Full lifecycle: `docs/analysis/race_spawn.md` (E5 results there).
 
 - `sub_13BF4` owns the reserved opponent `ram_FF1F2A`: a rating gate
   (`Rating*(ActorDistanceScale-ram_FF1B34)`, `ram_FF1B36` latch) and the `Data5`
-  special list (`ram_FFDBD4`). `sub_13CFE` applies the record page: graphics
+  special list (`Race_ram_SpecialSpawnCursor`). `sub_13CFE` applies the record page: graphics
   `$75 = LevelIndex+4`, type from `Race_ActorLevelBase[LevelIndex-1]`.
 - `sub_138CE` runs the static pair: assigns a respawn timer from `unk_13A1A`, palette,
   side, `$74` profile and `Race_StaticActionTable` speed/offset; expiry calls
   `sub_13A26` (X = `PlayerProgress+$208000`). `Race_ClampActorY` deactivates past
   `$210000`. The earlier "static layout anomaly" was the inactive reset state.
 - `$FF2FAA` (`$71=$12`) is gated by a `shape $186` track object:
-  `ram_FF1B30` `$FFFF` -> deactivate; `>= $1C` -> init (X from progress+marker,
+  `Race_ram_MarkerSlot` `$FFFF` -> deactivate; `>= $1C` -> init (X from progress+marker,
   Y `±(Rand&$7FF)`, Speed `$1770`); then updated by `Race_UpdateExtraStaticActor`.
 - E5 confirmed expansion lists, forced special spawn, static assignment/respawn and
   extra init/update. Natural free-list traffic spawn was not exercised by the demo.
@@ -463,7 +463,7 @@ Proposed only; no rename applied. See `identifiers.md` (R30 rows).
 
 `Race_UpdateActorActions` (`0x12F60`) compares the current actor index `$71` with
 `ram_FF1ADB` (Natasha's per-level actor index from `unk_D19A`). While the current-race
-flag `ram_FF0520 == 3`, Natasha is routed through the alternate action-profile branch
+flag `Player_ram_NatashaCounter == 3`, Natasha is routed through the alternate action-profile branch
 (`profile+4`) instead of the default opponent handler. The flag is set when player A
 attacks Natasha in `Race_UpdateActorPairImpact` and is persisted/decayed by
 `Race_ComputeResults`.

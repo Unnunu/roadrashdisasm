@@ -99,7 +99,7 @@ their low bits.
 | 20-bit field `w7..w10` | `Player_ram_CareerScoreA` | `Player_ram_CareerScoreB` |
 | money `w11..w16` | `Menu_ram_MoneyPlayerA` | `Menu_ram_MoneyPlayerB` |
 | bike id `w20 & 7` | `Menu_ram_BikeIdPlayerA` | `Menu_ram_BikeIdPlayerB` |
-| extra `(w20 >> 3) & 3` | `ram_FF0522` | `ram_FF0524` |
+| extra `(w20 >> 3) & 3` | `Player_ram_NatashaCounterA` | `Player_ram_NatashaCounterB` |
 
 `ParsePassword` also rebuilds the 16-word opponent list as `$4B` (the player's own
 definition id) followed by `(level-1)*15 + 0..14`.
@@ -249,9 +249,9 @@ both name/password fields at their fixed positions.
 
 ## Hypotheses / open questions
 
-- `U-0004` `[static]` resolved: `ram_FF0522/24` is a per-player 3-race Natasha encounter
+- `U-0004` `[static]` resolved: `Player_ram_NatashaCounterA/B` is a per-player 3-race Natasha encounter
   counter. `unk_D19A` holds Natasha's actor index per level; attacking her sets
-  `ram_FF0520=3`; `Race_ComputeResults` latches/decays the persisted value around
+  `Player_ram_NatashaCounter=3`; `Race_ComputeResults` latches/decays the persisted value around
   `$C41A`/`$C45C`. A non-zero value forces the fourth intro variant and the face overlay.
 - `U-0005` `[static]` resolved: `Player_ram_CareerScoreA/B` is the 20-bit career score / high-score
   value. `Race_ComputeResults` adds `unk_D1A0[place]*level` to it (together with money),
@@ -266,6 +266,6 @@ both name/password fields at their fixed positions.
 | Current | Proposed | Evidence | Confidence |
 |---------|----------|----------|------------|
 | `MenuPassword_ValidatePassword` | `MenuPassword_VerifyChecksum` | checksum checks only | high |
-| `ram_FF0522`/`ram_FF0524` | `Player_ram_NatashaCounterA/B` | per-player encounter counter (`U-0004`) | medium |
+| `Player_ram_NatashaCounterA`/`Player_ram_NatashaCounterB` | `Player_ram_NatashaCounterA/B` | per-player encounter counter (`U-0004`) | medium |
 
 `ram_FF0510/14` -> `Player_ram_CareerScoreA/B` was applied in the static-unknowns pass.

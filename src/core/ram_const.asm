@@ -31,9 +31,9 @@ Player_ram_CareerScoreA equ $FF0510
 Player_ram_CareerScoreB equ $FF0514
 Menu_ram_MoneyPlayerA equ $FF0518
 Menu_ram_MoneyPlayerB equ $FF051C
-ram_FF0520 equ $FF0520
-ram_FF0522 equ $FF0522
-ram_FF0524 equ $FF0524
+Player_ram_NatashaCounter equ $FF0520
+Player_ram_NatashaCounterA equ $FF0522
+Player_ram_NatashaCounterB equ $FF0524
 Race_ram_PlayerAOutcome equ $FF0526
 Race_ram_PlayerBOutcome equ $FF0528
 HighScore_ram_PlayerATableOffset equ $FF052A
@@ -91,12 +91,12 @@ EndLevel_ram_AnimFrame equ $FF0D22
 EndLevel_ram_SpriteSwapDelay equ $FF0D24
 ram_FF0D26 equ $FF0D26
 ram_FF0D28 equ $FF0D28
-ram_FF0D2A equ $FF0D2A
-ram_FF0D2E equ $FF0D2E
-ram_FF102E equ $FF102E
-ram_FF132E equ $FF132E
-ram_FF1330 equ $FF1330
-ram_FF1332 equ $FF1332
+SpriteStrip_ram_SourcePtr equ $FF0D2A
+SpriteStrip_ram_PlaneOffsets equ $FF0D2E
+SpriteStrip_ram_RowOffsets equ $FF102E
+SpriteStrip_ram_ColumnCount equ $FF132E
+SpriteStrip_ram_RowCount equ $FF1330
+SpriteStrip_ram_HalfWidth equ $FF1332
 ram_FF1336 equ $FF1336
 Road_ram_MirrorFlag equ $FF133A
 ram_FF133C equ $FF133C
@@ -112,7 +112,7 @@ ram_FF1356 equ $FF1356
 ram_FF1358 equ $FF1358
 ram_FF135A equ $FF135A
 ram_FF135C equ $FF135C
-ram_FF135E equ $FF135E
+SpriteStrip_ram_Clip equ $FF135E
 ram_FF1360 equ $FF1360
 ram_FF1362 equ $FF1362
 ram_FF1364 equ $FF1364
@@ -204,7 +204,7 @@ RoadMarking_TileOffset equ $FF1760
 Race_ram_EventProgress equ $FF1762
 Race_ram_SpeedTier equ $FF1764
 ram_FF1766 equ $FF1766
-ram_FF1768 equ $FF1768
+Race_ram_CrashAnimActive equ $FF1768
 ram_FF176A equ $FF176A
 ram_FF1786 equ $FF1786
 ram_FF178A equ $FF178A
@@ -220,8 +220,8 @@ ram_FF18A2 equ $FF18A2
 ram_FF18A4 equ $FF18A4
 ram_FF18A6 equ $FF18A6
 ram_FF18A8 equ $FF18A8
-ram_FF18AA equ $FF18AA
-ram_FF18AC equ $FF18AC
+Race_ram_PlayerStaminaMax equ $FF18AA
+Race_ram_StaminaHitScale equ $FF18AC
 ram_FF18AE equ $FF18AE
 ram_FF18B0 equ $FF18B0
 ram_FF18B2 equ $FF18B2
@@ -253,21 +253,21 @@ LogoEA_ram_Finished equ $FF1A66 ; .b or .w ?
 ram_FF1A68 equ $FF1A68
 Race_ram_TrackScaleTable equ $FF1A6C
 RaceBike_ram_Parameters equ $FF1A70
-ram_FF1A96 equ $FF1A96
-ram_FF1A98 equ $FF1A98
+Race_ram_ActionDispatchBudget equ $FF1A96
+Race_ram_ActionDispatchCount equ $FF1A98
 Race_ram_PairSpeedDeltaA equ $FF1A9A
 Race_ram_PairSpeedDeltaB equ $FF1A9C
 ram_FF1A9E equ $FF1A9E
 ram_FF1AA0 equ $FF1AA0
 Race_ram_PlayerRpmDivisor equ $FF1AA2
 Race_ram_NearestRpmDivisor equ $FF1AA4
-ram_FF1AA6 equ $FF1AA6
-ram_FF1AAA equ $FF1AAA
+RaceBike_ram_LeanSteeringDivisor equ $FF1AA6
+RaceBike_ram_LeanMultiplier equ $FF1AAA
 RaceBike_ram_ReturnToStraightPower equ $FF1AAC
 RaceBike_ram_SteeringPower equ $FF1AAE
 RaceBike_ram_MaxSteering equ $FF1AB0
-ram_FF1AB2 equ $FF1AB2
-ram_FF1AB4 equ $FF1AB4
+RaceBike_ram_CurveSpeedScale equ $FF1AB2
+RaceBike_ram_LeanSpeedScale equ $FF1AB4
 RaceBike_ram_PhysicsConstants equ $FF1AB6
 ram_FF1ABC equ $FF1ABC
 ram_FF1AC2 equ $FF1AC2
@@ -319,7 +319,7 @@ ram_FF1B24 equ $FF1B24
 Race_ram_BikeDamage equ $FF1B26
 Race_ram_ImpactScale equ $FF1B28
 ram_FF1B2E equ $FF1B2E
-ram_FF1B30 equ $FF1B30
+Race_ram_MarkerSlot equ $FF1B30
 ram_FF1B32 equ $FF1B32
 ram_FF1B34 equ $FF1B34
 ram_FF1B36 equ $FF1B36
@@ -334,8 +334,8 @@ ram_FF1B48 equ $FF1B48
 ram_FF1B4A equ $FF1B4A
 ram_FF1B4C equ $FF1B4C
 ram_FF1B4E equ $FF1B4E
-ram_FF1B50 equ $FF1B50
-ram_FF1C50 equ $FF1C50
+Road_ram_ObjectKeysUnsorted equ $FF1B50
+Road_ram_ObjectKeysSorted equ $FF1C50
 Road_VisibleObjectList equ $FF1D50
 ram_FF1E50 equ $FF1E50
 ram_FF1E52 equ $FF1E52
@@ -344,7 +344,7 @@ ram_FF1E56 equ $FF1E56
 ram_FF1E58 equ $FF1E58
 ram_FF1E5A equ $FF1E5A
 ram_FF1E5C equ $FF1E5C
-ram_FF1E60 equ $FF1E60
+Race_ram_CameraY equ $FF1E60
 ram_FF1E64 equ $FF1E64
 ram_FF1E66 equ $FF1E66 ; low word of the long camera field at $FF1E64
 Race_ram_PlayerProgress equ $FF1E68
@@ -352,11 +352,11 @@ ram_FF1E6A equ $FF1E6A ; low word of Race_ram_PlayerProgress ($FF1E68)
 ram_FF1E6C equ $FF1E6C
 ram_FF1E6E equ $FF1E6E
 ram_FF1E70 equ $FF1E70
-ram_FF1E76 equ $FF1E76
-ram_FF1E7A equ $FF1E7A ; camera Y bias; no writer in src/ (stays 0)
-ram_FF1E7E equ $FF1E7E ; camera collision bias; no writer in src/ (stays 0)
+Race_ram_ProgressBias equ $FF1E76
+Race_ram_CameraYBias equ $FF1E7A ; camera Y bias; only cleared to 0 in src/
+Race_ram_CameraCollisionBias equ $FF1E7E ; camera collision bias; only cleared to 0 in src/
 Race_ram_BestProgress equ $FF1E82
-ram_FF1E86 equ $FF1E86 ; dead $1E60 smoothing accumulator (branch skipped)
+Race_ram_CameraYSmoothingAccum equ $FF1E86 ; dead camera-Y smoothing accumulator (branch skipped)
 ram_FF1E8A equ $FF1E8A
 ram_FF1E8E equ $FF1E8E
 ram_FF1E92 equ $FF1E92
@@ -406,7 +406,7 @@ RaceActor_AttackReach equ $50
 RaceActor_AttackOverlap equ $52
 RaceActor_FallState equ $54
 RaceActor_AttackCooldown equ $5A
-RaceActor_TileBase equ $5C ; current animation/tile base
+RaceActor_Stamina equ $5C ; stamina/health (animation tile base is no longer its role)
 STRUCT_OFFSET_5E equ $5E
 STRUCT_OFFSET_60 equ $60
 RaceActor_Rating equ $66 ; definition byte5*100; also spawn/recycle distance
@@ -631,23 +631,23 @@ Race_ram_TrackObjectCount equ $FFD7CA
 Race_ram_TrackObjectRecordCursor equ $FFD7CC
 Race_ram_TrackObjectWritePtr equ $FFD7D0
 ram_FFD7D4 equ $FFD7D4
-ram_FFDBD4 equ $FFDBD4
+Race_ram_SpecialSpawnCursor equ $FFDBD4
 ram_FFDBD8 equ $FFDBD8
 Track_CurveBuffer equ $FFDC58
 ram_FFDD56 equ $FFDD56
 Race_ram_NextSpriteTileArray equ $FFDE58
 Race_ram_SpriteDestination equ $FFDE5C
-ram_FFDE5E equ $FFDE5E
+SpriteStrip_ram_FillWord equ $FFDE5E
 Animation_ram_TileIndex equ $FFDE60
 ram_FFDE62 equ $FFDE62
 Animation_ram_SpriteIndex equ $FFDE64
-ram_FFDE66 equ $FFDE66
-ram_FFDE68 equ $FFDE68
-ram_FFDE6A equ $FFDE6A
+SpriteStrip_ram_TailColumnGap equ $FFDE66
+SpriteStrip_ram_BandAdvance equ $FFDE68
+SpriteStrip_ram_ColumnGap equ $FFDE6A
 ram_FFDE6C equ $FFDE6C
 ram_FFDE6E equ $FFDE6E
 ram_FFDE70 equ $FFDE70
-ram_FFDE72 equ $FFDE72
+Road_ram_ObjectCount equ $FFDE72
 ram_FFDE74 equ $FFDE74
 ram_FFDE76 equ $FFDE76
 ram_FFDE78 equ $FFDE78

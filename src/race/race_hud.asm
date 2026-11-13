@@ -295,7 +295,7 @@ RaceHud_DrawStamina:
                 move.l  d0,8(a0)
                 move.l  d0,$C(a0)
                 move.l  d0,$10(a0)
-                move.w  (RacePlayerA + RaceActor_TileBase).l,d1
+                move.w  (RacePlayerA + RaceActor_Stamina).l,d1
                 lsr.w   #5,d1
                 cmp.w   #$51,d1 ; 'Q'
                 bcs.w   .loc_D502

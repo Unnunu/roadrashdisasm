@@ -46,7 +46,7 @@ bridge.
 
 | Label | Address | Size | Layout |
 |---|---|---|---|
-| `unk_259B6` | `$259B6` | `$A` | 5 words: per-level dispatch budget `[2,3,3,3,4]` -> `ram_FF1A96`. |
+| `unk_259B6` | `$259B6` | `$A` | 5 words: per-level dispatch budget `[2,3,3,3,4]` -> `Race_ram_ActionDispatchBudget`. |
 | `Race_ActorProfileTable` | `$259C0` | `$50` | 20 longs; `$74` -> 5-dword action group in `Race_ActorActionTable`. |
 | `unk_25A10` | `$25A10` | `$34` | 13 actor-record pointers; index = `RaceActor_Type($16)*4`. |
 | `Race_StaticActionTable` | `$25A44` | `$80` | 16 entries x 8 bytes: handler, speed, Y-offset. |
@@ -55,7 +55,7 @@ bridge.
 | `unk_25B70` | `$25B70` | `$350` | 424 words (race_core). |
 
 Dynamic (E3): `Race_LoadBikePalette` with `Menu_ram_PlayerALevel` forced to 1..5
-stored `ram_FF1A96 = 2,3,3,3,4`; a forced static respawn confirmed
+stored `Race_ram_ActionDispatchBudget = 2,3,3,3,4`; a forced static respawn confirmed
 `Race_StaticActionTable[$74]` supplies the `$12`/`$46` speed/Y-offset pair (see
 `race_map.md`, E3-4/E3-5).
 
@@ -105,13 +105,13 @@ Player example (`ActorBikeRecord_2`, bike id 0):
 
 | Word | Destination |
 |---|---|
-| `+0` | `ram_FF1AA6` (lean steering divisor) |
-| `+2` | `ram_FF1AAA` (lean multiplier, `$8000` = half) |
+| `+0` | `RaceBike_ram_LeanSteeringDivisor` (lean steering divisor) |
+| `+2` | `RaceBike_ram_LeanMultiplier` (lean multiplier, `$8000` = half) |
 | `+4` | `RaceBike_ram_ReturnToStraightPower` |
 | `+6` | `RaceBike_ram_SteeringPower` |
 | `+8` | `RaceBike_ram_MaxSteering` |
-| `+A` | `ram_FF1AB2` (curve speed scale) |
-| `+C` | `ram_FF1AB4` (lean speed scale) |
+| `+A` | `RaceBike_ram_CurveSpeedScale` (curve speed scale) |
+| `+C` | `RaceBike_ram_LeanSpeedScale` (lean speed scale) |
 | `+E` | pad (`$0000`) |
 
 Record 0 = `$01D0,$8000,$0018,$0030,$0600,$00C0,$0100,$0000`.

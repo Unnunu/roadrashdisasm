@@ -202,7 +202,7 @@ Race_DrawMirrorRoad:
 ; Function Race_ProjectActorSprite
 ; Projects an actor position vs the player progress into sprite Y/X fields.
 ; In:  a1 - actor; Race_ram_PlayerProgress progress
-; Out: actor/sprite fields; ram_FF1B50 list
+; Out: actor/sprite fields; Road_ram_ObjectKeysUnsorted list
 ; Clobbers: d0-d2/a0/a3
 ; *************************************************
 
@@ -210,8 +210,8 @@ Race_ProjectActorSprite:
                 move.l  4(a1),d2
                 sub.l   (Race_ram_PlayerProgress).l,d2
                 neg.l   d2
-                lea     (ram_FF1B50).l,a3
-                move.w  (ram_FFDE72).l,d0
+                lea     (Road_ram_ObjectKeysUnsorted).l,a3
+                move.w  (Road_ram_ObjectCount).l,d0
                 asl.w   #2,d0
                 move.l  d2,(a3,d0.w)
                 swap    d2
@@ -337,7 +337,7 @@ Race_ProjectActorSprite:
                 cmp.w   #$160,d0
                 bpl.w   .locret_DC7E
                 subi.w  #$200,(a0)
-                addi.w  #1,(ram_FFDE72).l
+                addi.w  #1,(Road_ram_ObjectCount).l
                 adda.w  #$14,a0
 
 .locret_DC7E:
@@ -601,14 +601,14 @@ Race_RoadMarkingDataB:       dc.b $BB
 ; *************************************************
 ; Function Race_DrawRoadMarkingHud
 ; Draws road markings/mirror from the width/position arrays and marking data A/B.
-; In:  ram_FF3238 widths, player progress, ram_FF1B30/2E
+; In:  ram_FF3238 widths, player progress, Race_ram_MarkerSlot/ram_FF1B2E
 ; Out: HUD marking rows/arrays
 ; Clobbers: d0-d7/a0-a5
 ; *************************************************
 
 Race_DrawRoadMarkingHud:
                 move.w  #$98,d0
-                move.w  (ram_FF1B30).l,d4
+                move.w  (Race_ram_MarkerSlot).l,d4
                 move.w  (Race_ram_PlayerProgress).l,d6
                 move.w  #$FFFF,d7
                 lea     (ram_FF3238).l,a0
@@ -758,28 +758,28 @@ Race_UpdateCamera:
                 move.w  d0,d1
                 asr.w   #1,d1
                 add.w   d1,d0
-                add.w   (ram_FF1E7A).l,d0
-                move.w  d0,(ram_FF1E60).l
+                add.w   (Race_ram_CameraYBias).l,d0
+                move.w  d0,(Race_ram_CameraY).l
                 bra.w   .loc_DF6E
 
                 move.w  (RacePlayerA + RaceActor_PosY).l,d1
-                add.w   (ram_FF1E7A).l,d1
+                add.w   (Race_ram_CameraYBias).l,d1
                 beq.w   .loc_DF6E
-                clr.w   (ram_FF1E86).l
-                sub.w   (ram_FF1E60).l,d1
+                clr.w   (Race_ram_CameraYSmoothingAccum).l
+                sub.w   (Race_ram_CameraY).l,d1
                 beq.s   .loc_DF6E
                 ext.l   d1
                 swap    d1
                 asr.l   #1,d1
-                add.l   d1,(ram_FF1E86).l
-                move.w  (ram_FF1E86).l,d1
-                add.w   (ram_FF1E60).l,d1
-                move.w  d1,(ram_FF1E60).l
+                add.l   d1,(Race_ram_CameraYSmoothingAccum).l
+                move.w  (Race_ram_CameraYSmoothingAccum).l,d1
+                add.w   (Race_ram_CameraY).l,d1
+                move.w  d1,(Race_ram_CameraY).l
 .loc_DF6E:
                 move.w  (RacePlayerA + RaceActor_CollisionOffset).l,d0
                 ext.l   d0
                 asr.l   #1,d0
-                add.l   (ram_FF1E7E).l,d0
+                add.l   (Race_ram_CameraCollisionBias).l,d0
                 addi.l  #$5D,d0
                 cmp.l   #$5D,d0
                 bpl.w   .loc_DF90
@@ -788,7 +788,7 @@ Race_UpdateCamera:
                 move.l  d0,(ram_FF1E64).l
                 move.w  (Race_ram_PlayerProgress).l,d1
                 move.l  (RacePlayerA + RaceActor_X).l,d0
-                sub.l   (ram_FF1E76).l,d0
+                sub.l   (Race_ram_ProgressBias).l,d0
                 sub.l   (Race_ram_CameraOffset).l,d0
                 move.l  d0,(Race_ram_PlayerProgress).l
                 swap    d0

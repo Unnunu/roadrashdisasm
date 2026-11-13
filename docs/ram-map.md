@@ -129,8 +129,8 @@ opponents `$FF0546/$FF0566`, bike ids
 
 | Address | Name | Size | Meaning |
 |---|---|---|---|
-| `$FF0520` | `ram_FF0520` | 2 | Current-race Natasha encounter flag (0/3), copied from `$FF0522`/`$FF0524`; selects intro variant 3 and the face overlay. |
-| `$FF0522`/`$FF0524` | `ram_FF0522/24` | 2 each | Player A/B persisted Natasha encounter counter (0..3, decays one step per race; not the bike id). |
+| `$FF0520` | `Player_ram_NatashaCounter` | 2 | Current-race Natasha encounter flag (0/3), copied from `$FF0522`/`$FF0524`; selects intro variant 3 and the face overlay. |
+| `$FF0522`/`$FF0524` | `Player_ram_NatashaCounterA/B` | 2 each | Player A/B persisted Natasha encounter counter (0..3, decays one step per race; not the bike id). |
 | `$FF1ADA` | `Race_ram_ActiveController` | 2 | 0/1: controller that exited the intro (used by the race). |
 | `$FF0508` | `Menu_ram_Player` | 2 | 0 = A, `$FFFF` = B. |
 | `$FF050C`/`$FF050E` | `Menu_ram_PlayerALevel/PlayerBLevel` | 2 each | Table level index (1..5). |
@@ -314,7 +314,7 @@ See `docs/analysis/race_ai.md`.
 | `RoadMarking_ram_XArray`/`WidthArray` | marking arrays | - | Marking X/width per line. |
 | `ram_FF310A`/`31D2`/`329A`/`3236`/`3362`/`3A9C` | profile arrays | - | Curve/height/marking values + indexes. |
 | `Race_ram_PlayerProgress` / `ram_FF1E6A` / `ram_FF1E6C` | progress state | 2 each | Player progress/curve. |
-| `ram_FF1B50`/`1C50`/`1D50` | object lists | - | Sorted/visible object lists. |
+| `Road_ram_ObjectKeysUnsorted`/`Road_ram_ObjectKeysSorted`/`Road_VisibleObjectList` | object lists | - | Sorted/visible object lists. |
 | `ram_FFD77C` | curve accumulator | - | Track curve integration. |
 | `unk_EB34` | road-edge data | - | Edge graphics for `Race_DrawRoadEdges`. |
 | `Interp_dDivisorMap` | interpolator table | - | Divisor map for `FillLinearInterpArray`. |
@@ -581,11 +581,11 @@ Rider/bike sprite builder (`src/screens/rider_sprites.asm`):
 | `$FFDE64` | `Animation_ram_SpriteIndex` | 2 | Sprite chain index / next link. |
 | `$FFDE60` | `Animation_ram_TileIndex` | 2 | Tile cursor. |
 | `$FFD34A` | `Animation_ram_BaseTile` | 2 | Base tile added to entries. |
-| `$FFDE5E` | `ram_FFDE5E` | 2 | Shape fill/tile word, ORed into each SAT tile word (`$2036` = palette 1, tile base `$36`). |
+| `$FFDE5E` | `SpriteStrip_ram_FillWord` | 2 | Shape fill/tile word, ORed into each SAT tile word (`$2036` = palette 1, tile base `$36`). |
 | `$FFDE62` | `ram_FFDE62` | 2 | Chain-end/overflow flag (`$FFFF`). |
-| `$FFDE66` | `ram_FFDE66` | 2 | Remainder-band tile-column gap (stride-4; `$5C` -> 3-tile stride `$60`). |
-| `$FFDE68` | `ram_FFDE68` | 2 | 32-row band advance after the partial `+128` (`$200`); `$8000` = not computed yet. |
-| `$FFDE6A` | `ram_FFDE6A` | 2 | Full-band tile-column gap (stride-4; `$7C` -> 4-tile stride `$80`). |
+| `$FFDE66` | `SpriteStrip_ram_TailColumnGap` | 2 | Remainder-band tile-column gap (stride-4; `$5C` -> 3-tile stride `$60`). |
+| `$FFDE68` | `SpriteStrip_ram_BandAdvance` | 2 | 32-row band advance after the partial `+128` (`$200`); `$8000` = not computed yet. |
+| `$FFDE6A` | `SpriteStrip_ram_ColumnGap` | 2 | Full-band tile-column gap (stride-4; `$7C` -> 4-tile stride `$80`). |
 | `$FFDE6E` | `ram_FFDE6E` | 2 | Base X (`+$80`). |
 | `$FFDE70` | `ram_FFDE70` | 2 | Base Y (`+$80`). |
 | `$FF0906` | `ram_FF0906` | 2 | Strip X base. |

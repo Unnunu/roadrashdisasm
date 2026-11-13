@@ -9,7 +9,7 @@
 ; Function RiderIntro_Init
 ; Builds the rider/opponent intro: VDP setup, background/gamepad/portrait, opponent
 ; record (RiderIntro_RecordTable), name/quote/palette, optional face overlay, font, message, DMA.
-; In:  Menu_ram_Player, PlayerA/BLevel, CurrentTrackId, ram_FF0520 (Natasha counter)
+; In:  Menu_ram_Player, PlayerA/BLevel, CurrentTrackId, Player_ram_NatashaCounter (Natasha counter)
 ; Out: Menu_ram_FrameBuffer -> VRAM $7000; VRAM $A000-$D000 assets; palette
 ; Clobbers: d0-d7, a0-a3
 ; Notes: ROM $0059C4-$005E65. Only reached on the non-demo path
@@ -138,10 +138,10 @@ RiderIntro_Init:
 .loc_5BAA:
 ; select the opponent record: copy the player's Natasha encounter counter, then pick a
 ; random variant (0/8/$10; $18 is used instead of 0 when the counter != 0)
-                move.w  (ram_FF0522).l,(ram_FF0520).l
+                move.w  (Player_ram_NatashaCounterA).l,(Player_ram_NatashaCounter).l
                 tst.w   (Menu_ram_Player).l
                 beq.w   .loc_5BC8
-                move.w  (ram_FF0524).l,(ram_FF0520).l ; player B
+                move.w  (Player_ram_NatashaCounterB).l,(Player_ram_NatashaCounter).l ; player B
 .loc_5BC8:
                 jsr     (Rand_NextWord).l
                 andi.w  #$18,d0
@@ -150,7 +150,7 @@ RiderIntro_Init:
 
                 tst.w   d0
                 bne.w   .loc_5BEC
-                tst.w   (ram_FF0520).l
+                tst.w   (Player_ram_NatashaCounter).l
                 ble.w   .loc_5BEC
                 move.w  #$18,d0
 .loc_5BEC:
@@ -333,7 +333,7 @@ RiderIntro_Init:
 ; non-zero, so it is the rivalry-reaction layer.
                 cmp.l   #RiderIntro_Portrait_0,d0
                 bne.w   .loc_5E2C
-                tst.w   (ram_FF0520).l
+                tst.w   (Player_ram_NatashaCounter).l
                 ble.w   .loc_5E2C
 
                 lea     (RiderIntro_NatashaFaceOverlay).l,a3

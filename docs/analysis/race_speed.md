@@ -130,8 +130,8 @@ same idea toward the road center when no target exists, using the
 `Race_UpdateBikeLean` (`0x13EA0`, player only, normal `$6E`):
 
 ```
-$42 = sign(steering) * |steering| * ram_FF1AAA
-      / ((ram_FF1AA6>>3) * (Speed * ram_FF1AB4 >> 8))
+$42 = sign(steering) * |steering| * RaceBike_ram_LeanMultiplier
+      / ((RaceBike_ram_LeanSteeringDivisor>>3) * (Speed * RaceBike_ram_LeanSpeedScale >> 8))
 ```
 
 Zero when `Speed == 0` or the steering quotient is zero.
@@ -155,7 +155,7 @@ $08 = $0C (when $6E is normal); $22/$00 updated from the curve term
 
 ```
 d0 = |$08|; if DemoMode != 0 or actor != PlayerA: d0 = |$08| * $200 >> 8
-d1 = Speed * ram_FF1AB2 >> 8
+d1 = Speed * RaceBike_ram_CurveSpeedScale >> 8
 d0 = d0 * d1 >> 3
 limit = $78 timer != 0 ? word_14742 ($4CC2)
       : ($68 bit5 ? (bit3 ? TrackParam3 : TrackParam0)

@@ -56,13 +56,13 @@ Confirmed record layout (static + dynamic + byte-exact writer replay):
 - `Road_InterpolateRightEdge` consumes `P+1` (or `P+3`).
 - `Road_DrawStrip` then reads the fill/tile word: `P+2/P+3` or `P+4/P+5`.
 - `Road_WriteTileColumns` starts at the next byte and consumes row/tile bytes;
-  the interpolators produce per-strip byte offsets in `ram_FF0D2E`/`ram_FF102E`.
+  the interpolators produce per-strip byte offsets in `SpriteStrip_ram_PlaneOffsets`/`SpriteStrip_ram_RowOffsets`.
 - `Road_ScaleShape` reads `P+0/P+1/P+2`; `Road_ProjectShape` reads `P+0`;
   the mirror bit uses the `P+2` width delta.
 
 - `[dynamic]` At `Road_WriteTileColumns` the first two objects had
-`ram_FF0D2A=$059952`/`$059CEE` (shape pointer + 6; special/mirror offset), strip counts
-`ram_FF132E=4`/`3`, `ram_FF1330=$35`. Row bytes at `$059952`:
+`SpriteStrip_ram_SourcePtr=$059952`/`$059CEE` (shape pointer + 6; special/mirror offset), strip counts
+`SpriteStrip_ram_ColumnCount=4`/`3`, `SpriteStrip_ram_RowCount=$35`. Row bytes at `$059952`:
 `00 00 00 00 00 00 00 00 33 33 00 00 ...`; at `$059CEE`:
 `00 00 00 00 00 00 00 00 33 33 30 00 ... 32`.
 
@@ -71,10 +71,10 @@ Confirmed record layout (static + dynamic + byte-exact writer replay):
 The row data is a stream of **4bpp bitplane bytes**, consumed through the two
 interpolator lists:
 
-- `ram_FF0D2E` (left list): one 16-bit source advance after every output byte.
+- `SpriteStrip_ram_PlaneOffsets` (left list): one 16-bit source advance after every output byte.
   Normally 1, so four consecutive source bytes form the four bitplanes of one
   8-pixel scanline; 0 repeats a byte and >1 skips bytes.
-- `ram_FF102E` (right list): one 16-bit source advance after every source row.
+- `SpriteStrip_ram_RowOffsets` (right list): one 16-bit source advance after every source row.
   The next row starts at `previous start + sum(left) + right`. For shape `$56`
   at scale `$10000` that is `16 + 1 = 17` bytes; the trailing zero offsets in the
   left list repeat the last new byte for the short fifth column. At smaller scales
@@ -83,8 +83,8 @@ interpolator lists:
 `Road_WriteTileColumns` transposes the stream into column-major 4-tile strips:
 for row `r` and column `c` it writes the 4 plane bytes to
 `base + 4*r + c*(gap+4)` (modulo the 32-row band wrap). Full-band `gap` is
-`ram_FFDE6A=$7C` (stride `$80` = 4 tiles), the remainder band uses
-`ram_FFDE66=$5C` (stride `$60` = 3 tiles), and `ram_FFDE68` advances the band
+`SpriteStrip_ram_ColumnGap=$7C` (stride `$80` = 4 tiles), the remainder band uses
+`SpriteStrip_ram_TailColumnGap=$5C` (stride `$60` = 3 tiles), and `SpriteStrip_ram_BandAdvance` advances the band
 base after 32 rows.
 
 Byte-exact check: shape `$56` (`base=$FF511C`, `src=$059952`, scale `$10000`,
@@ -109,8 +109,8 @@ palette 1 and tile base `$36` for the SAT entries.
 The shape bytes are read as `(a2)`, `1(a2)`, `2(a2)` by `Road_ScaleShape`;
 `Road_ProjectShape`/`Road_ProjectShapeSpecial` use byte0 for the projected edge and
 the object X plus `$C0/$200`. `Road_DrawStrip` starts at **shape pointer + 2**:
-the word at `+2` becomes `ram_FFDE5E` (tile/fill base), and `+4` onward is the
-per-row strip data copied/interpolated into `ram_FF0D2E`/`ram_FF102E`.
+the word at `+2` becomes `SpriteStrip_ram_FillWord` (tile/fill base), and `+4` onward is the
+per-row strip data copied/interpolated into `SpriteStrip_ram_PlaneOffsets`/`SpriteStrip_ram_RowOffsets`.
 
 `[dynamic]` First demo `Road_DrawStrip`: shape id `$56`, pointer `$05994C`,
 bytes `10 37 20 36 00...`; `Road_ScaleShape` reads `10/37/20`, then the special path

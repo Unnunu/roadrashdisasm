@@ -135,8 +135,8 @@ uses. It exists so later analysis can decide whether a rename is worth doing.
 | `Menu_ram_BikeIdPlayerB` | RAM | `ram_const.asm` (`$FF0544`) | menu_password: B bike id | good | `[static]` | keep | - | high | - |
 | `Player_ram_CareerScoreA` | RAM | `ram_const.asm` (`$FF0510`) | menu_password/race_core: A 20-bit career score / high-score value (`w7..w10`) | narrow | `[static]` | keep (renamed from `ram_FF0510`) | - | medium | `U-0005` resolved |
 | `Player_ram_CareerScoreB` | RAM | `ram_const.asm` (`$FF0514`) | menu_password/race_core: B 20-bit career score / high-score value | narrow | `[static]` | keep (renamed from `ram_FF0514`) | - | medium | `U-0005` resolved |
-| `ram_FF0522` | RAM | `ram_const.asm` (`$FF0522`) | menu_password/intro/race: A persisted Natasha encounter counter (0..3) | narrow | `[static]` | rename-later | `Player_ram_NatashaCounterA` | medium | `U-0004` resolved |
-| `ram_FF0524` | RAM | `ram_const.asm` (`$FF0524`) | menu_password/intro/race: B persisted Natasha encounter counter (0..3) | narrow | `[static]` | rename-later | `Player_ram_NatashaCounterB` | medium | `U-0004` resolved |
+| `Player_ram_NatashaCounterA` | RAM | `ram_const.asm` (`$FF0522`) | menu_password/intro/race: A persisted Natasha encounter counter (0..3) | narrow | `[static]` | keep (renamed from `ram_FF0522`) | - | medium | `U-0004` resolved |
+| `Player_ram_NatashaCounterB` | RAM | `ram_const.asm` (`$FF0524`) | menu_password/intro/race: B persisted Natasha encounter counter (0..3) | narrow | `[static]` | keep (renamed from `ram_FF0524`) | - | medium | `U-0004` resolved |
 | `Message_ShowNoop` | routine | `message.asm:56` (`$4268`) | message: no-op show function; also the rts ending `Message_ShowEmpty` | good | `[static]` | keep (renamed from `sub_4268`) | - | high | - |
 | `Message_BlinkButtonA` | routine | `message.asm:103` (`$42AA`) | message/Menu_ShowMessage: blink A-button icon | good | `[static]` | keep | - | high | - |
 | `Message_DrawButtonA` | routine | `message.asm:128` (`$42D0`) | message: draw-only A-button entry | good | `[static]` | keep | - | high | - |
@@ -208,11 +208,11 @@ uses. It exists so later analysis can decide whether a rename is worth doing.
 | `Animation_ram_TileIndex` | RAM | `ram_const.asm:642` (`$FFDE60`) | animation/rider_sprites: tile cursor | good | `[static]` | keep | - | high | - |
 | `Animation_ram_SpriteIndex` | RAM | `ram_const.asm:644` (`$FFDE64`) | animation/rider_sprites: next free SAT slot | good | `[static]` | keep | - | high | - |
 | `Animation_ram_BaseTile` | RAM | `ram_const.asm:603` (`$FFD34A`) | animation/rider_sprites: base tile added to entries | good | `[static]` | keep | - | high | - |
-| `ram_FFDE5E` | RAM | `ram_const.asm:641` (`$FFDE5E`) | road_render/rider_sprites: object palette/priority/base bits | placeholder | `[static]` | rename-later | `Road_ram_SpriteTileBits` | medium | - |
+| `SpriteStrip_ram_FillWord` | RAM | `ram_const.asm:641` (`$FFDE5E`) | road_render/rider_sprites: object palette/priority/base bits | placeholder | `[static]` | keep (renamed from `ram_FFDE5E`; duplicate medium proposal consolidated) | - | medium | - |
 | `ram_FFDE62` | RAM | `ram_const.asm:643` (`$FFDE62`) | road_render/rider_sprites: chain-end/overflow flag | placeholder | `[static]` | rename-later | `Road_ram_ChainEnd` | medium | - |
-| `ram_FFDE66` | RAM | `ram_const.asm:645` (`$FFDE66`) | road_render/rider_sprites: remainder-band tile-column gap (stride-4; `$5C` -> `$60`) | placeholder | `[static]`/E8-A | rename-later | `SpriteStrip_ram_TailColumnGap` | high | - |
-| `ram_FFDE68` | RAM | `ram_const.asm:646` (`$FFDE68`) | road_render/rider_sprites: 32-row band advance after the partial +128 | placeholder | `[static]`/E8-A | rename-later | `SpriteStrip_ram_BandAdvance` | high | - |
-| `ram_FFDE6A` | RAM | `ram_const.asm:647` (`$FFDE6A`) | road_render/rider_sprites: full-band tile-column gap (stride-4; `$7C` -> `$80`) | placeholder | `[static]`/E8-A | rename-later | `SpriteStrip_ram_ColumnGap` | high | - |
+| `SpriteStrip_ram_TailColumnGap` | RAM | `ram_const.asm:645` (`$FFDE66`) | road_render/rider_sprites: remainder-band tile-column gap (stride-4; `$5C` -> `$60`) | placeholder | `[static]`/E8-A | keep (renamed from `ram_FFDE66`) | - | high | - |
+| `SpriteStrip_ram_BandAdvance` | RAM | `ram_const.asm:646` (`$FFDE68`) | road_render/rider_sprites: 32-row band advance after the partial +128 | placeholder | `[static]`/E8-A | keep (renamed from `ram_FFDE68`) | - | high | - |
+| `SpriteStrip_ram_ColumnGap` | RAM | `ram_const.asm:647` (`$FFDE6A`) | road_render/rider_sprites: full-band tile-column gap (stride-4; `$7C` -> `$80`) | placeholder | `[static]`/E8-A | keep (renamed from `ram_FFDE6A`) | - | high | - |
 | `ram_FFDE6E` | RAM | `ram_const.asm:649` (`$FFDE6E`) | road_render/rider_sprites: object base X | placeholder | `[static]` | rename-later | `Road_ram_ObjectX` | medium | - |
 | `ram_FFDE70` | RAM | `ram_const.asm:650` (`$FFDE70`) | road_render/rider_sprites: object base Y | placeholder | `[static]` | rename-later | `Road_ram_ObjectY` | medium | - |
 | `ram_FF0906` | RAM | `ram_const.asm:74` (`$FF0906`) | rider_sprites: horizontal remainder code C as byte offset | placeholder | `[static]` | rename-later | `Rider_ram_ColCode` | medium | - |
@@ -227,7 +227,7 @@ uses. It exists so later analysis can decide whether a rename is worth doing.
 | `RiderIntro_GameTick` | routine | `rider_intro.asm:393` (`$5E66`) | rider_intro: per-frame DMA, pad release edge, timed message | good | `[static]` | keep | - | high | - |
 | `RiderIntro_RecordTable` | data | `race_data_tables.asm:8` (`$19A12`) | rider_intro: 5 levels x 5 tracks x 4 variants, 8-byte (quote,image) records | good | `[static]` | keep | - | high | - |
 | `Race_ram_ActiveController` | RAM | `ram_const.asm:287` (`$FF1ADA`) | rider_intro/race: 0/1 controller that exited the intro | good | `[static]` | keep | - | high | - |
-| `ram_FF0520` | RAM | `ram_const.asm:34` (`$FF0520`) | rider_intro/race: current-race Natasha encounter flag (0/3); selects variant 3/overlay | narrow | `[static]` | rename-later | `Player_ram_NatashaCounter` | medium | `U-0004` resolved |
+| `Player_ram_NatashaCounter` | RAM | `ram_const.asm:34` (`$FF0520`) | rider_intro/race: current-race Natasha encounter flag (0/3); selects variant 3/overlay | narrow | `[static]` | keep (renamed from `ram_FF0520`) | - | medium | `U-0004` resolved |
 | `RiderIntro_PortraitPanel` | data | `rom_assets.asm:7` (`$7EA66`) | rider_intro/endlevel/results: portrait panel image (11 tiles + 12x14 map) | good | `[static]` | keep (renamed from `unk_7EA66`) | - | high | - |
 | `RiderIntro_Portrait_0` | data | `rom_assets.asm:176` (`$AF902`) | rider_intro: Natasha portrait image (header name parsed) | good | `[static]` | keep (renamed from `unk_AF902`) | - | high | - |
 | `RiderIntro_NatashaFaceOverlay` | data | `rom_assets.asm:180` (`$B1506`) | rider_intro: close-up Natasha face/expression overlay drawn during the encounter counter | good | `[static]` | keep (renamed from `unk_B1506`) | - | high | `U-0008` resolved |
@@ -481,10 +481,10 @@ uses. It exists so later analysis can decide whether a rename is worth doing.
 | `unk_1471A` | data | `race_anim_audio.asm:1188 ($1471A)` | race_core: 5 track x 4 words -> TrackParam0..3 | placeholder | `[static]` | rename-later | `Race_TrackCurveParams` | high | - |
 | `word_14742` | data | `race_anim_audio.asm:1228 ($14742)` | race_ai: `$78`-timer curve limit; branch unreachable | placeholder | `[static]` | rename-later | `Race_CurveTimerLimit` | high | - |
 | `unk_14056` | data | `race_anim_audio.asm:7 ($14056)` | race_ai: 10-word curve scale indexed by `$75` | placeholder | `[static]` | rename-later | `Race_CurveScaleTable` | high | - |
-| `ram_FF1AA6` | RAM | `ram_const.asm:264 ($FF1AA6)` | race_ai: lean steering divisor (`>>3`) | placeholder | `[static]` | rename-later | `RaceBike_ram_LeanSteeringDivisor` | high | - |
-| `ram_FF1AAA` | RAM | `ram_const.asm:265 ($FF1AAA)` | race_ai: lean multiplier (usually `$8000`) | placeholder | `[static]` | rename-later | `RaceBike_ram_LeanMultiplier` | high | - |
-| `ram_FF1AB2` | RAM | `ram_const.asm:269 ($FF1AB2)` | race_ai: curve speed scale | placeholder | `[static]` | rename-later | `RaceBike_ram_CurveSpeedScale` | high | - |
-| `ram_FF1AB4` | RAM | `ram_const.asm:270 ($FF1AB4)` | race_ai: lean speed scale | placeholder | `[static]` | rename-later | `RaceBike_ram_LeanSpeedScale` | high | - |
+| `RaceBike_ram_LeanSteeringDivisor` | RAM | `ram_const.asm:264 ($FF1AA6)` | race_ai: lean steering divisor (`>>3`) | placeholder | `[static]` | keep (renamed from `ram_FF1AA6`) | - | high | - |
+| `RaceBike_ram_LeanMultiplier` | RAM | `ram_const.asm:265 ($FF1AAA)` | race_ai: lean multiplier (usually `$8000`) | placeholder | `[static]` | keep (renamed from `ram_FF1AAA`) | - | high | - |
+| `RaceBike_ram_CurveSpeedScale` | RAM | `ram_const.asm:269 ($FF1AB2)` | race_ai: curve speed scale | placeholder | `[static]` | keep (renamed from `ram_FF1AB2`) | - | high | - |
+| `RaceBike_ram_LeanSpeedScale` | RAM | `ram_const.asm:270 ($FF1AB4)` | race_ai: lean speed scale | placeholder | `[static]` | keep (renamed from `ram_FF1AB4`) | - | high | - |
 | `$78` (`STRUCT_OFFSET_78`) | field | `ram_const.asm:428 ($78)` | race_ai: bike-curve timer; zeroed at creation, only decremented | placeholder | `[static]` | rename-later | `RaceActor_CurveTimer` | medium | - |
 
 ### Race gap pass (R30, `0x1131A`-`0x1562C`)
@@ -529,7 +529,7 @@ Names stay `sub_XXXX`/`unk_XXXX`; proposals are not applied.
 | `unk_15624` | data | `race_anim_audio.asm:1974 ($15624)` | race_anim: random FallState (8) | placeholder | `[static]` | rename-later | `Race_FallStateRand8B` | medium | - |
 | `Race_UpdateActorAI` | routine | `race_ai.asm:94 ($10E66)` | race_ai: actor speed/move loop; candidates, Y clamp, player/AI branches | good | `[static]` | keep | - | high | - |
 | `Race_AdvanceActorProgress` | routine | `race_ai.asm:262 ($1103A)` | race_ai: X += frame distance, finish latch, per-frame clears | good | `[static]` | keep | - | high | - |
-| `Race_UpdateActorActions` | routine | `race_ai.asm:2989 ($12EA2)` | race_ai: recycle, profile base/+4, `ram_FF1A96/98` budget, handler call | good | `[static]/[dynamic]` E3 | keep | - | high | - |
+| `Race_UpdateActorActions` | routine | `race_ai.asm:2989 ($12EA2)` | race_ai: recycle, profile base/+4, `Race_ram_ActionDispatchBudget/Count` budget, handler call | good | `[static]/[dynamic]` E3 | keep | - | high | - |
 | `Race_DispatchActorAction` | routine | `race_combat.asm:326 ($16458)` | race_ai/combat: action2/3/4 dispatcher | good | `[static]/[dynamic]` E3 | keep | - | high | - |
 | `Race_BuildTargetCandidates` | routine | `race_ai.asm:3921 ($137E4)` | race_ai: static actor -> three Y buckets | good | `[static]` | keep | - | high | - |
 | `Race_AddTargetCandidate` | routine | `race_ai.asm:3954 ($13812)` | race_ai: append `$71` to bucket `d0` | good | `[static]/[dynamic]` E3 | keep | - | high | - |
@@ -537,8 +537,8 @@ Names stay `sub_XXXX`/`unk_XXXX`; proposals are not applied.
 | `Race_ActorProfileTable` | data | `race_actor_extra_tables.asm:34 ($259C0)` | race_ai: 20 slots into `Race_ActorActionTable` (`$74`) | good | `[static]` | keep | - | high | - |
 | `Race_ActorActionTable` | data | `race_ai.asm:2962 ($12D16)` | race_ai: 99 action pointers; 5-dword profile groups | good | `[static]` | keep | - | high | - |
 | `Race_StaticActionTable` | data | `race_actor_extra_tables.asm:72 ($25A44)` | race_ai: 16 handler/speed/Y-offset entries; `$74` indexing confirmed by E3 | narrow | `[static]/[dynamic]` E3 | rename-later | `Race_StaticActorProfileTable` | high | - |
-| `ram_FF1A96` | data | `race_core.asm:2711 ($FF1A96)` | race_ai: per-level action-dispatch budget `[2,3,3,3,4]`; E3 confirmed all five levels | placeholder | `[static]/[dynamic]` E3 | rename-later | `Race_ram_ActionDispatchBudget` | high | - |
-| `ram_FF1A98` | data | `race_ai.asm:2990 ($FF1A98)` | race_ai: per-frame count of `+4` dispatcher choices; E3 confirmed increment/clamp | placeholder | `[static]/[dynamic]` E3 | rename-later | `Race_ram_ActionDispatchCount` | high | - |
+| `Race_ram_ActionDispatchBudget` | data | `race_core.asm:2711 ($FF1A96)` | race_ai: per-level action-dispatch budget `[2,3,3,3,4]`; E3 confirmed all five levels | placeholder | `[static]/[dynamic]` E3 | keep (renamed from `ram_FF1A96`) | - | high | - |
+| `Race_ram_ActionDispatchCount` | data | `race_ai.asm:2990 ($FF1A98)` | race_ai: per-frame count of `+4` dispatcher choices; E3 confirmed increment/clamp | placeholder | `[static]/[dynamic]` E3 | keep (renamed from `ram_FF1A98`) | - | high | - |
 | `Race_ActorNormalVariant` | routine | `race_ai.asm:3141 ($1307C)` | race_ai: profile 0 action1; the profile-0 player always takes the base slot -> table slot unreachable | narrow | `[static]` | keep (dead) | - | medium | - |
 | `Race_UpdateActorPairCollision` | routine | `race_ai.asm:2202 ($124E2)` | race_ai: pair order/side/extent/reach; sets ContactFlags bit4 | good | `[static]/[dynamic]` E4 | keep | - | high | - |
 | `Race_GetCollisionExtent` | routine | `race_ai.asm:2665 ($12A88)` | race_ai: actor vs static extent selector | good | `[static]` | keep | - | high | - |
@@ -556,18 +556,18 @@ Names stay `sub_XXXX`/`unk_XXXX`; proposals are not applied.
 | `Race_ApplyCollisionImpact` | routine | `race_anim_audio.asm:466 ($14486)` | race_anim: deep/shallow impact; damage/speed/event | good | `[confirmed]` E4-F | keep | - | high | - |
 | `Race_UpdateCollisionSpeedState` | routine | `race_anim_audio.asm:579 ($145EC)` | race_anim: heavy/light speed state + event; returns magnitude | good | `[static]/[dynamic]` E4 | keep | - | high | - |
 | `Race_ApplyImpactSpeedLoss` | routine | `race_anim_audio.asm:663 ($146AC)` | race_anim: `$2C` decay / Speed loss `bit4` | good | `[static]` | keep | - | medium | - |
-| `Race_ScaleImpactDamage` | routine | `race_anim_audio.asm:318 ($1434A)` | race_anim: `abs(x)>>11`; 0 while `ram_FF1768` | good | `[confirmed]` E4-F | keep | - | high | - |
+| `Race_ScaleImpactDamage` | routine | `race_anim_audio.asm:318 ($1434A)` | race_anim: `abs(x)>>11`; 0 while `Race_ram_CrashAnimActive` | good | `[confirmed]` E4-F | keep | - | high | - |
 | `Race_UpdateCollision` | routine | `race_combat.asm:761 ($16732)` | race_combat: attack state start/cooldown (no damage) | good | `[static]/[dynamic]` combat | keep | - | high | - |
 | `sub_1438E` | routine | `race_anim_audio.asm:370 ($1438E)` | race_anim: impact speed-loss latch | placeholder | `[static]` | rename-later | `Race_ApplyImpactLatch` | medium | - |
 | `sub_142D8` | routine | `race_anim_audio.asm:269 ($142D8)` | race_anim: weapon-anim speed flag | placeholder | `[static]` | rename-later | `Race_SetWeaponAnimSpeedFlag` | low | - |
-| `RaceActor_TileBase` | RAM field | `race_anim_audio.asm:4414` / `race_hud.asm:266` (`$5C`) | stamina/health: regen + knockdown + HUD bar; not a tile base | misleading | `[confirmed]` E4-B + HUD | rename-later | `RaceActor_Stamina` | high | - |
-| `ram_FF18AC` | data | `race_core.asm:1258 ($FF18AC)` | race_anim: stamina damage per pair-impact unit (`$10`) | placeholder | `[confirmed]` E4-B | rename-later | `Race_ram_StaminaHitScale` | high | - |
+| `RaceActor_Stamina` | RAM field | `race_anim_audio.asm:4414` / `race_hud.asm:266` (`$5C`) | stamina/health: regen + knockdown + HUD bar; not a tile base | misleading | `[confirmed]` E4-B + HUD | keep (renamed from `RaceActor_TileBase`) | - | high | - |
+| `Race_ram_StaminaHitScale` | data | `race_core.asm:1258 ($FF18AC)` | race_anim: stamina damage per pair-impact unit (`$10`) | placeholder | `[confirmed]` E4-B | keep (renamed from `ram_FF18AC`) | - | high | - |
 | `ram_FF18A8` | data | `race_core.asm:1256 ($FF18A8)` | race_spawn/ai: shared stamina baseline (`$500`); above it the page max graphics `+$E` is restored | placeholder | `[confirmed]` U-0017 | rename-later | `Race_ram_StaminaBaseline` | medium | - |
-| `ram_FF18AA` | data | `race_core.asm:1257 ($FF18AA)` | core/ai/hud: player stamina max (`$A00`) | placeholder | `[confirmed]` HUD | rename-later | `Race_ram_PlayerStaminaMax` | high | - |
+| `Race_ram_PlayerStaminaMax` | data | `race_core.asm:1257 ($FF18AA)` | core/ai/hud: player stamina max (`$A00`) | placeholder | `[confirmed]` HUD | keep (renamed from `ram_FF18AA`) | - | high | - |
 | `ram_FF3038` | data | `race_ai.asm:1543 ($FF3038)` | race_ai/anim: pair X window (`$6000`/`$3700`) | placeholder | `[confirmed]` E4-F | rename-later | `Race_ram_PairXWindow` | medium | - |
 | `ram_FF303E` | data | `race_ai.asm:1545 ($FF303E)` | race_ai/anim: penetration threshold (`$40`) | placeholder | `[confirmed]` E4-F | rename-later | `Race_ram_ImpactPenetration` | medium | - |
 | `ram_FF3040` | data | `race_ai_road.asm:1092 ($FF3040)` | road/anim: collision side state (0..2) | placeholder | `[confirmed]` E4-F | rename-later | `Race_ram_CollisionSideState` | medium | - |
-| `ram_FF1768` | data | `race_ai.asm:1542 ($FF1768)` | race_ai/anim: current player in crash/fall (damage suppression) | placeholder | `[confirmed]` E4-F | rename-later | `Race_ram_CrashAnimActive` | high | - |
+| `Race_ram_CrashAnimActive` | data | `race_ai.asm:1542 ($FF1768)` | race_ai/anim: current player in crash/fall (damage suppression) | placeholder | `[confirmed]` E4-F | keep (renamed from `ram_FF1768`) | - | high | - |
 | `ram_FF1B26` | data | `race_hud.asm:331 ($FF1B26)` | hud/core/anim: BikeDamage (inverse HP); `$20` threshold | good | `[confirmed]` E4-F | keep | - | high | - |
 | `Race_ApplyCrashImpact` | routine | `race_ai.asm:1428 ($11B7A)` | race_ai: lean-over crash (`DemoMode==0`); damage `ScaleImpactDamage(Speed)>>2` | good | `[static]` | keep | - | medium | - |
 
@@ -592,9 +592,9 @@ Names stay `sub_XXXX`/`unk_XXXX`; proposals are not applied.
 | `word_B976` | data | `race_core.asm:1402 ($B976)` | race_core: per-level random-acceptance threshold for Data5 | placeholder | `[static]` | rename-later | `RaceTrack_SpawnAcceptThreshold` | high | - |
 | `word_B980` | data | `race_core.asm:1404 ($B980)` | race_core: per-level special-list cap | placeholder | `[static]` | rename-later | `RaceTrack_SpecialSpawnCap` | high | - |
 | `off_B98A` | data | `race_core.asm:1406 ($B98A)` | race_core: 5 per-level special colour/page lists | placeholder | `[static]` | rename-later | `RaceTrack_SpecialSpawnPages` | high | - |
-| `ram_FFDBD4` | RAM | `ram_const.asm:634 ($FFDBD4)` | race_core/ai: Data5 special-list cursor used by `sub_13BF4` | placeholder | `[static]/[dynamic]` E5-2 | rename-later | `Race_ram_SpecialSpawnCursor` | high | - |
+| `Race_ram_SpecialSpawnCursor` | RAM | `ram_const.asm:634 ($FFDBD4)` | race_core/ai: Data5 special-list cursor used by `sub_13BF4` | placeholder | `[static]/[dynamic]` E5-2 | keep (renamed from `ram_FFDBD4`) | - | high | - |
 | `ram_FF1B2E` | RAM | `ram_const.asm:321 ($FF1B2E)` | race_ai_road: shape `$186` run length -> extra actor gate | placeholder | `[static]` | rename-later | `Race_ram_MarkerRunLength` | medium | - |
-| `ram_FF1B30` | RAM | `ram_const.asm:322 ($FF1B30)` | race_ai_road/ai: shape `$186` slot position; extra actor init/deactivate | placeholder | `[static]/[dynamic]` E5-5 | rename-later | `Race_ram_MarkerSlot` | high | - |
+| `Race_ram_MarkerSlot` | RAM | `ram_const.asm:322 ($FF1B30)` | race_ai_road/ai: shape `$186` slot position; extra actor init/deactivate | placeholder | `[static]/[dynamic]` E5-5 | keep (renamed from `ram_FF1B30`) | - | high | - |
 | `ram_FF1B32` | RAM | `ram_const.asm:323 ($FF1B32)` | race_ai: reserved-opponent spawn delay | placeholder | `[static]` | rename-later | `Race_ram_ReservedSpawnTimer` | medium | - |
 | `ram_FF1B34` | RAM | `ram_const.asm:324 ($FF1B34)` | race_ai: reserved-opponent rating-distance offset (init `$E10`) | placeholder | `[static]` | rename-later | `Race_ram_ReservedSpawnOffset` | medium | - |
 | `ram_FF1B36` | RAM | `ram_const.asm:325 ($FF1B36)` | race_ai: reserved-opponent initial-placement latch | placeholder | `[static]` | rename-later | `Race_ram_ReservedSpawned` | medium | - |
@@ -651,13 +651,13 @@ Names stay `sub_XXXX`/`unk_XXXX`; proposals are not applied.
 | `ram_FF1E50` / `ram_FF1E52` | RAM | `ram_const.asm:340-341` | race: `$1E54/56 + $1E58/5A` combined scroll | placeholder | `[confirmed]` E6 | rename-later | `Race_ram_CurveScrollA/B` | medium | - |
 | `ram_FF1E54` / `ram_FF1E56` | RAM | `ram_const.asm:342-343` | race: signed curve-byte sums over the progress delta | placeholder | `[confirmed]` E6 | rename-later | `Race_ram_CurveSumA/B` | medium | - |
 | `ram_FF1E58` / `ram_FF1E5A` | RAM | `ram_const.asm:344-345` | race: scaled current/next curve byte | placeholder | `[confirmed]` E6 | rename-later | `Race_ram_CurveScaledA/B` | medium | - |
-| `ram_FF1E60` | RAM | `ram_const.asm:347` | race: camera Y = `3*PosY/4` | placeholder | `[confirmed]` E6 | rename-later | `Race_ram_CameraY` | high | - |
+| `Race_ram_CameraY` | RAM | `ram_const.asm:347` | race: camera Y = `3*PosY/4` | placeholder | `[confirmed]` E6 | keep (renamed from `ram_FF1E60`) | - | high | - |
 | `ram_FF1E64` | RAM | `ram_const.asm:348` | race: camera collision = `($32>>1)+$5D` (long) | placeholder | `[confirmed]` E6 | rename-later | `Race_ram_CameraCollision` | medium | - |
 | `ram_FF1E66` | RAM | `ram_const.asm:349` | low word of `ram_FF1E64` | narrow | `[confirmed]` E6 | keep | - | high | - |
 | `ram_FF1E6A` | RAM | `ram_const.asm:352` | low word of `Race_ram_PlayerProgress`; curve amplitude | narrow | `[confirmed]` E6 | keep | - | high | - |
 | `ram_FF1E6C` | RAM | `ram_const.asm:353` | race: current signed curve byte | placeholder | `[static]/[dynamic]` E6 | rename-later | `Race_ram_CurveByte` | medium | - |
-| `ram_FF1E76` | RAM | `ram_const.asm:355` | race: `$8000` progress bias set by `Race_CreateActors` | placeholder | `[confirmed]` E6 | rename-later | `Race_ram_ProgressBias` | high | - |
-| `ram_FF1E7A` / `ram_FF1E7E` / `ram_FF1E86` | RAM | `ram_const.asm:356-359` | camera bias/smoothing fields with no writer in `src/` | placeholder | `[static]` | rename-later | unused camera fields | high | - |
+| `Race_ram_ProgressBias` | RAM | `ram_const.asm:355` | race: `$8000` progress bias set by `Race_CreateActors` | placeholder | `[confirmed]` E6 | keep (renamed from `ram_FF1E76`) | - | high | - |
+| `Race_ram_CameraYBias` / `Race_ram_CameraCollisionBias` / `Race_ram_CameraYSmoothingAccum` | RAM | `ram_const.asm:356-359` | camera bias/smoothing fields with no writer in `src/` | placeholder | `[static]` | keep (renamed from `ram_FF1E7A/1E7E/1E86`) | - | high | - |
 | `ram_FF30EA`/`EE`/`F2`/`F6`/`FA`/`FE` | RAM | `ram_const.asm:494-503` | HInt HScroll plane A/B parallax accumulators | placeholder | `[static]/[dynamic]` E6 | rename-later | `Race_ram_HScrollLayerA/B..` | medium | - |
 | `ram_FF3274` | RAM | `ram_const.asm:517` | `ram_FF3236[31]`; horizon line used by the VScroll | narrow | `[confirmed]` E6 | retain alias | - | high | - |
 | `Race_ram_HIntVScroll` | RAM | `ram_const.asm:186 ($FF14DC)` | HInt HScroll base accumulator (`+$10000`/frame) | good | `[static]/[dynamic]` E6 | keep | - | high | - |
@@ -670,19 +670,19 @@ Names stay `sub_XXXX`/`unk_XXXX`; proposals are not applied.
 | `Race_BuildTrackObjects` | routine | `race_ai_road.asm:3568 ($109B6)` | race: ROM track-object stream -> records | good | `[static]` L6b | keep | - | high | - |
 | `Road_BuildVisibleList` | routine | `race_ai_road.asm:3927 ($10D46)` | race: insertion sort of distance keys -> draw order | good | `[static]` L6b | keep | - | high | mixed-sign keys (E8) |
 | `Road_ObjectArray` | data | `ram_const.asm:624 ($FFD37C)` | race: 0x14-byte object records, max 51, `$FFFF` terminated | good | `[static]` L6b | keep | - | high | - |
-| `ram_FFDE72` | RAM | `ram_const.asm:650 ($FFDE72)` | race: live `Road_ObjectArray` record count | narrow | `[static]` L6b | rename-later | `Road_ram_ObjectCount` | high | - |
+| `Road_ram_ObjectCount` | RAM | `ram_const.asm:650 ($FFDE72)` | race: live `Road_ObjectArray` record count | narrow | `[static]` L6b | keep (renamed from `ram_FFDE72`) | - | high | - |
 | `ram_FF1B48` | RAM | `ram_const.asm:333 ($FF1B48)` | race: actor-object count (snapshot after the actor builder) | placeholder | `[static]` L6b | rename-later | `Road_ram_ActorObjectCount` | medium | - |
 | `ram_FF1B4A` | RAM | `ram_const.asm:334 ($FF1B4A)` | race: track-object count (`count - FF1B48`) | placeholder | `[static]` L6b | rename-later | `Road_ram_TrackObjectDelta` | medium | - |
-| `ram_FF1B50` / `ram_FF1C50` / `ram_FF1D50` | RAM | `ram_const.asm:337-339` | race: unsorted keys / sorted keys / visible index list | narrow | `[static]` L6b | rename-later | `Road_ram_ObjectKeys*`/visible | high | - |
+| `Road_ram_ObjectKeysUnsorted` / `Road_ram_ObjectKeysSorted` / `Road_VisibleObjectList` | RAM | `ram_const.asm:337-339` | race: unsorted keys / sorted keys / visible index list | narrow | `[static]` L6b | keep (renamed from `ram_FF1B50/1C50/1D50`) | - | high | - |
 | `ram_FF1B16` | RAM | `ram_const.asm:311 ($FF1B16)` | race: per-actor custom-animation flag in the object builder | placeholder | `[static]` L6b | rename-later | `Race_ram_CustomAnimFlag` | medium | - |
 | `ram_FF1B2E` | RAM | `ram_const.asm:321 ($FF1B2E)` | race: shape-`$186` marker run length | placeholder | `[static]` L5/L6b | rename-later | `Race_ram_MarkerRunLength` | medium | - |
-| `ram_FF1B30` | RAM | `ram_const.asm:322 ($FF1B30)` | race: shape-`$186` marker row slot; extra-actor gate | placeholder | `[static]/[dynamic]` E5 | rename-later | `Race_ram_MarkerSlot` | high | - |
+| `Race_ram_MarkerSlot` | RAM | `ram_const.asm:322 ($FF1B30)` | race: shape-`$186` marker row slot; extra-actor gate | placeholder | `[static]/[dynamic]` E5 | keep (renamed from `ram_FF1B30`) | - | high | - |
 | `ram_FF1ACC` / `ram_FF1AC8` / `ram_FF1ACE` | RAM | `ram_const.asm:276-277` | race: player-finish selector / speed tier / finish toggle | placeholder | `[static]` L6b | rename-later | `Race_ram_*Shape*` | medium | - |
 | `ram_FF1AD9` / `ram_FF1ADC` | RAM | `ram_const.asm:308-309` | race: lean-shape (mod 4) / fall-shape (mod 8) phase counters | placeholder | `[static]` L6b | rename-later | `Race_ram_LeanPhase`/`FallPhase` | medium | - |
 | `ram_FFD338` / `ram_FFD33E` | RAM | `ram_const.asm:595-597` | race: 4-entry / 3-entry shape-bucket threshold tables | narrow | `[static]` L6b | rename-later | `Race_ram_ShapeThresholds*` | medium | - |
 | `Road_DrawStrip` | routine | `road_render.asm:16` (`$8FB4`) | road_render: shape controls -> offset lists -> tile columns + SAT chain | narrow (draws object sprite tiles, not the road surface) | `[static]` L6c | rename-later | `SpriteStrip_Draw` | medium | - |
-| `Road_InterpolateLeftEdge` | routine | `road_render.asm:122` (`$9142`) | road_render: per-output-byte source advance list (`ram_FF0D2E`) | good | `[static]`/`[dynamic]` E8-A | keep | - | high | - |
-| `Road_InterpolateRightEdge` | routine | `road_render.asm:204` (`$91F0`) | road_render: per-row source advance list (`ram_FF102E`) | good | `[static]`/`[dynamic]` E8-A | keep | - | high | - |
+| `Road_InterpolateLeftEdge` | routine | `road_render.asm:122` (`$9142`) | road_render: per-output-byte source advance list (`SpriteStrip_ram_PlaneOffsets`) | good | `[static]`/`[dynamic]` E8-A | keep | - | high | - |
+| `Road_InterpolateRightEdge` | routine | `road_render.asm:204` (`$91F0`) | road_render: per-row source advance list (`SpriteStrip_ram_RowOffsets`) | good | `[static]`/`[dynamic]` E8-A | keep | - | high | - |
 | `Road_InterpolateRightEdgeAlt` | routine | `road_render.asm:262` (`$9272`) | road_render: unused fixed-scale variant | misleading (no caller) | `[static]` | rename-later | `Road_InterpolateRightEdgeUnused` | medium | - |
 | `Road_WriteTileColumns` | routine | `road_render.asm:320` (`$9306`) | road_render: source bitplane stream -> column-major 4bpp sprite tile array | narrow (writes sprite tiles) | `[static]`/`[confirmed]` golden replay | rename-later | `SpriteStrip_WriteTiles` | high | - |
 | `Road_ClearEdgeTiles` | routine | `road_render.asm:409` (`$93D2`) | road_render: zero the unused edge strip bytes | good | `[static]`/E8 | keep | - | high | - |
@@ -696,14 +696,14 @@ Names stay `sub_XXXX`/`unk_XXXX`; proposals are not applied.
 | `Road_ShapeTable` | data | `road_shapes.asm` (`$3BF1A`) | road_shapes: 564 shape-data pointers | good | `[static]` | keep | - | high | - |
 | `word_3C7EA` | data | `road_shapes.asm` (`$3C7EA`) | road_shapes: shape count `$234` | narrow | `[static]` | rename-later | `Road_ShapeCount` | high | - |
 | `Road_ShapeData` | data | `road_shapes.asm` (`$3C7EC`) | road_shapes: per-shape header/control/bitplane row data | good | `[static]`/`[confirmed]` golden replay | keep | - | high | - |
-| `ram_FF0D2A` | RAM | `ram_const.asm:94` (`$FF0D2A`) | road_render: current shape row-data pointer | placeholder | `[static]`/E8-A | rename-later | `SpriteStrip_ram_SourcePtr` | high | - |
-| `ram_FF0D2E` | RAM | `ram_const.asm:95` (`$FF0D2E`) | road_render: left/inter-byte source advance list | placeholder | `[static]`/`[dynamic]` E8-A | rename-later | `SpriteStrip_ram_PlaneOffsets` | high | - |
-| `ram_FF102E` | RAM | `ram_const.asm:96` (`$FF102E`) | road_render: right/per-row source advance list | placeholder | `[static]`/`[dynamic]` E8-A | rename-later | `SpriteStrip_ram_RowOffsets` | high | - |
-| `ram_FF132E` | RAM | `ram_const.asm:99` (`$FF132E`) | road_render: emitted tile columns minus 1 | placeholder | `[static]`/E8-A | rename-later | `SpriteStrip_ram_ColumnCount` | high | - |
-| `ram_FF1330` | RAM | `ram_const.asm:100` (`$FF1330`) | road_render: source rows minus 1 | placeholder | `[static]`/E8-A | rename-later | `SpriteStrip_ram_RowCount` | high | - |
-| `ram_FF1332` | RAM | `ram_const.asm:101` (`$FF1332`) | road_render: left half-width seed for the right list | placeholder | `[static]`/E8-A | rename-later | `SpriteStrip_ram_HalfWidth` | high | - |
+| `SpriteStrip_ram_SourcePtr` | RAM | `ram_const.asm:94` (`$FF0D2A`) | road_render: current shape row-data pointer | placeholder | `[static]`/E8-A | keep (renamed from `ram_FF0D2A`) | - | high | - |
+| `SpriteStrip_ram_PlaneOffsets` | RAM | `ram_const.asm:95` (`$FF0D2E`) | road_render: left/inter-byte source advance list | placeholder | `[static]`/`[dynamic]` E8-A | keep (renamed from `ram_FF0D2E`) | - | high | - |
+| `SpriteStrip_ram_RowOffsets` | RAM | `ram_const.asm:96` (`$FF102E`) | road_render: right/per-row source advance list | placeholder | `[static]`/`[dynamic]` E8-A | keep (renamed from `ram_FF102E`) | - | high | - |
+| `SpriteStrip_ram_ColumnCount` | RAM | `ram_const.asm:99` (`$FF132E`) | road_render: emitted tile columns minus 1 | placeholder | `[static]`/E8-A | keep (renamed from `ram_FF132E`) | - | high | - |
+| `SpriteStrip_ram_RowCount` | RAM | `ram_const.asm:100` (`$FF1330`) | road_render: source rows minus 1 | placeholder | `[static]`/E8-A | keep (renamed from `ram_FF1330`) | - | high | - |
+| `SpriteStrip_ram_HalfWidth` | RAM | `ram_const.asm:101` (`$FF1332`) | road_render: left half-width seed for the right list | placeholder | `[static]`/E8-A | keep (renamed from `ram_FF1332`) | - | high | - |
 | `ram_FF133C` | RAM | `ram_const.asm:103` (`$FF133C`) | road_render: strip mirror selector (cleared by `Road_DrawObject`) | placeholder | `[static]` | rename-later | `SpriteStrip_ram_Mirror` | medium | - |
 | `ram_FF133E` | RAM | `ram_const.asm:104` (`$FF133E`) | road_render: SAT priority from `Flags & $3000` | placeholder | `[static]`/E8-B | rename-later | `SpriteStrip_ram_Priority` | medium | - |
-| `ram_FF135E` | RAM | `ram_const.asm:113` (`$FF135E`) | road_render: horizontal clip budget (0 = none) | placeholder | `[static]`/E8-A | rename-later | `SpriteStrip_ram_Clip` | high | - |
+| `SpriteStrip_ram_Clip` | RAM | `ram_const.asm:113` (`$FF135E`) | road_render: horizontal clip budget (0 = none) | placeholder | `[static]`/E8-A | keep (renamed from `ram_FF135E`) | - | high | - |
 | `ram_FF136A` | RAM | `ram_const.asm:119` (`$FF136A`) | road_render: horizon/limit row | placeholder | `[static]`/E8 | rename-later | `SpriteStrip_ram_Horizon` | medium | - |
-| `ram_FFDE5E` | RAM | `ram_const.asm:641` (`$FFDE5E`) | road_render: shape fill/tile word ORed into SAT entries | placeholder | `[static]`/E8 | rename-later | `SpriteStrip_ram_FillWord` | high | - |
+| `SpriteStrip_ram_FillWord` | RAM | `ram_const.asm:641` (`$FFDE5E`) | road_render: shape fill/tile word ORed into SAT entries | placeholder | `[static]`/E8 | keep (renamed from `ram_FFDE5E`) | - | high | - |

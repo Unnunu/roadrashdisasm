@@ -25,7 +25,7 @@
 ;   w17..w18 separator spaces             not editable, not in the checksum
 ;   w19      level (3 bits)
 ;   w20      bits 0..2 bike id, bits 3..4 Natasha encounter counter for player A/B
-;            (ram_FF0522/ram_FF0524; see Race_ComputeResults, U-0004)
+;            (Player_ram_NatashaCounterA/Player_ram_NatashaCounterB; see Race_ComputeResults, U-0004)
 ;   w21..w23 checksum characters
 ;
 ; Checksum (MenuPassword_ValidatePassword, tile indices, not raw values):
@@ -942,11 +942,11 @@ MenuPassword_ParsePassword:
                 asr.l   #8,d0
 ; and write to Menu_ram_MoneyPlayerA
                 move.l  d0,(Menu_ram_MoneyPlayerA).l
-; w20: bits 3..4 -> ram_FF0522 (Natasha encounter counter, U-0004)
+; w20: bits 3..4 -> Player_ram_NatashaCounterA (Natasha encounter counter, U-0004)
                 move.w  40(a0),d0
                 asr.w   #3,d0
                 andi.w  #3,d0
-                move.w  d0,(ram_FF0522).l ; persisted counter: 3 after attacking Natasha, decays each race
+                move.w  d0,(Player_ram_NatashaCounterA).l ; persisted counter: 3 after attacking Natasha, decays each race
 ; w20: bits 0..2 -> bike id (0..7)
                 move.w  40(a0),d0
                 andi.w  #7,d0
@@ -1029,11 +1029,11 @@ MenuPassword_ParsePassword:
                 asl.l   #8,d0
                 asr.l   #8,d0
                 move.l  d0,(Menu_ram_MoneyPlayerB).l
-; w20: bits 3..4 -> ram_FF0524 (same Natasha counter for player B); bits 0..2 -> bike id
+; w20: bits 3..4 -> Player_ram_NatashaCounterB (same Natasha counter for player B); bits 0..2 -> bike id
                 move.w  $28(a0),d0
                 asr.w   #3,d0
                 andi.w  #3,d0
-                move.w  d0,(ram_FF0524).l
+                move.w  d0,(Player_ram_NatashaCounterB).l
                 move.w  $28(a0),d0
                 andi.w  #7,d0
                 move.w  d0,(Menu_ram_BikeIdPlayerB).l
@@ -1129,7 +1129,7 @@ MenuPassword_CreatePassword:
                 move.w  (Menu_ram_PlayerALevel).l,d0
                 andi.w  #7,d0
                 move.w  d0,$26(a0)
-                move.w  (ram_FF0522).l,d0
+                move.w  (Player_ram_NatashaCounterA).l,d0
                 lsl.w   #3,d0
                 andi.w  #$18,d0
                 move.w  d0,$28(a0)
@@ -1258,7 +1258,7 @@ MenuPassword_CreatePassword:
                 move.w  (Menu_ram_PlayerBLevel).l,d0
                 andi.w  #7,d0
                 move.w  d0,$26(a0)
-                move.w  (ram_FF0524).l,d0
+                move.w  (Player_ram_NatashaCounterB).l,d0
                 lsl.w   #3,d0
                 andi.w  #$18,d0
                 move.w  d0,$28(a0)

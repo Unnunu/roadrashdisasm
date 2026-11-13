@@ -48,8 +48,8 @@ runtime into a rectangular grid of VDP sprites (max 4x4 cells each).
 
 ## Caller contract (`Road_DrawStrip`)
 
-- `d0 = (ram_FF132E + 1) << 3` (`ram_FF132E` = interpolated left-edge strip count).
-- `d1` = `(ram_FF1330 + 1)` rounded up to a multiple of 8 (`ram_FF1330` = interpolated
+- `d0 = (SpriteStrip_ram_ColumnCount + 1) << 3` (`SpriteStrip_ram_ColumnCount` = interpolated left-edge strip count).
+- `d1` = `(SpriteStrip_ram_RowCount + 1)` rounded up to a multiple of 8 (`SpriteStrip_ram_RowCount` = interpolated
   right-edge/height count). Both inputs are therefore `tiles*8`.
 - Before the call the caller sets `ram_FFDE6E/70` (base X/Y) and, on a mirrored
   object, `Road_ram_MirrorFlag = 1` (`Road_DrawObject`, `RoadObject_Flags` bit15).
@@ -58,7 +58,7 @@ runtime into a rectangular grid of VDP sprites (max 4x4 cells each).
 
 ## Loop / algorithm (ROM order)
 
-1. `ram_FFDE68 = $8000` (sentinel); `a0 = SAT + SpriteIndex*8`.
+1. `SpriteStrip_ram_BandAdvance = $8000` (sentinel); `a0 = SAT + SpriteIndex*8`.
 2. If `SpriteIndex == 0` skip linking. If `1..$4F`, OR the index into the previous
    entry's link byte (`or.w d2,-6(a0)`). If `>= $50` (80 SAT slots) set
    `ram_FF1366`/`ram_FFDE62 = $FFFF` and return.
@@ -68,22 +68,22 @@ runtime into a rectangular grid of VDP sprites (max 4x4 cells each).
    - `d3 = d1>>5`; `d1 &= $18`; if zero, `d3--`, `d1 = $20`; then `d1 -= 8`, `<<2` ->
      `ram_FF0908` (R offset `0..$60`).
    - Store counts in `ram_FF090A/C`; set the road-writer strides
-     `ram_FFDE6A = $7C`, `ram_FFDE66 = ram_FF0908 + $1C`, and use the shorter
-     `ram_FFDE66` for `ram_FFDE6A` when `d3 == 0`.
+     `SpriteStrip_ram_ColumnGap = $7C`, `SpriteStrip_ram_TailColumnGap = ram_FF0908 + $1C`, and use the shorter
+     `SpriteStrip_ram_TailColumnGap` for `SpriteStrip_ram_ColumnGap` when `d3 == 0`.
 4. Outer loop (rows, `d3`), inner loop (columns, `d2`):
    - `Y = ram_FFDE70 + $80`; `X = ram_FFDE6E + $80`
      (+ `2*ram_FF1336` on the mirrored pass).
    - Select the record: full block (`C=3` -> `$18`, `R=3` -> `$60`) except on the last
      column/row, which use `ram_FF0906`/`ram_FF0908`.
    - Build `size/link = (size_code<<8) | link`, write `Y, size/link`.
-   - Build `tile = tile_cursor | priority | ram_FFDE5E | Animation_ram_BaseTile`
+   - Build `tile = tile_cursor | priority | SpriteStrip_ram_FillWord | Animation_ram_BaseTile`
      (`$8000` when `Y < $118`; `$800` H-flip plus `X -= 8*(C+1)` when mirrored),
      write `tile` and `X`.
    - Advance the link and the tile cursor by the record's tile step. When the tile
      cursor reaches `$150`, set both end flags, clear the previous link and return.
    - On the non-mirrored pass advance X by `8*(C+1)` after each column.
 5. After each row: `Y += 8*(R+1)`; reload the column count; on the first row derive
-   `ram_FFDE68 = (tiles_used_in_first_row - 4) << 5`. In the tile writer this is the
+   `SpriteStrip_ram_BandAdvance = (tiles_used_in_first_row - 4) << 5`. In the tile writer this is the
    extra advance after the 32-row/128-byte partial step (the band stride is
    `columns*128`), not a per-row stride.
 6. After the last row: clear the last link, `SpriteIndex = last_link - 1`,
@@ -128,11 +128,11 @@ values are fully explained (no unverified per-record meanings remain).
 | `$FFDE60` | `Animation_ram_TileIndex` | Tile cursor (advanced per sprite). |
 | `$FFDE64` | `Animation_ram_SpriteIndex` | Next free SAT slot / chain head index. |
 | `$FFD34A` | `Animation_ram_BaseTile` | Base tile added to every entry. |
-| `$FFDE5E` | `ram_FFDE5E` | Object palette/priority/base bits ORed into the tile word. |
+| `$FFDE5E` | `SpriteStrip_ram_FillWord` | Object palette/priority/base bits ORed into the tile word. |
 | `$FFDE62` | `ram_FFDE62` | Chain-end/overflow flag (`$FFFF`). |
-| `$FFDE66` | `ram_FFDE66` | Remainder-band tile-column gap (stride-4; `$5C` -> `$60`). |
-| `$FFDE68` | `ram_FFDE68` | 32-row band advance (`$8000` sentinel, then computed; `$200`). |
-| `$FFDE6A` | `ram_FFDE6A` | Full-band tile-column gap (stride-4; `$7C` -> `$80`). |
+| `$FFDE66` | `SpriteStrip_ram_TailColumnGap` | Remainder-band tile-column gap (stride-4; `$5C` -> `$60`). |
+| `$FFDE68` | `SpriteStrip_ram_BandAdvance` | 32-row band advance (`$8000` sentinel, then computed; `$200`). |
+| `$FFDE6A` | `SpriteStrip_ram_ColumnGap` | Full-band tile-column gap (stride-4; `$7C` -> `$80`). |
 | `$FFDE6E` | `ram_FFDE6E` | Base X (SAT = value + `$80`). |
 | `$FFDE70` | `ram_FFDE70` | Base Y (SAT = value + `$80`). |
 | `$FF0906` | `ram_FF0906` | Horizontal remainder code `C` as a byte offset (`C*8`). |
@@ -153,7 +153,7 @@ Wrapper: `bsr.w RiderSprites_Build; rts`. No caller in the disassembled source.
 The demo race reached `RiderSprites_Build`'s return (`$593C`). Observed state:
 
 - `Animation_ram_SpriteIndex=6`, `Animation_ram_TileIndex=$27`, `Animation_ram_BaseTile=0`.
-- `ram_FFDE5E..70 = 0000 0027 0000 0006 005C 0200 007C FEAA 0053`.
+- `SpriteStrip_ram_FillWord..70 = 0000 0027 0000 0006 005C 0200 007C FEAA 0053`.
 - `ram_FF0906..0E = 0000 0040 0001 0001 0018`;
   `ram_FF1336=0010`, `Road_ram_MirrorFlag=0001`, `ram_FF1366=0000`.
 - SAT base `$FF479C`, entries:
@@ -186,5 +186,5 @@ routine writes, so they are not a 1:1 check of the table rows.
   `Road_DrawStrip` (left/right edge strip counts -> tile extents).
 - `[static]` `Road_ram_MirrorFlag` (object flags bit15) mirrors the whole object; it is the
   horizontal-mirror/facing bit also used by the shape projection (`U-0007` resolved).
-- `[ ]` Confirm `ram_FFDE66/68/6A` byte semantics in `Road_WriteTileColumns`
+- `[ ]` Confirm `SpriteStrip_ram_TailColumnGap/BandAdvance/ColumnGap` byte semantics in `Road_WriteTileColumns`
   (road_render analysis TODO).

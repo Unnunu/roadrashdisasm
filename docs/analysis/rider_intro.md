@@ -31,10 +31,10 @@ returns to the race when the held button is released (or after the message timer
   `variant` in `{0,8,$10,$18}`, `level` 1..5, `trackId` in `{0,2,4,6,8}` (5 races/level).
 - That is `[5 levels][5 tracks][4 variants]`: the variant is a random opponent pick.
 - Selection (`0x5BC8`): `d0 = Rand_NextWord & $18`; repeat while `d0 == $18`; if
-  `d0 == 0` and `ram_FF0520 > 0`, use `$18` instead. So variants 0/1/2 are random;
+  `d0 == 0` and `Player_ram_NatashaCounter > 0`, use `$18` instead. So variants 0/1/2 are random;
   variant 3 (Natasha) replaces variant 0 when the selected player's Natasha encounter
   counter is non-zero.
-- `ram_FF0520` is copied from `ram_FF0522` (player A) or `ram_FF0524` (player B),
+- `Player_ram_NatashaCounter` is copied from `Player_ram_NatashaCounterA` (player A) or `Player_ram_NatashaCounterB` (player B),
   selected by `Menu_ram_Player`. These are the per-player Natasha encounter counters,
   **not** the bike id (`Menu_ram_BikeIdPlayerA/B` is `$FF0542/$FF0544`).
 - Parsed opponents include Natasha, Biff, Slater, O'Leary, O'Rourke, Ikira, O'Connor,
@@ -130,7 +130,7 @@ The VDP setup is the same as the main menu: planes A/B `$4000`, window `$7000`
      front, encode and draw it at `(3,19)`;
    - encode the quote and draw it at `(16, y/2)` with destination stride 128
      (double-spaced rows).
-5. If the image is `RiderIntro_Portrait_0` (Natasha) and `ram_FF0520 > 0`, load
+5. If the image is `RiderIntro_Portrait_0` (Natasha) and `Player_ram_NatashaCounter > 0`, load
    `RiderIntro_NatashaFaceOverlay` (`UncompressB`) and draw a 6x7 face overlay at
    `(6,9)` from `ImageBuffer+$548`.
 6. Load the font at VRAM `$0`; `Menu_ShowMessage`; DMA the 64x28 frame buffer to
@@ -180,7 +180,7 @@ path), then inspect VRAM `$7000`/the portrait palette. Rendering/positions above
 
 | Current | Proposed | Evidence | Confidence |
 |---------|----------|----------|------------|
-| `ram_FF0520` | `Player_ram_NatashaCounter` | current-race encounter flag (`U-0004`) | medium |
+| `Player_ram_NatashaCounter` | `Player_ram_NatashaCounter` | current-race encounter flag (`U-0004`) | medium |
 
 The quote and asset labels were renamed during the line-by-line pass (see above); the
 remaining RAM rename is a separate task.
