@@ -1,9 +1,8 @@
 # Program: complete race understanding
 
-Status: in progress. L1, L2, R30, L3, L4 and L5 (static + dynamic E4/E5) are
-complete. Next is L7 results/HUD (`race_L7_results_hud.md`); L6 is the parallel
-world branch. This file is the roadmap, not a build task; the queue below lists what
-remains.
+Status: in progress. L1, L2, R30, L3, L4, L5 and L7 (static + dynamic
+E4/E5/E7) are complete. Next is the L6 world branch (`race_L6_world_a/b/c.md`). This
+file is the roadmap, not a build task; the queue below lists what remains.
 
 ## Goal
 
@@ -164,6 +163,28 @@ matrix v8 in `race_map.md`.
 - E5 confirmed expansion, forced special spawn, static assignment/respawn and extra
   init/update; natural free-list traffic spawn was not exercised (631 race ticks).
 
+## L7 results/HUD results (E7, completed)
+
+`race_L7_results_hud.md` completed; matrix v9 in `race_map.md`, contracts in
+`race_hud.md`, `race_results.md` and `race_ai_road.md`.
+
+- HUD cells: `2*(y*64+x)`, word `$8000|palette<<13|tile`; BCD time, packed place,
+  8-unit stamina/HP cells, colour thresholds.
+- Needle script: 32 one-sprite frames at `$7DF30` (tilemap `$7E070`); speed
+  `min(speed/453,31)`, RPM `((speed<<16)/divisor)/682`, `divisor=(curve<<2)&$FFFF`.
+- Odometer font = 32-byte digit tiles loaded by `Race_LoadHUD`.
+- Results: `Race_ComputeStandings` event keys -> `Race_SortResults`
+  (`value<<16|index`, `value=(key>>8)/6`, `$FFFF` DNF) -> best place/points/money ->
+  outcome -> `Race_BuildStandings` (4 rows) -> high-score table -> password.
+- `unk_15CE0`/`unk_15CFC`: AnimState-3 crash frame scripts; `d3=$26>>8` vs
+  `d4=|$22|` selects `unk_15CFC` when `d3<d4`; otherwise `unk_15CE0` on the
+  "behind" relative side, else the default `unk_155D0[FallState]` AnimState-3
+  script (`$15CC4`).
+- E7-A: HUD snapshot (place `$15`, BCD time, stamina `$0500`, name timer/rank).
+  E7-B: script selection for close/behind/ahead cases. E7-C: forced non-demo finish
+  reached the full results pipeline (place `$0F`, points 1, money 100->101,
+  career 0->1, outcome `$0F`).
+
 ## Out of scope
 
 - Audio/Z80 and the engine-audio mapping (separate workstream). Only the RAM fields
@@ -271,13 +292,14 @@ bodies and tables, so those tasks are now contract/dynamic work, not disassembly
 | 9 | `race_L4_impact_contracts.md` | L4 | done | pair collision/extents/reach, damage/exchange, stamina/knockdown + E4; matrix v7; crash-path timing static |
 | 10 | `race_L4_impact_dynamic.md` | L4 | done (merged into #9) | E4 integrated in `race_L4_impact_contracts.md` |
 | 11 | `race_L5_spawn.md` | L5 | done | four populations, `Data5` normal/special split, reserved opponent, static cycle, extra slot (E5) |
-| 12 | `race_L7_results_hud.md` | L7 | static + doc | results/standings/HUD; animation-script consumers `unk_15CE0`/`unk_15CFC` |
+| 12 | `race_L7_results_hud.md` | L7 | done | HUD/needle/odometer contract, results/standings/money pipeline, `unk_15CE0`/`unk_15CFC` scripts; matrix v9 + E7 |
 | 13 | `race_L6_world_a.md` | L6 | static + E6 | camera/progress/VScroll/HScroll |
 | 14 | `race_L6_world_b.md` | L6 | static | object list/projection/visible list |
-| 15 | `race_L6_world_c.md` | L6 | static + E7 | shape/pixel map, Data4/5 |
+| 15 | `race_L6_world_c.md` | L6 | static + E8 | shape/pixel map, Data4/5 |
 | 16 | `race_acceptance.md` | I | verify | acceptance criteria, `Matched OK` |
 
-L6 may be reordered before/after L3-L5 once L1 is closed. L1-L5/L7 are the priority.
+L1-L5/L7 are complete; L6 is the remaining world branch. Experiment Pack E7 is
+used by L7; L6 uses E8.
 
 ## Experiment Pack format
 

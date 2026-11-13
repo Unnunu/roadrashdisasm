@@ -71,6 +71,36 @@ unreferenced helpers.
   see `docs/analysis/race_impact.md`.
 - `Race_UpdateActorPairImpact` sets `ram_FF0520=3` when player A attacks the actor whose
   `$71` index equals `ram_FF1ADB`, i.e. Natasha (`U-0004`).
+- `sub_15014` is the fall/on-foot animation updater. `Race_BuildActorObjectList`
+  calls it when actor `$68` bit4 is set and `$6E >= 0`; it first runs
+  `sub_1533E`, then clamps `FallState ($54)` to `$11` and uses
+  `unk_155D0[FallState]` as the AnimState -> frame-script sequence. For
+  `AnimState == 3` (fall/crash) it chooses:
+  - `d3 = $26 >> 8`, `d4 = |$22|`; if `d3 < d4` -> `unk_15CFC`
+    (`ram_FF18BC = $B2`);
+  - else if `$69` bit3 is clear and actor progress (`$4` high word) <
+    `Race_ram_PlayerProgress` -> `unk_15CE0` (`ram_FF18BC = $B1`);
+  - else if `$69` bit3 is set and the actor is not behind the player ->
+    `unk_15CE0` (`$B1`);
+  - otherwise the default sequence entry (`$15CC4` in the demo tables) stays
+    (`ram_FF18BC = $B0`).
+  This is the "close / relative-side" pair of crash scripts; it is unrelated to the
+  `unk_155AC` sequence used by `sub_15478`.
+
+## E7-B animation-script selection (`analysis/capture_L7_anim3.gdb`)
+
+`analysis/notes/L7_anim3_trace.txt` forced PlayerA into the fall path (`$68` bit4,
+AnimState 3) and set the three relative-position cases:
+
+| Case | Forced state | Selected script | Token |
+|---|---|---|---|
+| close | `$22=$0100`, `$26>>8=0` | `unk_15CFC` | `$B2` |
+| behind | `$69` bit3 clear, progress 0 | `unk_15CE0` | `$B1` |
+| ahead/mismatch | progress `$7FFF...` | default `$15CC4` | `$B0` |
+
+The 8 forced calls also confirmed the `$15054` -> `$150EE` fall path and that
+`Race_BuildActorObjectList` only reaches `sub_15014` when the on-foot/fall gate
+(`$68` bit4) is set; normal demo riding never exercises these alternate scripts.
 
 ## Data / RAM
 
@@ -85,7 +115,11 @@ unreferenced helpers.
   `unk_155AC` is a 3-byte header + 8x4-byte records + `$FF` sentinel consumed by
   `sub_154D2`. `unk_155D0` is 18 FallState -> animation-sequence pointers.
 - `unk_15618`/`unk_1561C`/`unk_15624` are 4/8/8-entry random FallState tables
-  (`sub_15538`/`sub_15580`/`sub_1555C`). `unk_15CE0`/`unk_15CFC` remain animation data.
+  (`sub_15538`/`sub_15580`/`sub_1555C`).
+- `unk_15CE0`/`unk_15CFC` are alternate AnimState-3 fall/crash frame scripts selected
+  by `sub_15014` (below). Both are 6-frame, single-sprite scripts with header
+  `$00B3`, timer `4`, tile deltas `6..$B` -> tiles `$B9..$BE` (`unk_15CE0`) and
+  `$C..$11` -> tiles `$BF..$C4` (`unk_15CFC`), followed by an `$FF` sentinel.
 - PRNG/LFSR tables and RAM are documented in `docs/analysis/rand.md`.
 - Actor fields: `$3E/$40/$42` lean, `$4A/$5A/$52` impact/range, `$5C` stamina,
   `$6E` on-foot/animation gate. Attack fields: see `docs/ram-map.md` combat section.
@@ -97,7 +131,10 @@ unreferenced helpers.
 - L4 impact/damage/knockdown is confirmed (E4); the crash-handler branch timing
   (`sub_140EE`/`sub_141AE`) is still static-only because the demo never crashes.
   `sub_14DEC` is vestigial with no static caller (`U-0015` closed).
-- `unk_155A4`/`unk_15CE0`/`unk_15CFC` consumers and `unk_147FC` value distribution.
+- `unk_155A4` is still a vestigial pointer list; `unk_147FC` value distribution is
+  documented from the R30 table.
+- Remaining individual FallState frame scripts (the `$156..$159` blocks) are byte
+  data and not individually annotated.
 - Next: `src/race/race_hud.asm`/`src/race/road_marking.asm`/`src/race/animation.asm` cards/internals.
 
 ## Rename proposals

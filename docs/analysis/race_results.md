@@ -2,7 +2,8 @@
 
 - **Module:** post-race result screens: normal standings, caught-by-cops, bike repair
 - **ROM range:** `0x005F28`–`0x006DBF` (`src/screens/highscore.asm` starts at `0x6DC0`)
-- **Status:** analyzed statically; line-by-line pass done (demo skips the screen; rendering dynamic TODO)
+- **Status:** analyzed statically; line-by-line pass done; results pipeline exercised
+  dynamically by E7-C (forced non-demo finish); screen rendering still dynamic TODO
 - **Source:** `src/screens/race_results.asm`
 - **Related:** `docs/architecture.md`, `docs/hardware.md`, `docs/ram-map.md`
 
@@ -51,6 +52,57 @@ every course); >4 -> index 28 (`Message_StrComplete4thPlace`: complete every cou
 4th place or better); 4 -> index 35 (`Message_ram_DynamicRecord` = `Message_StrCongratulations`
 congratulations with the level digit). The digit is patched with the completed level
 before the level advances, so it reads as the next level (2..5; `U-0006` resolved).
+
+## Results pipeline (`Race_ComputeStandings` -> `Race_ComputeResults`)
+
+The top-level calls `Race_ComputeStandings` and `Race_ComputeResults`
+(`race_core.asm:2151`) before `RaceResults_Init`. Full contracts:
+
+1. `Race_ComputeStandings` (`race_ai_road.asm:724`) builds the per-actor
+   `Race_EventBuffer` keys (finished actors store their `$62` snapshot; running
+   actors and free-list traffic/opponents get `Race_ScaleResultValue` keys; the
+   reserved `ram_FF1F2A` is skipped). See `race_ai_road.md`.
+2. `Race_SortResults` (`0xC378`) clears `ram_FF0586[16]` and performs an insertion
+   sort of the 16 event dwords (it skips event index 1, the reserved slot). Each
+   sorted entry is rewritten as `value<<16 | actorIndex`:
+   - non-negative key: `value = (key>>8) / 6`;
+   - negative key (`$FFFFFFFF`): high word stays `$FFFF` = DNF.
+3. Player selection uses `Menu_ram_Player` to pick the A or B places/money/career
+   arrays. The Natasha counter pair decays and latches the current race (`U-0004`).
+4. Busted/destroyed path (`Race_EventBuffer[0] == $FFFF`):
+   - `Race_CopIndex != 0`: fine = `Menu_ram_PlayerLevel * $14`, subtracted from money;
+   - else: repair = `Shop_dPrices[bikeId] * 10 / 100`, subtracted from money.
+   Otherwise `RaceResults_ram_Amount = 0`.
+5. Finish place: scan the sorted `ram_FF0586` for the entry whose low word is the
+   player actor index (0); the 1-based scan position is the finish place. If the
+   event buffer is `$FFFF` the place is 0. The best (smallest non-zero) place is
+   kept in `Menu_ram_PlayerAPlaces/BPlaces[track]`; `ram_FF0592` stores the raw
+   finish place.
+6. Points: `unk_D1A0[place] * Menu_ram_PlayerLevel` (table `0,75,50,30,20,18,16,
+   14,12,10,8,6,4,3,2,1`), added to both the career score
+   (`Player_ram_CareerScoreA/B`) and spendable money (`Menu_ram_MoneyPlayerA/B`).
+7. Outcome: copy places[0]; while it is 1..4, copy the next course place; the first
+   place that is 0 or >4 stops the copy. Result: 0 = a course not completed, >4 =
+   worse than 4th, 4 = all five courses 1st-4th. The value is stored in
+   `Race_ram_PlayerAOutcome/BOutcome`.
+8. `Race_BuildStandings` (`0xC868`) copies `unk_D1C0` (header words
+   `17,5,3,30` + 120-byte template) into `RaceResults_ram_StandingsRecord`
+   (`127` bytes = `(3+1)*30+7`). It writes 4 rows: the template place character,
+   points (`unk_D1A0[place] * PlayerLevel`) right-aligned via `Race_FormatNumber`,
+   the sorted high word via `Race_FormatTime` (or `"DNF"` when `$FFFF`), and the
+   actor name at `+4` (player name when the low word is 0, else
+   `Race_ActorDefinitionTable[id*16+6]`). `RaceResults_ram_StandingsHeight/Width`
+   are bumped from the header (`+4/+6`).
+9. `Race_UpdateHighScoreTable` (`0xC598`) writes the player names, career score and
+   formatted money into `HighScore_ram_Table` and re-sorts the affected record.
+   `MenuPassword_CreatePassword` then rebuilds the password.
+
+E7-C2 (`analysis/notes/L7_results2_trace.txt`, forced non-demo finish at frame 305)
+confirmed the ordering and the arithmetic: `ProgressSnapshotC=$00070000`,
+`EventProgress=$073F`, sorted entries `00000009,0000000A,0000000B,0000000F,0000000D,
+0000000E`, place `$0F`, points `unk_D1A0[15]*level = 1`, money `100 -> 101`,
+career `0 -> 1`, outcome `$0F` (>4). The forced place was deliberately unnatural, so
+the screen text itself is not a gameplay reference.
 
 ## Normal results (`RaceResults_DrawStandings`)
 
@@ -171,8 +223,11 @@ Result portrait tables (8-byte records `quote_ptr, image_ptr`):
 
 ## Dynamic status
 
-Not captured: the demo skips results and forcing the non-demo race needs input. Table
-contents and the flag logic are parsed statically from `baserom.md` and `src/race/race_core.asm`.
-To confirm visually: finish a non-demo race in the native console and inspect the
-standings/police/repair screens.
+The demo path skips results (`src/core/top_level.asm 0x7E8B4`). E7-C and E7-C2 forced a
+non-demo finish by clearing `MainMenu_ram_DemoMode` and setting the player finish
+(`$68` bit7, `$62`) plus `Race_ram_GameEnded` mid-race; the `Race_ComputeStandings` /
+`Race_ComputeResults` / `Race_BuildStandings` path executed and was captured in
+`analysis/notes/L7_results_trace.txt` and `L7_results2_trace.txt`. The full
+`RaceResults_Draw*` rendering (portrait/track image/box) still needs a native-console
+visual check; E7-C did reach `RaceResults_Init` and re-ran `Race_BuildStandings`.
 

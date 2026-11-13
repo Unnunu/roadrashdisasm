@@ -60,11 +60,42 @@ Applied in R5: `RoadObject_X/Y/Scale/Limit/Shape/Flags/XOffset/Shape2/Size`;
 - `Road_FillProfileTables` clamps the bg scroll to `[-192,192]` and fg to `[-192,160]`
   (+512), computes the marking width `(roadWidth*3/2)/64` (1..8), clamps marking X and
   zeroes the sky rows.
-- After the race, `Race_ComputeStandings`/`Race_ScaleResultValue` produce the standings
-  and scaled result values (top-level flow), using `RaceTrack_Data1`.
+- After the race, `Race_ComputeStandings`/`Race_ScaleResultValue` produce the event
+  keys consumed by `Race_ComputeResults` (contract below).
 - `Road_BuildVisibleList` builds the visible object list from the sorted
   `ram_FF1B50`/`ram_FF1C50` lists into `ram_FF1D50`; `Race_WriteSpriteTiles` stages the
   sprite tiles for `Race_GameTick`.
+
+## `Race_ComputeStandings` (`0xEFA4`, L7 contract)
+
+Runs in `top_level.asm` (`0x7E8F4`) after the race and before `Race_ComputeResults`.
+
+- Player state: `a1 = RacePlayerA`, `a2 = Race_EventBuffer`.
+  - not finished (`$68` bit7 clear): `ProgressSnapshotC = ProgressSnapshotB`,
+    `EventProgress = PlayerA+$4` high word, `EventBuffer[0] = $FFFFFFFF`;
+  - finished: `ProgressSnapshotC = PlayerA+$62`, `EventProgress = RaceTrack_Data1`,
+    `EventBuffer[0] = PlayerA+$62`.
+- Active list (`ram_FF1A08`, count-2; the first entry is PlayerA and the last is the
+  sentinel): skip `ram_FF1F2A` (reserved opponent). Running actors
+  (`$68` bit7 clear) get `EventBuffer[$71] = ScaleResultValue(progress,
+  $71)`; finished actors store `$62` directly.
+- Opponent free list (walked backwards): `d2 = EventProgress + $20 +
+  (Rand & $1F)`; each non-reserved actor gets
+  `key = ScaleResultValue(d2, $71)` and is then replaced by
+  `min(key, (RaceTrack_Data1<<16)/Rating[$71])`.
+- Traffic free list (walked backwards): `d2 = EventProgress - $10 -
+  (Rand & $1F)`; each entry is overwritten by `ScaleResultValue(d2, $71)`.
+- `Race_ScaleResultValue(d0, d1, a2)`:
+  `d2 = ProgressSnapshotC; d2 <<= 8; d2 /= d0; d2 *= RaceTrack_Data1;
+  d2 >>= 8; write.l d2, a2[d1*4]`.
+  For a finished actor `$62` is the 16.16 progress snapshot; for a running actor
+  `d0` is the event progress, so the result key is proportional to distance covered.
+  The reserved opponent is skipped in all three lists.
+
+E7-C2 (`analysis/notes/L7_results2_trace.txt`) forced a non-demo finish at frame 305:
+`ProgressSnapshotC=$00070000`, `EventProgress=$073F`, `EventBuffer` built normally,
+then `Race_ComputeResults` produced the sorted keys
+`00000009,0000000A,0000000B,0000000F,0000000D,0000000E` and a place `$0F`.
 
 ## `Road_FillProfileTables` (`0xECE0`)
 

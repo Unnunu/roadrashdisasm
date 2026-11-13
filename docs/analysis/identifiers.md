@@ -594,3 +594,46 @@ Names stay `sub_XXXX`/`unk_XXXX`; proposals are not applied.
 | `ram_FF1B36` | RAM | `ram_const.asm:325 ($FF1B36)` | race_ai: reserved-opponent initial-placement latch | placeholder | `[static]` | rename-later | `Race_ram_ReservedSpawned` | medium | - |
 | `ram_FF1B3A` | RAM | `ram_const.asm:327 ($FF1B3A)` | race_ai: last reserved-opponent rating distance | placeholder | `[static]` | rename-later | `Race_ram_ReservedLastDistance` | low | - |
 | `Race_ram_LevelIndex` | RAM | `ram_const.asm:326 ($FF1B38)` | race_ai: Data5 special colour/page index; recycle compares with Menu level | narrow | `[static]/[dynamic]` E5-2 | rename-later | `Race_ram_ReservedPageIndex` | medium | - |
+
+### L7 results/HUD/animation (E7)
+
+| Identifier | Kind | Defined | Used in (file: role) | Name quality | Evidence | Rename verdict | Proposed | Confidence | Unknown ID |
+|---|---|---|---|---|---|---|---|---|---|
+| `RaceHud_Draw` | routine | `race_hud.asm:12 ($D278)` | race_core: per-frame HUD chain | good | `[static]/[dynamic]` E7-A | keep | - | high | - |
+| `RaceHud_DrawSpeedArrow` | routine | `race_hud.asm:37 ($D29E)` | race_hud: speed needle (`speed/453`, frame 31) | good | `[static]` | keep | - | high | - |
+| `RaceHud_DrawRPMArrow` | routine | `race_hud.asm:68 ($D2DC)` | race_hud: RPM needle from gear curve | good | `[static]` | keep | - | high | - |
+| `RaceHud_DrawOdometer` | routine | `race_hud.asm:107 ($D334)` | race_hud: three-digit distance odometer | good | `[static]` | keep | - | high | - |
+| `RaceHud_DrawPlace` | routine | `race_hud.asm:199 ($D3F6)` | race_hud: packed-decimal place cell | good | `[static]/[dynamic]` E7-A | keep | - | high | - |
+| `RaceHud_DrawTime` | routine | `race_hud.asm:220 ($D410)` | race_hud: BCD minutes/seconds | good | `[static]` | keep | - | high | - |
+| `RaceHud_DrawStamina` | routine | `race_hud.asm:254 ($D458)` | race_hud: player/nearest stamina bars | good | `[static]/[dynamic]` E7-A | keep | - | high | - |
+| `Race_DrawBikeHPBar` | routine | `race_hud.asm:337 ($D534)` | race_hud: `$20-BikeDamage` bar | good | `[static]/[dynamic]` E7-A | keep | - | high | - |
+| `Race_DrawPlayerNameOrPlace` | routine | `race_hud.asm:399 ($D5CE)` | race_hud: name/"Nth PLACE" timer | good | `[static]/[dynamic]` E7-A | keep | - | high | - |
+| `Race_DrawOpponentName` | routine | `race_hud.asm:506 ($D73A)` | race_hud: nearest/finish rider name | good | `[static]` | keep | - | high | - |
+| `RaceHud_DrawSymbol` | routine | `race_hud.asm:575 ($D830)` | race_hud: one HUD tile cell | good | `[static]` | keep | - | high | - |
+| `RaceHud_DrawNumber2Digits` | routine | `race_hud.asm:598 ($D850)` | race_hud: two BCD digit cells | good | `[static]` | keep | - | high | - |
+| `RaceHud_DrawNumber4Digits` | routine | `race_hud.asm:636 ($D890)` | race_hud: four digit cells (no race caller) | good | `[static]` | keep | - | high | - |
+| `RaceHud_dRankStrings` | data | `race_hud.asm:370 ($D58E)` | race_hud: `" 1st".."16th"` rank text | good | `[static]` | keep | - | high | - |
+| `RaceHud_NeedleScript` | data | `race_misc_data.asm:45 ($7DEAA)` | race_hud: 32-frame needle script | good | `[static]` | keep | - | high | - |
+| `RaceHud_NeedleData` | data | `race_misc_data.asm:74 ($7DF30)` | race_hud: needle frame/tile data | good | `[static]` | keep | - | high | - |
+| `RaceHud_ram_OdometerFont` | RAM | `ram_const.asm:525 ($FF352C)` | race_core/hud: odometer digit tiles | good | `[static]` | keep | - | high | - |
+| `RaceHud_ram_NameTimer` | RAM | `ram_const.asm:180 ($FF14B8)` | race_hud: name/place phase timer | good | `[static]/[dynamic]` E7-A | keep | - | high | - |
+| `RaceHud_ram_LastPlace` | RAM | `ram_const.asm:182 ($FF14BA)` | race_hud: last seen place | good | `[static]/[dynamic]` E7-A | keep | - | high | - |
+| `RaceHud_ram_Rank` | RAM | `ram_const.asm:183 ($FF14BC)` | race_hud: displayed rank index | good | `[static]/[dynamic]` E7-A | keep | - | high | - |
+| `RaceHud_ram_NameFlags` | RAM | `ram_const.asm:181 ($FF14B9)` | race_hud: bit1 = show "PLACE" text | good | `[static]/[dynamic]` E7-A | keep | - | high | - |
+| `RaceHud_ram_TextDescriptor` | RAM | `ram_const.asm:184 ($FF14BE)` | race_hud: 10-char text descriptor | good | `[static]` | keep | - | high | - |
+| `Race_ram_PlayerRpmDivisor` | RAM | `ram_const.asm:262 ($FF1AA2)` | race_hud: stored `(curve<<2)&$FFFF` divisor | good | `[static]` | keep | - | high | - |
+| `Race_ram_PlayerPlace` | RAM | `ram_const.asm:329 ($FF1B40)` | race_physics: packed place; HUD/name | good | `[static]/[dynamic]` E7-A | keep | - | high | - |
+| `Race_ComputeStandings` | routine | `race_ai_road.asm:724 ($EFA4)` | top_level: event keys for results | good | `[static]/[dynamic]` E7-C | keep | - | high | - |
+| `Race_ScaleResultValue` | routine | `race_ai_road.asm:844 ($F0E4)` | standings: scale progress by event distance/track length | good | `[static]/[dynamic]` E7-C | keep | - | high | - |
+| `Race_SortResults` | routine | `race_core.asm:2086 ($C378)` | results: sort 16 event keys -> `value<<16|index` | good | `[static]/[dynamic]` E7-C | keep | - | high | - |
+| `Race_UpdateHighScoreTable` | routine | `race_core.asm:2272 ($C598)` | results: name/career/money -> high-score table | good | `[static]` | keep | - | high | - |
+| `Race_BuildStandings` | routine | `race_core.asm:2527 ($C868)` | results: 4-row standings record | good | `[static]/[dynamic]` E7-C | keep | - | high | - |
+| `Race_FormatTime` | routine | `race_core.asm:2645 ($C9D4)` | standings: format sorted value as time | good | `[static]` | keep | - | high | - |
+| `unk_D1A0` | data | `race_core.asm:2967 ($D1A0)` | results: place points `0,75,50,...,1` | placeholder | `[static]/[dynamic]` E7-C | rename-later | `Race_PointsByPlace` | high | - |
+| `unk_D1C0` | data | `race_core.asm:2970 ($D1C0)` | results: standings header `17,5,3,30` + template | placeholder | `[static]/[dynamic]` E7-C | rename-later | `Race_StandingsTemplate` | high | - |
+| `Race_ram_EventProgress` | RAM | `ram_const.asm:204 ($FF1762)` | standings: base distance for free-list keys | good | `[static]/[dynamic]` E7-C | keep | - | high | - |
+| `Race_ram_ProgressSnapshotC` | RAM | `ram_const.asm:367 ($FF1E9E)` | standings: player finish/distance snapshot | good | `[static]/[dynamic]` E7-C | keep | - | high | - |
+| `sub_15014` | routine | `race_anim_audio.asm:1408 ($15014)` | race_ai_road: fall/on-foot animation updater | placeholder | `[static]/[dynamic]` E7-B | rename-later | `Race_UpdateActorFallAnimation` | high | - |
+| `sub_154D2` | routine | `race_anim_audio.asm:1826 ($154D2)` | race_anim: frame-script sequencer (`header+4-byte frames`) | placeholder | `[static]` | rename-later | `Race_StepAnimationScript` | high | - |
+| `unk_15CE0` | data | `race_anim_audio.asm:3694 ($15CE0)` | race_anim: AnimState-3 "side" crash frames tiles `$B9..$BE` | placeholder | `[static]/[dynamic]` E7-B | rename-later | `Race_FallScriptSideA` | high | - |
+| `unk_15CFC` | data | `race_anim_audio.asm:3722 ($15CFC)` | race_anim: AnimState-3 "close" crash frames tiles `$BF..$C4` | placeholder | `[static]/[dynamic]` E7-B | rename-later | `Race_FallScriptSideB` | high | - |

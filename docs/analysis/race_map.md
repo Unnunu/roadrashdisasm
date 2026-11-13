@@ -1,8 +1,8 @@
 # Race map: timeline, dataflow, field ownership and captures
 
-- **Status:** matrix v8 (v7 + L5 spawn/lifecycle contracts and E5 dynamic results:
-  four actor populations, `Data5` normal/special split, reserved `ram_FF1F2A`,
-  static respawn cycle, `$FF2FAA` extra slot)
+- **Status:** matrix v9 (v8 + L7 results/HUD/animation contracts and E7 dynamic
+  results: HUD cells/needle script/odometer font, results/standings/money pipeline,
+  `unk_15CE0`/`unk_15CFC` crash-script selection)
 - **Sources:** `docs/analysis/race.md`, `race_actors.md`, `race_ai.md`, `race_movement.md`,
   `race_speed.md`, `race_impact.md`, `race_spawn.md`, `road_render.md`, `docs/ram-map.md`,
   `tasks/race_understanding_program.md`
@@ -734,6 +734,36 @@ already used for them. New checks follow the Experiment Pack format in
 | E5-5 extra actor | `0x10B2E`/`0x12972`/`0x12A86` | marker gate, init fields, updates |
 | E5-6 natural spawn | `0x16AF6`/`0x16D2A`/`0x16D60`/`0x16CAE` | not exercised (631 ticks, count 8) |
 
+## L7 results/HUD addendum (matrix v9)
+
+L7 consumes the simulation state only; it does not write actor fields. Contracts are
+in `race_hud.md` (HUD), `race_results.md` (standings/results/money/high score) and
+`race_ai_road.md` (`Race_ComputeStandings`).
+
+- HUD cells: `offset = 2*(y*64+x)`, word = `$8000 | palette<<13 | tile`; digit tiles
+  are `$1F4+digit`. Time is BCD from `Race_UpdateTime`; place is 1..9 or `$10..$16`
+  for 10..16; stamina/bike-HP bars are 8 units per cell (10 cells) with
+  green/yellow/red thresholds.
+- Needle script: 32 one-sprite frames, 10 bytes each, at `$7DF30` (tilemap `$7E070`);
+  speed frame `min(speed/453,31)`, RPM frame `((speed<<16)/divisor)/682` with
+  `divisor = (curve[gear]<<2)&$FFFF`.
+- Results: `Race_ComputeStandings` -> event keys -> `Race_SortResults` rewrites each
+  entry as `value<<16 | actorIndex` (`value=(key>>8)/6`, `$FFFF` = DNF) ->
+  best place, `unk_D1A0[place]*level` points to career score + money -> outcome ->
+  `Race_BuildStandings` (4-row record) -> high-score table -> password.
+- Alternate AnimState-3 crash scripts: `d3=$26>>8` vs `d4=|$22|` selects
+  `unk_15CFC` when `d3<d4`; otherwise `unk_15CE0` when the actor is on the
+  "behind" side of the player (bit3 clear + behind, or bit3 set + not behind);
+  otherwise the default `unk_155D0[FallState]` AnimState-3 script (`$15CC4`).
+
+E7 results (captures `analysis/capture_L7_*.gdb`, traces `analysis/notes/L7_*`):
+
+| Check | Script | Result |
+|---|---|---|
+| E7-A HUD snapshot | `capture_L7_hud.gdb` | place `$15`, BCD time, stamina `$0500`, HP cell `$8430`, name timer/rank `$2A/$0E`; forced place changes bump the timer |
+| E7-B script select | `capture_L7_anim3.gdb` | close -> `unk_15CFC`/`$B2`; behind -> `unk_15CE0`/`$B1`; ahead/mismatch -> `$15CC4`/`$B0` |
+| E7-C results | `capture_L7_results.gdb`, `capture_L7_results2.gdb` | forced non-demo finish reaches `Race_ComputeStandings`/`ComputeResults`; place `$0F`, points `1`, money `100->101`, career `0->1`, outcome `$0F` |
+
 ## Tooling and validation
 
 Both tools decode the same layout from `src/core/ram_const.asm` through
@@ -784,5 +814,7 @@ L4 (`tasks/race_L4_impact_contracts.md`) is now in matrix v7: pair collision,
 damage/exchange, stamina `$5C`, knockdown and both `Race_ApplyCollisionImpact`
 branches are confirmed; only the R30 crash-path timing remains static. L5
 (`tasks/race_L5_spawn.md`) is complete (v8/E5): four populations, `Data5`
-normal/special split, reserved opponent, static respawn cycle and extra slot. Next:
-L7 results/HUD; L6 is the parallel world branch.
+normal/special split, reserved opponent, static respawn cycle and extra slot. L7
+(`tasks/race_L7_results_hud.md`) is complete (v9/E7): HUD/needle/odometer contracts,
+the full results/standings/money pipeline and the `unk_15CE0`/`unk_15CFC` crash
+scripts. Next is the L6 world branch (`race_L6_world_a/b/c.md`).

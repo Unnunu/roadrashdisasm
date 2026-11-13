@@ -1,7 +1,7 @@
 # Module card: `src/screens/race_results.asm`
 
 - **ROM range:** `0x005F28`–`0x006DBF` (`src/screens/highscore.asm` starts at `0x6DC0`)
-- **Status:** analyzed; line-by-line pass done (static; demo skips the screen, rendering dynamic TODO)
+- **Status:** analyzed; line-by-line pass done; results pipeline exercised by E7-C (forced non-demo finish); screen rendering still dynamic TODO
 - **Related:** `docs/architecture.md`, `docs/reverse-engineering.md`,
   `docs/hardware.md`, `docs/ram-map.md`, `docs/analysis/race_results.md`
 
@@ -60,7 +60,7 @@ open the shop (C), or inspect the cash/password (B).
 
 | Function | Address | Contract | Algorithm | Data | Hardware | Why | Dynamic | Status |
 |----------|---------|----------|-----------|------|----------|-----|---------|--------|
-| `RaceResults_Init` | `0x5F28` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
+| `RaceResults_Init` | `0x5F28` | [x] | [x] | [x] | [x] | [x] | [x] | analyzed (E7-C reached it) |
 | `RaceResults_DrawStandings` | `0x62CE` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
 | `RaceResults_DrawBusted` | `0x647E` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |
 | `RaceResults_DrawRepair` | `0x67AC` | [x] | [x] | [x] | [x] | [x] | [ ] | analyzed |

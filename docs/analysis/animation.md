@@ -19,9 +19,12 @@
 
 ```text
 script:  .l tilemap_base, .w frame_count, .l frame_ptr[frame_count+1]
-frame:   .w sprite_count, then per sprite:
+frame:   .w sprite_count_minus_1, then per sprite:
          .w dy, .w size(1), .w palette|flip|tile, .w dx
 ```
+
+The first word is loaded into `d0` and consumed by `dbf d0`; `0` therefore draws
+one sprite, `n` draws `n+1` sprites.
 
 `UpdateAnimation`:
 
@@ -50,6 +53,8 @@ when the tiles are preloaded in VRAM (e.g. `EndLevel_UpdateAnimation`).
 
 - Race HUD needles (`RaceHud_NeedleScript` script), `RiderSprites_Build`, `EndLevel_UpdateAnimation`,
   and raced actor/sprite code; `UpdateAnimation2` for preloaded VRAM.
+- `RaceHud_NeedleScript` is fully decoded in `docs/analysis/race_hud.md`: 32
+  one-sprite frames at `$7DF30` (10 bytes each), tilemap base `$7E070`.
 
 ## End-level script
 
@@ -63,8 +68,8 @@ are empty (0 sprites); level cut-offs use the inclusive indices in
 
 ## Open questions
 
-- Individual animation frame data (`RaceHud_NeedleData`, `unk_7DF??`, end-level
-  `EndLevel_AnimationData`) and the per-frame sprite layout.
+- Individual animation frame data (end-level `EndLevel_AnimationData`, actor
+  sprite scripts) and the per-frame sprite layout; the HUD needle script is decoded.
 - The exact SAT link/priority semantics and maximum sprite counts.
 - Dynamic verification of scripts and tile copies.
 
