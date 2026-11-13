@@ -1,8 +1,8 @@
 # Race map: timeline, dataflow, field ownership and captures
 
-- **Status:** v5 + L3 static addendum (v4 + R30 crash/fall contracts, handler tables
-  and `U-0012`..`U-0016` triage; field rows corrected for `$08/$0E/$10/$3C/$78`;
-  L3 adds the loop/target/dispatch contracts, `$74` assignment/families and E3)
+- **Status:** matrix v6 (v5 + R30 contracts + L3 static contracts and E3 dynamic
+  results: candidate bucket/list, profile slot and budget, dispatcher branches,
+  per-level budget and static respawn indexing)
 - **Sources:** `docs/analysis/race.md`, `race_actors.md`, `race_ai.md`, `race_movement.md`,
   `race_speed.md`, `race_impact.md`, `race_spawn.md`, `road_render.md`, `docs/ram-map.md`,
   `tasks/race_understanding_program.md`
@@ -561,6 +561,34 @@ Decision:    if $74 selects table[$74] and $12/$46 equal its speed/Y-offset ->
              confirmed
 ```
 
+## Experiment E3 results (dynamic)
+
+Runs: `analysis/capture_L3_a.gdb`, `capture_L3_a2.gdb`, `capture_L3_b.gdb`,
+`capture_L3_b2.gdb`, `capture_L3_c.gdb`, `capture_L3_level.gdb`; traces in
+`analysis/notes/L3*`.
+
+| Check | Breakpoint / window | Observed | Decision |
+|---|---|---|---|
+| E3-1 candidate bucket | `0x13832`, demo | bucket 3 at `$30=$0020`, bucket 5 at `$30=$00A0`; `$71` written at `ram_FF1792[bucket*16+count]`; `ram_FF178A[bucket]` advanced | confirmed |
+| E3-2 profile slot | `0x12FD8`/`0x12FCE`, forced Speed `$7FFF` | PlayerA and over-budget non-nearest actors stayed on the base slot; `a4=slot+4` for nearest actors and while `ram_FF1A98 < ram_FF1A96`; the counter incremented on every `+4` (nearest included) and never exceeded the budget | confirmed |
+| E3-3 action2 | `0x164A2`, forced non-player `a2` | 12 hits; branch condition is `a2 != -1 && a2 != RacePlayerA`. Natural demo: 0 hits (every target was PlayerA) | confirmed forced; unused naturally |
+| E3-3 action3 distance | `0x164F6`, forced `d0 >= d6` | 6 hits; `8(a4)` selected when `distance >= threshold` | confirmed forced |
+| E3-3 action3 nearest/cooldown | `0x16510`, natural | 262 hits; sampled `near=0`, `$5A=0` -> nearest-mismatch path. Cooldown variant remains `[static]` | confirmed (mismatch) |
+| E3-3 action4 | `0x16518`, natural | 174 hits; sampled `near=1`, `$5A=0`, `isPB=0` -> nearest with expired cooldown | confirmed |
+| E3-4 per-level budget | `Race_LoadBikePalette` `0xCAAC`, forced levels 1..5 | budgets `2,3,3,3,4`; demo level 1 budget `2`; `ram_FF1A98` never exceeded `ram_FF1A96` | confirmed |
+| E3-5 static respawn | `0x1397E`/`0x1399E`/`0x139A4`, forced timers | `$74` selects `Race_StaticActionTable[$74]`; `$12/$46` matched its speed/Y-offset (`$0E -> $1B58/$FFEF`, `$0D -> $1770/$FFF8`, `$01 -> $1B58/$0010`, `$07 -> $1964/$000C`); timer expiry reached `sub_13A26` | confirmed |
+
+Notes:
+
+- The demo never produced a non-player target, so action2 and the distance-based
+  action3 were reached only by forcing `a2`/`d0`; both agree with the static branch
+  conditions and the older forced dispatcher trace.
+- Profiles 17/19 were never assigned; the AI loop used profiles 0/6/8/9 in the demo
+  sample. `ram_FF1A98` stayed `<= ram_FF1A96` on every sampled frame.
+- Forcing a high PlayerA speed (`$7FFF`) was needed because the demo opponents'
+  ratings (`$1B58`+) exceed the early player speed; this isolates the slot/budget
+  logic without changing the branch under test.
+
 ## Register-base and list warning
 
 Raw `NN(aN)` greps are not evidence until the base register is known:
@@ -607,11 +635,11 @@ already used for them. New checks follow the Experiment Pack format in
 | E2-4 input flags | `0xBE6C` injected pad, `0xC00A` sample | B/A -> `$68` bit1/bit2, Left/Right steering sign confirmed |
 | E2-5 off-road accel | `0x10E8C`/`0x10E9C`, forced bit3 | `$14 -= $14>>2` confirmed |
 | U-0011 spawn `d4` | `0x13746`, normal mode | 6 spawn (`ret=0x16E24`) calls, `d4=0`; closed |
-| E3-1 candidate bucket | `0x13812` | `d0` vs `clamp($30>>6+3)`; `$71` at `ram_FF1792[d0*16+count]` |
-| E3-2 profile slot | `0x12FCE`/`0x12FD8` | base vs `a4+4`; `ram_FF1A96/98` budget |
-| E3-3 dispatcher | `0x164A2`/`0x16510`/`0x16518` | action2/3/4 branch conditions |
-| E3-4 level budget | `0x12FD8` | `ram_FF1A96` per level, `+4` count |
-| E3-5 static respawn | `0x13972`/`0x13982` | `$74` -> `Race_StaticActionTable` speed/Y-offset |
+| E3-1 candidate bucket | `0x13832` | `$71` appended at `ram_FF1792[bucket*16+count]`; bucket 3/5 match `clamp($30>>6+3)` |
+| E3-2 profile slot | `0x12FCE`/`0x12FD8` | forced Speed `$7FFF`: base at/over budget, `+4` for nearest or `count<budget`; counter clamps |
+| E3-3 dispatcher | `0x164A2`/`0x164F6`/`0x16510`/`0x16518` | forced non-player target -> action2; forced distance -> action3; natural nearest-mismatch -> action3; nearest+expired cooldown -> action4 |
+| E3-4 level budget | `0xCAAC` (forced levels 1..5) | budgets `2,3,3,3,4`; level 1 demo budget 2 |
+| E3-5 static respawn | `0x1397E`/`0x1399E`/`0x139A4` | `$74` -> `Race_StaticActionTable[$74]`; `$12/$46` match speed/Y-offset; timer -> `sub_13A26` |
 | Demo collision/crash | `0x127EA`/`0x14486`/`0x11B7A`/`0x14C3C`, full demo | 9 pair contacts (1 player), 0 crash/object, no player fall |
 | Static/extra actors | running dump: static `$16/$30/$46/$56/$74`; `$FF2FAA` `$71` | static layout anomaly vs extra slot activation |
 
@@ -658,5 +686,7 @@ integrates E1. The L2 static and dynamic passes (`tasks/race_L2_control_a.md`,
 `race_L2_control_b.md`) are complete: matrix v4 integrates E2 and closes `U-0011`.
 R30 integration (`tasks/race_R30_integration.md`) is complete: matrix v5 adds the
 crash/fall contracts and handler tables, corrects `$08/$0E/$10/$3C/$78`, and closes
-`U-0012`..`U-0016`. L3 static contracts are now in the addendum above; next: E3
-(`race_L3_ai_dynamic.md`), then L4 impact/fall dynamics.
+`U-0012`..`U-0016`. L3 static contracts are in the addendum above, and E3
+(`race_L3_ai_dynamic.md`) dynamically confirmed the candidate buckets, profile
+slot/budget, dispatcher branches, per-level budget and static respawn indexing.
+Next: L4 impact/fall dynamics.

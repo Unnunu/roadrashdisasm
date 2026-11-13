@@ -5,7 +5,8 @@
 - **ROM range:** `0x010E00`–`0x014055`
 - **Status:** analyzed (roles/flow, target buckets/scan, movement/speed; impact handoff
   documented; gap functions `0x1131A`-`0x13DDF` disassembled in R30; L3 static
-  contracts, `$74` assignment/families and the static action table documented)
+  contracts and E3 dynamics: candidate bucket/list, profile slot/budget, dispatcher
+  branches, per-level budget, static respawn indexing)
 - **Source:** `src/race/race_ai.asm`
 - **Related:** `docs/analysis/combat.md` (fist/AI attack state), `docs/analysis/race.md`, `docs/analysis/race_ai_road.md`,
   `docs/analysis/race_physics.md`, `docs/modules/race_ai.md`, `docs/ram-map.md`
@@ -118,6 +119,11 @@ register through `Race_BuildTargetCandidates`. Buckets are Y bands, not actor ty
 The bucket counts are cleared once per frame by `sub_1383E`; the list bytes are
 overwritten on append.
 
+`[dynamic]` E3 (`capture_L3_a.gdb`) confirmed the append: `$71` is stored at
+`ram_FF1792[bucket*16+count]` and `ram_FF178A[bucket]` advances. The demo produced
+bucket 3 at `$30=$0020` and bucket 5 at `$30=$00A0`, matching
+`clamp(($30>>6)+3,0,5)`.
+
 `Race_StaticActionTable` (16 entries, each `dc.l handler`, `dc.w speed`,
 `dc.w Y-offset`): every handler is `Race_ClampActorY`. `sub_138CE` writes the speed
 and Y-offset pair into `$12`/`$46` on respawn; `Race_UpdateStaticActions` reads only
@@ -133,6 +139,11 @@ the handler pointer. The pairs repeat a small set:
 | 5 | `$1770` | `+8` | 13 | `$1770` | `-8` |
 | 6 | `$1B58` | `+$10` | 14 | `$1B58` | `-$11` |
 | 7 | `$1964` | `+$C` | 15 | `$1770` | `-$11` |
+
+`[dynamic]` E3 (`capture_L3_c.gdb`) forced the respawn branch and observed `$74`
+select `Race_StaticActionTable[$74]`; the written `$12`/`$46` matched that entry's
+speed/Y-offset (`$01 -> $1B58/$0010`, `$07 -> $1964/$000C`, `$0D -> $1770/$FFF8`,
+`$0E -> $1B58/$FFEF`). The expiry path reached `sub_13A26`.
 
 ## Bike lean / curve (L2 contract)
 
@@ -351,6 +362,18 @@ player's speed stay on action0.
   `13004`/`16612`, and profile `9` entered `166B0`/`16612`. This matches the
   profile/action4 table and confirms that action2/3/4 are live code, not just
   unreachable table entries.
+- `[dynamic]` E3 (`capture_L3_a2.gdb`, PlayerA Speed forced to `$7FFF`): profiles
+  `6`/`8` took `slot+4` while the actor was `Race_ram_NearestActor` or while
+  `ram_FF1A98 < ram_FF1A96`; once the budget was full, non-nearest actors returned to
+  the base slot. The counter incremented on every `+4` (nearest included) and never
+  exceeded the budget. Profiles 17/19 never appeared.
+- `[dynamic]` E3 (`capture_L3_level.gdb`) set `Menu_ram_PlayerALevel` before
+  `Race_LoadBikePalette`; the stored `ram_FF1A96` was `[2,3,3,3,4]` for levels 1..5.
+- `[dynamic]` E3 (`capture_L3_b2.gdb`) sampled the natural demo: 262 action3 hits
+  (`near=0`, nearest mismatch) and 174 action4 hits (`near=1`, `$5A=0`, nearest with
+  expired cooldown); action2 had 0 natural hits because every target was PlayerA.
+  Forcing a non-player `a2` selected action2 (12 hits), and forcing `d0 >= d6`
+  selected the distance-based action3 (6 hits).
 - `Race_DispatchActorAction` is entered only after `Race_UpdateActorActions` selects slot+4. In the
   normal demo profiles `6/8/9` stay on `Race_ActorNormalUpdate`; the older trace
   forced PlayerA Speed `$3000` plus `ram_FF1A96=$FFFF` to make the dispatcher reachable.
@@ -401,8 +424,8 @@ combat handlers are in `race_combat.asm`.
 - `unk_25812` is read in `Race_SetupActorSprite` but the value (`d2`) is never used;
   role unknown (dead read, not a behaviour dependency).
 - Exact actor-action handler semantics (`0x12FE4`..`0x131BE`); dispatcher action2/3/4
-  paths are now dynamically confirmed, and E3 in `race_map.md` covers the remaining
-  profile-slot/budget/candidate checks.
+  paths are dynamically confirmed, and E3 closed the profile-slot/budget/candidate
+  checks; handler-internal semantics remain for L4/combat.
 - Next: `src/race/race_combat.asm` (attack/action semantics) and
   `src/race/race_anim_audio.asm` (animations/random/audio).
 

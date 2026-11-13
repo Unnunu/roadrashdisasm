@@ -3832,10 +3832,9 @@ sub_13704:
 ; In:  a1 - actor; d4 - caller-provided Y span (NOT set by this routine)
 ; Out: RaceActor_AnimIndex; ram_FF178A/ram_FF1792 candidate buckets
 ; Clobbers: d0/d1/d2/a0 (d4 is an input)
-; @UNKNOWN(U-0011): d4 is an ambient register here. E1 observed d4=0 on every
-; AI-path call in a full demo (4169 calls); the spawn path (Race_SetupActor) was not
-; reached, so its value there is still unproven. Only the extra Y+d4/Y-d4 candidate
-; buckets are affected, not the base AnimIndex.
+; d4 is an ambient register here. E1 observed d4=0 on every AI-path call in a full
+; demo (4169 calls); E2 reached the spawn path (6 calls) with d4=0 on all, so U-0011
+; is closed: the Y+d4/Y-d4 extra candidate buckets are not widened in normal play.
 ; *************************************************
 
 Race_SetupActorSprite:

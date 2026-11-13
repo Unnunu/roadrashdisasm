@@ -1,9 +1,9 @@
 # Program: complete race understanding
 
-Status: in progress. L1 and L2 (static + dynamic), the R30 gap disassembly and the
-R30 integration are complete. L3 static contracts are complete (E3 pack written);
-next is the L3 dynamic pass (`race_L3_ai_dynamic.md`). This file is the roadmap, not
-a build task; the queue below lists what remains.
+Status: in progress. L1 and L2 (static + dynamic), the R30 gap disassembly, the
+R30 integration, and the L3 static + dynamic passes (E3) are complete. Next is L4
+impact/fall (`race_L4_impact_contracts.md`). This file is the roadmap, not a build
+task; the queue below lists what remains.
 
 ## Goal
 
@@ -106,8 +106,23 @@ addendum and Experiment Pack E3.
   the pair at respawn, `Race_UpdateStaticActions` uses only the handler.
 - Dispatcher slot offsets corrected: `+0` action0, `+4` action1 (dispatch),
   `+8` action2, `+C` action3, `+10` action4; `a4` at dispatcher entry is slot+4.
-- Next: run E3 (candidate registration, profile slot/budget, dispatcher branches,
-  per-level budget, static respawn values) and integrate into matrix v6.
+## L3 dynamic results (E3, completed)
+
+`race_L3_ai_dynamic.md` completed; matrix v6 in `race_map.md` integrates the E3
+captures.
+
+- E3-1 `[confirmed]`: `Race_AddTargetCandidate` stores `$71` at
+  `ram_FF1792[bucket*16+count]` and increments `ram_FF178A[bucket]`; demo buckets
+  3/5 match `clamp(($30>>6)+3,0,5)`.
+- E3-2 `[confirmed]`: with PlayerA Speed forced to `$7FFF`, nearest actors and
+  actors while `ram_FF1A98 < ram_FF1A96` take `slot+4`; the counter increments on
+  every `+4` (nearest included) and never exceeds the budget.
+- E3-3 `[confirmed]`: natural demo = 262 action3 (nearest mismatch) and 174 action4
+  (nearest + expired cooldown); forced non-player target = action2; forced
+  `d0 >= d6` = distance-based action3. No natural non-player target occurred.
+- E3-4 `[confirmed]`: levels 1..5 load budgets `2,3,3,3,4`.
+- E3-5 `[confirmed]`: `$74` indexes `Race_StaticActionTable`; `$12/$46` match its
+  speed/Y-offset; timer expiry reaches `sub_13A26`.
 
 ## Out of scope
 
@@ -199,7 +214,7 @@ One session = one task file from `tasks/_template.md`.
 
 ## Session queue (orientation, not fixed)
 
-Rows 0-7 are complete and kept for orientation. R30 disassembled the L3/L4 handler
+Rows 0-8 are complete and kept for orientation. R30 disassembled the L3/L4 handler
 bodies and tables, so those tasks are now contract/dynamic work, not disassembly.
 
 | # | Task file | Layer | Work type | Deliverable |
@@ -212,7 +227,7 @@ bodies and tables, so those tasks are now contract/dynamic work, not disassembly
 | 5 | `race_L2_control_b.md` | L2 | done | matrix v4; E2-1..E2-5 dynamic; `U-0011` closed |
 | 6 | `race_R30_integration.md` | L1/L4/L7 | done | matrix v5: `$3C` conflict resolved (not a timer), crash/fall contracts, handler tables, `unk_155D0` consumers; `U-0012`..`U-0016` closed |
 | 7 | `race_L3_ai_contracts.md` | L3 | done | loop/targets/dispatcher contract + `$74` pages/families + E3 pack |
-| 8 | `race_L3_ai_dynamic.md` | L3 | run E3 | integrate E3 into matrix v6; handler behavior, `$5A/$6C/$6D/$69` |
+| 8 | `race_L3_ai_dynamic.md` | L3 | done | matrix v6; candidate/slot/budget/branch/level/static-respawn E3 results |
 | 9 | `race_L4_impact_contracts.md` | L4 | static + E4 | pair collision/extents/reach + R30 crash paths (`sub_140EE`/`sub_141AE`/`sub_14404`) |
 | 10 | `race_L4_impact_dynamic.md` | L4 | integrate E4 | damage, `$5C`, fall/knockdown |
 | 11 | `race_L5_spawn.md` | L5 | static + E5 | lifecycle/static/police closed |

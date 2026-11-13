@@ -523,14 +523,14 @@ Names stay `sub_XXXX`/`unk_XXXX`; proposals are not applied.
 | `unk_15624` | data | `race_anim_audio.asm:1974 ($15624)` | race_anim: random FallState (8) | placeholder | `[static]` | rename-later | `Race_FallStateRand8B` | medium | - |
 | `Race_UpdateActorAI` | routine | `race_ai.asm:94 ($10E66)` | race_ai: actor speed/move loop; candidates, Y clamp, player/AI branches | good | `[static]` | keep | - | high | - |
 | `Race_AdvanceActorProgress` | routine | `race_ai.asm:262 ($1103A)` | race_ai: X += frame distance, finish latch, per-frame clears | good | `[static]` | keep | - | high | - |
-| `Race_UpdateActorActions` | routine | `race_ai.asm:2989 ($12EA2)` | race_ai: recycle, profile base/+4, `ram_FF1A96/98` budget, handler call | good | `[static]` | keep | - | high | - |
-| `Race_DispatchActorAction` | routine | `race_combat.asm:326 ($16458)` | race_ai/combat: action2/3/4 dispatcher | good | `[static]` | keep | - | high | - |
+| `Race_UpdateActorActions` | routine | `race_ai.asm:2989 ($12EA2)` | race_ai: recycle, profile base/+4, `ram_FF1A96/98` budget, handler call | good | `[static]/[dynamic]` E3 | keep | - | high | - |
+| `Race_DispatchActorAction` | routine | `race_combat.asm:326 ($16458)` | race_ai/combat: action2/3/4 dispatcher | good | `[static]/[dynamic]` E3 | keep | - | high | - |
 | `Race_BuildTargetCandidates` | routine | `race_ai.asm:3921 ($137E4)` | race_ai: static actor -> three Y buckets | good | `[static]` | keep | - | high | - |
-| `Race_AddTargetCandidate` | routine | `race_ai.asm:3954 ($13812)` | race_ai: append `$71` to bucket `d0` | good | `[static]` | keep | - | high | - |
+| `Race_AddTargetCandidate` | routine | `race_ai.asm:3954 ($13812)` | race_ai: append `$71` to bucket `d0` | good | `[static]/[dynamic]` E3 | keep | - | high | - |
 | `Race_ScanTargetDistance` | routine | `race_ai.asm:3693 ($13626)` | race_ai: min `dX/relSpeed` over one bucket | good | `[static]` | keep | - | high | - |
 | `Race_ActorProfileTable` | data | `race_actor_extra_tables.asm:34 ($259C0)` | race_ai: 20 slots into `Race_ActorActionTable` (`$74`) | good | `[static]` | keep | - | high | - |
 | `Race_ActorActionTable` | data | `race_ai.asm:2962 ($12D16)` | race_ai: 99 action pointers; 5-dword profile groups | good | `[static]` | keep | - | high | - |
-| `Race_StaticActionTable` | data | `race_actor_extra_tables.asm:72 ($25A44)` | race_ai: 16 handler/speed/Y-offset entries | narrow | `[static]` | rename-later | `Race_StaticActorProfileTable` | high | - |
-| `ram_FF1A96` | data | `race_core.asm:2711 ($FF1A96)` | race_ai: per-level action-dispatch budget `[2,3,3,3,4]` | placeholder | `[static]` | rename-later | `Race_ram_ActionDispatchBudget` | high | - |
-| `ram_FF1A98` | data | `race_ai.asm:2990 ($FF1A98)` | race_ai: per-frame count of `+4` dispatcher choices | placeholder | `[static]` | rename-later | `Race_ram_ActionDispatchCount` | high | - |
+| `Race_StaticActionTable` | data | `race_actor_extra_tables.asm:72 ($25A44)` | race_ai: 16 handler/speed/Y-offset entries; `$74` indexing confirmed by E3 | narrow | `[static]/[dynamic]` E3 | rename-later | `Race_StaticActorProfileTable` | high | - |
+| `ram_FF1A96` | data | `race_core.asm:2711 ($FF1A96)` | race_ai: per-level action-dispatch budget `[2,3,3,3,4]`; E3 confirmed all five levels | placeholder | `[static]/[dynamic]` E3 | rename-later | `Race_ram_ActionDispatchBudget` | high | - |
+| `ram_FF1A98` | data | `race_ai.asm:2990 ($FF1A98)` | race_ai: per-frame count of `+4` dispatcher choices; E3 confirmed increment/clamp | placeholder | `[static]/[dynamic]` E3 | rename-later | `Race_ram_ActionDispatchCount` | high | - |
 | `Race_ActorNormalVariant` | routine | `race_ai.asm:3141 ($1307C)` | race_ai: profile 0 action1; the profile-0 player always takes the base slot -> table slot unreachable | narrow | `[static]` | keep (dead) | - | medium | - |

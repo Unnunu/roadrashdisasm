@@ -1,7 +1,7 @@
 # Module card: `src/race/race_ai.asm`
 
 - **ROM range:** `0x010E00`–`0x014055` (`src/race/race_anim_audio.asm` starts at `0x14056`)
-- **Status:** actor/AI/action dispatch, movement/speed/curve fields and the R30 gap set analyzed; crash/fall contracts integrated (matrix v5); L3 static contracts and `$74`/static-table decode done; E3/L4 dynamics TODO
+- **Status:** actor/AI/action dispatch, movement/speed/curve fields and the R30 gap set analyzed; crash/fall contracts integrated (matrix v5); L3 static contracts and E3 dynamics done (candidate buckets, profile slot/budget, dispatcher branches, per-level budget, static respawn); L4 dynamics next
 - **Related:** `docs/analysis/race.md`, `docs/analysis/race_spawn.md`,
   `docs/ram-map.md`, `docs/modules/race.md`
 
@@ -46,7 +46,7 @@ audio live in `src/race/race_anim_audio.asm`; PRNG/LFSR helpers are in
 | Function | Address | Contract | Algorithm | Data | Hardware | Why | Dynamic | Status |
 |----------|---------|----------|-----------|------|----------|-----|---------|--------|
 | actor/input/AI chain | `0x10E00`+ | [~] | [~] | [~] | [ ] | [~] | [~] | partial; `10E66` snapshot |
-| actor action dispatch | `0x12D0A`-`0x131BE` | [x] | [x] | [x] | [x] | [x] | [~] | L3 static contracts + `$74` pages/families; E3 pending |
+| actor action dispatch | `0x12D0A`-`0x131BE` | [x] | [x] | [x] | [x] | [x] | [x] | L3 static contracts + `$74` pages/families; E3 confirmed slots/budget/branches |
 | bike lean/curve | `0x13EA0`/`0x13EFA` | [x] | [~] | [x] | [x] | [~] | [~] | static + steering snapshots |
 | curve speed limit | `0x13FE6` | [x] | [~] | [x] | [x] | [~] | [ ] | static |
 | gap functions | `0x1131A`-`0x13DDF` | [x] | [~] | [x] | [x] | [~] | [ ] | R30 integration: contracts/tables static; `U-0012`..`U-0016` closed |

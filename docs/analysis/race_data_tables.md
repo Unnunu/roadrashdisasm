@@ -54,6 +54,11 @@ bridge.
 | `unk_25B50` | `$25B50` | `$20` | 8 player-bike record pointers; index = `bikeId*4`. |
 | `unk_25B70` | `$25B70` | `$350` | 424 words (race_core). |
 
+Dynamic (E3): `Race_LoadBikePalette` with `Menu_ram_PlayerALevel` forced to 1..5
+stored `ram_FF1A96 = 2,3,3,3,4`; a forced static respawn confirmed
+`Race_StaticActionTable[$74]` supplies the `$12`/`$46` speed/Y-offset pair (see
+`race_map.md`, E3-4/E3-5).
+
 ### `unk_25A10` (actor bike records)
 
 13 pointers, selected by `RaceActor_Type` (`$16`):
