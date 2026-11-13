@@ -556,7 +556,7 @@ Names stay `sub_XXXX`/`unk_XXXX`; proposals are not applied.
 | `sub_142D8` | routine | `race_anim_audio.asm:269 ($142D8)` | race_anim: weapon-anim speed flag | placeholder | `[static]` | rename-later | `Race_SetWeaponAnimSpeedFlag` | low | - |
 | `RaceActor_TileBase` | RAM field | `race_anim_audio.asm:4414` / `race_hud.asm:266` (`$5C`) | stamina/health: regen + knockdown + HUD bar; not a tile base | misleading | `[confirmed]` E4-B + HUD | rename-later | `RaceActor_Stamina` | high | - |
 | `ram_FF18AC` | data | `race_core.asm:1258 ($FF18AC)` | race_anim: stamina damage per pair-impact unit (`$10`) | placeholder | `[confirmed]` E4-B | rename-later | `Race_ram_StaminaHitScale` | high | - |
-| `ram_FF18A8` | data | `race_core.asm:1256 ($FF18A8)` | race_spawn/ai: opponent stamina base/cap (`$500`) | placeholder | `[static]` | rename-later | `Race_ram_OpponentStaminaMax` | medium | - |
+| `ram_FF18A8` | data | `race_core.asm:1256 ($FF18A8)` | race_spawn/ai: shared stamina baseline (`$500`); above it the page max graphics `+$E` is restored | placeholder | `[confirmed]` U-0017 | rename-later | `Race_ram_StaminaBaseline` | medium | - |
 | `ram_FF18AA` | data | `race_core.asm:1257 ($FF18AA)` | core/ai/hud: player stamina max (`$A00`) | placeholder | `[confirmed]` HUD | rename-later | `Race_ram_PlayerStaminaMax` | high | - |
 | `ram_FF3038` | data | `race_ai.asm:1543 ($FF3038)` | race_ai/anim: pair X window (`$6000`/`$3700`) | placeholder | `[confirmed]` E4-F | rename-later | `Race_ram_PairXWindow` | medium | - |
 | `ram_FF303E` | data | `race_ai.asm:1545 ($FF303E)` | race_ai/anim: penetration threshold (`$40`) | placeholder | `[confirmed]` E4-F | rename-later | `Race_ram_ImpactPenetration` | medium | - |
@@ -640,7 +640,7 @@ Names stay `sub_XXXX`/`unk_XXXX`; proposals are not applied.
 | `Race_UpdateCamera` | routine | `race_physics.asm:720 ($DE9E)` | race: camera offset + `PlayerProgress`; curve walk | good | `[static]/[dynamic]` E6 | keep | - | high | - |
 | `Race_IntegrateTrackCurve` | routine | `race_ai_road.asm:522 ($EDD0)` | race: 32-strip road profile from `Track_CurveBuffer` | good | `[static]/[dynamic]` E6 | keep | - | high | - |
 | `Road_FillProfileTables` | routine | `race_ai_road.asm:410 ($ECE0)` | race: road HScroll fg/bg + marking X/width | good | `[static]/[dynamic]` E6 | keep | - | high | - |
-| `Race_BuildVScrollInfo` | routine | `race_physics.asm:829 ($E004)` | race: HInt VScroll raster blocks/chain | good | `[static]/[dynamic]` E6 | keep | - | high | `U-0018` open (compaction) |
+| `Race_BuildVScrollInfo` | routine | `race_physics.asm:829 ($E004)` | race: HInt VScroll raster blocks/chain; four-phase compaction | good | `[static]/[dynamic]` E6 + U-0018 | keep | - | high | - |
 | `Race_BuildHScrollTable` | routine | `race_physics.asm:1157 ($E494)` | race: per-line HScroll plane A/B bands | good | `[static]/[dynamic]` E6 | keep | - | high | - |
 | `ram_FF1E50` / `ram_FF1E52` | RAM | `ram_const.asm:340-341` | race: `$1E54/56 + $1E58/5A` combined scroll | placeholder | `[confirmed]` E6 | rename-later | `Race_ram_CurveScrollA/B` | medium | - |
 | `ram_FF1E54` / `ram_FF1E56` | RAM | `ram_const.asm:342-343` | race: signed curve-byte sums over the progress delta | placeholder | `[confirmed]` E6 | rename-later | `Race_ram_CurveSumA/B` | medium | - |

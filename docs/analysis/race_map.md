@@ -1,7 +1,7 @@
 # Race map: timeline, dataflow, field ownership and captures
 
-- **Status:** matrix v12 (v11 + L6c shape/control/interpolator/tile-writer map,
-  Data4 side/second-shape/pass-count bits and E8)
+- **Status:** matrix v13 (v12 + closed `U-0017` stamina regen and `U-0018` VScroll
+  compaction arithmetic)
 - **Sources:** `docs/analysis/race.md`, `race_actors.md`, `race_ai.md`, `race_movement.md`,
   `race_speed.md`, `race_impact.md`, `race_spawn.md`, `road_render.md`, `docs/ram-map.md`,
   `tasks/race_understanding_program.md`
@@ -165,7 +165,7 @@ Widths match the actual instruction sizes: `$04/$1E/$26` are longs, the
 | `$56` | word | `RaceActor_RespawnTimer` | `Race_CreateActors` (`$FFFF`), static updater | static update | `[static/dynamic]` | - |
 | `$58` | word | (unnamed) | `Race_UpdateAnimation` (race_anim_audio) | `Race_BuildActorObjectList` copies to actor object `+8` | `[static]` | animation frame token |
 | `$5A` | word | `RaceActor_AttackCooldown` | combat | `Race_DispatchActorAction` (close-action branch), pursue/attack handlers | `[static]` | - |
-| `$5C` | word | `RaceActor_TileBase` | `Race_CreateActors`/`Race_SetupActor`/`Race_SpawnTick` (init), `Race_UpdatePlayerAnimation`/`Race_UpdateActorActions` (regen), `Race_ApplyFallKnockdown` (consume) | `RaceHud_DrawStamina` (bar `>>5`), knockdown | `[confirmed]` E4-B: **stamina/health**, not a tile base; player cap `ram_FF18AA=$A00`, opponent `ram_FF18A8=$500`, hit `PairImpact*ram_FF18AC` | rename-later `RaceActor_Stamina` |
+| `$5C` | word | `RaceActor_TileBase` | `Race_CreateActors`/`Race_SetupActor`/`Race_SpawnTick` (init), `Race_UpdatePlayerAnimation`/`Race_UpdateActorActions` (regen), `Race_ApplyFallKnockdown` (consume) | `RaceHud_DrawStamina` (bar `>>5`), knockdown | `[confirmed]` E4-B + U-0017: **stamina/health**, not a tile base; regen adds `FrameDelay` below `ram_FF18A8=$500`, then snaps to graphics `+$E` (`$500/$640/$780/$8C0/$A00`); player cap `ram_FF18AA=$A00`; hit `PairImpact*ram_FF18AC` | rename-later `RaceActor_Stamina` |
 | `$5E` | word | (unnamed) | `Race_CreateActors` | sprite setup | `[static]` graphics `+$A` | exact sprite field |
 | `$60` | word | (unnamed) | `Race_CreateActors` | sprite setup | `[static]` graphics `+$C` | exact sprite field |
 | `$62` | long | (unnamed) | movement/advance (`= Race_ram_ProgressSnapshotB`) | not documented | `[static]` | late-race progress snapshot |
@@ -798,9 +798,10 @@ E6 results (captures `analysis/capture_L6a*.gdb`, traces `analysis/notes/L6a*`):
 | E6-3 VScroll | `capture_L6a.gdb`, `capture_L6a_hint.gdb` | blocks `$10/$20/$50/$60/$70/$80` at lines `$03/$07/$25/$33/$47/$9C`; `$30/$40` compacted |
 | E6-4 HScroll | `capture_L6a.gdb` | plane A top `$30EA>>16=$0027`, plane B top `$30EE>>16=$0013`; road line `$80=$017CFFAB` |
 
-Residual: `U-0018` (exact VScroll compaction arithmetic) and `U-0017` (opponent
-stamina regen); rearview, marking visuals and the final shape-art crop stay
-`[static]`/optional-visual.
+`U-0018` is closed: the four compaction phases and `$8A00+E(next2)-E(next)-1` gap
+formula reproduce the E6 numbers. `U-0017` is closed too (see L4/`race_impact.md`).
+Residual: engine-audio mapping, rearview/marking visuals and the final shape-art
+crop stay `[static]`/optional-visual.
 
 ## L6b object/projection/visible-list addendum (matrix v11)
 

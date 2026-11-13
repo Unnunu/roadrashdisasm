@@ -181,9 +181,14 @@ E4-B confirmed the arithmetic and stores: `PairImpact=1`, `ram_FF18AC=$10`,
 - init: `Race_CreateActors` from the graphics entry `+$E`; `Race_SetupActor` and
   `Race_SpawnTick` use `ram_FF18A8 = $500`; the player is overridden to
   `ram_FF18AA = $A00`.
-- regeneration: `Race_UpdatePlayerAnimation` and `Race_UpdateActorActions` add
-  `FrameDelay` per frame, capped at `ram_FF18AA` (player) or the graphics entry
-  `+$E` (opponents, with the `ram_FF18A8` guard).
+- regeneration: the generic `Race_UpdateActorActions` loop adds `FrameDelay` while
+  `$5C+FrameDelay < ram_FF18A8 ($500)`, then stores the graphics entry `+$E`
+  (page maxima `$500/$640/$780/$8C0/$A00`). `ram_FF18A8` is the shared baseline, not
+  the per-actor cap; the graphics `+$E` is the restored page maximum. The player is
+  skipped by that loop outside demo mode and regenerates in
+  `Race_UpdatePlayerAnimation` toward `ram_FF18AA = $A00` (its spawn override).
+  `[confirmed]` `analysis/capture_L8_u17.gdb`: page-1 actor `$640`, forced
+  `$4F0 -> $4F7 -> $4FE -> $640` across the `$500` threshold.
 - consumption: `Race_ApplyFallKnockdown` subtracts `PairImpact * ram_FF18AC`
   (`ram_FF18AC = $10`).
 - display: `RaceHud_DrawStamina` draws the two stamina bars from `$5C >> 5`
@@ -242,7 +247,7 @@ older combat note and is distinct from `sub_140EE` (half) and `sub_141AE` (full)
 
 | Field | Role | Evidence |
 |---|---|---|
-| `$5C` | stamina/health (HUD bar); regen +consumption | `[confirmed]` E4-B + HUD |
+| `$5C` | stamina/health (HUD bar); regen +consumption | `[confirmed]` E4-B + U-0017 + HUD |
 | `$68` bit0 | impact/speed-loss latch | `[confirmed]` E4-F |
 | `$68` bit4 | pair contact / crash latch | `[confirmed]` E4-F |
 | `$69` bit0 | pair X order (a1 ahead) | `[static]` |
@@ -257,7 +262,7 @@ older combat note and is distinct from `sub_140EE` (half) and `sub_141AE` (full)
 | `$2A/$2C/$2E` | projected Y offset / impact scale / accumulator | `[confirmed]` E4-F |
 | `$54` | FallState (`$11` knockdown) | `[confirmed]` E4-B |
 | `ram_FF18A6` | impact speed magnitude | `[confirmed]` E4-F |
-| `ram_FF18A8/AA` | opponent/player stamina caps (`$500`/`$A00`) | `[static]` + HUD |
+| `ram_FF18A8/AA` | shared stamina baseline / player cap (`$500`/`$A00`) | `[confirmed]` U-0017 + HUD |
 | `ram_FF18AC` | stamina damage per pair-impact unit (`$10`) | `[confirmed]` E4-B |
 | `ram_FF18B6` | track-position adjustment scale (`$1400`) | `[static]` |
 | `ram_FF1768` | current player in crash/fall animation | `[confirmed]` E4-F |

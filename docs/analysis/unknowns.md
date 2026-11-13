@@ -29,8 +29,8 @@ an analysis document).
 | `U-0014` | `src/race/race_ai.asm:4468` | `Race_TrackObjectTypeTable` | record fields beyond the type byte and the `+6` word; why the side test uses `$2` bits | resolved: track-object record = `+0` long 16.16 X, `+2` type byte, `+3` lane byte (low nibble). Type table = `+0` render flags, `+2` size 16.8, `+4` action-handler index, `+6` word (`+7` steerable flag). Side test = `lane*$20-$100` XOR `PosY` sign | none | confirmed | `[static]`: `sub_12070`, `sub_13D44`, `sub_13DE0`, `race_ai_road.asm:1767` |
 | `U-0015` | `src/race/race_anim_audio.asm:1224` | `sub_14DEC` | why `d0` is always 0 (both signed Speed terms read `$12(a1)`) and who calls it | resolved: vestigial helper. Both Speed terms read `$12(a1)` (the second was likely meant to be `$12(a2)`), so `d0` is always 0; neither a call nor any pointer/address reference exists in the ROM | none | wontfix | `[static]`: full `src/` and `build/roadrash.lst` reference scan |
 | `U-0016` | `src/race/race_ai.asm:1887` | `unk_12168` | consumer and dispatch semantics of the 9-pointer table (index 2 is `sub_140EE`) | resolved: dead data. No static reader and no pointer/address reference in the ROM; the live dispatch tables are `unk_147FC` -> `unk_14744` | none | wontfix | `[static]`: full `src/` and `build/roadrash.lst` reference scan |
-| `U-0017` | `src/race/race_ai.asm:3017` | `Race_UpdateActorActions` stamina regen | why opponent stamina `$5C` regrows toward `ram_FF18A8=$500` but snaps to the graphics entry `+$E` once `$5C+FrameDelay >= $500`, instead of capping at a fixed max | best guess: `ram_FF18A8` is a shared regen threshold and graphics `+$E` is the per-bike stamina value; the player uses `ram_FF18AA=$A00` directly | sample an opponent's `$5C` over 600 frames and dump `Race_ActorGraphicsTable` `+$E` for the same actors | open | `[static]` `race_ai.asm:3017-3024`, `race_core.asm:1256-1258`; `[confirmed]` E4-B covers the consumption side only |
-| `U-0018` | `src/race/race_physics.asm:1013` | `Race_BuildVScrollInfo` compaction pass | per-case arithmetic of the `+E`-driven block copy/merge and the recomputed `$8Axx` line-gap commands | thresholds are `+E<0` skip, `+E<=8` merge; the surviving bands are then clamped and the commands derived from HV differences | instrument `+E` and the HV targets for a curve with many bands; enumerate all branches | open | `[static]` pass at `.loc_E2AE..E3B0`; `[dynamic]` E6 runtime chain `$10->$20->$50->$60->$70->$80->$90` (`analysis/notes/L6a_hint_trace.txt`) |
+| `U-0017` | `src/race/race_ai.asm:3017` | `Race_UpdateActorActions` stamina regen | why opponent stamina `$5C` regrows toward `ram_FF18A8=$500` but snaps to the graphics entry `+$E` once `$5C+FrameDelay >= $500`, instead of capping at a fixed max | resolved: `$5C` is stamina. The generic actor loop adds `FrameDelay` while `$5C+FrameDelay < ram_FF18A8 ($500)`; once the sum reaches `$500` it stores the actor's graphics record `+$E`. So `$500` is the shared minimum/baseline, not the per-actor cap; the graphics `+$E` is the per-page maximum restored at/above the baseline (pages 0..3: `$500/$640/$780/$8C0`, pages 4..9: `$A00`). The player is skipped by the action loop outside demo mode and regenerates in `Race_UpdatePlayerAnimation` toward `ram_FF18AA=$A00` (its spawn override) | none | confirmed | `[static]` `race_ai.asm:3017-3024`, `race_anim_audio.asm:4414-4432`, `race_core.asm:1256-1258/2794-2797`, `Race_ActorGraphicsTable`; `[confirmed]` `analysis/capture_L8_u17.gdb`: page-1 actor starts at `$640`, forced `$4F0 -> $4F7 -> $4FE -> $640` across the `$500` threshold (`analysis/notes/L8u17_trace.txt`) |
+| `U-0018` | `src/race/race_physics.asm:1013` | `Race_BuildVScrollInfo` compaction pass | per-case arithmetic of the `+E`-driven block copy/merge and the recomputed `$8Axx` line-gap commands | resolved: `+E` is the band line reference (`HV=(E<<8)-$A0`). Phase 1: negative `+E` copies the referenced block into block 0 and follows its `+A` (elide). Phase 2: `+E<=8` merges into block `$10`, then `E10=max(E,4)`. Phase 3: merge into `$20` while `+E<=E10+8`, then `E20=max(E,E10+4)`. Phase 4 writes `cmd(d1)=$8A00+E(next(next(d1)))-E(next(d1))-1` while the block after next is below `$90`; block `$70` keeps `$8AFF`, block 0 is `$8A01`, tail writes `$C=$8210/$E=$8403`. E6 lines `$04/$08/$26/$34/$48/$9D` give `$8A1D/$8A0D/$8A13/$8A54/$8AFF` and the `$10->$20->$50->$60->$70->$80->$90` chain, matching the formula exactly | none | confirmed | `[static]` `.loc_E2AE..E3E0`; `[dynamic]` E6 `analysis/notes/L6a_hint_trace.txt` |
 | `U-0019` | `src/race/race_ai_road.asm:1932` | `Race_ProjectObject` return `d3` / `RoadObject_Flags` bits | whether the projected profile row and the sprite-chain pass count share the same `Flags` bits | resolved: they are different fields. Low 5 bits = row; the high byte `(Flags>>8) & 7` (bits 10-8) = SAT copy-pass count. Data4 `+$02` bits 8-10 feed the pass count; the row comes from the projection. `Road_DrawObject` reads `move.b Flags(a0)` (high byte), not the low bits | none | confirmed | `[static]` `road_render.asm:96F4-96F8`, `race_ai_road.asm:10AFC`; `[confirmed]` E8-B: `$FFD430` `flags=$1184` pass=1 row=4, 6 entries copied once; pass=0 objects skip the loop (`analysis/notes/L8b_trace.txt`) |
 
 L2 static pass added **no new U rows**. The open-looking items are statically
@@ -53,14 +53,20 @@ L4 dynamic pass (E4) closed the `$5C`/damage/knockdown questions: `$5C` is stami
 opponent stamina regen cap. The R30 crash handlers (`sub_140EE`/`sub_141AE`) remain
 `[static]` because the 60 s demo never crashes.
 
+Residual pass closed `U-0017` dynamically: `ram_FF18A8=$500` is the shared baseline;
+below it the actor accumulates `FrameDelay`, at/above it the loop restores the
+`Race_ActorGraphicsTable` page maximum `+$E` (`$500/$640/$780/$8C0/$A00`). The player
+regenerates separately in `Race_UpdatePlayerAnimation` toward `ram_FF18AA=$A00`.
+
 L6a added `U-0018` for the VScroll compaction arithmetic; the block layout, chain and
-observed runtime bands are confirmed, but the exact `+E` merge/gap cases are not yet
-enumerated.
+observed runtime bands were confirmed then. The residual pass enumerated the four
+phases (negative elide, `+E<=8` merge, `+E<=E10+8` merge with line clamps, and the
+gap loop `$8A00+E(next2)-E(next)-1`) and checked them against the E6 numbers.
 
 L6c (E8) closed `U-0019`: `RoadObject_Flags` bits 10-8 are the SAT copy-pass count
 (read through the high byte), while the low 5 bits are the projected row. The
 Data4 `+$02` bits 8-10 source and the Data4 side/second-shape bits are decoded in
 `docs/analysis/race_track_data.md`; the writer pixel map is in
 `docs/analysis/road_render.md`. Remaining world unknowns are optional visual
-checks; `U-0017` (opponent stamina regen cap) and `U-0018` (VScroll compaction
-arithmetic) stay open.
+checks; `U-0017` (opponent stamina regen) and `U-0018` (VScroll compaction
+arithmetic) are now closed.

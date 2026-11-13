@@ -841,8 +841,11 @@ Race_UpdateCamera:
 ; chain using +E (negative -> copy/skip; <=8 -> merge) and .loc_E3B6 recomputes the
 ; $8Axx line-gap commands from the HV differences. E6 runtime chain:
 ;   $10 -> $20 -> $50 -> $60 -> $70 -> $80 -> $90 (the $30/$40 bands are compacted).
-; @UNKNOWN(U-0018): the exact +E merge/gap arithmetic of the compaction pass is not
-;   fully enumerated; E6 gives the runtime chain and HV targets.
+; Compaction (U-0018 closed): +E is the band line (HV=(E<<8)-$A0). Negative +E
+;   elides a block (copy its payload into the predecessor); +E<=8 merges into
+;   block $10 (line clamp >=4); +E<=line($10)+8 merges into $20 (line clamp
+;   >=line($10)+4). The gap loop writes cmd=$8A00+line(next(next))-line(next)-1
+;   while the block after next is below $90. E6 matches this arithmetic exactly.
 ; Clobbers: d0/d1/a0/a1
 ; *************************************************
 

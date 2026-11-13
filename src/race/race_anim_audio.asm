@@ -4411,7 +4411,7 @@ unk_15CFC:      dc.b   0
 
  ; *************************************************
 ; Function Race_UpdatePlayerAnimation
-; Advances the player tile base $5C toward ram_FF18AA by the frame delay.
+; Advances player stamina $5C toward ram_FF18AA by the frame delay.
 ; In:  RacePlayerA $5C/$6E/$68; Race_ram_FrameDelay
 ; Out: player $5C
 ; Clobbers: d0

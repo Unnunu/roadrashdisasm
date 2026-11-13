@@ -2,9 +2,10 @@
 
 Status: in progress. L1, L2, R30, L3, L4, L5, L7, L6a (camera/progress/VScroll/HScroll),
 L6b (object list/projection/visible list) and L6c (shape/pixel map, Data4 bits, E8) are
-complete. The L6 world branch is closed; what remains is the acceptance/visual branch
-and the separate audio workstream. This file is the roadmap, not a build task; the
-queue below lists what remains.
+complete, and the residual pass closed `U-0017` (stamina regen) and `U-0018` (VScroll
+compaction). The L6 world branch is closed; what remains is the acceptance/visual
+branch and the separate audio workstream. This file is the roadmap, not a build task;
+the queue below lists what remains.
 
 ## Goal
 
@@ -144,6 +145,9 @@ captures.
   while it is set.
 - R30 crash handlers remain `[static]` (0 calls in the 60 s demo); timing is the
   residual dynamic item.
+- The residual pass closed `U-0017`: `$5C` adds `FrameDelay` below `ram_FF18A8=$500`
+  and then restores the `Race_ActorGraphicsTable` page maximum `+$E`; the player
+  regenerates separately in `Race_UpdatePlayerAnimation` toward `ram_FF18AA=$A00`.
 
 ## L5 spawn/lifecycle results (E5, completed)
 
@@ -203,7 +207,7 @@ matrix v8 in `race_map.md`.
 - E8: offset lists match, pass count confirmed (`$FFD430` pass=1 -> 6 entries once),
   sorted keys in `ram_FF1C50`, draw order in `ram_FF1D50`.
 - Remaining: optional shape-art catalogue/crop and visual checks; `U-0017`/`U-0018`
-  stay open.
+  are closed by the residual pass (stamina regen and VScroll compaction).
 
 ## Out of scope
 
@@ -319,8 +323,9 @@ bodies and tables, so those tasks are now contract/dynamic work, not disassembly
 | 16 | `race_acceptance.md` | I | verify | acceptance criteria, `Matched OK` |
 
 L1-L5/L7 and the L6a/L6b/L6c world branch are complete. Experiment Pack E7 was used
-by L7; L6a used E6 and L6c used E8. Remaining: optional visual catalogues/crops,
-`U-0017`/`U-0018`, the asset-tail catalogue and the separate audio workstream.
+by L7; L6a used E6 and L6c used E8; the residual pass closed `U-0017`/`U-0018`
+(`race_residual_unknowns.md`). Remaining: optional visual catalogues/crops, the
+asset-tail catalogue and the separate audio workstream.
 
 ## Experiment Pack format
 

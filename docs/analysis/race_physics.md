@@ -3,8 +3,9 @@
 - **Module:** VDP DMA helpers, rearview mirror/camera, HInt V/HScroll tables,
   road-marking HUD, actor-sprite projection, nearest-opponent/engine audio
 - **ROM range:** `0x00D8FA`–`0x00E731`
-- **Status:** L6a camera/VScroll/HScroll contract complete (matrix v10, E6); rearview
-  mirror and engine-audio mapping remain `[static]`/TODO
+- **Status:** L6a camera/VScroll/HScroll contract complete (matrix v10, E6); the
+  compaction arithmetic is closed (`U-0018`, matrix v13); rearview mirror and
+  engine-audio mapping remain `[static]`/TODO
 - **Source:** `src/race/race_physics.asm`
 - **Related:** `docs/analysis/race.md`, `docs/analysis/race_spawn.md`,
   `docs/analysis/race_ai_road.md`, `docs/modules/race_physics.md`, `docs/ram-map.md`
@@ -93,11 +94,25 @@ words from a block at `$A0+offset`:
 - Blocks `$10..$80` are built back to front; `$70` clamps alpha to `[$10,$98]`,
   `$60`/`$50` derive the horizon/road-top bands from `ram_FF3274`, and `$80` is the
   fixed bottom/sky block (`VSRAM -8,-8`, backdrop `$3F`, next `$90`).
-- The pass at `.loc_E2AE` compacts the linked list using `+E`: a negative value copies
-  the referenced block's fields into block 0 and skips it; a value `<= 8` merges the
-  next band. `.loc_E31A..E3B6` clamp the surviving bands and recompute every `$8Axx`
-  line gap from the HV target differences. The exact arithmetic is still being
-  characterized (`U-0018`).
+- The compaction pass (`U-0018` closed) uses `+E` as the band line reference
+  (`HV = (E<<8) - $A0`) and runs four phases:
+  1. `.loc_E2AE` elide: while the candidate block (`d0 = +A`) has `+E < 0`, copy its
+     `+2/+4/+6/+8/+A/+E` fields into block 0 and continue with the copied `+A`.
+  2. `.loc_E2E4` first-band merge: while `+E <= 8`, copy the candidate into block
+     `$10` and advance; then `E10 = max(E, 4)`, `HV10 = (E10<<8)-$A0`, block0.`+A=$10`.
+  3. `.loc_E33E` second-band merge: with `d2 = E10+8`, while `+E <= d2`, copy the
+     candidate into block `$20`; then `E20 = max(E, E10+4)`, `HV20 = (E20<<8)-$A0`,
+     block`$10.+A=$20`, block0.`+0=$8A01`.
+  4. `.loc_E3B6` gap loop: starting at `$10`, for `d1`, `d2=next(d1)`,
+     `d3=next(d2)`, while `d3 < $90` write
+     `block[d1].+0 = $8A00 + E(d3) - E(d2) - 1` and continue at `d2`. The last
+     editable band retains its build-time `$8AFF`.
+  A provisional `block$10.+0 = E(block$20.next)-9+$8A00` is written before the loop
+  and is normally overwritten by its first iteration. Tail: `+C=$8210`, `+E=$8403`.
+  E6 check: lines `$04/$08/$26/$34/$48/$9D` produce
+  `$8A1D/$8A0D/$8A13/$8A54/$8AFF` and the chain
+  `$10->$20->$50->$60->$70->$80->$90`; `$30/$40` disappear in phase 3. These values
+  match `$8A00+E(d3)-E(d2)-1` exactly (`analysis/notes/L6a_hint_trace.txt`).
 - `ram_FF3274` is the last index of the road-profile index array (`ram_FF3236[31]`),
   i.e. the horizon line; it is not a separate variable.
 - The final part of the routine subtracts `PlayerA $22 * {6000,3000,1800,1800,3000,4800}`
@@ -214,8 +229,8 @@ Builds a `Road_ObjectArray` record for an actor that is far behind the player
 
 ## Open questions
 
-- `U-0018`: exact VScroll compaction arithmetic (the `+E` thresholds are known; the
-  per-case merge/gap selection is not fully enumerated).
+- `U-0018` is closed: the four phases and the `$8Axx` formula above reproduce the E6
+  runtime chain and line gaps exactly.
 - Engine-audio mapping of `Race_ram_NearestBehindSpeed`/`Race_ram_NearestAheadSpeed`
   into the audio routine.
 - Rearview mirror pixel/row mapping (visual confirmation).

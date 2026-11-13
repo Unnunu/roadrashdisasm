@@ -3014,6 +3014,8 @@ Race_UpdateActorActions:
                 lea     (Race_ActorGraphicsTable).l,a4
                 movea.l (a4,d2.w),a4
                 move.l  a4,(ram_FF1A68).l
+                ; stamina regen: accumulate FrameDelay below the shared $500
+                ; baseline, then restore the graphics page maximum +$E (U-0017).
                 move.w  $5C(a1),d0
                 add.w   (Race_ram_FrameDelay).l,d0
                 cmp.w   (ram_FF18A8).l,d0
