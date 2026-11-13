@@ -80,26 +80,32 @@ starts at `Data6-6`.
 
 ## Data5 spawn records
 
-`Race_SpawnOpponents` expands 4-byte records into the normal list at
-`ram_FFD7D4` and the special/traffic list at `ram_FFDBD8`; `$FFFFFFFF` terminates.
+`Race_SpawnOpponents` expands 4-byte records into two lists and terminates both with
+`$FFFFFFFF`:
+
+- `ram_FFD7D4` **normal list** -> `Race_AddStagedObjects` (road/track objects);
+- `ram_FFDBD8` **special list** -> `sub_13BF4` (the reserved `ram_FF1F2A` opponent).
 
 | Bits | Meaning | Evidence |
 |---|---|---|
-| high word | progress/distance threshold | `[static]` `sub_13BF4`, `Race_AddStagedObjects` |
+| high word | world X (16.16 high word) of the object/reserved spawn | `[static]` `sub_13BF4`, `Race_AddStagedObjects` |
 | bit4 | randomize low nibble (0..15) | `[static]` `B934` |
-| bit5 | special/traffic list; append colour byte | `[static]` `B94A` |
-| bits 8-11 | level/type index | `[static]` `sub_13BF4`; staged object uses byte2 as type |
+| bit5 | route to the special list and replace byte 2 with the colour/page byte | `[static]` `B94A` |
+| byte 2 | normal: object type; special: colour/page index from `off_B98A` | `[static]` `B964`/`sub_13CFE` |
 | bits 0-3 | lane/spawn offset (`*$20 - $100`) | `[static]` `sub_13BF4`, `Race_AddStagedObjects` |
 | other bits | flag bits preserved in the record | TODO |
 
-The per-level gates are `word_B976` (random acceptance threshold), `word_B980`
-(max coloured entries), and `off_B98A` (colour lists). Normal records are used by
-the level/opponent event path and the staged-object builder; the special list
-records have byte 2 replaced by the colour byte.
+The per-level gates are `word_B976` (random acceptance threshold
+`CCCC,B333,9999,8000,6666`), `word_B980` (special-list cap `1,2,3,4,4`), and
+`off_B98A` (colour lists `{2,0}`, `{1,3}`, `{1,2,4,0}`, `{1,2,3,5}`, `{1,2,3,4}`).
+The normal list is also capped at `$FF` entries. `sub_13CFE` maps the special byte 2
+to graphics index `byte+4` and the definition page `ActorLevelBase[byte-1]`; see
+`docs/analysis/race_spawn.md`.
 
 `[dynamic]` Demo normal list starts `00A7 0218, 01A5 0118, 02BC 050F, ...`;
-special list starts `02D6 022F` then `FFFFFFFF`. This matches progress-high /
-lane-low / level-byte field mapping.
+special list starts `02D6 022F` then `FFFFFFFF`. Forcing the player past `$02D60000`
+made `sub_13BF4` consume that record and spawn `ram_FF1F2A` at X `$02D60000`,
+page index 2, lane `$E0` (E5-2).
 
 ## Data6 background bundle
 
@@ -128,7 +134,7 @@ them as stacked far/near background strips; `race_image_0` is the cloud parallax
 
 - Data4 side/mirror bit pairing, the `+$02` remaining bits and second-shape
   generation.
-- Data5 other flag bits and the exact normal-vs-special consumer split.
+- Data5 other flag bits (the normal/special consumer split is now resolved).
 - Meaning of the level word and the `*$10/$210` scaling.
 - Dynamic verification of Data6 decompression offsets and palette rows.
 

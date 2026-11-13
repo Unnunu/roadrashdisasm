@@ -511,7 +511,7 @@ Names stay `sub_XXXX`/`unk_XXXX`; proposals are not applied.
 | `unk_12168` | data | `race_ai.asm:1887 ($12168)` | race_ai: 9 actor handler pointers; unreferenced dead data | placeholder | `[static]` | keep (dead) | `Race_ActorImpactHandlerTable` | low | `U-0016` resolved |
 | `unk_12B7C` | data | `race_ai.asm:2812 ($12B7C)` | race_ai: 80 extent bytes | placeholder | `[static]` | rename-later | `Race_CollisionExtentTable` | medium | - |
 | `unk_12BCC` | data | `race_ai.asm:2824 ($12BCC)` | race_ai: 6 close-attack reaches | placeholder | `[static]` | rename-later | `Race_CloseAttackReachTable` | medium | - |
-| `unk_13A1A` | data | `race_ai.asm:4158 ($13A1A)` | race_ai: 6 per-level respawn words | placeholder | `[static]` | rename-later | `Race_LevelRespawnScale` | medium | - |
+| `unk_13A1A` | data | `race_ai.asm:4158 ($13A1A)` | race_ai: 6 per-level static-respawn scale words (`FFFF,B333,8000,4CCC,3333,2222`); E5-3 observed the timer product | placeholder | `[static]/[dynamic]` E5-3 | rename-later | `Race_LevelRespawnScale` | high | - |
 | `unk_14744` | data | `race_anim_audio.asm:712 ($14744)` | race_anim/ai: 8 action handlers | placeholder | `[static]` | rename-later | `Race_ActionHandlerTable` | high | - |
 | `Race_TrackObjectTypeTable` | data | `race_anim_audio.asm:724 ($14764)` | race_ai/road: 19 x 8-byte records (flags/size/handler/steerable) | narrow | `[static]` | rename-later | `Race_TrackObjectRecordTable` | medium | `U-0014` resolved |
 | `unk_147FC` | data | `race_anim_audio.asm:747 ($147FC)` | race_ai: 128 handler-index bytes | placeholder | `[static]` | rename-later | `Race_ActionHandlerIndexTable` | high | - |
@@ -564,3 +564,33 @@ Names stay `sub_XXXX`/`unk_XXXX`; proposals are not applied.
 | `ram_FF1768` | data | `race_ai.asm:1542 ($FF1768)` | race_ai/anim: current player in crash/fall (damage suppression) | placeholder | `[confirmed]` E4-F | rename-later | `Race_ram_CrashAnimActive` | high | - |
 | `ram_FF1B26` | data | `race_hud.asm:331 ($FF1B26)` | hud/core/anim: BikeDamage (inverse HP); `$20` threshold | good | `[confirmed]` E4-F | keep | - | high | - |
 | `Race_ApplyCrashImpact` | routine | `race_ai.asm:1428 ($11B7A)` | race_ai: lean-over crash (`DemoMode==0`); damage `ScaleImpactDamage(Speed)>>2` | good | `[static]` | keep | - | medium | - |
+
+### L5 spawn/lifecycle (E5)
+
+| Identifier | Kind | Defined | Used in (file: role) | Name quality | Evidence | Rename verdict | Proposed | Confidence | Unknown ID |
+|---|---|---|---|---|---|---|---|---|---|
+| `Race_SpawnTick` | routine | `race_spawn.asm:158 ($16AF6)` | race_spawn: timer/count/speed gate -> opponent or traffic spawn | good | `[static]` E5-6 | keep | - | high | - |
+| `Race_CheckOpponentAhead` | routine | `race_spawn.asm:208 ($16B6A)` | race_spawn: recycle ahead actor; reserved opponent exempt | good | `[static]` | keep | - | high | - |
+| `Race_CheckTrafficBehind` | routine | `race_spawn.asm:236 ($16B9E)` | race_spawn: recycle behind traffic | good | `[static]` | keep | - | high | - |
+| `Race_SpawnOpponent` | routine | `race_spawn.asm:283 ($16BD6)` | race_spawn: free-list opponent -> activate/init $200000 ahead | good | `[static]` E5-6 | keep | - | high | - |
+| `Race_SpawnTraffic` | routine | `race_spawn.asm:316 ($16C1A)` | race_spawn: traffic free-list -> activate/init $100000 behind | good | `[static]` E5-6 | keep | - | high | - |
+| `Race_SpawnOpponents` | routine | `race_core.asm:1348 ($B8D0)` | race_core: Data5 -> normal (`FFD7D4`) and special (`FFDBD8`) lists | good | `[static]/[dynamic]` E5-1 | keep | - | high | - |
+| `Race_UpdateStaticActors` | routine | `race_ai.asm:2469 ($12868)` | race_ai: move active static pair; candidates/collision | good | `[static]/[dynamic]` E5 | keep | - | high | - |
+| `Race_InitExtraStaticActor` | routine | `race_ai.asm:2516 ($128E0)` | race_ai: `$FF2FAA` init from progress + marker offset | good | `[static]/[dynamic]` E5-5 | keep | - | high | - |
+| `Race_UpdateExtraStaticActor` | routine | `race_ai.asm:2569 ($12974)` | race_ai: steer/clamp `$FF2FAA` | good | `[static]/[dynamic]` E5-5 | keep | - | high | - |
+| `sub_138CE` | routine | `race_ai.asm:4059 ($138CE)` | race_ai: static respawn timer/palette/side/profile/speed | placeholder | `[static]/[dynamic]` E5-3 | rename-later | `Race_UpdateStaticSpawnCycle` | high | - |
+| `sub_13A26` | routine | `race_ai.asm:4169 ($13A26)` | race_ai: static respawn at `PlayerProgress+$208000`; set `$68` bit6 | placeholder | `[static]/[dynamic]` E5-4 | rename-later | `Race_RespawnStaticActor` | high | - |
+| `sub_13BF4` | routine | `race_ai.asm:4361 ($13BF4)` | race_ai: reserved opponent rating gate + Data5 special list | placeholder | `[static]/[dynamic]` E5-2 | rename-later | `Race_UpdateReservedOpponentSpawn` | high | - |
+| `sub_13CFE` | routine | `race_ai.asm:4437 ($13CFE)` | race_ai: activate/setup reserved opponent, graphics `page+4`, definition page | placeholder | `[static]/[dynamic]` E5-2 | rename-later | `Race_InitReservedOpponent` | high | - |
+| `ram_FF1F2A` | RAM | `ram_const.asm:430 ($FF1F2A)` | race_spawn/ai: reserved `Race_ActorList[1]` opponent (`$71=1`) | placeholder | `[static]/[dynamic]` E5-2 | rename-later | `Race_ReservedOpponent` | medium | - |
+| `word_B976` | data | `race_core.asm:1402 ($B976)` | race_core: per-level random-acceptance threshold for Data5 | placeholder | `[static]` | rename-later | `RaceTrack_SpawnAcceptThreshold` | high | - |
+| `word_B980` | data | `race_core.asm:1404 ($B980)` | race_core: per-level special-list cap | placeholder | `[static]` | rename-later | `RaceTrack_SpecialSpawnCap` | high | - |
+| `off_B98A` | data | `race_core.asm:1406 ($B98A)` | race_core: 5 per-level special colour/page lists | placeholder | `[static]` | rename-later | `RaceTrack_SpecialSpawnPages` | high | - |
+| `ram_FFDBD4` | RAM | `ram_const.asm:634 ($FFDBD4)` | race_core/ai: Data5 special-list cursor used by `sub_13BF4` | placeholder | `[static]/[dynamic]` E5-2 | rename-later | `Race_ram_SpecialSpawnCursor` | high | - |
+| `ram_FF1B2E` | RAM | `ram_const.asm:321 ($FF1B2E)` | race_ai_road: shape `$186` run length -> extra actor gate | placeholder | `[static]` | rename-later | `Race_ram_MarkerRunLength` | medium | - |
+| `ram_FF1B30` | RAM | `ram_const.asm:322 ($FF1B30)` | race_ai_road/ai: shape `$186` slot position; extra actor init/deactivate | placeholder | `[static]/[dynamic]` E5-5 | rename-later | `Race_ram_MarkerSlot` | high | - |
+| `ram_FF1B32` | RAM | `ram_const.asm:323 ($FF1B32)` | race_ai: reserved-opponent spawn delay | placeholder | `[static]` | rename-later | `Race_ram_ReservedSpawnTimer` | medium | - |
+| `ram_FF1B34` | RAM | `ram_const.asm:324 ($FF1B34)` | race_ai: reserved-opponent rating-distance offset (init `$E10`) | placeholder | `[static]` | rename-later | `Race_ram_ReservedSpawnOffset` | medium | - |
+| `ram_FF1B36` | RAM | `ram_const.asm:325 ($FF1B36)` | race_ai: reserved-opponent initial-placement latch | placeholder | `[static]` | rename-later | `Race_ram_ReservedSpawned` | medium | - |
+| `ram_FF1B3A` | RAM | `ram_const.asm:327 ($FF1B3A)` | race_ai: last reserved-opponent rating distance | placeholder | `[static]` | rename-later | `Race_ram_ReservedLastDistance` | low | - |
+| `Race_ram_LevelIndex` | RAM | `ram_const.asm:326 ($FF1B38)` | race_ai: Data5 special colour/page index; recycle compares with Menu level | narrow | `[static]/[dynamic]` E5-2 | rename-later | `Race_ram_ReservedPageIndex` | medium | - |

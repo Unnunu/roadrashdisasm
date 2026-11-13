@@ -1,8 +1,8 @@
 # Race map: timeline, dataflow, field ownership and captures
 
-- **Status:** matrix v7 (v6 + L4 pair-collision/impact/damage/fall contracts and E4
-  dynamic results: contact latch, extent/reach, `Race_ApplyCollisionImpact` branches,
-  stamina `$5C`, knockdown arithmetic)
+- **Status:** matrix v8 (v7 + L5 spawn/lifecycle contracts and E5 dynamic results:
+  four actor populations, `Data5` normal/special split, reserved `ram_FF1F2A`,
+  static respawn cycle, `$FF2FAA` extra slot)
 - **Sources:** `docs/analysis/race.md`, `race_actors.md`, `race_ai.md`, `race_movement.md`,
   `race_speed.md`, `race_impact.md`, `race_spawn.md`, `road_render.md`, `docs/ram-map.md`,
   `tasks/race_understanding_program.md`
@@ -636,6 +636,41 @@ Notes:
   ratings (`$1B58`+) exceed the early player speed; this isolates the slot/budget
   logic without changing the branch under test.
 
+## L5 spawn/lifecycle (E5)
+
+Full contracts and the E5 table: `docs/analysis/race_spawn.md`.
+
+Four populations share the `$80`-byte actor struct (`$71` = slot index):
+
+| Population | Slots | `$71` | Activation | Recycle |
+|---|---|---|---|---|
+| Player | `RacePlayerA` | 0 | always | never |
+| Loop opponents | `ram_FF1A08` `Struct_9..15` + opponent free list `Struct_2..8` | 2..15 | init / `Race_SpawnOpponent` | `Race_RecycleOpponent` |
+| Reserved opponent | `ram_FF1F2A` (`Race_ActorList[1]`) | 1 | `sub_13BF4` rating gate or `Data5` special list | `Race_RecycleActor` special case |
+| Static pair | `$FF2EAA`, `$FF2F2A` | `$10`, `$11` | `sub_138CE` timer -> `sub_13A26` | `Race_ClampActorY` (`$68` bit6) |
+| Extra static | `$FF2FAA` | `$12` | `shape $186` marker, `ram_FF1B30 >= $1C` | `ram_FF1B30 < 0` clears bit6 |
+
+Static cycle: `sub_138CE` sets timer `(Rand&$FFF)*unk_13A1A[level]>>16`, palette,
+side, `$74` profile and `Race_StaticActionTable` Speed/offset; `sub_13A26` respawns at
+`PlayerProgress+$208000`; `Race_ClampActorY` deactivates past `$210000`. Extra actor:
+X = `(PlayerProgress_integer + ram_FF1B30 - 1)<<16`, Y = `±(Rand&$7FF)`,
+Speed `$1770`, then steered by `Race_UpdateExtraStaticActor`.
+
+`Data5` split: normal list `ram_FFD7D4` -> `Race_AddStagedObjects` (track objects);
+special list `ram_FFDBD8` -> `sub_13BF4` (reserved opponent; byte 2 = colour/page from
+`off_B98A`, mapped by `sub_13CFE` to graphics `page+4` and a definition page).
+
+`[dynamic]` E5 (`capture_L5*.gdb`, `analysis/notes/L5*_trace.txt`):
+
+| Check | Breakpoint / window | Observed | Decision |
+|---|---|---|---|
+| E5-1 expansion | `0xB970` | level-1 `d7=$CCCC`, `d6=1`; normal `00A70218,01A50118,...`; special `02D6022F,FFFFFFFF` | confirmed |
+| E5-2 special spawn | forced X past `$02D60000`, `0x13CFE` | `ram_FF1F2A` X `$02D60000`, page 2, lane `$E0`, Speed `$050C`, cursor -> terminator | confirmed forced |
+| E5-3 static assign | `0x1397E` | profiles `0E,01,07,0D,05`; timers `E2,17,474,7D6,415,257`; Speed/offset from table | confirmed |
+| E5-4 static respawn | `0x13A26` | 3 natural respawns | confirmed |
+| E5-5 extra actor | `0x10B2E`/`0x12972`/`0x12A86` | marker `$11`; init X `$02060000`, Y `$FEC8`, Speed `$1770`, `$68=$40`; 130 updates | confirmed |
+| E5-6 natural traffic spawn | `0x16AF6`+ | 631 race ticks, 0 spawns/recycles, active count 8 | static only |
+
 ## Register-base and list warning
 
 Raw `NN(aN)` greps are not evidence until the base register is known:
@@ -692,7 +727,12 @@ already used for them. New checks follow the Experiment Pack format in
 | E4-B knockdown arithmetic | `0x14C3C`/`0x14C54`/`0x14C5C`/`0x14C8C`/`0x14CAC` | `delta=PairImpact*$18AC`; fall at underflow, `$54=$11`, bit4, `$0F`/`$0D` |
 | E4-D/E player exchange | `0x14CEC`/`0x14CFA`/`0x14D50`/`0x14D82` | player path reached; small delta -> 0 BikeDamage |
 | E4-F forced static impact | `0x11EC4`/`0x11ED0` | deep and shallow `Race_ApplyCollisionImpact` confirmed |
-| Static/extra actors | running dump: static `$16/$30/$46/$56/$74`; `$FF2FAA` `$71` | static layout anomaly vs extra slot activation |
+| Static/extra actors | running dump: static `$16/$30/$46/$56/$74`; `$FF2FAA` `$71` | static lifecycle confirmed (E5); roles open |
+| E5-1 `Data5` expansion | `0xB970` | normal/special lists, thresholds, colour cap |
+| E5-2 reserved spawn | forced X, `0x13CFE` | special record -> `ram_FF1F2A`, page/lane/Speed |
+| E5-3/E5-4 static cycle | `0x1397E`/`0x13A26` | timer/profile/palette/side + respawn |
+| E5-5 extra actor | `0x10B2E`/`0x12972`/`0x12A86` | marker gate, init fields, updates |
+| E5-6 natural spawn | `0x16AF6`/`0x16D2A`/`0x16D60`/`0x16CAE` | not exercised (631 ticks, count 8) |
 
 ## Tooling and validation
 
@@ -742,5 +782,7 @@ crash/fall contracts and handler tables, corrects `$08/$0E/$10/$3C/$78`, and clo
 slot/budget, dispatcher branches, per-level budget and static respawn indexing.
 L4 (`tasks/race_L4_impact_contracts.md`) is now in matrix v7: pair collision,
 damage/exchange, stamina `$5C`, knockdown and both `Race_ApplyCollisionImpact`
-branches are confirmed; only the R30 crash-path timing remains static. Next: L5
-spawn/lifecycle.
+branches are confirmed; only the R30 crash-path timing remains static. L5
+(`tasks/race_L5_spawn.md`) is complete (v8/E5): four populations, `Data5`
+normal/special split, reserved opponent, static respawn cycle and extra slot. Next:
+L7 results/HUD; L6 is the parallel world branch.

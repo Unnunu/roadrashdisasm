@@ -219,36 +219,34 @@ values. The exact semantics and the 1:1 mapping to rider graphics are TODO.
 ## Static actor group
 
 `Race_StaticActorList` = `$FF2EAA`, `$FF2F2A`; `Race_CreateActors` sets `+$16=$10`,
-`+$71` from `$10`, zeroes `+$74/+$75/+$68/+$69/+$6A`, `+$56=$FFFF`, then writes the
-group's start values (`ram_FF2EAA/$2F2A/$2F2E/$2F9D/...`). It is likely the police /
-special traffic actor; the exact role is TODO.
+`+$71` from `$10`/`$11`, zeroes `+$74/+$75/+$68/+$69/+$6A`, `+$56=$FFFF`, then
+writes the group's start values (`ram_FF2EAA/$2F2A/$2F2E/$2F9D/...`). The actor
+struct is the normal `$80`-byte layout; the only special part is the
+`sub_138CE` respawn cycle (`docs/analysis/race_spawn.md`).
 
-`[dynamic]` After the running update these two structs no longer look like normal
-racers: `+$16` becomes `0`, `+$30=$8000`, `+$46=-$11`/`+$10`, `+$56=$E2`/`$17`,
-`+$74=$0E`/`$01`, and `+$69` is `0`/`$08`. That suggests `Race_UpdateStaticActors`
-reuses the `$80`-byte slots with a phase-specific field layout or a different
-structure; do not apply normal actor names blindly to `$FF2EAA/$FF2F2A` until the
-static updater is analyzed.
+`[confirmed]` E5-3/E5-4: `sub_138CE` assigns each inactive static actor a respawn
+timer (`(Rand & $FFF) * unk_13A1A[Menu level] >> 16`), palette `0`/`2`, side
+`$70`/`-$70`, profile `$74 = (timer & $F0)>>4`, and Speed/curve offset from
+`Race_StaticActionTable[$74]`. On expiry it calls `sub_13A26`, which places the actor
+at `PlayerProgress + $208000` and sets `$68` bit6. `Race_ClampActorY` clears bit6 once
+the actor is more than `$210000` from the player progress, so the pair cycles.
+Observed profiles/timers: `$0E/$E2`, `$01/$17`, `$07/$474`, `$0D/$7D6`, `$05/$415`.
+The earlier "static field layout anomaly" (`$16=0`, `$30=$8000`) was a snapshot of
+the inactive/reset state, not a different structure.
 
-`[dynamic]` Forced activation test (`ProgressSnapshotB=$800`,
-`ram_FF1B30=$1C`) reached `Race_UpdateExtraStaticActor` with
-`$FF2FAA`: index `$12`, type `0`, speed `$1770`, Y `$FEBC`, X `$00220000`,
-`$68=$40` (active), `$69=0`. This confirms the late-race extra/static slot is
-initialized and updated by that path; visual role remains police/static.
-
-`[dynamic]` `$FF2FAA` is zero except `+$71=$12` in both demo snapshots; it is not in
-the active/free/static lists. `Race_CreateActors` writes `$12` at `$FF2FAA+$71`, so
-this is a third static-like slot; `Race_InitExtraStaticActor`/`Race_UpdateExtraStaticActor`/collision paths reference
-it. `Race_InitExtraStaticActor` activates it when `Race_ram_ProgressSnapshotB >= $708`, sets `$68`
-bit6, `$73` 0/2, `$30/$00/$1A`, `$69` bit3, `$12=$1770`, and a progress-derived X;
-`Race_UpdateExtraStaticActor` then updates/moves it. This looks like a late-race **police/static**
-actor, but the role is still a hypothesis.
-
-`Race_UpdateStaticActors` only processes static actors with `$56==$FFFF` and `$68`
-bit6. It uses `$16` as the `unk_25A10` type index, recomputes `$26`, calls
+`Race_UpdateStaticActors` only processes active static actors (`$56==$FFFF` and `$68`
+bit6). It uses `$16` as the `unk_25A10` type index, recomputes `$26`, calls
 `sub_113A4`/`Race_UpdateActorMovement`/`Race_UpdateActorFallMovement`, then `$36+$38 -> $00`, `Race_BuildTargetCandidates`,
-`sub_12C9A`, `sub_13DE0`. The observed static `$16=0` after update is therefore an
-open semantic question, not a reason to rename the field.
+`sub_12C9A`, `sub_13DE0`.
+
+`[confirmed]` Extra slot `$FF2FAA` (`$71=$12`) is not in the active/free/static
+lists. `Race_Update` activates it when a `shape $186` track object lands in the
+object window (`ram_FF1B30 >= $1C`) and `ProgressSnapshotB >= $708`; init sets
+`$68` bit6, palette 0/2, X = `(PlayerProgress_integer + ram_FF1B30 - 1) << 16`,
+Y = `±(Rand & $7FF)` (`$69` bit3 = sign), Speed `$1770`. `Race_UpdateExtraStaticActor`
+then steers/clamps it. E5-5 observed init at progress `$01E84C52` with X
+`$02060000`, Y `$FEC8`, palette 0, `$68=$40`, and 130 update calls. The visual role
+(police/traffic/pacer) remains a hypothesis.
 
 ## Actor lifecycle notes
 
@@ -272,13 +270,13 @@ open semantic question, not a reason to rename the field.
   other speeds.
 - `+$2A` origin/role and `+$4A/$4C/$4E` collision/sprite extents.
 - `+$56` sentinel/timer and `+$68` bit0/4/5/7 semantics; `$69` bit0/1/7 split.
-- Static group `$FF2EAA/$FF2F2A` and `$FF2FAA` (index `$12`); 2P is
-  sequential and uses `RacePlayerA` with the selected player data, while
-  `$FF26AA` is a region bound/zero slot.
+- Static group `$FF2EAA/$FF2F2A` lifecycle is resolved (`sub_138CE` cycle); the
+  visual role of the static pair and `$FF2FAA` (index `$12`) remains a
+  police/traffic/pacer hypothesis. 2P is sequential and uses `RacePlayerA` with the
+  selected player data, while `$FF26AA` is a region bound/zero slot.
 - Which fields are copied/overwritten by `Race_SpawnOpponent`/`Race_RecycleActor`.
-- Next dynamic tests: brake/accelerate via native pad or after disabling demo mode,
-  off-road, 2P/player B, static/police appearance. Steering/lean is covered by the
-  left/right snapshots above.
+- Next dynamic tests: a natural free-list respawn in non-demo play, plus
+  visual/role confirmation for the static and extra actors.
 
 ## Experiments performed
 
@@ -289,7 +287,7 @@ open semantic question, not a reason to rename the field.
 | Speed/frame distance | `0x10E66`, Speed > 0 | `$EE/$111/$118`, `$26=$682/$777/$7A8`, FrameDelay 7 | `$26=Speed*FrameDelay` confirmed |
 | Steering/lean | `CurrentSteering=±$600` each frame, 90 frames | `$42=∓$49`, `$69=$04`, `$04-$1E=$26` | `$42` signed lean; `$1E` previous X |
 | Hard-left/off-road | 300 frames forced left | `$00=$FF89`, `$30=$FFEA`, `$69=$07`, `$4A/$4C/$4E=$0E/$0C/$0F` | hard-curve state; off-road bit3 not confirmed |
-| Static/extra slots | running dump | static `$16=0`, `$30=$8000`; extra zero except `$71` | static layout/owner TODO |
+| Static/extra slots | running dump + E5 (`0x1397E`/`0x12972`) | static pair timer/profile cycle; extra init X/Y/Speed and 130 update calls | static lifecycle confirmed; roles open |
 | Brake/input injection | break at `0xBE6C` in demo | `Race_GetInputDemo` path, injected d0 ignored | use native pad or disable demo mode |
 
 ## Rename proposals (apply only on request)

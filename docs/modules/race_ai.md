@@ -1,7 +1,7 @@
 # Module card: `src/race/race_ai.asm`
 
 - **ROM range:** `0x010E00`–`0x014055` (`src/race/race_anim_audio.asm` starts at `0x14056`)
-- **Status:** actor/AI/action dispatch, movement/speed/curve fields and the R30 gap set analyzed; crash/fall contracts integrated (matrix v5); L3 static contracts and E3 dynamics done (candidate buckets, profile slot/budget, dispatcher branches, per-level budget, static respawn); L4 dynamics next
+- **Status:** actor/AI/action dispatch, movement/speed/curve fields and the R30 gap set analyzed; crash/fall contracts (matrix v7/E4); L3 contracts/E3, L4 impact and L5 spawn/static lifecycle (matrix v8/E5) done
 - **Related:** `docs/analysis/race.md`, `docs/analysis/race_spawn.md`,
   `docs/ram-map.md`, `docs/modules/race.md`
 
@@ -26,7 +26,13 @@ audio live in `src/race/race_anim_audio.asm`; PRNG/LFSR helpers are in
 
 - `Race_UpdateActorAI` `0x10E66`: main player/opponent AI loop.
 - `Race_HandleInputOnFoot` `0x110AE` / `Race_AnotherInputOnFoot` `0x111FA`: on-foot input.
-- `Race_UpdateStaticActors` `0x12868`: static/police actor AI.
+- `Race_UpdateStaticActors` `0x12868`: static pair AI (movement/candidates/collision).
+- `sub_138CE` `0x138CE` / `sub_13A26` `0x13A26`: static respawn timer -> respawn cycle
+  (E5).
+- `sub_13BF4` `0x13BF4` / `sub_13CFE` `0x13CFE`: reserved `ram_FF1F2A` opponent
+  (rating gate + `Data5` special list, E5).
+- `Race_InitExtraStaticActor` `0x128E0` / `Race_UpdateExtraStaticActor` `0x12974`:
+  `$FF2FAA` extra slot (`shape $186` marker gate, E5).
 - `Race_UpdateActorActions` `0x12EA2`: profile action selection (`Race_ActorProfileTable[$74]`), recycle and `ram_FF1A96/98` budget.
 - `Race_UpdateStaticActions`/`Race_ClampActorY` `0x13106`/`0x13130`: static action dispatch/shared Y clamp; `Race_StaticActionTable` speed/Y-offset pairs decode.
 - `Race_DispatchActorAction` `0x16458`: action-1 dispatcher (target/cooldown).

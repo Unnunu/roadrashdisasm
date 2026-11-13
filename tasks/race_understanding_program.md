@@ -1,8 +1,9 @@
 # Program: complete race understanding
 
-Status: in progress. L1, L2, R30, L3 and L4 (static + dynamic E4) are complete.
-Next is L5 spawn/lifecycle (`race_L5_spawn.md`). This file is the roadmap, not a
-build task; the queue below lists what remains.
+Status: in progress. L1, L2, R30, L3, L4 and L5 (static + dynamic E4/E5) are
+complete. Next is L7 results/HUD (`race_L7_results_hud.md`); L6 is the parallel
+world branch. This file is the roadmap, not a build task; the queue below lists what
+remains.
 
 ## Goal
 
@@ -143,6 +144,26 @@ captures.
 - R30 crash handlers remain `[static]` (0 calls in the 60 s demo); timing is the
   residual dynamic item.
 
+## L5 spawn/lifecycle results (E5, completed)
+
+`race_L5_spawn.md` completed; full contracts in `docs/analysis/race_spawn.md` and
+matrix v8 in `race_map.md`.
+
+- Four populations: player; 7 loop opponents + opponent free list; reserved
+  `ram_FF1F2A` (index 1, `sub_13BF4`); static pair `$10/$11` (`sub_138CE` cycle);
+  extra `$FF2FAA` (index `$12`, `shape $186` marker).
+- `Data5` split corrected: normal list `ram_FFD7D4` -> `Race_AddStagedObjects`;
+  special list `ram_FFDBD8` -> `sub_13BF4` (reserved opponent, byte 2 =
+  colour/page from `off_B98A`, not a traffic list).
+- `sub_13BF4` rating gate + special-list paths; `sub_13CFE` maps page to graphics
+  `page+4` and a definition page.
+- Static cycle: timer from `unk_13A1A`, profile/palette/side, `sub_13A26` respawn at
+  `PlayerProgress+$208000`, `Race_ClampActorY` deactivation past `$210000`.
+- Extra slot: `ram_FF1B30` `$FFFF` deactivates; `$1C+` inits at
+  `(progress_integer+marker-1)<<16`, Y `±(Rand&$7FF)`, Speed `$1770`.
+- E5 confirmed expansion, forced special spawn, static assignment/respawn and extra
+  init/update; natural free-list traffic spawn was not exercised (631 race ticks).
+
 ## Out of scope
 
 - Audio/Z80 and the engine-audio mapping (separate workstream). Only the RAM fields
@@ -249,7 +270,7 @@ bodies and tables, so those tasks are now contract/dynamic work, not disassembly
 | 8 | `race_L3_ai_dynamic.md` | L3 | done | matrix v6; candidate/slot/budget/branch/level/static-respawn E3 results |
 | 9 | `race_L4_impact_contracts.md` | L4 | done | pair collision/extents/reach, damage/exchange, stamina/knockdown + E4; matrix v7; crash-path timing static |
 | 10 | `race_L4_impact_dynamic.md` | L4 | done (merged into #9) | E4 integrated in `race_L4_impact_contracts.md` |
-| 11 | `race_L5_spawn.md` | L5 | static + E5 | lifecycle/static/police closed |
+| 11 | `race_L5_spawn.md` | L5 | done | four populations, `Data5` normal/special split, reserved opponent, static cycle, extra slot (E5) |
 | 12 | `race_L7_results_hud.md` | L7 | static + doc | results/standings/HUD; animation-script consumers `unk_15CE0`/`unk_15CFC` |
 | 13 | `race_L6_world_a.md` | L6 | static + E6 | camera/progress/VScroll/HScroll |
 | 14 | `race_L6_world_b.md` | L6 | static | object list/projection/visible list |

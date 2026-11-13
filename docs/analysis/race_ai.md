@@ -411,12 +411,30 @@ Y/road, `$3E/$40/$42` lean, `$46` curve direction, `$56` static respawn timer,
 `RacePlayerB` is an address bound, not a live concurrent actor in sequential 2P.
 combat handlers are in `race_combat.asm`.
 
+## L5 spawn/lifecycle (E5)
+
+Full lifecycle: `docs/analysis/race_spawn.md` (E5 results there).
+
+- `sub_13BF4` owns the reserved opponent `ram_FF1F2A`: a rating gate
+  (`Rating*(ActorDistanceScale-ram_FF1B34)`, `ram_FF1B36` latch) and the `Data5`
+  special list (`ram_FFDBD4`). `sub_13CFE` applies the record page: graphics
+  `$75 = LevelIndex+4`, type from `Race_ActorLevelBase[LevelIndex-1]`.
+- `sub_138CE` runs the static pair: assigns a respawn timer from `unk_13A1A`, palette,
+  side, `$74` profile and `Race_StaticActionTable` speed/offset; expiry calls
+  `sub_13A26` (X = `PlayerProgress+$208000`). `Race_ClampActorY` deactivates past
+  `$210000`. The earlier "static layout anomaly" was the inactive reset state.
+- `$FF2FAA` (`$71=$12`) is gated by a `shape $186` track object:
+  `ram_FF1B30` `$FFFF` -> deactivate; `>= $1C` -> init (X from progress+marker,
+  Y `±(Rand&$7FF)`, Speed `$1770`); then updated by `Race_UpdateExtraStaticActor`.
+- E5 confirmed expansion lists, forced special spawn, static assignment/respawn and
+  extra init/update. Natural free-list traffic spawn was not exercised by the demo.
+
 ## Open questions
 
 - L2 closed the input/lean/curve/speed contracts statically (`race_speed.md`);
   Experiment Pack E2 in `race_map.md` covers the residual dynamic checks.
-- Static/police actor role and the `$FF2FAA` actor; static layout changes after
-  `Race_UpdateStaticActors`.
+- Visual roles of the static pair and `$FF2FAA` remain police/traffic/pacer
+  hypotheses; their lifecycle is resolved (L5/E5).
 - AI tables: `unk_12B7C`/`unk_12BCC` and `unk_13A1A` roles are described in
   `race_data_tables.md`; `Race_StaticActionTable` is decoded above; `unk_10E3E`,
   `unk_12168` (dead data, `U-0016` closed) and the on-foot vector table
