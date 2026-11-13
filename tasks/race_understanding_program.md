@@ -1,8 +1,9 @@
 # Program: complete race understanding
 
-Status: in progress. L1, L2, R30, L3, L4, L5 and L7 (static + dynamic
-E4/E5/E7) are complete. Next is the L6 world branch (`race_L6_world_a/b/c.md`). This
-file is the roadmap, not a build task; the queue below lists what remains.
+Status: in progress. L1, L2, R30, L3, L4, L5, L7 and L6a (camera/progress/VScroll/
+HScroll) are complete. Next is the L6 world-b branch (`race_L6_world_b.md`:
+object list/projection/visible list). This file is the roadmap, not a build task; the
+queue below lists what remains.
 
 ## Goal
 
@@ -293,13 +294,13 @@ bodies and tables, so those tasks are now contract/dynamic work, not disassembly
 | 10 | `race_L4_impact_dynamic.md` | L4 | done (merged into #9) | E4 integrated in `race_L4_impact_contracts.md` |
 | 11 | `race_L5_spawn.md` | L5 | done | four populations, `Data5` normal/special split, reserved opponent, static cycle, extra slot (E5) |
 | 12 | `race_L7_results_hud.md` | L7 | done | HUD/needle/odometer contract, results/standings/money pipeline, `unk_15CE0`/`unk_15CFC` scripts; matrix v9 + E7 |
-| 13 | `race_L6_world_a.md` | L6 | static + E6 | camera/progress/VScroll/HScroll |
+| 13 | `race_L6_world_a.md` | L6 | done | camera/progress/VScroll/HScroll; matrix v10 + E6 |
 | 14 | `race_L6_world_b.md` | L6 | static | object list/projection/visible list |
 | 15 | `race_L6_world_c.md` | L6 | static + E8 | shape/pixel map, Data4/5 |
 | 16 | `race_acceptance.md` | I | verify | acceptance criteria, `Matched OK` |
 
-L1-L5/L7 are complete; L6 is the remaining world branch. Experiment Pack E7 is
-used by L7; L6 uses E8.
+L1-L5/L7 and L6a are complete; L6b/L6c are the remaining world branch. Experiment
+Pack E7 is used by L7; L6a used E6 and the remaining L6b/L6c use E8.
 
 ## Experiment Pack format
 

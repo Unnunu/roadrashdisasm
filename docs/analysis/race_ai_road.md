@@ -57,6 +57,11 @@ Applied in R5: `RoadObject_X/Y/Scale/Limit/Shape/Flags/XOffset/Shape2/Size`;
   `Road_FillProfileTables` to build the per-line HScroll/marking tables.
 - `Race_IntegrateTrackCurve` reads `Track_CurveBuffer` at `Race_ram_PlayerProgress & $FF` and fills
   the profile value/index arrays (`ram_FF310A`/`31D2`/`329A`/`3236`/`3362`/`D77C`).
+  `$1E6A` is the low word of `PlayerProgress` and doubles as the curve amplitude;
+  `$1E6C` is the current signed curve byte; `$1E54/$1E56` accumulate the two curve
+  bytes, `$1E58/$1E5A` are the scaled current/next bytes, and the `$3236` array is 32
+  words whose last entry `$3274` is the horizon line. E6 confirmed these aliases and
+  the 32-strip output.
 - `Road_FillProfileTables` clamps the bg scroll to `[-192,192]` and fg to `[-192,160]`
   (+512), computes the marking width `(roadWidth*3/2)/64` (1..8), clamps marking X and
   zeroes the sky rows.
@@ -97,10 +102,13 @@ E7-C2 (`analysis/notes/L7_results2_trace.txt`) forced a non-demo finish at frame
 then `Race_ComputeResults` produced the sorted keys
 `00000009,0000000A,0000000B,0000000F,0000000D,0000000E` and a place `$0F`.
 
-## `Road_FillProfileTables` (`0xECE0`)
+## `Road_FillProfileTables` (`0xECE0`, L6a contract)
 
 `Race_ram_CurrentAlpha` selects the first road row: start at line `$98` and fill
-backwards for `$97-alpha` lines.
+backwards for `$97-alpha` lines. HScroll rows are 4 bytes
+`[plane A (fg), plane B (bg)]`; this routine writes the road part, then
+`Race_BuildHScrollTable` overwrites the sky/parallax part above alpha and clears the
+unused lower lines (see `race_physics.md`).
 
 For each row:
 

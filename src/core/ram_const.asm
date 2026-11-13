@@ -346,17 +346,17 @@ ram_FF1E5A equ $FF1E5A
 ram_FF1E5C equ $FF1E5C
 ram_FF1E60 equ $FF1E60
 ram_FF1E64 equ $FF1E64
-ram_FF1E66 equ $FF1E66
+ram_FF1E66 equ $FF1E66 ; low word of the long camera field at $FF1E64
 Race_ram_PlayerProgress equ $FF1E68
-ram_FF1E6A equ $FF1E6A
+ram_FF1E6A equ $FF1E6A ; low word of Race_ram_PlayerProgress ($FF1E68)
 ram_FF1E6C equ $FF1E6C
 ram_FF1E6E equ $FF1E6E
 ram_FF1E70 equ $FF1E70
 ram_FF1E76 equ $FF1E76
-ram_FF1E7A equ $FF1E7A
-ram_FF1E7E equ $FF1E7E
+ram_FF1E7A equ $FF1E7A ; camera Y bias; no writer in src/ (stays 0)
+ram_FF1E7E equ $FF1E7E ; camera collision bias; no writer in src/ (stays 0)
 Race_ram_BestProgress equ $FF1E82
-ram_FF1E86 equ $FF1E86
+ram_FF1E86 equ $FF1E86 ; dead $1E60 smoothing accumulator (branch skipped)
 ram_FF1E8A equ $FF1E8A
 ram_FF1E8E equ $FF1E8E
 ram_FF1E92 equ $FF1E92
@@ -514,7 +514,7 @@ ram_FF310A equ $FF310A
 ram_FF31D2 equ $FF31D2
 ram_FF3236 equ $FF3236
 ram_FF3238 equ $FF3238
-ram_FF3274 equ $FF3274
+ram_FF3274 equ $FF3274 ; index[31] of ram_FF3236; horizon line for the VScroll
 ram_FF3276 equ $FF3276
 ram_FF329A equ $FF329A
 ram_FF32FE equ $FF32FE

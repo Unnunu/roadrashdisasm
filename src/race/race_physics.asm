@@ -712,8 +712,18 @@ Race_DrawRoadMarkingHud:
 ; Function Race_UpdateCamera
 ; Updates the camera offset/road position and integrates the track curve over the
 ; player X movement.
-; In:  player A $68/6E/PosX/PosY/32; Track_CurveBuffer
-; Out: Race_ram_CameraOffset/ram_FF1E54/56/60/64/68/76/7A/7E/86
+; In:  player A $68/6E/PosY/$32/FrameDistance; Track_CurveBuffer
+; Out: Race_ram_CameraOffset/ram_FF1E54/56/60/64/68; also $1E4A/$1E4C are the signed
+;      curve-byte sums from the old->new progress walk.
+; Contract (E6):
+;   $68 bit4 clear -> CameraOffset = 0.
+;   otherwise, not paused: AnimState ($6E) < 2 -> CameraOffset += FrameDistance>>4
+;   (negated when $69 bit3), clamped at -$7000; AnimState >= 2 -> offset -= offset>>2.
+;   $1E60 = (PosY>>1) + (PosY>>2) + $1E7A (word; $1E7A has no writer -> 0).
+;   $1E64 = ($32>>1) + $1E7E + $5D (long; floor $5D; $1E7E has no writer -> 0).
+;   PlayerProgress = PlayerA.X - $8000 - CameraOffset.
+;   $1E6A is the low word of PlayerProgress and $1E66 the low word of $1E64.
+;   The block after .loc_DF14 that smooths $1E60 through $1E86 is dead (skipped).
 ; Clobbers: d0-d4/a0
 ; *************************************************
 
@@ -821,8 +831,18 @@ Race_UpdateCamera:
 ; *************************************************
 ; Function Race_BuildVScrollInfo
 ; Builds the HInt VScroll/raster layer info (sky/horizon/road) for the current frame.
-; In:  Race_ram_CurrentVScrollInfo/Alpha, ram_FF3274
+; In:  Race_ram_CurrentVScrollInfo/Alpha, ram_FF3274 (= index[31], the horizon line)
 ; Out: VScroll info buffer
+; Layout (E6): 16-byte blocks, read by HorizontalInterrupt/GameTick as
+;   +0 VDP control ($8Axx line gap), +2 HV counter, +4 VDP reg7 (backdrop),
+;   +6/+8 VSRAM A/B, +A next block offset; +C/+E are builder metadata.
+; Block 0 is the VBlank entry (GameTick applies +0/+4/+6). Its +A starts the HInt
+; chain at $10; $80 links to the $90 sentinel. The pass at .loc_E2AE compacts the
+; chain using +E (negative -> copy/skip; <=8 -> merge) and .loc_E3B6 recomputes the
+; $8Axx line-gap commands from the HV differences. E6 runtime chain:
+;   $10 -> $20 -> $50 -> $60 -> $70 -> $80 -> $90 (the $30/$40 bands are compacted).
+; @UNKNOWN(U-0018): the exact +E merge/gap arithmetic of the compaction pass is not
+;   fully enumerated; E6 gives the runtime chain and HV targets.
 ; Clobbers: d0/d1/a0/a1
 ; *************************************************
 
@@ -1151,6 +1171,14 @@ Race_BuildVScrollInfo:
 ; Builds the HInt HScroll table from the VScroll/alpha state.
 ; In:  Race_ram_CurrentVScrollInfo/CurrentHScrollTable/Alpha
 ; Out: HScroll table; ram_FF30EA/EE/F2/F6/FA/FE
+; Table layout (E6): 4 bytes per line; word 0 = plane A (fg), word 1 = plane B (bg).
+; VScroll lines L50=$52>>8, L60=$62>>8, L70=$72>>8 and alpha split the screen.
+; Plane A bands: $30EA>>16 for lines alpha-1..L50; (HIntVScroll/2 + $30FA)>>16 for
+;   min(L50,$17)+1 lines; (HIntVScroll + $30F2)>>16 for the rest.
+; Plane B bands: $30EE>>16 for (L70-L60-1) lines; zero gap for (L60-L50-$D) lines;
+;   (HIntVScroll/4 + $30FE)>>16 for min(L50+$C,$17)+1 lines;
+;   (3*HIntVScroll/4 + $30F6)>>16 for L50+$D-$18 lines.
+; Lines $98..$D7 are cleared; $D8..$E7 get -((PlayerA.X>>9)&$C0); the rest is untouched.
 ; Clobbers: d0/d1/a0-a3
 ; *************************************************
 

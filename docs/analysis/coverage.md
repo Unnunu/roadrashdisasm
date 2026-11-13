@@ -27,7 +27,7 @@ Legend: `[x]` done, `[~]` partial, `[ ]` not started.
 | Menus/screens | `menu_*`, `message`, `shop`, `highscore`, `endlevel`, `race_results`, `rider_intro` | [x] | [~] | [~] | [~] | non-demo captures; shop layout user-described |
 | Race core/HUD/spawn | `race_core`, `race_hud*`, `race_spawn` | [x] | [~] | [~] | [~] | L1/L2 (E1/E2), R30 (v5), L5 (E5) and L7 (E7, v9) done: four populations, `Data5` split, reserved opponent, static respawn, extra slot; HUD cells/needle/odometer, standings/results/money pipeline and crash-script selection confirmed |
 | Actor AI/movement/combat | `race_ai`, `race_combat`, `race_anim_audio` | [x] | [~] | [~] | [~] | L2 (E2), R30 (v5), L3 (E3, v6) and L4 (E4, v7) done: target/scan/dispatch, `$74` pages/families, budget, static action table, pair collision/extent/reach, damage/exchange, stamina/knockdown; crash-handler timing static |
-| Physics/collision/road marking | `race_physics`, `road_marking` | [x] | [~] | [~] | [~] | table offsets, visual confirmation |
+| Physics/collision/road marking | `race_physics`, `road_marking` | [x] | [~] | [~] | [~] | L6a camera/VScroll/HScroll done (E6, v10); rearview and marking/table visuals remain |
 | Road render/shapes | `road_render`, `road_shapes` | [x] | [~] | [~] | [~] | shape row bytes, interpolation/projection |
 | Track/data formats | `track_data`, `race_track_data`, `race_*_tables`, `race_misc_data` | [x] | [~] | [~] | [~] | stream/channel/table field meanings |
 | Decompression | `uncompress` | [x] | [x] | [~] | [~] | remaining edge cases |
@@ -47,7 +47,8 @@ Priority is analytical impact, not address order.
 | 3 | `Race_FindTargetActor`, `Race_UpdateActorActions`, `Race_DispatchActorAction` | **done static+dynamic:** candidate bucket/scan, profile choice (`$74` pages/families), budget `ram_FF1A96/98`, dispatcher slots; E3 confirmed slot/budget/branches/levels/static respawn; L5/E5 closed the spawn/lifecycle layer; L7/E7 closed HUD/results | L6 world branch | `race_ai.md`, `race_spawn.md`, `race_map.md`, `race_hud.md`, `race_results.md` |
 | 4 | `Race_UpdateActorMovement/FallMovement`, `sub_115C6`, `sub_11A5E` | **done:** E1 closed `$36` accumulator, `$38/$3A` movement updates; R30 closed `$3C` (write-only step, not a timer) and `$0E/$10` (write-only advance/index) | fall/movement edge coverage | movement matrix v5 |
 | 5 | `Race_GetCurveSpeedLimit`, `Race_UpdateBikeCurve`, `Race_UpdateLeanCurve` | **done:** formulas + table decode + E2-2/E2-3 (`$42/$0C` sign, `$3E=(limit<<8)/(d0>>8)`; TP0 dynamic, TP2/TP3 static); R30 corrected `$78`: armed by the fall handlers, so `word_14742` is reachable | `race_speed.md` | speed/curve contract |
-| 6 | Road render helpers: `Race_ProjectObject`, `Race_ProjectActorObject`, `Road_DrawStrip`, `Road_WriteTileColumns` | exact row/tile mapping | **progress:** shape record layout + row start confirmed; SAT/VSRAM next | render/shape doc |
+| 6 | `Race_UpdateCamera`/`IntegrateTrackCurve`/`BuildVScrollInfo`/`BuildHScrollTable` | L6a camera/progress and HInt tables | **done:** E6 (v10) camera branches, progress aliases, VScroll chain/compaction, HScroll bands | `race_physics.md`, `race_ai_road.md` |
+| 6b | Road render helpers: `Race_ProjectObject`, `Race_ProjectActorObject`, `Road_DrawStrip`, `Road_WriteTileColumns` | exact row/tile mapping | **progress:** shape record layout + row start confirmed; SAT/VSRAM next | render/shape doc |
 | 7 | `Race_ApplyCollisionImpact`, `Race_ApplyCrashImpact`, `sub_140EE`/`sub_141AE`/`sub_14404`, `unk_14744`/`unk_147FC` | `$2A/$2C/$2E/$54/$5C`, damage timing, action-handler table | **done static+dynamic (L4/E4):** both `Race_ApplyCollisionImpact` branches, damage/exchange, `$5C` stamina and knockdown confirmed; R30 crash handlers static-only (demo never crashes) | `race_impact.md`, `race_map.md` |
 | 8 | Track/shape data formats | **done:** Data2/3 decoder, Data4/5/6 formats, Data5 normal/special consumer split; remaining Data4 side bits | compare staged/service consumers | format spec |
 | 9 | Screens flow | non-demo inputs/visuals | **progress:** demo flow + menu entry; `screens_flow.md`; input injection next | screen state machines |
@@ -59,7 +60,7 @@ Priority is analytical impact, not address order.
 - [x] Phase 0: coverage baseline and work queue.
 - [ ] Phase 1: runtime, IRQ, input, RAM ownership.
 - [~] Phase 2: race simulation semantics (targeting/speed/collision/impact/spawn-L5 done; movement residual).
-- [~] Phase 3: road/render and data formats (Data4/5/6 mapped; row/tile mapping in progress).
+- [~] Phase 3: road/render and data formats (Data4/5/6 mapped; L6a camera/HInt done; object/projection/row-tile mapping in progress).
 - [~] Phase 4: screens and visual confirmation (flow mapped; non-demo/visual captures pending).
 - [ ] Phase 5: audio/Z80, separate.
 - [ ] Phase 6: asset tail catalogue.

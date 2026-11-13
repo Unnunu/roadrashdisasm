@@ -404,6 +404,10 @@ Race_DrawRoadEdges:
 ; Builds per-line HScroll (fg/bg), marking X/width and the sky rows.
 ; In:  Road_ram_XLeft/XRight/MarkingX arrays, Race_ram_CurrentAlpha
 ; Out: Race_ram_CurrentHScrollTable, RoadMarking_ram_XArray/WidthArray
+; The first road row is line $98 and alpha selects where it stops; each HScroll
+; line is 4 bytes [plane A fg = clamp(left,-192,160)+512, plane B bg =
+; clamp(right,-160,192)-192]. The top alpha rows are zeroed; Race_BuildHScrollTable
+; later overwrites the sky/parallax part.
 ; Clobbers: d0-d3/a0-a6
 ; *************************************************
 
@@ -516,6 +520,11 @@ Road_FillProfileTables:
 ; values/index arrays.
 ; In:  Track_CurveBuffer, Race_ram_PlayerProgress/6A/6C
 ; Out: ram_FF310A/31D2/329A/3236/3362/D77C
+; Note: $1E6A is the low word of Race_ram_PlayerProgress ($1E68), used as the curve
+; amplitude; $1E6C stores the current signed curve byte. 32 strips are emitted:
+; $1E54/$1E56 accumulate the two curve bytes over the progress delta, $1E58/$1E5A
+; are the scaled current/next bytes, and the $3236 index array ends at $3274, which
+; Race_BuildVScrollInfo uses as the horizon line.
 ; Clobbers: d0-d5/a0-a6
 ; *************************************************
 

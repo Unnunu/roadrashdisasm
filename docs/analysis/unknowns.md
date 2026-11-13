@@ -30,6 +30,7 @@ an analysis document).
 | `U-0015` | `src/race/race_anim_audio.asm:1224` | `sub_14DEC` | why `d0` is always 0 (both signed Speed terms read `$12(a1)`) and who calls it | resolved: vestigial helper. Both Speed terms read `$12(a1)` (the second was likely meant to be `$12(a2)`), so `d0` is always 0; neither a call nor any pointer/address reference exists in the ROM | none | wontfix | `[static]`: full `src/` and `build/roadrash.lst` reference scan |
 | `U-0016` | `src/race/race_ai.asm:1887` | `unk_12168` | consumer and dispatch semantics of the 9-pointer table (index 2 is `sub_140EE`) | resolved: dead data. No static reader and no pointer/address reference in the ROM; the live dispatch tables are `unk_147FC` -> `unk_14744` | none | wontfix | `[static]`: full `src/` and `build/roadrash.lst` reference scan |
 | `U-0017` | `src/race/race_ai.asm:3017` | `Race_UpdateActorActions` stamina regen | why opponent stamina `$5C` regrows toward `ram_FF18A8=$500` but snaps to the graphics entry `+$E` once `$5C+FrameDelay >= $500`, instead of capping at a fixed max | best guess: `ram_FF18A8` is a shared regen threshold and graphics `+$E` is the per-bike stamina value; the player uses `ram_FF18AA=$A00` directly | sample an opponent's `$5C` over 600 frames and dump `Race_ActorGraphicsTable` `+$E` for the same actors | open | `[static]` `race_ai.asm:3017-3024`, `race_core.asm:1256-1258`; `[confirmed]` E4-B covers the consumption side only |
+| `U-0018` | `src/race/race_physics.asm:1013` | `Race_BuildVScrollInfo` compaction pass | per-case arithmetic of the `+E`-driven block copy/merge and the recomputed `$8Axx` line-gap commands | thresholds are `+E<0` skip, `+E<=8` merge; the surviving bands are then clamped and the commands derived from HV differences | instrument `+E` and the HV targets for a curve with many bands; enumerate all branches | open | `[static]` pass at `.loc_E2AE..E3B0`; `[dynamic]` E6 runtime chain `$10->$20->$50->$60->$70->$80->$90` (`analysis/notes/L6a_hint_trace.txt`) |
 
 L2 static pass added **no new U rows**. The open-looking items are statically
 resolved quirks, not semantic gaps: `$18` is a word (the old trace read its low
@@ -50,3 +51,7 @@ L4 dynamic pass (E4) closed the `$5C`/damage/knockdown questions: `$5C` is stami
 `Race_ApplyCollisionImpact` branches are confirmed. It added `U-0017` for the
 opponent stamina regen cap. The R30 crash handlers (`sub_140EE`/`sub_141AE`) remain
 `[static]` because the 60 s demo never crashes.
+
+L6a added `U-0018` for the VScroll compaction arithmetic; the block layout, chain and
+observed runtime bands are confirmed, but the exact `+E` merge/gap cases are not yet
+enumerated.

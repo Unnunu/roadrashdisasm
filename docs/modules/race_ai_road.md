@@ -7,6 +7,11 @@
   `docs/modules/race_anim_audio.md`
 
 ## Role / purpose
+
+L6a profile contract: `Race_IntegrateTrackCurve` emits 32 strips from
+`Track_CurveBuffer` (curve amplitude = low word of `PlayerProgress`), and
+`Road_FillProfileTables` writes the road rows of the 4-byte HScroll layout. See
+`docs/analysis/race_ai_road.md` and `docs/analysis/race_physics.md`.
 R5 renamed the track-object cursor fields and road-object record offsets; see `docs/analysis/race_ai_road.md`.
 
 

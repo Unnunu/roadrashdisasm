@@ -637,3 +637,22 @@ Names stay `sub_XXXX`/`unk_XXXX`; proposals are not applied.
 | `sub_154D2` | routine | `race_anim_audio.asm:1826 ($154D2)` | race_anim: frame-script sequencer (`header+4-byte frames`) | placeholder | `[static]` | rename-later | `Race_StepAnimationScript` | high | - |
 | `unk_15CE0` | data | `race_anim_audio.asm:3694 ($15CE0)` | race_anim: AnimState-3 "side" crash frames tiles `$B9..$BE` | placeholder | `[static]/[dynamic]` E7-B | rename-later | `Race_FallScriptSideA` | high | - |
 | `unk_15CFC` | data | `race_anim_audio.asm:3722 ($15CFC)` | race_anim: AnimState-3 "close" crash frames tiles `$BF..$C4` | placeholder | `[static]/[dynamic]` E7-B | rename-later | `Race_FallScriptSideB` | high | - |
+| `Race_UpdateCamera` | routine | `race_physics.asm:720 ($DE9E)` | race: camera offset + `PlayerProgress`; curve walk | good | `[static]/[dynamic]` E6 | keep | - | high | - |
+| `Race_IntegrateTrackCurve` | routine | `race_ai_road.asm:522 ($EDD0)` | race: 32-strip road profile from `Track_CurveBuffer` | good | `[static]/[dynamic]` E6 | keep | - | high | - |
+| `Road_FillProfileTables` | routine | `race_ai_road.asm:410 ($ECE0)` | race: road HScroll fg/bg + marking X/width | good | `[static]/[dynamic]` E6 | keep | - | high | - |
+| `Race_BuildVScrollInfo` | routine | `race_physics.asm:829 ($E004)` | race: HInt VScroll raster blocks/chain | good | `[static]/[dynamic]` E6 | keep | - | high | `U-0018` open (compaction) |
+| `Race_BuildHScrollTable` | routine | `race_physics.asm:1157 ($E494)` | race: per-line HScroll plane A/B bands | good | `[static]/[dynamic]` E6 | keep | - | high | - |
+| `ram_FF1E50` / `ram_FF1E52` | RAM | `ram_const.asm:340-341` | race: `$1E54/56 + $1E58/5A` combined scroll | placeholder | `[confirmed]` E6 | rename-later | `Race_ram_CurveScrollA/B` | medium | - |
+| `ram_FF1E54` / `ram_FF1E56` | RAM | `ram_const.asm:342-343` | race: signed curve-byte sums over the progress delta | placeholder | `[confirmed]` E6 | rename-later | `Race_ram_CurveSumA/B` | medium | - |
+| `ram_FF1E58` / `ram_FF1E5A` | RAM | `ram_const.asm:344-345` | race: scaled current/next curve byte | placeholder | `[confirmed]` E6 | rename-later | `Race_ram_CurveScaledA/B` | medium | - |
+| `ram_FF1E60` | RAM | `ram_const.asm:347` | race: camera Y = `3*PosY/4` | placeholder | `[confirmed]` E6 | rename-later | `Race_ram_CameraY` | high | - |
+| `ram_FF1E64` | RAM | `ram_const.asm:348` | race: camera collision = `($32>>1)+$5D` (long) | placeholder | `[confirmed]` E6 | rename-later | `Race_ram_CameraCollision` | medium | - |
+| `ram_FF1E66` | RAM | `ram_const.asm:349` | low word of `ram_FF1E64` | narrow | `[confirmed]` E6 | keep | - | high | - |
+| `ram_FF1E6A` | RAM | `ram_const.asm:352` | low word of `Race_ram_PlayerProgress`; curve amplitude | narrow | `[confirmed]` E6 | keep | - | high | - |
+| `ram_FF1E6C` | RAM | `ram_const.asm:353` | race: current signed curve byte | placeholder | `[static]/[dynamic]` E6 | rename-later | `Race_ram_CurveByte` | medium | - |
+| `ram_FF1E76` | RAM | `ram_const.asm:355` | race: `$8000` progress bias set by `Race_CreateActors` | placeholder | `[confirmed]` E6 | rename-later | `Race_ram_ProgressBias` | high | - |
+| `ram_FF1E7A` / `ram_FF1E7E` / `ram_FF1E86` | RAM | `ram_const.asm:356-359` | camera bias/smoothing fields with no writer in `src/` | placeholder | `[static]` | rename-later | unused camera fields | high | - |
+| `ram_FF30EA`/`EE`/`F2`/`F6`/`FA`/`FE` | RAM | `ram_const.asm:494-503` | HInt HScroll plane A/B parallax accumulators | placeholder | `[static]/[dynamic]` E6 | rename-later | `Race_ram_HScrollLayerA/B..` | medium | - |
+| `ram_FF3274` | RAM | `ram_const.asm:517` | `ram_FF3236[31]`; horizon line used by the VScroll | narrow | `[confirmed]` E6 | retain alias | - | high | - |
+| `Race_ram_HIntVScroll` | RAM | `ram_const.asm:186 ($FF14DC)` | HInt HScroll base accumulator (`+$10000`/frame) | good | `[static]/[dynamic]` E6 | keep | - | high | - |
+| `ram_FF310A`/`31D2`/`3236`/`329A`/`3362`/`D77C` | RAM | `ram_const.asm:513-521` | race: 32-strip profile values/indexes/depth | placeholder | `[static]/[dynamic]` E6 | rename-later | `Race_ram_Profile*` | medium | - |

@@ -1,8 +1,8 @@
 # Race map: timeline, dataflow, field ownership and captures
 
-- **Status:** matrix v9 (v8 + L7 results/HUD/animation contracts and E7 dynamic
-  results: HUD cells/needle script/odometer font, results/standings/money pipeline,
-  `unk_15CE0`/`unk_15CFC` crash-script selection)
+- **Status:** matrix v10 (v9 + L6a camera/progress and VScroll/HScroll contracts with
+  E6 dynamic results: camera branch/progress aliases, VScroll raster chain and
+  compaction, HScroll plane A/B bands)
 - **Sources:** `docs/analysis/race.md`, `race_actors.md`, `race_ai.md`, `race_movement.md`,
   `race_speed.md`, `race_impact.md`, `race_spawn.md`, `road_render.md`, `docs/ram-map.md`,
   `tasks/race_understanding_program.md`
@@ -764,6 +764,44 @@ E7 results (captures `analysis/capture_L7_*.gdb`, traces `analysis/notes/L7_*`):
 | E7-B script select | `capture_L7_anim3.gdb` | close -> `unk_15CFC`/`$B2`; behind -> `unk_15CE0`/`$B1`; ahead/mismatch -> `$15CC4`/`$B0` |
 | E7-C results | `capture_L7_results.gdb`, `capture_L7_results2.gdb` | forced non-demo finish reaches `Race_ComputeStandings`/`ComputeResults`; place `$0F`, points `1`, money `100->101`, career `0->1`, outcome `$0F` |
 
+## L6a camera/progress/VScroll/HScroll addendum (matrix v10)
+
+L6a covers `Race_UpdateCamera`, `Race_IntegrateTrackCurve`,
+`Race_BuildVScrollInfo` and `Race_BuildHScrollTable`; full contracts are in
+`race_physics.md` and `race_ai_road.md`.
+
+- Camera: `$68` bit4 clear -> `CameraOffset=0`; otherwise `$6E<2` adds
+  `FrameDistance>>4` (negated on `$69` bit3) clamped at `-$7000`, `$6E>=2` decays
+  `off -= off>>2`. `PlayerProgress = PlayerA.X - $8000 - CameraOffset`.
+  `$1E60 = 3*PosY/4` (`$1E7A` has no writer); `$1E64 = ($32>>1)+$5D` (`$1E7E` has
+  no writer). `$1E66` = low word of `$1E64`; `$1E6A` = low word of `PlayerProgress`.
+- Curve walk: high-word delta over `Track_CurveBuffer`; `$1E54/$1E56` sums,
+  `$1E58/$1E5A` scaled current/next bytes, `$1E50/$1E52 = $1E54/56 + $1E58/5A`;
+  `$3274` is `$3236[31]`, the horizon line used by the VScroll.
+- VScroll: 16-byte blocks `[cmd,HV,reg7,vsramA,vsramB,next,+C,+E]`. Block 0 is the
+  VBlank entry; `$10..$80` are HInt bands, `$90` is the sentinel. A compaction pass
+  uses `+E` (negative skip, `<=8` merge) and recomputes the `$8Axx` line gaps.
+  E6 runtime chain: `$10 -> $20 -> $50 -> $60 -> $70 -> $80 -> $90` (the `$30/$40`
+  bands are compacted away).
+- HScroll: 4 bytes/line `[plane A fg, plane B bg]`; plane A three bands
+  (`$30EA`, `HIntVScroll/2 + $30FA`, `HIntVScroll + $30F2`), plane B four bands
+  (`$30EE`, zero gap, `HIntVScroll/4 + $30FE`, `3*HIntVScroll/4 + $30F6`).
+  Lines `$98..$D7` are cleared, `$D8..$E7` get `-((PlayerA.X>>9)&$C0)`, the rest is
+  untouched. `HIntVScroll` and the six accumulators are advanced at the end of the
+  VScroll builder from `PlayerA $22 * {6000,3000,1800,1800,3000,4800}`.
+
+E6 results (captures `analysis/capture_L6a*.gdb`, traces `analysis/notes/L6a*`):
+
+| Check | Script | Result |
+|---|---|---|
+| E6-1 camera/progress | `capture_L6a.gdb` | `progress = X-$8000-cam`; `$1E60=$78` from PosY `$A0`; `$1E64=$5D`; `$1E6A` follows the progress low word |
+| E6-2 forced camera | `capture_L6a_camforce.gdb` | `FD=$1FE0 -> cam=$1FE`; `AnimState>=2` decays `$1FE->$1AE->...->3` |
+| E6-3 VScroll | `capture_L6a.gdb`, `capture_L6a_hint.gdb` | blocks `$10/$20/$50/$60/$70/$80` at lines `$03/$07/$25/$33/$47/$9C`; `$30/$40` compacted |
+| E6-4 HScroll | `capture_L6a.gdb` | plane A top `$30EA>>16=$0027`, plane B top `$30EE>>16=$0013`; road line `$80=$017CFFAB` |
+
+Residual: `U-0018` (exact VScroll compaction arithmetic); rearview and engine-audio
+mapping stay `[static]`/TODO.
+
 ## Tooling and validation
 
 Both tools decode the same layout from `src/core/ram_const.asm` through
@@ -817,4 +855,6 @@ branches are confirmed; only the R30 crash-path timing remains static. L5
 normal/special split, reserved opponent, static respawn cycle and extra slot. L7
 (`tasks/race_L7_results_hud.md`) is complete (v9/E7): HUD/needle/odometer contracts,
 the full results/standings/money pipeline and the `unk_15CE0`/`unk_15CFC` crash
-scripts. Next is the L6 world branch (`race_L6_world_a/b/c.md`).
+scripts. L6a (`tasks/race_L6_world_a.md`) is complete (v10/E6): camera/progress,
+VScroll raster chain and HScroll plane A/B bands. Next is the L6 world-b branch
+(`race_L6_world_b.md`: object list/projection/visible list).
