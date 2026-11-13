@@ -1,9 +1,8 @@
 # Program: complete race understanding
 
-Status: in progress. L1 and L2 (static + dynamic), the R30 gap disassembly, the
-R30 integration, and the L3 static + dynamic passes (E3) are complete. Next is L4
-impact/fall (`race_L4_impact_contracts.md`). This file is the roadmap, not a build
-task; the queue below lists what remains.
+Status: in progress. L1, L2, R30, L3 and L4 (static + dynamic E4) are complete.
+Next is L5 spawn/lifecycle (`race_L5_spawn.md`). This file is the roadmap, not a
+build task; the queue below lists what remains.
 
 ## Goal
 
@@ -124,6 +123,26 @@ captures.
 - E3-5 `[confirmed]`: `$74` indexes `Race_StaticActionTable`; `$12/$46` match its
   speed/Y-offset; timer expiry reaches `sub_13A26`.
 
+## L4 static+dynamic results (E4, completed)
+
+`race_L4_impact_contracts.md` completed; matrix v7 in `race_map.md`, full contract in
+`docs/analysis/race_impact.md`. No `src/` behavior change and no renames.
+
+- Pair collision: order/side/extents/reach, `ContactFlags` (`$68`) bit4 latch,
+  `$69` bit0/1/3/7 roles; extent table index formula and static `$37`/`$60`.
+- `Race_ApplyCollisionImpact` both branches `[confirmed]` (E4-F): deep contact
+  `Speed $2000/$1000 -> $1400`, `BikeDamage=2`, event `$0A`, `$2C/$2A/$2E`;
+  shallow contact keeps Speed, adds no damage, event `$09`, `$32=$0002`.
+- `Race_ExchangeCollisionSpeed`: ~0.1x speed delta, speed equalization, X push
+  `$7000`; ordinary deltas add 0 BikeDamage (`ScaleImpactDamage=abs>>11`).
+- `$5C` is **stamina**, not a tile base: HUD bar, regen toward `$A00`/`$500`,
+  consumed by `Race_ApplyFallKnockdown` (`PairImpact*ram_FF18AC`, underflow ->
+  FallState `$11`). E4-B confirmed the arithmetic and `$0F`/`$0D` events.
+- `ram_FF1768` is "current player in a crash/fall animation"; damage is suppressed
+  while it is set.
+- R30 crash handlers remain `[static]` (0 calls in the 60 s demo); timing is the
+  residual dynamic item.
+
 ## Out of scope
 
 - Audio/Z80 and the engine-audio mapping (separate workstream). Only the RAM fields
@@ -228,8 +247,8 @@ bodies and tables, so those tasks are now contract/dynamic work, not disassembly
 | 6 | `race_R30_integration.md` | L1/L4/L7 | done | matrix v5: `$3C` conflict resolved (not a timer), crash/fall contracts, handler tables, `unk_155D0` consumers; `U-0012`..`U-0016` closed |
 | 7 | `race_L3_ai_contracts.md` | L3 | done | loop/targets/dispatcher contract + `$74` pages/families + E3 pack |
 | 8 | `race_L3_ai_dynamic.md` | L3 | done | matrix v6; candidate/slot/budget/branch/level/static-respawn E3 results |
-| 9 | `race_L4_impact_contracts.md` | L4 | static + E4 | pair collision/extents/reach + R30 crash paths (`sub_140EE`/`sub_141AE`/`sub_14404`) |
-| 10 | `race_L4_impact_dynamic.md` | L4 | integrate E4 | damage, `$5C`, fall/knockdown |
+| 9 | `race_L4_impact_contracts.md` | L4 | done | pair collision/extents/reach, damage/exchange, stamina/knockdown + E4; matrix v7; crash-path timing static |
+| 10 | `race_L4_impact_dynamic.md` | L4 | done (merged into #9) | E4 integrated in `race_L4_impact_contracts.md` |
 | 11 | `race_L5_spawn.md` | L5 | static + E5 | lifecycle/static/police closed |
 | 12 | `race_L7_results_hud.md` | L7 | static + doc | results/standings/HUD; animation-script consumers `unk_15CE0`/`unk_15CFC` |
 | 13 | `race_L6_world_a.md` | L6 | static + E6 | camera/progress/VScroll/HScroll |

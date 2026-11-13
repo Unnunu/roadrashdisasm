@@ -1,8 +1,8 @@
 # Race map: timeline, dataflow, field ownership and captures
 
-- **Status:** matrix v6 (v5 + R30 contracts + L3 static contracts and E3 dynamic
-  results: candidate bucket/list, profile slot and budget, dispatcher branches,
-  per-level budget and static respawn indexing)
+- **Status:** matrix v7 (v6 + L4 pair-collision/impact/damage/fall contracts and E4
+  dynamic results: contact latch, extent/reach, `Race_ApplyCollisionImpact` branches,
+  stamina `$5C`, knockdown arithmetic)
 - **Sources:** `docs/analysis/race.md`, `race_actors.md`, `race_ai.md`, `race_movement.md`,
   `race_speed.md`, `race_impact.md`, `race_spawn.md`, `road_render.md`, `docs/ram-map.md`,
   `tasks/race_understanding_program.md`
@@ -166,14 +166,14 @@ Widths match the actual instruction sizes: `$04/$1E/$26` are longs, the
 | `$56` | word | `RaceActor_RespawnTimer` | `Race_CreateActors` (`$FFFF`), static updater | static update | `[static/dynamic]` | - |
 | `$58` | word | (unnamed) | `Race_UpdateAnimation` (race_anim_audio) | `Race_BuildActorObjectList` copies to actor object `+8` | `[static]` | animation frame token |
 | `$5A` | word | `RaceActor_AttackCooldown` | combat | `Race_DispatchActorAction` (close-action branch), pursue/attack handlers | `[static]` | - |
-| `$5C` | word | `RaceActor_TileBase` | `Race_CreateActors`, `Race_SetupActor`, knockdown budget | animation/impact | `[confirmed]` Player `$A00 -> $507` | dual tile-base/health role |
+| `$5C` | word | `RaceActor_TileBase` | `Race_CreateActors`/`Race_SetupActor`/`Race_SpawnTick` (init), `Race_UpdatePlayerAnimation`/`Race_UpdateActorActions` (regen), `Race_ApplyFallKnockdown` (consume) | `RaceHud_DrawStamina` (bar `>>5`), knockdown | `[confirmed]` E4-B: **stamina/health**, not a tile base; player cap `ram_FF18AA=$A00`, opponent `ram_FF18A8=$500`, hit `PairImpact*ram_FF18AC` | rename-later `RaceActor_Stamina` |
 | `$5E` | word | (unnamed) | `Race_CreateActors` | sprite setup | `[static]` graphics `+$A` | exact sprite field |
 | `$60` | word | (unnamed) | `Race_CreateActors` | sprite setup | `[static]` graphics `+$C` | exact sprite field |
 | `$62` | long | (unnamed) | movement/advance (`= Race_ram_ProgressSnapshotB`) | not documented | `[static]` | late-race progress snapshot |
 | `$64` | word | (unnamed) | - (VScroll/object writers only) | - | `[static]` not an actor field | unused for actors |
 | `$66` | word | `RaceActor_Rating` | `Race_CreateActors`, `Race_RecycleActor` | spawn/init speed | `[confirmed]` def byte5*100 | recycle distance reuse |
-| `$68` | byte | `RaceActor_ControlFlags` | `Race_GetInput`, AI, impact, spawn; bit6 set in `Race_UpdateActorAI`/`Race_UpdateActorActions`, cleared by recycle | AI/movement/impact | `[confirmed]` bit0 collision, bit1 accel (E2-4 B), bit2 brake (E2-4 A), bit3 off-road (E2-5 forced), bit4 fall/on-foot, bit5 curve, bit6 AI-active/action-eligible, bit7 finish | L2 bits closed; L3 bit6 semantics; bit0/4 L4, bit7 L1/L5 |
-| `$69` | byte | `RaceActor_StateFlags` | combat/AI | pair collision, dispatcher | `[confirmed]` bit2 steer/curve, bit3 direction; combat bits L4 | L2 owns bit2/3; bit0/1/4/5/6/7 L4 |
+| `$68` | byte | `RaceActor_ControlFlags` | `Race_GetInput`, AI, pair test, impact, spawn; bit6 set in `Race_UpdateActorAI`/`Race_UpdateActorActions`, cleared by recycle | AI/movement/impact | `[confirmed]` bit0 impact/speed-loss latch (E4-F), bit1 accel (E2-4 B), bit2 brake (E2-4 A), bit3 off-road (E2-5), bit4 pair-contact/crash latch (E4-F), bit5 curve/fall timer, bit6 AI-active/action-eligible, bit7 finish | L4 bits closed (E4); bit7 L1/L5 |
+| `$69` | byte | `RaceActor_StateFlags` | combat/AI, pair test | pair collision, dispatcher | `[confirmed]` bit0 pair X order (E4), bit1 pair Y side (E4-A), bit2 steer/curve, bit3 collision direction (E4-F copy), bit4 attack active, bit5 attack side, bit6 low, bit7 reach contact | none (bit0/1/7 static geometry; combat bits L4) |
 | `$6A` | byte | `RaceActor_WeaponAnimFlags` | animation | animation | `[static]` | role |
 | `$6B` | byte | `RaceActor_AttackFlags` | `Race_CreateActors`, combat | combat | `[confirmed]` armed `$02` | - |
 | `$6C` | byte | `RaceActor_AttackPhase` | combat | dispatcher/combat | `[confirmed]` | - |
@@ -302,6 +302,53 @@ Matrix rows touched by L3: `$5A` is read by `Race_DispatchActorAction` (cooldown
 branch); `$68` bit6 is set/cleared in `Race_UpdateActorAI`/`Race_UpdateActorActions`;
 `$74` is written only by `Race_CreateActors` (definition byte1 / 0) and `sub_138CE`
 (random nibble). Experiment Pack E3 below is the residual dynamic pass.
+
+## L4 addendum (pair collision, impact, fall)
+
+Full contract: `docs/analysis/race_impact.md`. Matrix v7 delta:
+
+- `$68` bit4 = pair-contact/crash latch (set at `0x127EA`, every crash handler);
+  `$68` bit0 = impact/speed-loss latch (`Race_ApplyCollisionImpact`,
+  `Race_ApplyImpactSpeedLoss`, `sub_1438E`).
+- `$69` bit0 = pair X order, bit1 = pair Y side, bit3 = collision direction copied
+  across the pair, bit7 = reach contact.
+- `$5C` is **stamina/health** (HUD `RaceHud_DrawStamina`, regen toward
+  `ram_FF18AA=$A00`/`ram_FF18A8=$500`, consumed by knockdown). Not a tile base.
+- `ram_FF1768` = "current player is in a crash/fall animation"; `Race_ScaleImpactDamage`
+  returns 0 while it is set, preventing repeated damage during one crash.
+- New constants: `ram_FF3038` X window (`$6000`/`$3700`), `ram_FF303C` extent base
+  (`$10`/`$37`/`$60`), `ram_FF303E` penetration threshold (`$40`), `ram_FF3040` side
+  state, `ram_FF18AC` stamina hit scale (`$10`), `ram_FF18B6` track-position scale
+  (`$1400`).
+
+Pair/impact chain (detail in `race_impact.md`):
+
+```
+Race_UpdateActorPairCollision   ; order/side/extent/reach, ContactFlags bit4 latch
+  -> Race_UpdateActorPairImpact ; gap >= ram_FF3038 -> exchange, else clamp+attack
+     -> Race_ExchangeCollisionSpeed   ; ~0.1x speed delta, speeds equalize, X push $7000
+     -> Race_ClampActorPairY          ; Y separation using $4C/$4E + $10
+     -> Race_StealClub / Mirror       ; club transfer, $52 pair impact
+     -> Race_ApplyFallKnockdown       ; $5C -= PairImpact*ram_FF18AC -> fall at underflow
+  ; the coordinator calls the impact handler when ContactFlags bit4 is set:
+  -> Race_ApplyCollisionImpact  ; deep (<$40): damage = ScaleImpactDamage(|dSpeed|),
+                                ;   Speed = a2.Speed + dSpeed/4, $2C/$2A/$2E
+                                ; shallow: $2C = Speed>>11, $32 = ram_FF3040, no damage
+```
+
+E4 results (traces in `analysis/notes/L4*`):
+
+| Check | Observed | Verdict |
+|---|---|---|
+| E4-A demo survey (`capture_L4_a.gdb`) | 3600 frames: 9 pair impacts (1 player), 6 clamps, 3 exchanges, 0 knockdown stores, 0 `sub_140EE`/`sub_141AE`/`sub_14404`, 0 `0x14486` | pair/clamp/exchange natural; crashes are not |
+| E4-B forced knockdown (`capture_L4_b.gdb`) | `delta = 1*$10 = $10`; `$100->$0F0`; `$08->0` with `$54=$11`, `$6E=0`, `$6F=$FF`, bit4, event `$0F`; a2 underflow reached the `$0D` store | confirmed |
+| E4-C VBlank simulated impact call (`capture_L4_c.gdb`) | PSG fault in the artificial interrupt context | failed; superseded by E4-F |
+| E4-D/E natural player exchange (`capture_L4_d/e.gdb`) | player exchange reached; speed delta `$3BD` -> `ScaleImpactDamage=0`, BikeDamage unchanged | confirmed (small deltas do no damage) |
+| E4-F forced natural static impact (`capture_L4_f.gdb`) | deep: `Speed $2000/$1000 -> $1400`, `BikeDamage=2`, event `$0A`, `$2C=2`, `$2A=$02+$30`, bit0; shallow (`$1C=$80`): Speed unchanged, damage 0, event `$09`, `$2C=4`, `$32=$0002`, bit4 clear/bit0 set | confirmed both branches |
+
+Residual: `sub_140EE`/`sub_141AE` timing stays `[static]` (the demo never crashes);
+the next dynamic check is a normal-mode run into a track object. `$5C` regeneration
+cap for opponents (`ram_FF18A8` vs graphics `+$E`) is `[static]`.
 
 ## Experiment Pack E1 (residual L1 fields)
 
@@ -624,7 +671,7 @@ already used for them. New checks follow the Experiment Pack format in
 | Speed/gear loop | `0x10E66` every 10th frame: `$12/$14/$18/$68/$69/$3A/$3C/$4C/$4E` | accel vs gear branch; `$4C/$4E` extent flips |
 | Off-road transition | `0x10E66` after 300 forced-left frames: `$68` bit3, `$30/$36/$00` | hard curve vs off-road bit |
 | Road objects | running/`road_objects` dump: `$FFDE72` count, `Road_ObjectArray`, `Road_VisibleObjectList` | object count is `ram_FFDE72` (22 in the demo), not `Race_ram_TrackObjectCount` |
-| Pair impact | `0x14486` (`Race_ApplyCollisionImpact`): `$1C/$2A/$2C/$2E/$54/$5C` | impact/damage post-state; return breakpoint still TODO |
+| Pair impact | `0x14486` (`Race_ApplyCollisionImpact`): `$1C/$2A/$2C/$2E/$54/$5C` | E4-F confirms both branches, Speed, BikeDamage, `$2A/$2C/$2E/$32`, event |
 | E1-1/E1-4 actor fields | `0x10FDE`/`0x10FE4`/`0x10F6C`/`0x115C6`, demo PlayerA | `$30 = $00-$36`; `$36` accumulator; `$3C` write-only |
 | E1-2 Y correction | `0x113C4`, demo PlayerA | `$22 = d0`, then `$00 += d0` |
 | E1-3 shape variant | `0x101E6`/`0x1022C`/`0x10254`, demo | signed `$34` -> shape index + H-flip |
@@ -641,6 +688,10 @@ already used for them. New checks follow the Experiment Pack format in
 | E3-4 level budget | `0xCAAC` (forced levels 1..5) | budgets `2,3,3,3,4`; level 1 demo budget 2 |
 | E3-5 static respawn | `0x1397E`/`0x1399E`/`0x139A4` | `$74` -> `Race_StaticActionTable[$74]`; `$12/$46` match speed/Y-offset; timer -> `sub_13A26` |
 | Demo collision/crash | `0x127EA`/`0x14486`/`0x11B7A`/`0x14C3C`, full demo | 9 pair contacts (1 player), 0 crash/object, no player fall |
+| E4-A demo L4 survey | `0x1487C`/`0x1496C`/`0x14C3C`/`0x14CEC`/`0x140EE`/`0x141AE`/`0x14404`/`0x14486` | 9 pair / 6 clamp / 3 exchange / 0 knockdown / 0 crash |
+| E4-B knockdown arithmetic | `0x14C3C`/`0x14C54`/`0x14C5C`/`0x14C8C`/`0x14CAC` | `delta=PairImpact*$18AC`; fall at underflow, `$54=$11`, bit4, `$0F`/`$0D` |
+| E4-D/E player exchange | `0x14CEC`/`0x14CFA`/`0x14D50`/`0x14D82` | player path reached; small delta -> 0 BikeDamage |
+| E4-F forced static impact | `0x11EC4`/`0x11ED0` | deep and shallow `Race_ApplyCollisionImpact` confirmed |
 | Static/extra actors | running dump: static `$16/$30/$46/$56/$74`; `$FF2FAA` `$71` | static layout anomaly vs extra slot activation |
 
 ## Tooling and validation
@@ -689,4 +740,7 @@ crash/fall contracts and handler tables, corrects `$08/$0E/$10/$3C/$78`, and clo
 `U-0012`..`U-0016`. L3 static contracts are in the addendum above, and E3
 (`race_L3_ai_dynamic.md`) dynamically confirmed the candidate buckets, profile
 slot/budget, dispatcher branches, per-level budget and static respawn indexing.
-Next: L4 impact/fall dynamics.
+L4 (`tasks/race_L4_impact_contracts.md`) is now in matrix v7: pair collision,
+damage/exchange, stamina `$5C`, knockdown and both `Race_ApplyCollisionImpact`
+branches are confirmed; only the R30 crash-path timing remains static. Next: L5
+spawn/lifecycle.

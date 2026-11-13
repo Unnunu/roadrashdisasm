@@ -162,14 +162,24 @@ entered `Race_ActorSteerCollide`/`Race_ActorSteerThrottle` (action4), profile `8
 - `$1A` Y chooses above/below and sets `$69` bit1;
 - `$4A/$4C/$4E` extents come from `Race_GetCollisionExtent` (`$4A` uses the `unk_12B7C` table
   for normal actors; static actors use `$37`/`$60`);
+  the actor extent index is
+  `6*clamp(|$8>>4|,0,3) + 2*clamp(($C>>3)+2,0,4) + side(0/1)` into `unk_12B7C`;
+  static actors use `$37` (`$71 < $12`) or `$60`;
 - if the attacker has `$69` bit4 and `$6C == 1`, the matching side/low bits select
   `Race_GetAttackerReach`: **armed `$6B` bit1 -> `$28`, unarmed -> `$19`**; the defender path
   `Race_GetDefenderReach` returns `$1A`;
 - the result goes to `$50`, `$52` gets the overlap, and `$69` bit7 marks contact;
-  no `BikeDamage` is added here.
+  no `BikeDamage` is added here;
+- when the Y overlap exists and the X penetration passes, the routine sets
+  `ControlFlags` (`$68`) **bit4** on both actors (`0x127EA`), which is the
+  contact/crash latch consumed by the impact and crash callers. Otherwise it clears
+  bit4/bit7 (`0x1280A`).
 
 This is the positional punch/knockback path. `BikeDamage` remains the crash/impact
-counter updated by the impact helpers above.
+counter updated by the impact helpers above. Knockdown is separate: the pair-impact
+value (`$52` scaled in `Race_StealClub`) is accumulated into `$5C`, the actor
+**stamina** (`Race_ApplyFallKnockdown`); underflow drops the rider (`$54=$11`).
+See `docs/analysis/race_impact.md` for the full L4 contract and E4 evidence.
 
 ### Dynamic test 5 (pair collision, headless)
 
@@ -201,18 +211,25 @@ and attack timing tables (`ram_FF1AC2`, `ram_FF1ABC`, `unk_257E2/E8/EE`).
 
 ## Damage
 
-`Race_ScaleImpactDamage` is the impact scale: if `ram_FF1768` is non-zero it returns 0;
-otherwise `abs(d0) >> 11` and stores it in `Race_ram_ImpactScale`.
+`Race_ScaleImpactDamage` is the impact scale: if `ram_FF1768` (current player in a
+crash/fall animation) is non-zero it returns 0; otherwise `abs(d0) >> 11` and stores
+it in `Race_ram_ImpactScale`. Normal riding has `AnimState=$FF`, so impacts do add
+damage; during one crash the value is suppressed.
 
 | Source | Added to `Race_ram_BikeDamage` | Notes |
 |---|---|---|
-| `Race_ApplyCrashImpact` | `Race_ScaleImpactDamage(Speed) >> 2` | player/actor crash/impact path; sets `$68` bit4 and recovery animation |
-| `Race_ApplyCollisionImpact` | `Race_ScaleImpactDamage(result)` | impact/avoid path, also copies `$69` bit3 from the other actor |
-| `Race_ExchangeCollisionSpeed` | `Race_ScaleImpactDamage(result)` | speed-exchange collision path |
+| `Race_ApplyCrashImpact` (`0x11B7A`, lean-over) | `Race_ScaleImpactDamage(Speed) / 4` | normal-mode player only (`DemoMode==0`); lean/curve threshold `ram_FFD33E`, `|$34|>=3` |
+| `sub_140EE` (on-road crash) | `Race_ScaleImpactDamage(Speed) / 2` | player branch, `ram_FF1768 == 0`; sets `$68` bit4 and the crash animation |
+| `sub_141AE` (off-road/high-speed crash) | `Race_ScaleImpactDamage(ram_FF18A6)` | player branch, no halving |
+| `Race_ApplyCollisionImpact` | `Race_ScaleImpactDamage(ram_FF18A6)` on the deep-penetration branch only | also copies `$69` bit3; shallow branch adds nothing (E4-F) |
+| `Race_ExchangeCollisionSpeed` | `Race_ScaleImpactDamage(delta)` | delta ~0.1x speed difference, so ordinary exchanges add 0 (E4-D/E) |
 
 `Race_UpdateCollision` starts the attack state but does not add damage itself.
-Whether a player punch changes the opponent’s bike-damage/knockdown only through
-these impact helpers is still a dynamic question.
+Punches affect `$52`/`$5C` (stamina/knockdown), not `BikeDamage` directly.
+
+E4-F (`docs/analysis/race_impact.md`) confirmed both `Race_ApplyCollisionImpact`
+branches: deep contact `Speed $2000/$1000 -> $1400`, `BikeDamage=2`, event `$0A`;
+shallow contact keeps Speed, adds no damage and raises event `$09`.
 
 Attack SFX: `Race_TriggerArmedAttackSfx` sets `ram_FF1AD7=$0E` at attack phase 1;
 `sub_14E38` passes `ram_FF1AD6/AD7` to `Audio_PlaySfx`.

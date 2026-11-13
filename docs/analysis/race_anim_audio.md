@@ -62,10 +62,13 @@ unreferenced helpers.
 ## Animation / impact
 
 - `Race_UpdateLeanCurve` computes the lean/curve from `$3E`/d0 into `$40`/`ram_FF3042`.
-- `Race_UpdatePlayerAnimation` advances the player tile base `$5C` up to `ram_FF18AA`
-  by `Race_ram_FrameDelay` (on-foot/`$6E` gated).
-- `Race_ScaleImpactDamage`/`Race_ApplyCollisionImpact`/`Race_ExchangeCollisionSpeed` handle impact/damage side effects; their
-  callers and exact collision rules remain TODO.
+- `Race_UpdatePlayerAnimation` advances the player **stamina** `$5C` up to
+  `ram_FF18AA` by `Race_ram_FrameDelay` (on-foot/`$6E` gated).
+- `Race_ScaleImpactDamage`/`Race_ApplyCollisionImpact`/`Race_ExchangeCollisionSpeed`
+  handle impact/damage side effects. L4 (`tasks/race_L4_impact_contracts.md`, E4)
+  confirmed both `Race_ApplyCollisionImpact` branches, the `ScaleImpactDamage =
+  abs(x)>>11` scale (`ram_FF1768` suppression), and the knockdown `$5C` arithmetic;
+  see `docs/analysis/race_impact.md`.
 - `Race_UpdateActorPairImpact` sets `ram_FF0520=3` when player A attacks the actor whose
   `$71` index equals `ram_FF1ADB`, i.e. Natasha (`U-0004`).
 
@@ -84,14 +87,15 @@ unreferenced helpers.
 - `unk_15618`/`unk_1561C`/`unk_15624` are 4/8/8-entry random FallState tables
   (`sub_15538`/`sub_15580`/`sub_1555C`). `unk_15CE0`/`unk_15CFC` remain animation data.
 - PRNG/LFSR tables and RAM are documented in `docs/analysis/rand.md`.
-- Actor fields: `$3E/$40/$42` lean, `$4A/$5A` impact/range, `$5C` tile base,
+- Actor fields: `$3E/$40/$42` lean, `$4A/$5A/$52` impact/range, `$5C` stamina,
   `$6E` on-foot/animation gate. Attack fields: see `docs/ram-map.md` combat section.
 
 ## Open questions
 
 - Remaining animation scripts targeted by `unk_155D0` and the `unk_155AC` sequencer
   fields.
-- Dynamic confirmation of the crash-handler branches and damage timing (L4);
+- L4 impact/damage/knockdown is confirmed (E4); the crash-handler branch timing
+  (`sub_140EE`/`sub_141AE`) is still static-only because the demo never crashes.
   `sub_14DEC` is vestigial with no static caller (`U-0015` closed).
 - `unk_155A4`/`unk_15CE0`/`unk_15CFC` consumers and `unk_147FC` value distribution.
 - Next: `src/race/race_hud.asm`/`src/race/road_marking.asm`/`src/race/animation.asm` cards/internals.

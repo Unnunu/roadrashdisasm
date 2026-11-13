@@ -534,3 +534,33 @@ Names stay `sub_XXXX`/`unk_XXXX`; proposals are not applied.
 | `ram_FF1A96` | data | `race_core.asm:2711 ($FF1A96)` | race_ai: per-level action-dispatch budget `[2,3,3,3,4]`; E3 confirmed all five levels | placeholder | `[static]/[dynamic]` E3 | rename-later | `Race_ram_ActionDispatchBudget` | high | - |
 | `ram_FF1A98` | data | `race_ai.asm:2990 ($FF1A98)` | race_ai: per-frame count of `+4` dispatcher choices; E3 confirmed increment/clamp | placeholder | `[static]/[dynamic]` E3 | rename-later | `Race_ram_ActionDispatchCount` | high | - |
 | `Race_ActorNormalVariant` | routine | `race_ai.asm:3141 ($1307C)` | race_ai: profile 0 action1; the profile-0 player always takes the base slot -> table slot unreachable | narrow | `[static]` | keep (dead) | - | medium | - |
+| `Race_UpdateActorPairCollision` | routine | `race_ai.asm:2202 ($124E2)` | race_ai: pair order/side/extent/reach; sets ContactFlags bit4 | good | `[static]/[dynamic]` E4 | keep | - | high | - |
+| `Race_GetCollisionExtent` | routine | `race_ai.asm:2665 ($12A88)` | race_ai: actor vs static extent selector | good | `[static]` | keep | - | high | - |
+| `Race_GetActorCollisionExtent` | routine | `race_ai.asm:2679 ($12A9C)` | race_ai: `unk_12B7C` index from `$8/$C/side` | good | `[static]` | keep | - | high | - |
+| `Race_GetStaticCollisionExtent` | routine | `race_ai.asm:2728 ($12AF8)` | race_ai: static extent `$37`/`$60` | good | `[static]` | keep | - | high | - |
+| `Race_GetAttackerReach` | routine | `race_ai.asm:2738 ($12B0C)` | race_ai: `$28` armed / `$19` unarmed | good | `[static]/[dynamic]` | keep | - | high | - |
+| `Race_GetDefenderReach` | routine | `race_ai.asm:2753 ($12B24)` | race_ai: defender reach `$1A` | good | `[static]/[dynamic]` | keep | - | high | - |
+| `Race_UpdateActorPairImpact` | routine | `race_anim_audio.asm:761 ($1487C)` | race_anim: exchange vs clamp/steal/knockdown chooser | good | `[static]/[dynamic]` E4 | keep | - | high | - |
+| `Race_ClampActorPairY` | routine | `race_anim_audio.asm:845 ($1496C)` | race_anim: Y separation with `$4C/$4E+$10` | good | `[static]/[dynamic]` E4 | keep | - | high | - |
+| `Race_StealClub` | routine | `race_anim_audio.asm:930 ($149C4)` | race_anim: club transfer/impact accumulation | good | `[static]/[dynamic]` | keep | - | medium | - |
+| `Race_StealClubMirror` | routine | `race_anim_audio.asm:1035 ($14B04)` | race_anim: mirror club transfer | good | `[static]/[dynamic]` | keep | - | medium | - |
+| `Race_ApplyFallKnockdown` | routine | `race_anim_audio.asm:1070 ($14C3C)` | race_anim: stamina `$5C` underflow -> fall/`$54=$11` | good | `[confirmed]` E4-B | keep | - | high | - |
+| `Race_ExchangeCollisionSpeed` | routine | `race_anim_audio.asm:1117 ($14CEC)` | race_anim: speed equalization + X push + damage | good | `[confirmed]` E4-D/E/F | keep | - | high | - |
+| `Race_AdjustActorTrackPositions` | routine | `race_anim_audio.asm:1174 ($14D84)` | race_anim: track-position split by `$22` | good | `[static]` | keep | - | medium | - |
+| `Race_ApplyCollisionImpact` | routine | `race_anim_audio.asm:466 ($14486)` | race_anim: deep/shallow impact; damage/speed/event | good | `[confirmed]` E4-F | keep | - | high | - |
+| `Race_UpdateCollisionSpeedState` | routine | `race_anim_audio.asm:579 ($145EC)` | race_anim: heavy/light speed state + event; returns magnitude | good | `[static]/[dynamic]` E4 | keep | - | high | - |
+| `Race_ApplyImpactSpeedLoss` | routine | `race_anim_audio.asm:663 ($146AC)` | race_anim: `$2C` decay / Speed loss `bit4` | good | `[static]` | keep | - | medium | - |
+| `Race_ScaleImpactDamage` | routine | `race_anim_audio.asm:318 ($1434A)` | race_anim: `abs(x)>>11`; 0 while `ram_FF1768` | good | `[confirmed]` E4-F | keep | - | high | - |
+| `Race_UpdateCollision` | routine | `race_combat.asm:761 ($16732)` | race_combat: attack state start/cooldown (no damage) | good | `[static]/[dynamic]` combat | keep | - | high | - |
+| `sub_1438E` | routine | `race_anim_audio.asm:370 ($1438E)` | race_anim: impact speed-loss latch | placeholder | `[static]` | rename-later | `Race_ApplyImpactLatch` | medium | - |
+| `sub_142D8` | routine | `race_anim_audio.asm:269 ($142D8)` | race_anim: weapon-anim speed flag | placeholder | `[static]` | rename-later | `Race_SetWeaponAnimSpeedFlag` | low | - |
+| `RaceActor_TileBase` | RAM field | `race_anim_audio.asm:4414` / `race_hud.asm:266` (`$5C`) | stamina/health: regen + knockdown + HUD bar; not a tile base | misleading | `[confirmed]` E4-B + HUD | rename-later | `RaceActor_Stamina` | high | - |
+| `ram_FF18AC` | data | `race_core.asm:1258 ($FF18AC)` | race_anim: stamina damage per pair-impact unit (`$10`) | placeholder | `[confirmed]` E4-B | rename-later | `Race_ram_StaminaHitScale` | high | - |
+| `ram_FF18A8` | data | `race_core.asm:1256 ($FF18A8)` | race_spawn/ai: opponent stamina base/cap (`$500`) | placeholder | `[static]` | rename-later | `Race_ram_OpponentStaminaMax` | medium | - |
+| `ram_FF18AA` | data | `race_core.asm:1257 ($FF18AA)` | core/ai/hud: player stamina max (`$A00`) | placeholder | `[confirmed]` HUD | rename-later | `Race_ram_PlayerStaminaMax` | high | - |
+| `ram_FF3038` | data | `race_ai.asm:1543 ($FF3038)` | race_ai/anim: pair X window (`$6000`/`$3700`) | placeholder | `[confirmed]` E4-F | rename-later | `Race_ram_PairXWindow` | medium | - |
+| `ram_FF303E` | data | `race_ai.asm:1545 ($FF303E)` | race_ai/anim: penetration threshold (`$40`) | placeholder | `[confirmed]` E4-F | rename-later | `Race_ram_ImpactPenetration` | medium | - |
+| `ram_FF3040` | data | `race_ai_road.asm:1092 ($FF3040)` | road/anim: collision side state (0..2) | placeholder | `[confirmed]` E4-F | rename-later | `Race_ram_CollisionSideState` | medium | - |
+| `ram_FF1768` | data | `race_ai.asm:1542 ($FF1768)` | race_ai/anim: current player in crash/fall (damage suppression) | placeholder | `[confirmed]` E4-F | rename-later | `Race_ram_CrashAnimActive` | high | - |
+| `ram_FF1B26` | data | `race_hud.asm:331 ($FF1B26)` | hud/core/anim: BikeDamage (inverse HP); `$20` threshold | good | `[confirmed]` E4-F | keep | - | high | - |
+| `Race_ApplyCrashImpact` | routine | `race_ai.asm:1428 ($11B7A)` | race_ai: lean-over crash (`DemoMode==0`); damage `ScaleImpactDamage(Speed)>>2` | good | `[static]` | keep | - | medium | - |
