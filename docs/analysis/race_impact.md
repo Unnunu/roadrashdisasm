@@ -288,5 +288,6 @@ older combat note and is distinct from `sub_140EE` (half) and `sub_141AE` (full)
   demo never crashes. A normal-mode run that drives into a track object is the next
   dynamic check. `Race_ApplyCrashImpact` (lean-over, `0x11B7A`) is also non-demo only.
 - `Race_GetAttackerReach` close-attack table `unk_12BCC` use is static-only.
-- `ram_FF18A8` cap semantics for opponents (regeneration cap vs graphics `+$E`) is
-  `[static]` and needs an opponent-stamina sample.
+- `ram_FF18A8 = $500` is the shared stamina baseline, not the opponent cap; the cap is
+  the `Race_ActorGraphicsTable` page maximum `+$E` (`U-0017`, closed by
+  `race_residual_unknowns.md` and the page-1 regen capture).

@@ -7,8 +7,8 @@
 - **Source:** `src/race/race_core.asm` (`Race_CreateActors` `0xCAD0`, `Race_InitActorLists`
   `0xB6C4`-area, `Race_InitActorPositions`), `src/data/race_actor_tables.asm`
   (pointer/graphics tables from the ROM gap), `src/race/race_spawn.asm` (dynamic spawn).
-- **Status:** static tables + dynamic init/running snapshots; field semantics partly
-  confirmed, AI/physics fields still TODO
+- **Status:** static tables + dynamic init/running snapshots; field roles are in the
+  `race_map.md` matrix v13. Residual visual/label questions are in `acceptance.md`.
 - **Related:** `docs/analysis/race.md`, `docs/analysis/combat.md`,
   `docs/analysis/race_ai.md`, `docs/ram-map.md`, `docs/modules/race.md`
 
@@ -22,14 +22,14 @@
 
 - Actor struct size: `$80`; player A `$FF1EAA`, player B `$FF26AA`; the 15 opponents
   `$FF1F2A`..`$FF262A`; the static actors `$FF2EAA/$FF2F2A`; `$FF2FAA` is a further
-  actor-like struct used by `Race_UpdateStaticActors` but **not** in the static list (TODO).
+  actor-like extra-static slot (`$71=$12`) driven by `Race_Init/UpdateExtraStaticActor` (L5/E5).
 - `Race_InitActorLists` copies the actor pointers into `ram_FF1A08` / `Race_ram_OpponentFreeList`
   (with the `Race_ActorListMid` sub-list); `Race_InitActorPositions` then sets the
   actor screen fields `+$1A/+$30` (alternating `$60±$40`, `$80000`, `$30000` steps).
 - `[dynamic]` The demo snapshot confirms the split: active count is 8 =
   `RacePlayerA` + 7 opponents (`$FF232A`..`$FF262A`); the opponent free list has 7
   pointers (`$FF1FAA,$FF202A,$FF20AA,$FF212A,$FF21AA,$FF222A,$FF22AA`). `$FF1F2A`
-  is outside both lists in this snapshot; its role is still TODO.
+  is outside both lists in this snapshot: it is the reserved opponent slot (`Race_ReservedOpponent`, L5/E5).
 
 ## Dynamic snapshots
 
@@ -77,8 +77,8 @@ detection. `$69` bits0/1/2 are all set in this state.
 | 0 | `+$16` | actor type/sprite (2..10). |
 | 1 | `+$74` | unknown (1..18). |
 | 2 | `+$75`, `+$6B` bit1 | low 7 bits = graphics index; bit7 = special flag. |
-| 3 | `+$73` | 2 for all opponents (palette/team? TODO). |
-| 4 | `+$77` | 3/5/10/7/1 per level (class/tier? TODO). |
+| 3 | `+$73` | 2 for all opponents (palette/team index). |
+| 4 | `+$77` | 3/5/10/7/1 per level (role open; residual R-12). |
 | 5 | `+$66` | actor rating ×100 (70..120); player def = 0. |
 | 6..15 | - | 10-char name (standings/tooltips; not copied into the actor). |
 
@@ -141,7 +141,7 @@ routines; `+$06` is its low word, not an independent X coordinate.
 | `+$1E` | long | previous X; `Race_UpdateActorX` copies current `+$04` here before adding `+$26` | `[confirmed]` `$04-$1E=$26`; initial spawn value before movement |
 | `+$22`/`+$24` | word | Y correction (`$22`, added to `$00`); `$24` is write-only | `[confirmed]` E1-2: `$22 = d0` then `$00 += d0`; `[dynamic]` `$09/0` steering; zero no-steer |
 | `+$26` | long | frame distance = `Speed * Race_ram_FrameDelay` | `[confirmed]` Player `$EE*7=$682`, Opp `$111*7=$777`; steering `$2D15*7=$13B93` |
-| `+$2A` | word | screen/road Y offset; source derives from `+$02`/road value | `[dynamic]` `-$08` no-steer, `$223` steering; exact role TODO |
+| `+$2A` | word | screen/road Y offset; source derives from `+$02`/road value | `[dynamic]` `-$08` no-steer, `$223` steering; collision path writes `$02+$30` (E4-F); residual R-12 |
 | `+$2C`/`+$2E` | word | impact/speed fraction pair; source writes from Speed | `[static]`; zero in snapshots |
 | `+$30` | word | current road/target Y; `+$1A` keeps the previous value | `[confirmed]` E1-1: `$30 = $00-$36`; `[dynamic]` steering `$35`; hard-left `$FFEA`; no-steer `$A0` |
 | `+$32` | word | `RaceActor_CollisionOffset`; projected collision penetration; zero outside collisions | `[static/dynamic]`; R25 |
@@ -169,7 +169,7 @@ routines; `+$06` is its low word, not an independent X coordinate.
 | `+$71` | byte | actor index | `[confirmed]` 0..15, static `$10/$11`, extra `$12` |
 | `+$72` | byte | animation frame/index written by `Race_SetupActorSprite` | `[static]/[dynamic]` values 3/5 |
 | `+$73`/`+$74`/`+$75`/`+$77` | byte | definition bytes 3/1/2/4; `+$74` AI profile, `+$75` graphics index, `+$73` palette | `[confirmed]`; R23 |
-| `+$78` | byte | animation/state flag; zero in snapshots | `[dynamic]`; TODO |
+| `+$78` | byte | animation/state flag; armed by `sub_14456`/`sub_1446E` during a fall, so the `word_14742` curve branch is reachable | `[dynamic]` zero in demo; R30 |
 | `+$7E` | word | unknown; zero in snapshots | `[dynamic]` |
 
 **Structure-base warning:** raw offset greps are misleading. `Race_BuildVScrollInfo`
@@ -216,8 +216,9 @@ Words at `+$A/+$C/+$E` selected by the definition's graphics index:
 | 4 | `$0300` | `$0100` | `$0A00` |
 | 5..9 | `0` | `0` | `$0A00` |
 
-`+$E` looks like the tile base (`$500`..`$A00`); `+$A/+$C` are sprite-size/position-like
-values. The exact semantics and the 1:1 mapping to rider graphics are TODO.
+`+$E` is the stamina/page maximum used by `Race_UpdateActorActions` (`U-0017`);
+`+$A/+$C` are sprite-size/position-like. The rider-graphics mapping stays a
+catalogue task (D2).
 
 ## Static actor group
 
